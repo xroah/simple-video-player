@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,23 +8,38 @@
     <title>Document</title>
     <link rel="stylesheet" href="rPlayer.css">
 </head>
+
 <body>
     <div class="rplayer-container">
+        <button type="button" class="rplayer-play-btn"></button>
         <video src="https://sec.ch9.ms/ch9/3418/c38b5045-5fad-45ab-a058-e51b7ebb3418/B8088_mid.mp4"></video>
-        <div class="rplayer-controls">
-            <div class="rplayer-play-btn"></div>
+        <div class="rplayer-control-panel">
             <div class="rplayer-progress">
                 <div class="rplayer-bufferd-bar"></div>
                 <div class="rplayer-bar"></div>
                 <div class="rplayer-slider"></div>
             </div>
-            <div class="rplayer-audio-controls">
-                <div class="rplayer-progress">
-                    <div class="rplayer-bar"></div>
-                    <div class="rplayer-slider"></div>
+            <div class="rplayer-controls">
+                <div class="rplayer-play-control">
+                    <button type="button" class="rplayer-play-btn"></button>
+                    <span class="rplayer-time-info">
+                        <span></span>/
+                        <span></span>
+                    </span>
+                </div>
+                <div class="rplayer-settings">
+                    <div class="rplayer-audio-control">
+                        <button type="button" class="rplayer-audio-btn"></button>
+                        <div class="rplayer-progress">
+                            <div class="rplayer-bar"></div>
+                            <div class="rplayer-slider"></div>
+                        </div>
+                    </div>
+                    <button type="button" class="rplayer-fullscreen-btn"></button>
                 </div>
             </div>
         </div>
     </div>
 </body>
+
 </html>
