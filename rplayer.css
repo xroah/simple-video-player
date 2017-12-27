@@ -6,9 +6,18 @@
     position: relative;
 }
 
-.rplayer-container.fullscreen {
+.rplayer-container.fullscreen{
     width: 100% !important;
     height: 100% !important;
+}
+
+.rplayer-container.fixed {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    margin: auto;
 }
 
 .rplayer-container .rplayer-video {
