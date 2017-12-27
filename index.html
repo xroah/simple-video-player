@@ -7,6 +7,11 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Document</title>
     <link rel="stylesheet" href="rplayer.css">
+    <style>
+        body {
+            padding: 20px;
+        }
+    </style>
 </head>
 
 <body>
@@ -45,7 +50,12 @@
         </div>
     </div>
 </div>-->
-<script src="rplayer.js"></script>
+<script src="dist/rplayer.js"></script>
+<script>
+    var player = RPlayer.init("#container", {
+        //source: ["test.mp4", "https://sec.ch9.ms/ch9/3418/c38b5045-5fad-45ab-a058-e51b7ebb3418/B8088_mid.mp4"]
+    });
+</script>
 </body>
 
 </html>
