@@ -1,0 +1,27 @@
+{
+  "name": "videoplayer",
+  "version": "1.0.0",
+  "description": "",
+  "main": "dist/rplayer.min.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/xroah/videoPlayer.git"
+  },
+  "author": "X Roah",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/xroah/videoPlayer/issues"
+  },
+  "homepage": "https://github.com/xroah/videoPlayer#readme",
+  "devDependencies": {
+    "gulp": "^3.9.1",
+    "gulp-clean-css": "^3.9.0",
+    "gulp-concat": "^2.6.1",
+    "gulp-rename": "^1.2.2",
+    "gulp-uglify": "^3.0.0",
+    "gulp-umd": "^0.2.1"
+  }
+}
