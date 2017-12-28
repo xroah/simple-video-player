@@ -288,6 +288,7 @@ function RPlayer(selector, options) {
     this.volume = this.config.defaultVolume
     this.muted = false;
     this.isFullScreen = false;
+    this.seekingTime = 0;
 }
 
 var fn = RPlayer.prototype,
@@ -509,21 +510,19 @@ fn.initPlayEvent = function () {
                 var x = evt.clientX;
                 distance = x - startX + origLeft;
                 distance = distance < 0 ? 0 : distance > max ? max : distance;
-                distance = distance / max * 100;
-                videoProgress.style.width = videoSlider.style.left = distance + "%";
+                distance = distance / max;
+                videoProgress.style.width = videoSlider.style.left = distance * 100 + "%";
                 _this.videoEl.pause();
             };
         dom.on(_this.container, "mousemove", move)
             .on(doc, "mouseup", function () {
                 dom.off(_this.container, "mousemove").off(doc, "mouseup");
-                _this.videoEl.currentTime = _this.videoEl.duration * distance / 100;
+                _this.videoEl.currentTime = _this.videoEl.duration * distance;
                 _this.videoEl.play();
             });
     }).on(this.videoEl, "loadedmetadata", function () {
         totalTime.innerHTML = convertTime(this.duration);
         console.log("duration====", _this.videoEl.duration)
-    }).on(this.videoEl, "canplay", function () {
-        dom.removeClass(loading, "loading").addClass(loading, "rplayer-hide");
     }).on(this.videoEl, "progress", function () {
         var b = this.buffered,
             len = b.length;
@@ -532,20 +531,20 @@ fn.initPlayEvent = function () {
             len = len / this.duration * 100;
             buffered.style.width = len + "%";
         }
-        if (this.readyState < 3) {
-            dom.addClass(loading, "loading").removeClass(loading, "rplayer-hide");
-        }
+        console.log(len)
     }).on(this.videoEl, "timeupdate", function () {
         var progress = this.currentTime / this.duration * 100;
         videoProgress.style.width = videoSlider.style.left = progress + "%";
         currentTime.innerHTML = convertTime(this.currentTime);
     }).on(this.videoEl, "abort", function () {
         console.log("abort")
-        videoProgress.style.width = videoSlider.style.left = 0;
+        videoProgress.style.width = videoSlider.style.left = "0";
     }).on(this.videoEl, "error", function () {
 console.log("error")
     }).on(this.videoEl, "seeking", function () {
-       console.log("seeking")
+        dom.addClass(loading, "loading").removeClass(loading, "rplayer-hide");
+    }).on(this.videoEl, "seeked", function () {
+        dom.removeClass(loading, "loading").addClass(loading, "rplayer-hide");
     });
     return this;
 };
