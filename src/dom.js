@@ -63,9 +63,10 @@ dom.fullPage = function (el, exit) {
 };
 
 //选择元素， 只选中一个
-dom.selectElement = function (selector) {
+dom.selectElement = function (selector, context) {
     var ret,
         reg = /^#[^>~+\[\]\s]+$/; //匹配id选择器
+    context = context || doc;
     if (selector) {
         if (selector.nodeName) {
             ret = selector;
