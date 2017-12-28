@@ -56,12 +56,6 @@
     clear: both;
 }
 
-.rplayer-controls .rplayer-bufferd-bar,
-.rplayer-controls .rplayer-bar,
-.rplayer-controls .rplayer-slider{
-    position: absolute;
-}
-
 .rplayer-controls .rplayer-progress-panel {
     position: absolute;
     top: 0;
@@ -85,7 +79,10 @@
 }
 
 .rplayer-controls .rplayer-bufferd-bar,
-.rplayer-controls .rplayer-bar {
+.rplayer-controls .rplayer-bar,
+.rplayer-controls .rplayer-progress-track,
+.rplayer-controls .rplayer-slider,
+.rplayer-controls .rplayer-audio-track {
     position: absolute;
     left: 0;
     bottom: 0;
@@ -117,6 +114,10 @@
 
 .rplayer-controls .rplayer-slider.rplayer-video-slider {
     transform: translateY(50%);
+}
+
+.rplayer-controls .rplayer-progress-track {
+    width: calc(100% - 12px);
 }
 
 .rplayer-controls .rplayer-slider:hover {
@@ -183,7 +184,6 @@
     width: 6px;
     height: 100px;
     margin: 0 auto;
-    border-radius: 5px;
     background-color: #dadada;
 }
 
@@ -238,7 +238,6 @@ rplayer-controls .rplayer-audio-btn.volume-mute:hover,
     left: 0;
     width: 100%;
     height: 10%;
-    border-radius: inherit;
     background: #5185f3;
 }
 
@@ -246,6 +245,11 @@ rplayer-controls .rplayer-audio-btn.volume-mute:hover,
     left: 50%;
     bottom: 50%;
     transform: translateX(-50%);
+}
+
+.rplayer-controls .rplayer-audio-track {
+    width: 100%;
+    height: calc(100% - 12px);
 }
 
 .rplayer-controls .rplayer-fullscreen-btn {

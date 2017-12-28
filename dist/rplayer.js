@@ -272,52 +272,43 @@ function RPlayer(selector, options) {
 
 var fn = RPlayer.prototype,
     SLIDER_SIZE = 12,
-    tpl = '<div class="rplayer-loading rplayer-hide"></div>' +
+    tpl = '<div class="rplayer-container">' +
+        '    <video class="rplayer-video"></video>' +
+        '    <div class="rplayer-loading rplayer-hide"></div>' +
         '    <div class="rplayer-controls">' +
         '        <div class="rplayer-progress-panel">' +
         '            <div class="rplayer-progress rplayer-video-track">' +
         '                <div class="rplayer-bufferd-bar"></div>' +
-        '                <div class="rplayer-bar rplayer-video-progress"></div>' +
-        '                <div class="rplayer-slider rplayer-video-slider"></div>' +
+        '                <div class="rplayer-progress-track">' +
+        '                    <div class="rplayer-bar rplayer-video-progress"></div>' +
+        '                    <div class="rplayer-slider rplayer-video-slider"></div>' +
+        '                </div>' +
         '            </div>' +
         '        </div>' +
         '        <div class="rplayer-play-control rplayer-lf">' +
         '            <button type="button" class="rplayer-play-btn"></button>' +
         '            <span class="rplayer-time-info">' +
-        '                        <span class="rplayer-current-time">dsfsdfs</span> / ' +
-        '                        <span class="rplayer-total-time">sdsdf</span>' +
+        '                        <span>dsfsdfs</span> / ' +
+        '                        <span>sdsdf</span>' +
         '                    </span>' +
-        '        </div>\n' +
-        '        <div class="rplayer-settings rplayer-rt">\n' +
-        '            <button type="button" class="rplayer-fullscreen-btn rplayer-rt"></button>\n' +
-        '            <div class="rplayer-audio-control rplayer-rt">\n' +
-        '                <button type="button" class="rplayer-audio-btn volume-1"></button>\n' +
-        '                <div class="rplayer-volume-popup rplayer-hide">\n' +
-        '                    <div class="rplayer-progress">\n' +
-        '                        <div class="rplayer-bar rplayer-volume-value"></div>\n' +
-        '                        <div class="rplayer-slider rplayer-volume-slider"></div>\n' +
-        '                    </div>\n' +
-        '                    <button class="rplayer-mute volume-1"></button>\n' +
-        '                </div>\n' +
-        '            </div>\n' +
-        '        </div>\n' +
-        '    </div>';
-
-/**
- * slide the slider, change video progress or volume
- * @param el {Element} element
- * @param slider {Element} element
- * @param distance {number} 移动的距离
- * @param {string} position left/bottom属性
- * @param {string} prop width/height属性
- */
-fn.slide = function (el, slider, distance, position, prop, max) {
-    var min = 0;
-    distance = distance < min ? min :
-               distance > max ? max : distance;
-    el.style[prop] = distance + "px";
-    slider.style[position] = distance + "px";
-};
+        '        </div>' +
+        '        <div class="rplayer-settings rplayer-rt">' +
+        '            <button type="button" class="rplayer-fullscreen-btn rplayer-rt"></button>' +
+        '            <div class="rplayer-audio-control rplayer-rt">' +
+        '                <button type="button" class="rplayer-audio-btn volume-1"></button>' +
+        '                <div class="rplayer-volume-popup rplayer-hide">' +
+        '                    <div class="rplayer-progress">' +
+        '                        <div class="rplayer-audio-track">' +
+        '                            <div class="rplayer-bar rplayer-volume-value"></div>' +
+        '                            <div class="rplayer-slider rplayer-volume-slider"></div>' +
+        '                        </div>' +
+        '                    </div>' +
+        '                    <button class="rplayer-mute volume-1"></button>' +
+        '                </div>' +
+        '            </div>' +
+        '        </div>' +
+        '    </div>' +
+        '</div>';
 
 fn.initFullScreenEvent = function () {
     var _this = this,
@@ -352,15 +343,16 @@ fn.initVolumeEvent = function () {
         evt.stopPropagation();
     }).on(".rplayer-volume-slider", "mousedown", function (evt) {
         var slider = this,
-            origTop = this.offsetTop,
+            origTop = this.offsetTop + SLIDER_SIZE,
             startY = evt.clientY,
             el = query(".rplayer-volume-value", context),
-            max = parseInt(getComputedStyle(el.parentNode).height) - SLIDER_SIZE;
+            max = el.parentNode.offsetHeight;
         move = function (evt) {
             var y = evt.clientY,
                 distance = max - (y - startY + origTop);
-            console.log(distance)
-            _this.slide(el, slider, distance, "bottom", "height", max);
+            distance = distance < 0 ? 0 : distance > max ? max : distance;
+            distance = distance / max * 100;
+            el.style.height = slider.style.bottom = distance + "%";
         };
         dom.on(_this.container, "mousemove", move)
             .on(doc, "mouseup", function () {
@@ -387,17 +379,18 @@ fn.initPlayEvent = function () {
             origLeft = this.offsetLeft,
             startX = evt.clientX,
             el = query(".rplayer-video-progress", context),
-            max = parseInt(getComputedStyle(el.parentNode).width) - SLIDER_SIZE;
+            max = el.parentNode.offsetWidth;
         move = function (evt) {
             var x = evt.clientX,
                 distance = x - startX + origLeft;
-            console.log(distance)
-            _this.slide(el, slider, distance, "left", "width", max);
+            distance = distance < 0 ? 0 : distance > max ? max : distance;
+            distance = distance / max * 100;
+            el.style.width = slider.style.left = distance + "%";
         };
         dom.on(_this.container, "mousemove", move)
             .on(doc, "mouseup", function () {
-            dom.off(_this.container, "mousemove").off(doc, "mouseup");
-        });
+                dom.off(_this.container, "mousemove").off(doc, "mouseup");
+            });
     });
     return this;
 };
@@ -422,7 +415,7 @@ fn.destroy = function () {
     return this;
 };
 
-fn.initSource = function(el) {
+fn.initSource = function (el) {
     var source = this.config.source
     if (typeof source === "string") {
         el.src = source;
