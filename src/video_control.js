@@ -13,12 +13,11 @@ function VideoControl (config) {
 VideoControl.prototype = {
     constructor: VideoControl,
     setVolume: function (volume) {
-        if (volume > 1) {
+        if (volume >= 1) {
             volume = volume / 100;
         }
         this.el.volume = volume;
         this.el.muted = !volume;
-        console.log(volume)
         return this;
     },
     getVolume: function () {
@@ -123,16 +122,11 @@ VideoControl.prototype = {
         }
         return this;
     },
-    initEvent: function () {
-        var _this = this;
-        VIDEO_EVENTS.forEach(function (evt) {
-
-        });
-    },
     init: function () {
-        var video = doc.createElement("video");
+        var video = doc.createElement("video"),
+            text = doc.createTextNode(this.config.msg.toString());
         this.el = video;
-        video.appendChild(doc.createTextNode(this.config.msg.toString()));
+        video.appendChild(text);
         dom.addClass(this.el, "rplayer-video");
         this.initSource()
             .setVolume(this.config.defaultVolume);

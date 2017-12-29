@@ -1,9 +1,6 @@
-"use strict";
 var dom = {
         handlers: {}
-    },
-    doc = document,
-    guid = 1;
+    };
 
 function isFunction(fn) {
     return Object.prototype.toString.call(fn) === "[object Function]";
