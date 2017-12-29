@@ -1,3 +1,4 @@
+"use strict";
 var dom = {
         handlers: {}
     },
@@ -35,11 +36,6 @@ dom.removeClass = function (el, cls) {
             el.className = el.className.replace(reg, " ").trim();
         }
     }
-    return this;
-};
-
-dom.replaceClass = function (el, cls) {
-    el.className  = cls;
     return this;
 };
 
@@ -103,12 +99,20 @@ dom._on = function (el, type, callback) {
 };
 
 dom.on = function (selector, type, callback, off) {
-    var el = this.selectElement(selector);
-    if (el && isFunction(callback)) {
-        off ? this._off(el, type, callback) :
-            this._on(el, type, callback);
-    } else if (el && !isFunction(callback)) {
-        this._off(el, type);
+    var el = this.selectElement(selector),
+        i, t;
+    if (el) {
+        type = type.split(" ");
+        i = type.length;
+        if (isFunction(callback)) {
+            for (; i--;) {
+                t = type[i];
+                off ? this._off(el, t, callback) :
+                    this._on(el, t, callback);
+            }
+        } else {
+            this._off(el, type);
+        }
     }
     return this;
 };

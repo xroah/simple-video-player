@@ -13,7 +13,7 @@ gulp.task("minifyCss", () => {
 });
 
 gulp.task("concat", () => {
-    return gulp.src(["./src/dom.js", "./src/template.js", "./src/rplayer.js"])
+    return gulp.src(["./src/dom.js", "./src/template.js", "./src/video_control.js", "./src/rplayer.js"])
         .pipe(concat("rplayer.js"))
         .pipe(umd({
             exports: () => "RPlayer",
