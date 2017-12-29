@@ -55,9 +55,9 @@ dom.replaceClass = function (el, cls) {
 dom.fullScreen = function (el, exit) {
     var fsApi = this.fsApi;
     if (fsApi) {
-        exit ? el[fsApi.requestFullscreen()]() : doc[fsApi.exit]();
+        exit ? doc[fsApi.exitFullscreen]() : el[fsApi.requestFullscreen]();
     } else {
-        this.fullPage(el, false);
+        this.fullPage(el, exit);
     }
     return this;
 };
@@ -84,7 +84,7 @@ dom.selectElement = function (selector, context) {
                 ret = doc.getElementById(selector.substring(1));
                 console.log(selector, ret)
             } else {
-                ret = doc.querySelector(selector);
+                ret = context.querySelector(selector);
             }
         }
     }
@@ -165,39 +165,39 @@ function isSupportFullScreen() {
     var fullScreenApi = [
             //W3C
             [
-                'requestFullscreen',
-                'exitFullscreen',
-                'fullscreenElement',
-                'fullscreenEnabled',
-                'fullscreenchange',
-                'fullscreenerror'
+                "requestFullscreen",
+                "exitFullscreen",
+                "fullscreenElement",
+                "fullscreenEnabled",
+                "fullscreenchange",
+                "fullscreenerror"
             ],
             // WebKit
             [
-                'webkitRequestFullscreen',
-                'webkitExitFullscreen',
-                'webkitFullscreenElement',
-                'webkitFullscreenEnabled',
-                'webkitfullscreenchange',
-                'webkitfullscreenerror'
+                "webkitRequestFullscreen",
+                "webkitExitFullscreen",
+                "webkitFullscreenElement",
+                "webkitFullscreenEnabled",
+                "webkitfullscreenchange",
+                "webkitfullscreenerror"
             ],
             // Firefox
             [
-                'mozRequestFullScreen',
-                'mozCancelFullScreen',
-                'mozFullScreenElement',
-                'mozFullScreenEnabled',
-                'mozfullscreenchange',
-                'mozfullscreenerror'
+                "mozRequestFullScreen",
+                "mozCancelFullScreen",
+                "mozFullScreenElement",
+                "mozFullScreenEnabled",
+                "mozfullscreenchange",
+                "mozfullscreenerror"
             ],
             // IE
             [
-                'msRequestFullscreen',
-                'msExitFullscreen',
-                'msFullscreenElement',
-                'msFullscreenEnabled',
-                'MSFullscreenChange',
-                'MSFullscreenError'
+                "msRequestFullscreen",
+                "msExitFullscreen",
+                "msFullscreenElement",
+                "msFullscreenEnabled",
+                "MSFullscreenChange",
+                "MSFullscreenError"
             ]
 
         ],
@@ -225,6 +225,43 @@ function isSupportFullScreen() {
 
 dom.fsApi = isSupportFullScreen();
 
+var tpl = '<div class="rplayer-loading rplayer-hide"></div>' +
+    '    <div class="rplayer-controls">' +
+    '        <div class="rplayer-popup-info rplayer-video-popup-info rplayer-hide">10:00</div>' +
+    '        <div class="rplayer-progress-panel">' +
+    '            <div class="rplayer-progress rplayer-video-track">' +
+    '                <div class="rplayer-bufferd-bar"></div>' +
+    '                <div class="rplayer-progress-track">' +
+    '                    <div class="rplayer-bar rplayer-video-progress"></div>' +
+    '                    <div class="rplayer-slider rplayer-video-slider"></div>' +
+    '                </div>' +
+    '            </div>' +
+    '        </div>' +
+    '        <div class="rplayer-play-control rplayer-lf">' +
+    '            <button type="button" class="rplayer-play-btn"></button>' +
+    '            <span class="rplayer-time-info">' +
+    '                        <span class="rplayer-current-time">00:00</span>/' +
+    '                        <span class="rplayer-total-time">00:00</span>' +
+    '                    </span>' +
+    '        </div>' +
+    '        <div class="rplayer-settings rplayer-rt">' +
+    '            <button type="button" class="rplayer-fullscreen-btn rplayer-rt"></button>' +
+    '            <div class="rplayer-audio-control rplayer-rt">' +
+    '                <div class="rplayer-popup-info rplayer-popup-volume-info rplayer-hide">10:00</div>' +
+    '                <button type="button" class="rplayer-audio-btn volume-1"></button>' +
+    '                <div class="rplayer-volume-popup rplayer-hide">' +
+    '                    <span class="rplayer-current-volume">12</span>' +
+    '                    <div class="rplayer-progress rplayer-volume-progress">' +
+    '                        <div class="rplayer-audio-track">' +
+    '                            <div class="rplayer-bar rplayer-volume-value"></div>' +
+    '                            <div class="rplayer-slider rplayer-volume-slider"></div>' +
+    '                        </div>' +
+    '                    </div>' +
+    '                    <button class="rplayer-mute volume-1"></button>' +
+    '                </div>' +
+    '            </div>' +
+    '        </div>' +
+    '    </div>';
 var DEFAULT_OPTIONS = {
     autoPlay: false,
     defaultVolume: 50,
@@ -294,61 +331,47 @@ function RPlayer(selector, options) {
 var fn = RPlayer.prototype,
     SLIDER_SIZE = 12,
     BASE_VOLUME = 100;
-var tpl = '<div class="rplayer-loading rplayer-hide"></div>' +
-    '    <div class="rplayer-controls">' +
-    '        <div class="rplayer-popup-info rplayer-video-time-info rplayer-hide">10:00</div>' +
-    '        <div class="rplayer-progress-panel">' +
-    '            <div class="rplayer-progress rplayer-video-track">' +
-    '                <div class="rplayer-bufferd-bar"></div>' +
-    '                <div class="rplayer-progress-track">' +
-    '                    <div class="rplayer-bar rplayer-video-progress"></div>' +
-    '                    <div class="rplayer-slider rplayer-video-slider"></div>' +
-    '                </div>' +
-    '            </div>' +
-    '        </div>' +
-    '        <div class="rplayer-play-control rplayer-lf">' +
-    '            <button type="button" class="rplayer-play-btn"></button>' +
-    '            <span class="rplayer-time-info">' +
-    '                        <span class="rplayer-current-time">00:00</span>/' +
-    '                        <span class="rplayer-total-time">00:00</span>' +
-    '                    </span>' +
-    '        </div>' +
-    '        <div class="rplayer-settings rplayer-rt">' +
-    '            <button type="button" class="rplayer-fullscreen-btn rplayer-rt"></button>' +
-    '            <div class="rplayer-audio-control rplayer-rt">' +
-    '                <div class="rplayer-popup-info rplayer-volume-info rplayer-hide">10:00</div>' +
-    '                <button type="button" class="rplayer-audio-btn volume-1"></button>' +
-    '                <div class="rplayer-volume-popup rplayer-hide">' +
-    '                    <span class="rplayer-current-volume">12</span>' +
-    '                    <div class="rplayer-progress rplayer-volume-progress">' +
-    '                        <div class="rplayer-audio-track">' +
-    '                            <div class="rplayer-bar rplayer-volume-value"></div>' +
-    '                            <div class="rplayer-slider rplayer-volume-slider"></div>' +
-    '                        </div>' +
-    '                    </div>' +
-    '                    <button class="rplayer-mute volume-1"></button>' +
-    '                </div>' +
-    '            </div>' +
-    '        </div>' +
-    '    </div>';
+
+fn.toggleFullScreen = function (btn) {
+    if (this.isFullScreen = !this.isFullScreen) {
+        this.requestFullscreen(btn);
+    } else {
+        this.exitFullScreen(btn);
+    }
+};
+
+fn.requestFullscreen = function (btn) {
+    this.isFullScreen = true;
+    dom.fullScreen(this.container)
+        .addClass(btn, "fullscreen")
+        .addClass(this.container, "fullscreen");
+};
+
+fn.exitFullScreen = function (btn) {
+    this.isFullScreen = false;
+    dom.fullScreen(this.container, true)
+        .removeClass(btn, "fullscreen")
+        .removeClass(this.container, "fullscreen");
+};
 
 fn.initFullScreenEvent = function () {
     var _this = this,
-        fsApi = dom.fsApi;
+        fsApi = dom.fsApi,
+        btn = dom.selectElement(".rplayer-fullscreen-btn", this.container);
     if (fsApi) {
-        dom.on(dom.doc, fsApi.fullscreenchange, function () {
-
+        dom.on(doc, fsApi.fullscreenchange, function () {
+            if (!doc[fsApi.fullscreenElement]) {
+                _this.exitFullScreen(btn);
+            }
+            console.log(doc[fsApi.fullscreenElement])
+        }).on(doc, fsApi.fullscreenerror, function () {
+            _this.exitFullScreen(btn);
         });
     }
-    dom.on(".rplayer-fullscreen-btn", "click", function () {
-        if (_this.isFullScreen) {
-
-        } else {
-            dom.fullScreen(_this.container)
-                .addClass(this, "fullscreen")
-                .addClass(_this.container, "fullscreen");
-        }
+    dom.on(btn, "click", function () {
+        _this.toggleFullScreen(btn);
     });
+    return this;
 };
 
 fn.setVolume = function (audioBtn, muteBtn, volumeSlider, volumeValue, currentVolume, volume) {
@@ -386,7 +409,7 @@ fn.initVolumeEvent = function () {
         changeAudioBtn = dom.selectElement(".rplayer-audio-btn", context),
         muteBtn = dom.selectElement(".rplayer-mute", context),
         volumePopup = dom.selectElement(".rplayer-volume-popup", context),
-        volumeInfo = dom.selectElement(".rplayer-volume-info", context),
+        volumeInfo = dom.selectElement(".rplayer-popup-volume-info", context),
         volumeSlider = dom.selectElement(".rplayer-volume-slider", context),
         volumeProgress = dom.selectElement(".rplayer-volume-progress", context),
         volumeValue = dom.selectElement(".rplayer-volume-value", context),
@@ -440,15 +463,19 @@ fn.initVolumeEvent = function () {
     }).on(this.container, "keydown", function (evt) {
         var key = evt.key.toLowerCase(),
             volume = _this.volume,
-            //up,down为IE浏览器中的上，下按键
-            //arrowup,arrowdown为其他浏览器中的上，下按键
+            //up,down, left, right为IE浏览器中的上，下按键
+            //arrowup,arrowdown, arrowleft, arrowright为其他浏览器中的上，下按键
             //按上下键音量加减5
             STEP = 5,
             keyMap = {
                 up: STEP,
                 arrowup: STEP,
                 down: -STEP,
-                arrowdown: -STEP
+                arrowdown: -STEP,
+                left: -STEP,
+                arrowleft: -STEP,
+                right: STEP,
+                arrowright: STEP
             },
             tmp = keyMap[key];
         if (tmp) {
@@ -470,6 +497,31 @@ fn.initVolumeEvent = function () {
     return this;
 };
 
+fn.togglePlay = function (btn) {
+    if (this.playing = !this.playing) {
+        dom.addClass(btn, "paused")
+        this.videoEl.play();
+    } else {
+        this.videoEl.pause();
+        dom.removeClass(btn, "paused")
+    }
+};
+
+fn.showPopupTimeInfo = function (evt, track, popup) {
+    if (this.videoEl.duration) {
+        var rect = track.getBoundingClientRect(),
+            x = evt.clientX,
+            distance = x - rect.left,
+            width = popup.offsetWidth,
+            left = distance - width / 2,
+            max = rect.width - width;
+        left = left < 0 ? 0 : left > max ? max : left;
+        popup.innerHTML = convertTime(distance / rect.width * this.videoEl.duration);
+        popup.style.left = left + "px";
+        dom.removeClass(popup, "rplayer-hide");
+    }
+};
+
 fn.initPlayEvent = function () {
     var _this = this,
         context = this.container,
@@ -477,19 +529,14 @@ fn.initPlayEvent = function () {
         videoTrack = dom.selectElement(".rplayer-video-track", context),
         videoSlider = dom.selectElement(".rplayer-video-slider", context),
         videoProgress = dom.selectElement(".rplayer-video-progress", context),
+        videoPopupTime = dom.selectElement(".rplayer-video-popup-info", context),
         currentTime = dom.selectElement(".rplayer-current-time", context),
         totalTime = dom.selectElement(".rplayer-total-time", context),
         loading = dom.selectElement(".rplayer-loading", context),
         buffered = dom.selectElement(".rplayer-bufferd-bar", context);
     dom.on(playButton, "click", function () {
         //点击播放/暂停
-        if (_this.playing = !_this.playing) {
-            dom.addClass(this, "paused")
-            _this.videoEl.play();
-        } else {
-            _this.videoEl.pause();
-            dom.removeClass(this, "paused")
-        }
+        _this.togglePlay(this);
     }).on(videoTrack, "click", function (evt) {
         //点击视频轨道改变进度
         var rect = this.getBoundingClientRect(),
@@ -497,8 +544,13 @@ fn.initPlayEvent = function () {
         if (evt.target === videoSlider) return;
         rect = (x - rect.left) / rect.width;
         _this.videoEl.currentTime = _this.videoEl.duration * rect;
-        console.log(_this.videoEl.currentTime)
         videoProgress.style.width = videoSlider.style.left = rect * 100 + "%";
+    }).on(videoTrack, "mouseover", function (evt) {
+        _this.showPopupTimeInfo(evt, this, videoPopupTime);
+    }).on(videoTrack, "mousemove", function (evt) {
+        _this.showPopupTimeInfo(evt, this, videoPopupTime);
+    }).on(videoTrack, "mouseout", function () {
+        dom.addClass(videoPopupTime, "rplayer-hide");
     }).on(videoSlider, "mousedown", function (evt) {
         //拖动滑块改变进度
         if (evt.button) return;
@@ -523,21 +575,29 @@ fn.initPlayEvent = function () {
     }).on(this.videoEl, "loadedmetadata", function () {
         totalTime.innerHTML = convertTime(this.duration);
         console.log("duration====", _this.videoEl.duration)
+    }).on(this.videoEl, "canplay", function () {
+        dom.removeClass(loading, "loading").addClass(loading, "rplayer-hide");
     }).on(this.videoEl, "progress", function () {
         var b = this.buffered,
             len = b.length;
-        if (len) {
+        if (len & len < 100) {
             len = b.end(len - 1);
             len = len / this.duration * 100;
             buffered.style.width = len + "%";
         }
-        console.log(len)
+        if (this.readyState < 3) {
+            dom.addClass(loading, "loading").removeClass(loading, "rplayer-hide");
+        }
+        console.log(this.readyState)
     }).on(this.videoEl, "timeupdate", function () {
         var progress = this.currentTime / this.duration * 100;
         videoProgress.style.width = videoSlider.style.left = progress + "%";
         currentTime.innerHTML = convertTime(this.currentTime);
     }).on(this.videoEl, "abort", function () {
         console.log("abort")
+        if (_this.playing) {
+            this.play();
+        }
         videoProgress.style.width = videoSlider.style.left = "0";
     }).on(this.videoEl, "error", function () {
 console.log("error")
@@ -545,6 +605,11 @@ console.log("error")
         dom.addClass(loading, "loading").removeClass(loading, "rplayer-hide");
     }).on(this.videoEl, "seeked", function () {
         dom.removeClass(loading, "loading").addClass(loading, "rplayer-hide");
+    }).on(this.videoEl, "ended", function () {
+        _this.togglePlay(playButton);
+        console.log("end")
+    }).on(this.videoEl, "click", function () {
+       _this.togglePlay(playButton);
     });
     return this;
 };
@@ -559,7 +624,8 @@ fn.initEvent = function () {
         }
     });
     return this.initPlayEvent()
-        .initVolumeEvent();
+        .initVolumeEvent()
+        .initFullScreenEvent();
 
 };
 

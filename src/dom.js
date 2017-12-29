@@ -46,9 +46,9 @@ dom.replaceClass = function (el, cls) {
 dom.fullScreen = function (el, exit) {
     var fsApi = this.fsApi;
     if (fsApi) {
-        exit ? el[fsApi.requestFullscreen()]() : doc[fsApi.exit]();
+        exit ? doc[fsApi.exitFullscreen]() : el[fsApi.requestFullscreen]();
     } else {
-        this.fullPage(el, false);
+        this.fullPage(el, exit);
     }
     return this;
 };
@@ -75,7 +75,7 @@ dom.selectElement = function (selector, context) {
                 ret = doc.getElementById(selector.substring(1));
                 console.log(selector, ret)
             } else {
-                ret = doc.querySelector(selector);
+                ret = context.querySelector(selector);
             }
         }
     }
@@ -156,39 +156,39 @@ function isSupportFullScreen() {
     var fullScreenApi = [
             //W3C
             [
-                'requestFullscreen',
-                'exitFullscreen',
-                'fullscreenElement',
-                'fullscreenEnabled',
-                'fullscreenchange',
-                'fullscreenerror'
+                "requestFullscreen",
+                "exitFullscreen",
+                "fullscreenElement",
+                "fullscreenEnabled",
+                "fullscreenchange",
+                "fullscreenerror"
             ],
             // WebKit
             [
-                'webkitRequestFullscreen',
-                'webkitExitFullscreen',
-                'webkitFullscreenElement',
-                'webkitFullscreenEnabled',
-                'webkitfullscreenchange',
-                'webkitfullscreenerror'
+                "webkitRequestFullscreen",
+                "webkitExitFullscreen",
+                "webkitFullscreenElement",
+                "webkitFullscreenEnabled",
+                "webkitfullscreenchange",
+                "webkitfullscreenerror"
             ],
             // Firefox
             [
-                'mozRequestFullScreen',
-                'mozCancelFullScreen',
-                'mozFullScreenElement',
-                'mozFullScreenEnabled',
-                'mozfullscreenchange',
-                'mozfullscreenerror'
+                "mozRequestFullScreen",
+                "mozCancelFullScreen",
+                "mozFullScreenElement",
+                "mozFullScreenEnabled",
+                "mozfullscreenchange",
+                "mozfullscreenerror"
             ],
             // IE
             [
-                'msRequestFullscreen',
-                'msExitFullscreen',
-                'msFullscreenElement',
-                'msFullscreenEnabled',
-                'MSFullscreenChange',
-                'MSFullscreenError'
+                "msRequestFullscreen",
+                "msExitFullscreen",
+                "msFullscreenElement",
+                "msFullscreenEnabled",
+                "MSFullscreenChange",
+                "MSFullscreenError"
             ]
 
         ],
