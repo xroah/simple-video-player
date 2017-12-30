@@ -10,4 +10,6 @@ var doc = document,
     preload: "metadata",
     source: "",
     msg: ""
-};
+},
+    hideVolumePopTimer = null,
+    hideControlsTimer = null;

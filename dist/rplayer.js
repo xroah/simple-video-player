@@ -19,7 +19,9 @@ var doc = document,
     preload: "metadata",
     source: "",
     msg: ""
-};
+},
+    hideVolumePopTimer = null,
+    hideControlsTimer = null;
 var dom = {
         handlers: {}
     };
@@ -240,13 +242,14 @@ function isSupportFullScreen() {
 dom.fsApi = isSupportFullScreen();
 
 var tpl = '<div class="rplayer-loading rplayer-hide"></div>' +
-    '    <div class="rplayer-controls">' +
-    '        <div class="rplayer-popup-info rplayer-video-popup-info rplayer-hide">10:00</div>' +
+    '    <div class="rplayer-popup-info rplayer-popup-volume-info rplayer-hide">10:00</div>' +
+    '    <div class="rplayer-controls rplayer-hide rplayer-transform">' +
+    '        <div class="rplayer-popup-info rplayer-popup-video-info rplayer-hide">10:00</div>' +
     '        <div class="rplayer-progress-panel">' +
     '            <div class="rplayer-progress rplayer-video-track">' +
     '                <div class="rplayer-bufferd-bar"></div>' +
+    '                <div class="rplayer-bar rplayer-video-progress"></div>' +
     '                <div class="rplayer-progress-track">' +
-    '                    <div class="rplayer-bar rplayer-video-progress"></div>' +
     '                    <div class="rplayer-slider rplayer-video-slider"></div>' +
     '                </div>' +
     '            </div>' +
@@ -254,20 +257,19 @@ var tpl = '<div class="rplayer-loading rplayer-hide"></div>' +
     '        <div class="rplayer-play-control rplayer-lf">' +
     '            <button type="button" class="rplayer-play-btn"></button>' +
     '            <span class="rplayer-time-info">' +
-    '                        <span class="rplayer-current-time">00:00</span>/' +
-    '                        <span class="rplayer-total-time">00:00</span>' +
-    '                    </span>' +
+    '               <span class="rplayer-current-time">00:00</span>/' +
+    '               <span class="rplayer-total-time">00:00</span>' +
+    '             </span>' +
     '        </div>' +
     '        <div class="rplayer-settings rplayer-rt">' +
     '            <button type="button" class="rplayer-fullscreen-btn rplayer-rt"></button>' +
     '            <div class="rplayer-audio-control rplayer-rt">' +
-    '                <div class="rplayer-popup-info rplayer-popup-volume-info rplayer-hide">10:00</div>' +
     '                <button type="button" class="rplayer-audio-btn volume-1"></button>' +
     '                <div class="rplayer-volume-popup rplayer-hide">' +
     '                    <span class="rplayer-current-volume">12</span>' +
     '                    <div class="rplayer-progress rplayer-volume-progress">' +
+    '                        <div class="rplayer-bar rplayer-volume-value"></div>' +
     '                        <div class="rplayer-audio-track">' +
-    '                            <div class="rplayer-bar rplayer-volume-value"></div>' +
     '                            <div class="rplayer-slider rplayer-volume-slider"></div>' +
     '                        </div>' +
     '                    </div>' +
@@ -439,7 +441,6 @@ function RPlayer(selector, options) {
     this.target = target;
     this.isFullScreen = false;
     this.video = new VideoControl(config);
-    this.timer = null;
 }
 
 var fn = RPlayer.prototype;
@@ -520,15 +521,21 @@ fn.updateVolumeStyle = function (volume) {
 
 //点击显示/隐藏设置音量面板
 fn.toggleVolumeSettingsPanel = function (evt) {
-    var cls = "rplayer-hide";
-    if (dom.hasClass(this.volumePopup)) {
-        dom.addClass(this.volumePopup, cls);
-    }
-    dom.hasClass(this.volumePopup, cls) ?
-        dom.removeClass(this.volumePopup, cls) :
-        dom.addClass(this.volumePopup, cls);
+    dom.hasClass(this.volumePopup, "rplayer-hide") ?
+        this.showVolumeSettingsPanel() :
+        this.hideVolumeSettingsPanel();
     //阻止冒泡到document, document点击事件点击面板外任意地方隐藏面板，如不阻止冒泡则显示不出来
     evt.stopPropagation();
+};
+
+fn.showVolumeSettingsPanel = function () {
+    dom.removeClass(this.volumePopup, "rplayer-hide");
+    return this;
+};
+
+fn.hideVolumeSettingsPanel = function () {
+    dom.addClass(this.volumePopup, "rplayer-hide");
+    return this;
 };
 
 //移动slider改变音量
@@ -536,7 +543,7 @@ fn.slideVolumeSlider = function (evt) {
     if (evt.button) return; //按下的鼠标不是左键则不作处理(左键evt.button=0)
     var origTop = this.volumeSlider.offsetTop + SLIDER_SIZE,
         startY = evt.clientY,
-        max = this.volumeValue.parentNode.offsetHeight,
+        max = this.volumeSlider.parentNode.offsetHeight,
         _this = this,
         move = function (evt) {
             var y = evt.clientY,
@@ -545,9 +552,9 @@ fn.slideVolumeSlider = function (evt) {
             distance = distance / max * 100;
             _this.updateVolume(distance);
         };
-    dom.on(_this.container, "mousemove", move)
+    dom.on(doc, "mousemove", move)
         .on(doc, "mouseup", function () {
-            dom.off(_this.container, "mousemove").off(doc, "mouseup");
+            dom.off(doc, "mousemove").off(doc, "mouseup");
         });
 };
 
@@ -586,19 +593,21 @@ fn.togglePlay = function () {
     }
 };
 
-fn.showPopupTimeInfo = function (evt, track, popup) {
-    var duration = this.video.getDuration();
+fn.showPopupTimeInfo = function (evt) {
+    var duration = this.video.getDuration(),
+        popup = this.videoPopupTime;
     if (duration) {
-        var rect = track.getBoundingClientRect(),
+        dom.removeClass(popup, "rplayer-hide");
+        var rect = this.videoTrack.getBoundingClientRect(),
             x = evt.clientX,
             distance = x - rect.left,
             width = popup.offsetWidth,
             left = distance - width / 2,
             max = rect.width - width;
         left = left < 0 ? 0 : left > max ? max : left;
+        console.log(width)
         popup.innerHTML = this.video.convertTime(distance / rect.width * duration);
         popup.style.left = left + "px";
-        dom.removeClass(popup, "rplayer-hide");
     }
 };
 
@@ -607,7 +616,7 @@ fn.slideVideoSlider = function (evt) {
     if (evt.button) return;
     var origLeft = this.videoSlider.offsetLeft,
         startX = evt.clientX,
-        max = this.videoProgress.parentNode.offsetWidth,
+        max = this.videoSlider.parentNode.offsetWidth,
         distance,
         _this = this,
         paused = this.video.isPaused(),
@@ -616,12 +625,14 @@ fn.slideVideoSlider = function (evt) {
             distance = x - startX + origLeft;
             distance = distance < 0 ? 0 : distance > max ? max : distance;
             distance = distance / max;
+            dom.addClass(_this.videoSlider, "moving");
             _this.updateProgressPosition(distance);
             _this.video.pause();
         };
-    dom.on(_this.container, "mousemove", move)
+    dom.on(doc, "mousemove", move)
         .on(doc, "mouseup", function () {
-            dom.off(_this.container, "mousemove").off(doc, "mouseup");
+            dom.off(doc, "mousemove").off(doc, "mouseup");
+            dom.removeClass(_this.videoSlider, "moving");
             distance && _this.video.setCurrentTime(distance, true);
             if (!paused) {
                 _this.video.play();
@@ -690,7 +701,7 @@ fn.initPlayEvent = function () {
         _this.video.setCurrentTime(rect, true);
         _this.updateProgressPosition(rect);
     }).on(this.videoTrack, "mouseover mousemove", function (evt) {
-        _this.showPopupTimeInfo(evt, this, _this.videoPopupTime);
+        _this.showPopupTimeInfo(evt);
     }).on(this.videoTrack, "mouseout", function () {
         dom.addClass(_this.videoPopupTime, "rplayer-hide");
     }).on(this.videoSlider, "mousedown", this.slideVideoSlider.bind(this))
@@ -719,16 +730,32 @@ fn.initPlayEvent = function () {
     return this;
 };
 
+fn.hideControls = function () {
+    dom.addClass(this.controlsPanel, "rplayer-hide")
+        .addClass(this.controlsPanel, "rplayer-transform");
+    return this;
+};
+
+fn.showControls = function () {
+    var _this = this;
+    clearTimeout(hideControlsTimer);
+    dom.removeClass(this.controlsPanel, "rplayer-hide")
+        .removeClass(this.controlsPanel, "rplayer-transform");
+    hideControlsTimer = setTimeout(function () {
+        _this.hideControls().hideVolumeSettingsPanel();
+    }, 5000);
+    return this;
+};
+
 fn.toggleVolumePopupInfo = function (volume) {
     var _this = this;
-    if (dom.hasClass(this.volumePopup, "rplayer-hide")) {
-        clearTimeout(this.timer);
-        this.volumePopupInfo.innerHTML = this.currentVolume.innerHTML = volume;
-        dom.removeClass(this.volumePopupInfo, "rplayer-hide");
-        this.timer = setTimeout(function () {
-            dom.addClass(_this.volumePopupInfo, "rplayer-hide");
-        }, 3000);
-    }
+    clearTimeout(hideVolumePopTimer);
+    this.volumePopupInfo.innerHTML = "当前音量: " + volume;
+    this.currentVolume.innerHTML = volume;
+    dom.removeClass(this.volumePopupInfo, "rplayer-hide");
+    hideVolumePopTimer = setTimeout(function () {
+        dom.addClass(_this.volumePopupInfo, "rplayer-hide");
+    }, 3000);
 };
 
 fn.keyDown = function (evt) {
@@ -775,9 +802,14 @@ fn.initEvent = function () {
         //点击设置音频面板外任何地方隐藏
         var tgt = evt.target;
         if (_this.volumePopup !== tgt && !_this.volumePopup.contains(tgt)) {
-            dom.addClass(_this.volumePopup, "rplayer-hide");
+            _this.hideVolumeSettingsPanel();
         }
-    }).on(this.container, "keydown", this.keyDown.bind(this));
+    }).on(this.container, "keydown", this.keyDown.bind(this))
+        .on(this.container, "mousemove", function () {
+            _this.showControls();
+        }).on(this.container, "mouseleave", function () {
+        _this.hideVolumeSettingsPanel();
+    });
     return this.initPlayEvent()
         .initVolumeEvent()
         .initFullScreenEvent();
@@ -794,11 +826,12 @@ fn.destroy = function () {
 
 fn.initElements = function () {
     var context = this.container;
+    this.controlsPanel = dom.selectElement(".rplayer-controls", context);
     this.playBtn = dom.selectElement(".rplayer-play-btn", context);
     this.videoTrack = dom.selectElement(".rplayer-video-track", context);
     this.videoSlider = dom.selectElement(".rplayer-video-slider", context);
     this.videoProgress = dom.selectElement(".rplayer-video-progress", context);
-    this.videoPopupTime = dom.selectElement(".rplayer-video-popup-info", context);
+    this.videoPopupTime = dom.selectElement(".rplayer-popup-video-info", context);
     this.currentTime = dom.selectElement(".rplayer-current-time", context);
     this.totalTime = dom.selectElement(".rplayer-total-time", context);
     this.loading = dom.selectElement(".rplayer-loading", context);
