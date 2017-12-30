@@ -100,15 +100,19 @@ VideoControl.prototype = {
         if (this.source !== src) {
             this.source = src;
             this.initSource();
+            console.log(src)
         }
         if (!paused) {
             this.play();
         }
         return this;
     },
-    initSource: function () {
-        var source = this.config.source,
-            frag = doc.createDocumentFragment();
+    getSource: function () {
+      return this.source;
+    },
+    initSource: function (source) {
+        var frag = doc.createDocumentFragment();
+        source = source || this.source;
         if (typeof source === "string") {
             this.el.src = source;
         } else if (Array.isArray(source)) {
@@ -126,6 +130,7 @@ VideoControl.prototype = {
         var video = doc.createElement("video"),
             text = doc.createTextNode(this.config.msg.toString());
         this.el = video;
+        this.source = this.config.source;
         video.appendChild(text);
         dom.addClass(this.el, "rplayer-video");
         this.initSource()

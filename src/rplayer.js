@@ -2,6 +2,11 @@ function isObject(obj) {
     return Object.prototype.toString.call(obj) === "[object Object]";
 }
 
+function isUndefined(v) {
+    var tmpVar;
+    return v === tmpVar;
+}
+
 function RPlayer(selector, options) {
     var target = dom.selectElement(selector),
         config;
@@ -12,7 +17,8 @@ function RPlayer(selector, options) {
             loop: !!options.loop,
             poster: options.poster || DEFAULT_OPTIONS.poster,
             source: options.source,
-            msg: options.msg || DEFAULT_OPTIONS.msg
+            msg: options.msg || DEFAULT_OPTIONS.msg,
+            useBrowserControls: isUndefined(options.useBrowserControls) ? false : options.useBrowserControls
         };
     } else {
         config = DEFAULT_OPTIONS;
@@ -26,6 +32,7 @@ function RPlayer(selector, options) {
     this.target = target;
     this.isFullScreen = false;
     this.video = new VideoControl(config);
+    this.controls = isUndefined(options.controls) ? true : !!options.controls;
 }
 
 var fn = RPlayer.prototype;
@@ -106,7 +113,7 @@ fn.updateVolumeStyle = function (volume) {
 
 //点击显示/隐藏设置音量面板
 fn.toggleVolumeSettingsPanel = function (evt) {
-    dom.hasClass(this.volumePopup, "rplayer-hide") ?
+    dom.hasClass(this.volumePopup, HIDE_CLASS) ?
         this.showVolumeSettingsPanel() :
         this.hideVolumeSettingsPanel();
     //阻止冒泡到document, document点击事件点击面板外任意地方隐藏面板，如不阻止冒泡则显示不出来
@@ -114,12 +121,12 @@ fn.toggleVolumeSettingsPanel = function (evt) {
 };
 
 fn.showVolumeSettingsPanel = function () {
-    dom.removeClass(this.volumePopup, "rplayer-hide");
+    dom.removeClass(this.volumePopup, HIDE_CLASS);
     return this;
 };
 
 fn.hideVolumeSettingsPanel = function () {
-    dom.addClass(this.volumePopup, "rplayer-hide");
+    dom.addClass(this.volumePopup, HIDE_CLASS);
     return this;
 };
 
@@ -144,8 +151,7 @@ fn.slideVolumeSlider = function (evt) {
 };
 
 fn.initVolumeEvent = function () {
-    var _this = this,
-        timer;
+    var _this = this;
     dom.on(this.showVolumePopBtn, "click", this.toggleVolumeSettingsPanel.bind(this))
         .on(this.volumeSlider, "mousedown", this.slideVolumeSlider.bind(this))
         .on(this.volumeProgress, "click", function (evt) {
@@ -170,11 +176,11 @@ fn.initVolumeEvent = function () {
 
 fn.togglePlay = function () {
     if (this.video.isPaused()) {
-        dom.addClass(this.playBtn, "paused")
+        this.controls && dom.addClass(this.playBtn, "paused");
         this.video.play();
     } else {
         this.video.pause();
-        dom.removeClass(this.playBtn, "paused")
+        this.controls && dom.removeClass(this.playBtn, "paused");
     }
 };
 
@@ -182,7 +188,7 @@ fn.showPopupTimeInfo = function (evt) {
     var duration = this.video.getDuration(),
         popup = this.videoPopupTime;
     if (duration) {
-        dom.removeClass(popup, "rplayer-hide");
+        dom.removeClass(popup, HIDE_CLASS);
         var rect = this.videoTrack.getBoundingClientRect(),
             x = evt.clientX,
             distance = x - rect.left,
@@ -190,10 +196,14 @@ fn.showPopupTimeInfo = function (evt) {
             left = distance - width / 2,
             max = rect.width - width;
         left = left < 0 ? 0 : left > max ? max : left;
-        console.log(width)
         popup.innerHTML = this.video.convertTime(distance / rect.width * duration);
         popup.style.left = left + "px";
     }
+};
+
+fn.hidePopupTimeInfo = function () {
+    dom.addClass(this.videoPopupTime, HIDE_CLASS);
+    return this;
 };
 
 //拖动滑块改变进度
@@ -226,17 +236,17 @@ fn.slideVideoSlider = function (evt) {
 };
 
 fn.showLoading = function () {
-    dom.addClass(this.loading, "loading").removeClass(this.loading, "rplayer-hide");
+    dom.addClass(this.loading, "loading").removeClass(this.loading, HIDE_CLASS);
 };
 
 fn.hideLoading = function () {
-    dom.removeClass(this.loading, "loading").addClass(this.loading, "rplayer-hide");
+    dom.removeClass(this.loading, "loading").addClass(this.loading, HIDE_CLASS);
 };
 
 fn.progress = function () {
     var b = this.video.getBuffered(),
         len = b.length;
-    if (len && len < 100) {
+    if (this.controls && len && len < 100) {
         len = b.end(len - 1);
         len = len / this.video.getDuration() * 100;
         this.bufferedBar.style.width = len + "%";
@@ -247,8 +257,9 @@ fn.progress = function () {
 };
 
 fn.updateProgressPosition = function (progress) {
-    progress = progress || this.video.getPlayedPercentage();
+    isUndefined(progress) && (progress = this.video.getPlayedPercentage());
     this.videoProgress.style.width = this.videoSlider.style.left = progress * 100 + "%";
+    this.updateCurrentTime();
     return this;
 };
 
@@ -271,6 +282,10 @@ fn.updateTotalTime = function () {
     return this;
 };
 
+fn.updateMetaInfo = function () {
+    this.controls && this.updateTotalTime();
+};
+
 fn.initPlayEvent = function () {
     var _this = this,
         videoEl = this.video.el;
@@ -285,38 +300,51 @@ fn.initPlayEvent = function () {
         rect = (x - rect.left) / rect.width;
         _this.video.setCurrentTime(rect, true);
         _this.updateProgressPosition(rect);
-    }).on(this.videoTrack, "mouseover mousemove", function (evt) {
-        _this.showPopupTimeInfo(evt);
-    }).on(this.videoTrack, "mouseout", function () {
-        dom.addClass(_this.videoPopupTime, "rplayer-hide");
-    }).on(this.videoSlider, "mousedown", this.slideVideoSlider.bind(this))
-        .on(videoEl, "loadedmetadata", function () {
-            _this.updateTotalTime();
-        }).on(videoEl, "canplay seeked", function () {
-        _this.hideLoading();
-    }).on(videoEl, "progress", this.progress.bind(this))
-        .on(videoEl, "timeupdate", function () {
-            _this.updateProgressPosition().updateCurrentTime();
-        }).on(videoEl, "abort", function () {
-        /*if (_this.playing) {
-            this.play();
-        }
-        _this.videoProgress.style.width = _this.videoSlider.style.left = "0";*/
-    }).on(videoEl, "error", function () {
+    }).on(videoEl, "loadedmetadata", this.updateMetaInfo.bind(this))
+        .on(videoEl, "canplay seeked", this.hideLoading.bind(this))
+        .on(videoEl, "progress", this.progress.bind(this))
+        .on(videoEl, "abort", function () {
+            /*if (_this.playing) {
+                this.play();
+            }
+            _this.videoProgress.style.width = _this.videoSlider.style.left = "0";*/
+        }).on(videoEl, "error", function () {
         console.log("error")
     }).on(videoEl, "seeking", function () {
         _this.showLoading();
     }).on(videoEl, "ended", function () {
         _this.togglePlay();
         console.log("end")
-    }).on(videoEl, "click", function () {
-        _this.togglePlay();
-    });
+    }).on(videoEl, "click", this.togglePlay.bind(this))
+        .on(videoEl, "dblclick", this.toggleFullScreen.bind(this))
+        .on(videoEl, "durationchange", function () {
+            console.log("duration changed");
+        });
+    return this;
+};
+
+fn.initControlsEvent = function () {
+    var _this = this;
+    dom.on(this.videoTrack, "mouseover mousemove", this.showPopupTimeInfo.bind(this))
+        .on(this.videoTrack, "mouseout", this.hidePopupTimeInfo.bind(this))
+        .on(this.videoSlider, "mousedown", this.slideVideoSlider.bind(this))
+        .on(doc, "click", function (evt) {
+            //点击设置音频面板外任何地方隐藏
+            var tgt = evt.target;
+            if (_this.volumePopup !== tgt && !_this.volumePopup.contains(tgt)) {
+                _this.hideVolumeSettingsPanel();
+            }
+        }).on(this.container, "keydown", this.keyDown.bind(this))
+        .on(this.container, "mousemove", function () {
+            _this.showControls();
+        }).on(this.container, "mouseleave", function () {
+        _this.hideVolumeSettingsPanel();
+    }).on(this.video.el, "timeupdate", this.updateProgressPosition.bind(this));
     return this;
 };
 
 fn.hideControls = function () {
-    dom.addClass(this.controlsPanel, "rplayer-hide")
+    dom.addClass(this.controlsPanel, HIDE_CLASS)
         .addClass(this.controlsPanel, "rplayer-transform");
     return this;
 };
@@ -324,7 +352,7 @@ fn.hideControls = function () {
 fn.showControls = function () {
     var _this = this;
     clearTimeout(hideControlsTimer);
-    dom.removeClass(this.controlsPanel, "rplayer-hide")
+    dom.removeClass(this.controlsPanel, HIDE_CLASS)
         .removeClass(this.controlsPanel, "rplayer-transform");
     hideControlsTimer = setTimeout(function () {
         _this.hideControls().hideVolumeSettingsPanel();
@@ -334,13 +362,16 @@ fn.showControls = function () {
 
 fn.toggleVolumePopupInfo = function (volume) {
     var _this = this;
-    clearTimeout(hideVolumePopTimer);
-    this.volumePopupInfo.innerHTML = "当前音量: " + volume;
-    this.currentVolume.innerHTML = volume;
-    dom.removeClass(this.volumePopupInfo, "rplayer-hide");
-    hideVolumePopTimer = setTimeout(function () {
-        dom.addClass(_this.volumePopupInfo, "rplayer-hide");
-    }, 3000);
+    if (dom.hasClass(this.volumePopup, HIDE_CLASS)) {
+        clearTimeout(hideVolumePopTimer);
+        this.volumePopupInfo.innerHTML = "当前音量: " + volume;
+        this.currentVolume.innerHTML = volume;
+        dom.removeClass(this.volumePopupInfo, HIDE_CLASS);
+        hideVolumePopTimer = setTimeout(function () {
+            dom.addClass(_this.volumePopupInfo, HIDE_CLASS);
+        }, 3000);
+    }
+    return this;
 };
 
 fn.keyDown = function (evt) {
@@ -368,9 +399,9 @@ fn.keyDown = function (evt) {
     console.log(tmp)
     if (tmp) {
         if (regLeftOrRight.test(key)) {
-            this.updateProgressByStep(tmp);
+            this.controls && this.updateProgressByStep(tmp);
         } else if (regUpOrDown.test(key)) {
-            this.updateVolumeByStep(tmp);
+            this.controls && this.updateVolumeByStep(tmp);
         } else {// if (regEsc.test(key)) {
             this.toggleFullScreen();
         }
@@ -382,23 +413,9 @@ fn.keyDown = function (evt) {
 };
 
 fn.initEvent = function () {
-    var _this = this;
-    dom.on(doc, "click", function (evt) {
-        //点击设置音频面板外任何地方隐藏
-        var tgt = evt.target;
-        if (_this.volumePopup !== tgt && !_this.volumePopup.contains(tgt)) {
-            _this.hideVolumeSettingsPanel();
-        }
-    }).on(this.container, "keydown", this.keyDown.bind(this))
-        .on(this.container, "mousemove", function () {
-            _this.showControls();
-        }).on(this.container, "mouseleave", function () {
-        _this.hideVolumeSettingsPanel();
-    });
     return this.initPlayEvent()
         .initVolumeEvent()
         .initFullScreenEvent();
-
 };
 
 fn.destroy = function () {
@@ -409,9 +426,14 @@ fn.destroy = function () {
     return this;
 };
 
+fn.initEssentialElements = function () {
+    var context = this.container;
+    this.loading = dom.selectElement(".rplayer-loading", context);
+    return this;
+};
+
 fn.initElements = function () {
     var context = this.container;
-    this.controlsPanel = dom.selectElement(".rplayer-controls", context);
     this.playBtn = dom.selectElement(".rplayer-play-btn", context);
     this.videoTrack = dom.selectElement(".rplayer-video-track", context);
     this.videoSlider = dom.selectElement(".rplayer-video-slider", context);
@@ -419,7 +441,6 @@ fn.initElements = function () {
     this.videoPopupTime = dom.selectElement(".rplayer-popup-video-info", context);
     this.currentTime = dom.selectElement(".rplayer-current-time", context);
     this.totalTime = dom.selectElement(".rplayer-total-time", context);
-    this.loading = dom.selectElement(".rplayer-loading", context);
     this.bufferedBar = dom.selectElement(".rplayer-bufferd-bar", context);
     this.showVolumePopBtn = dom.selectElement(".rplayer-audio-btn", context);
     this.muteBtn = dom.selectElement(".rplayer-mute", context);
@@ -437,18 +458,36 @@ fn.initPlayState = function () {
 
 };
 
+fn.getSource = function () {
+    return this.video.getSource();
+};
+
 fn.initialize = function () {
     this.destroy();
     this.container = doc.createElement("div");
     this.container.tabIndex = 100;
     this.container.innerHTML = tpl;
-    dom.addClass(this.container, "rplayer-container");
     this.container.appendChild(this.video.init());
+    dom.addClass(this.container, "rplayer-container");
+    if (this.controls) {
+        this.controlsPanel = doc.createElement("div");
+        dom.addClass(this.controlsPanel, "rplayer-controls")
+            .addClass(this.controlsPanel, "rplayer-hide");
+        this.controlsPanel.innerHTML = controls;
+        this.container.appendChild(this.controlsPanel);
+        this.showControls()
+            .initElements()
+            .updateVolumeStyle(this.video.getVolume())
+            .initControlsEvent();
+    }
     this.target.appendChild(this.container);
-    this.initElements()
-        .initEvent()
-        .updateVolume(this.video.config.defaultVolume);
+    this.initEssentialElements()
+        .initEvent();
     return this;
+};
+
+fn.updateSource = function (src) {
+    this.video.changeSource(src);
 };
 
 RPlayer.init = function (selector, options) {
