@@ -6,7 +6,7 @@ const css = require("gulp-clean-css");
 const concat = require("gulp-concat");
 
 gulp.task("minifyCss", () => {
-    return gulp.src("./src/rplayer.css")
+    return gulp.src("./src/index.css")
         .pipe(css())
         .pipe(rename("rplayer.min.css"))
         .pipe(gulp.dest("./dist"));
@@ -18,7 +18,8 @@ gulp.task("concat", () => {
         "./src/dom.js",
         "./src/template.js",
         "./src/video_control.js",
-        "./src/rplayer.js"
+        "./src/player_controls.js",
+        "./src/index.js"
     ])
         .pipe(concat("rplayer.js"))
         .pipe(umd({
@@ -29,7 +30,7 @@ gulp.task("concat", () => {
 })
 
 gulp.task("uglifyJs", ["concat"], () => {
-    return gulp.src("./dist/rplayer.js")
+    return gulp.src("./dist/index.js")
         .pipe(uglify({
             output: {
                 comments: /^!/

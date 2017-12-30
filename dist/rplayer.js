@@ -816,7 +816,6 @@ fn.keyDown = function (evt) {
             escape: "escape"
         },
         tmp = keyMap[key];
-    console.log(tmp)
     if (tmp) {
         if (regLeftOrRight.test(key)) {
             this.controls && this.updateProgressByStep(tmp);
