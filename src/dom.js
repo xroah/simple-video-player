@@ -2,10 +2,6 @@ var dom = {
         handlers: {}
     };
 
-function isFunction(fn) {
-    return Object.prototype.toString.call(fn) === "[object Function]";
-}
-
 dom.hasClass = function (el, cls) {
     if (el.classList) {
         return el.classList.contains(cls);
@@ -14,6 +10,7 @@ dom.hasClass = function (el, cls) {
 };
 
 dom.addClass = function (el, cls) {
+    if (!el) return;
     if (!this.hasClass(el, cls)) {
         if (el.classList) {
             el.classList.add(cls);
@@ -25,6 +22,7 @@ dom.addClass = function (el, cls) {
 };
 
 dom.removeClass = function (el, cls) {
+    if (!el) return;
     var reg = new RegExp("\\s*" + cls + "\\s*");
     if (this.hasClass(el, cls)) {
         if (el.classList) {

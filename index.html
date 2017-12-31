@@ -62,7 +62,8 @@
 <script>
     var player = RPlayer.init("#container", {
         source: "//sec.ch9.ms/ch9/3418/c38b5045-5fad-45ab-a058-e51b7ebb3418/B8088_mid.mp4",
-        controls: false
+        //controls: false,
+        //useBrowserControls: true
     });
     change.onclick = function () {
         player.updateSource("test.mp4");

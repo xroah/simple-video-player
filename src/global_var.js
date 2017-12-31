@@ -14,3 +14,16 @@ var doc = document,
     hideVolumePopTimer = null,
     hideControlsTimer = null,
     HIDE_CLASS = "rplayer-hide";
+
+function isFunction(fn) {
+    return Object.prototype.toString.call(fn) === "[object Function]";
+}
+
+function isObject(obj) {
+    return Object.prototype.toString.call(obj) === "[object Object]";
+}
+
+function isUndefined(v) {
+    var tmpVar;
+    return v === tmpVar;
+}

@@ -68,6 +68,10 @@ VideoControl.prototype = {
     getReadyState: function () {
         return this.el.readyState;
     },
+    showControls: function () {
+        this.el.controls = true;
+        return this;
+    },
     convertTime: function (time) {
         var changeLen = function (num) {
                 return num < 10 ? "0" + num : num.toString();
