@@ -29,7 +29,7 @@ gulp.task("concat", () => {
 })
 
 gulp.task("uglifyJs", ["concat"], () => {
-    return gulp.src("./dist/index.js")
+    return gulp.src("./dist/rplayer.js")
         .pipe(uglify({
             output: {
                 comments: /^!/
