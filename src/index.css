@@ -116,6 +116,7 @@
     left: 0;
     bottom: 0;
     height: 100%;
+    z-index: 3;
 }
 
 .rplayer-controls .rplayer-video-slider {
@@ -134,7 +135,6 @@
 .rplayer-controls .rplayer-bar {
     height: 100%;
     background: #5185f3;
-    z-index: 3;
 }
 
 .rplayer-controls .rplayer-slider {

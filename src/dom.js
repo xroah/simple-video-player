@@ -97,9 +97,9 @@ dom.on = function (selector, type, callback, off) {
     var el = this.selectElement(selector),
         i, t;
     if (el) {
-        type = type.split(" ");
-        i = type.length;
         if (isFunction(callback)) {
+            type = type.split(" ");
+            i = type.length;
             for (; i--;) {
                 t = type[i];
                 off ? this._off(el, t, callback) :
@@ -114,25 +114,31 @@ dom.on = function (selector, type, callback, off) {
 
 dom._off = function (el, type, callback) {
     var id = el.guid,
-        handlers = dom.handlers[id],
+        handlers = this.handlers[id],
         i = 0, len;
-    if (handlers && (handlers = handlers[type])) {
-        len = handlers.length;
-        if (callback) {
-            for (; i < len; i++ ) {
-                if (handlers[i] === callback) {
-                    handlers.splice(i, 1);
-                    el.removeEventListener(type, callback);
-                    break;
+    if (handlers) {
+        if (type && (handlers = handlers[type])) {
+            len = handlers.length;
+            if (callback) {
+                for (; i < len; i++ ) {
+                    if (handlers[i] === callback) {
+                        handlers.splice(i, 1);
+                        el.removeEventListener(type, callback);
+                        break;
+                    }
                 }
+            } else {
+                handlers.forEach(function (fn) {
+                    el.removeEventListener(type, fn);
+                });
+                dom.handlers[type] = [];
             }
-        } else {
-            handlers.forEach(function (fn) {
-                el.removeEventListener(type, fn);
-            });
-            dom.handlers[type] = [];
+        } else if (!type) {
+            for (i in handlers) {
+                this._off(el, i);
+            }
         }
-    };
+    }
 };
 
 dom.off = function (selector, type, callback) {

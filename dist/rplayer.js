@@ -135,9 +135,9 @@ dom.on = function (selector, type, callback, off) {
     var el = this.selectElement(selector),
         i, t;
     if (el) {
-        type = type.split(" ");
-        i = type.length;
         if (isFunction(callback)) {
+            type = type.split(" ");
+            i = type.length;
             for (; i--;) {
                 t = type[i];
                 off ? this._off(el, t, callback) :
@@ -152,25 +152,31 @@ dom.on = function (selector, type, callback, off) {
 
 dom._off = function (el, type, callback) {
     var id = el.guid,
-        handlers = dom.handlers[id],
+        handlers = this.handlers[id],
         i = 0, len;
-    if (handlers && (handlers = handlers[type])) {
-        len = handlers.length;
-        if (callback) {
-            for (; i < len; i++ ) {
-                if (handlers[i] === callback) {
-                    handlers.splice(i, 1);
-                    el.removeEventListener(type, callback);
-                    break;
+    if (handlers) {
+        if (type && (handlers = handlers[type])) {
+            len = handlers.length;
+            if (callback) {
+                for (; i < len; i++ ) {
+                    if (handlers[i] === callback) {
+                        handlers.splice(i, 1);
+                        el.removeEventListener(type, callback);
+                        break;
+                    }
                 }
+            } else {
+                handlers.forEach(function (fn) {
+                    el.removeEventListener(type, fn);
+                });
+                dom.handlers[type] = [];
             }
-        } else {
-            handlers.forEach(function (fn) {
-                el.removeEventListener(type, fn);
-            });
-            dom.handlers[type] = [];
+        } else if (!type) {
+            for (i in handlers) {
+                this._off(el, i);
+            }
         }
-    };
+    }
 };
 
 dom.off = function (selector, type, callback) {
@@ -433,15 +439,6 @@ VideoControl.prototype = {
         return this.el;
     }
 };
-function isObject(obj) {
-    return Object.prototype.toString.call(obj) === "[object Object]";
-}
-
-function isUndefined(v) {
-    var tmpVar;
-    return v === tmpVar;
-}
-
 function RPlayer(selector, options) {
     var target = dom.selectElement(selector),
         config;
@@ -583,11 +580,13 @@ fn.slideVolumeSlider = function (evt) {
         .on(doc, "mouseup", function () {
             dom.off(doc, "mousemove").off(doc, "mouseup");
         });
+    evt.preventDefault();
 };
 
 fn.initVolumeEvent = function () {
     var _this = this;
     dom.on(this.showVolumePopBtn, "click", this.toggleVolumeSettingsPanel.bind(this))
+        .on(this.volumePopup, "mouseleave", this.hideVolumeSettingsPanel.bind(this))
         .on(this.volumeSlider, "mousedown", this.slideVolumeSlider.bind(this))
         .on(this.volumeProgress, "click", function (evt) {
             //点击音量轨道设置音量
@@ -668,6 +667,7 @@ fn.slideVideoSlider = function (evt) {
                 _this.video.play();
             }
         });
+    evt.preventDefault();
 };
 
 fn.showLoading = function () {
@@ -738,18 +738,10 @@ fn.initPlayEvent = function () {
     }).on(this.videoTrack, "mouseover mousemove", this.showPopupTimeInfo.bind(this))
         .on(this.videoTrack, "mouseout", this.hidePopupTimeInfo.bind(this))
         .on(this.videoSlider, "mousedown", this.slideVideoSlider.bind(this))
-        .on(doc, "click", function (evt) {
-            //点击设置音频面板外任何地方隐藏
-            var tgt = evt.target;
-            if (_this.volumePopup !== tgt && !_this.volumePopup.contains(tgt)) {
-                _this.hideVolumeSettingsPanel();
-            }
-        }).on(this.container, "keydown", this.keyDown.bind(this))
+        .on(this.container, "keydown", this.keyDown.bind(this))
         .on(this.container, "mousemove", function () {
             _this.showControls();
-        }).on(this.container, "mouseleave", function () {
-            _this.hideVolumeSettingsPanel();
-        }).on(this.video.el, "timeupdate", this.updateProgressPosition.bind(this))
+        }).on(videoEl, "timeupdate", this.updateProgressPosition.bind(this))
         .on(videoEl, "loadedmetadata", this.updateMetaInfo.bind(this))
         .on(videoEl, "canplay seeked", this.hideLoading.bind(this))
         .on(videoEl, "progress", this.progress.bind(this))
@@ -766,27 +758,24 @@ fn.initPlayEvent = function () {
         _this.togglePlay();
         console.log("end")
     }).on(videoEl, "click", this.togglePlay.bind(this))
-        .on(videoEl, "dblclick", this.toggleFullScreen.bind(this))
-        .on(videoEl, "durationchange", function () {
-            console.log("duration changed");
-        });
+        .on(videoEl, "dblclick", this.toggleFullScreen.bind(this));
     return this;
 };
 
 fn.hideControls = function () {
-    dom.addClass(this.controlsPanel, HIDE_CLASS)
-        .addClass(this.controlsPanel, "rplayer-transform");
+    dom.addClass(this.controlsPanel, HIDE_CLASS);
     return this;
 };
 
 fn.showControls = function () {
     var _this = this;
     clearTimeout(hideControlsTimer);
-    dom.removeClass(this.controlsPanel, HIDE_CLASS)
-        .removeClass(this.controlsPanel, "rplayer-transform");
-    hideControlsTimer = setTimeout(function () {
-        _this.hideControls().hideVolumeSettingsPanel();
-    }, 5000);
+    dom.removeClass(this.controlsPanel, HIDE_CLASS);
+    if (dom.hasClass(this.volumePopup, HIDE_CLASS)) {
+        hideControlsTimer = setTimeout(function () {
+            _this.hideControls();
+        }, 5000);
+    }
     return this;
 };
 
@@ -847,10 +836,50 @@ fn.initEvent = function () {
         .initFullScreenEvent();
 };
 
+fn.offEvent = function () {
+    dom.off(doc)
+        .off(this.showVolumePopBtn)
+        .off(this.volumePopup)
+        .off(this.volumeSlider)
+        .off(this.volumeProgress)
+        .off(this.muteBtn)
+        .off(this.playBtn)
+        .off(this.videoTrack)
+        .off(this.container)
+        .off(this.video.el);
+    return this;
+};
+
+fn.removeProp = function () {
+    delete this.playBtn;
+    delete this.videoTrack;
+    delete this.videoSlider;
+    delete this.videoProgress;
+    delete this.videoPopupTime;
+    delete this.currentTime;
+    delete this.totalTime;
+    delete this.bufferedBar;
+    delete this.showVolumePopBtn;
+    delete this.muteBtn;
+    delete this.volumePopup;
+    delete this.volumePopupInfo;
+    delete this.volumeSlider;
+    delete this.volumeProgress;
+    delete this.volumeValue;
+    delete this.currentVolume;
+    delete this.fullScreenBtn;
+    delete this.video;
+    delete this.container;
+    delete this.controls;
+    delete this.useBrowserControls;
+    return this;
+};
+
 fn.destroy = function () {
     if (this.container) {
         this.target.removeChild(this.container);
-        this.container = null;
+        this.offEvent()
+            .removeProp();
     }
     return this;
 };
@@ -892,7 +921,7 @@ fn.getSource = function () {
 };
 
 fn.initialize = function () {
-    this.destroy();
+    if(this.container) return;
     this.container = doc.createElement("div");
     this.container.tabIndex = 100;
     this.container.innerHTML = tpl;
@@ -900,13 +929,12 @@ fn.initialize = function () {
     dom.addClass(this.container, "rplayer-container");
     if (this.controls && !this.useBrowserControls) {
         this.controlsPanel = doc.createElement("div");
-        dom.addClass(this.controlsPanel, "rplayer-controls")
-            .addClass(this.controlsPanel, "rplayer-hide");
+        dom.addClass(this.controlsPanel, "rplayer-controls");
         this.controlsPanel.innerHTML = controls;
         this.container.appendChild(this.controlsPanel);
-        this.showControls()
-            .initElements()
+        this.initElements()
             .updateVolumeStyle(this.video.getVolume())
+            .showControls()
             .initEvent();
     } else if(this.useBrowserControls) {
         this.video.showControls();
