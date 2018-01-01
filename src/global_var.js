@@ -27,3 +27,7 @@ function isUndefined(v) {
     var tmpVar;
     return v === tmpVar;
 }
+
+function  isWindow(obj) {
+    return obj && obj.window === obj;
+}

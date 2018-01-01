@@ -20,7 +20,6 @@ function RPlayer(selector, options) {
         throw new Error("未选中任何元素");
     }
     this.target = target;
-    this.isFullScreen = false;
     this.video = new VideoControl(config);
     this.controls = isUndefined(options.controls) ? true : !!options.controls;
     this.useBrowserControls = isUndefined(options.useBrowserControls) ? false : options.useBrowserControls;
@@ -249,7 +248,6 @@ fn.progress = function () {
         len = len / this.video.getDuration() * 100;
         this.bufferedBar.style.width = len + "%";
     }
-    console.log(this.video.getDuration())
     if (this.video.getReadyState() < 3) {
         this.showLoading();
     }
@@ -258,6 +256,7 @@ fn.progress = function () {
 fn.updateProgressPosition = function (progress) {
     isUndefined(progress) && (progress = this.video.getPlayedPercentage());
     this.videoProgress.style.width = this.videoSlider.style.left = progress * 100 + "%";
+    console.log(progress)
     this.updateCurrentTime();
     return this;
 };
@@ -336,7 +335,9 @@ fn.initPlayEvent = function () {
         })
         .on(videoEl, "loadstart", this.disableControls.bind(this))
         .on(videoEl, "loadedmetadata", this.updateMetaInfo.bind(this))
-        .on(videoEl, "timeupdate", this.updateProgressPosition.bind(this))
+        .on(videoEl, "timeupdate", function () {
+            _this.updateProgressPosition();
+        })
         .on(videoEl, "canplay seeked", this.hideLoading.bind(this))
         .on(videoEl, "progress", this.progress.bind(this))
         .on(videoEl, "error", function () {
@@ -344,7 +345,8 @@ fn.initPlayEvent = function () {
     }).on(videoEl, "seeking", function () {
         _this.showLoading();
     }).on(videoEl, "ended", function () {
-        cofnsole.log("end")
+
+        console.log("end")
     }).on(videoEl, "click", this.togglePlay.bind(this))
         .on(videoEl, "dblclick", this.toggleFullScreen.bind(this));
     return this;
@@ -442,8 +444,12 @@ fn.removeProp = function () {
     delete this.fullScreenBtn;
     delete this.video;
     delete this.container;
-    delete this.controls;
+    delete this.controlsPanel;
+    delete this.isFullScreen;
+    delete this.loading;
     delete this.useBrowserControls;
+    delete this.controls;
+    delete this.target;
     return this;
 };
 
@@ -494,10 +500,12 @@ fn.getSource = function () {
 
 fn.initialize = function () {
     if(this.container) return;
-    this.container = doc.createElement("div");
-    this.container.tabIndex = 100;
-    this.container.innerHTML = tpl;
-    this.container.appendChild(this.video.init());
+    var container = doc.createElement("div");
+    this.isFullScreen = false;
+    container.tabIndex = 100;
+    container.innerHTML = tpl;
+    this.container = container
+    container.appendChild(this.video.init());
     dom.addClass(this.container, "rplayer-container");
     if (this.controls && !this.useBrowserControls) {
         this.controlsPanel = doc.createElement("div");

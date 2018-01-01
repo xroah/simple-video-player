@@ -59,7 +59,7 @@ dom.selectElement = function (selector, context) {
         reg = /^#[^>~+\[\]\s]+$/; //匹配id选择器
     context = context || doc;
     if (selector) {
-        if (selector.nodeName) {
+        if (selector.nodeName || isWindow(selector)) {
             ret = selector;
         } else if (typeof selector === "string") {
             if (reg.test(selector)) {
