@@ -104,9 +104,11 @@ fn.updateVolumeStyle = function (volume) {
 
 //点击显示/隐藏设置音量面板
 fn.toggleVolumeSettingsPanel = function (evt) {
-    dom.hasClass(this.volumePopup, HIDE_CLASS) ?
-        this.showVolumeSettingsPanel() :
-        this.hideVolumeSettingsPanel();
+    if (!dom.hasClass(this.controlsPanel, "rplayer-disabled")) {
+        dom.hasClass(this.volumePopup, HIDE_CLASS) ?
+            this.showVolumeSettingsPanel() :
+            this.hideVolumeSettingsPanel();
+    }
     //阻止冒泡到document, document点击事件点击面板外任意地方隐藏面板，如不阻止冒泡则显示不出来
     evt.stopPropagation();
 };
@@ -168,12 +170,14 @@ fn.initVolumeEvent = function () {
 };
 
 fn.togglePlay = function () {
-    if (this.video.isPaused()) {
-        dom.addClass(this.playBtn, "paused");
-        this.video.play();
-    } else {
-        this.video.pause();
-        dom.removeClass(this.playBtn, "paused");
+    if (!dom.hasClass(this.controlsPanel, "rplayer-disabled")) {
+        if (this.video.isPaused()) {
+            dom.addClass(this.playBtn, "paused");
+            this.video.play();
+        } else {
+            this.video.pause();
+            dom.removeClass(this.playBtn, "paused");
+        }
     }
 };
 
@@ -245,6 +249,7 @@ fn.progress = function () {
         len = len / this.video.getDuration() * 100;
         this.bufferedBar.style.width = len + "%";
     }
+    console.log(this.video.getDuration())
     if (this.video.getReadyState() < 3) {
         this.showLoading();
     }
@@ -277,7 +282,35 @@ fn.updateTotalTime = function () {
 };
 
 fn.updateMetaInfo = function () {
-    this.updateTotalTime();
+    this.updateTotalTime()
+        .enableControls();
+};
+
+fn.hideControls = function () {
+    dom.addClass(this.controlsPanel, HIDE_CLASS);
+    return this;
+};
+
+fn.showControls = function () {
+    var _this = this;
+    clearTimeout(hideControlsTimer);
+    dom.removeClass(this.controlsPanel, HIDE_CLASS);
+    if (dom.hasClass(this.volumePopup, HIDE_CLASS)) {
+        hideControlsTimer = setTimeout(function () {
+            _this.hideControls();
+        }, 5000);
+    }
+    return this;
+};
+
+fn.disableControls = function () {
+    dom.addClass(this.controlsPanel, "rplayer-disabled");
+    return this;
+};
+
+fn.enableControls = function () {
+    dom.removeClass(this.controlsPanel, "rplayer-disabled");
+    return this;
 };
 
 fn.initPlayEvent = function () {
@@ -300,41 +333,20 @@ fn.initPlayEvent = function () {
         .on(this.container, "keydown", this.keyDown.bind(this))
         .on(this.container, "mousemove", function () {
             _this.showControls();
-        }).on(videoEl, "timeupdate", this.updateProgressPosition.bind(this))
+        })
+        .on(videoEl, "loadstart", this.disableControls.bind(this))
         .on(videoEl, "loadedmetadata", this.updateMetaInfo.bind(this))
+        .on(videoEl, "timeupdate", this.updateProgressPosition.bind(this))
         .on(videoEl, "canplay seeked", this.hideLoading.bind(this))
         .on(videoEl, "progress", this.progress.bind(this))
-        .on(videoEl, "abort", function () {
-            /*if (_this.playing) {
-                this.play();
-            }
-            _this.videoProgress.style.width = _this.videoSlider.style.left = "0";*/
-        }).on(videoEl, "error", function () {
+        .on(videoEl, "error", function () {
         console.log("error")
     }).on(videoEl, "seeking", function () {
         _this.showLoading();
     }).on(videoEl, "ended", function () {
-        _this.togglePlay();
-        console.log("end")
+        cofnsole.log("end")
     }).on(videoEl, "click", this.togglePlay.bind(this))
         .on(videoEl, "dblclick", this.toggleFullScreen.bind(this));
-    return this;
-};
-
-fn.hideControls = function () {
-    dom.addClass(this.controlsPanel, HIDE_CLASS);
-    return this;
-};
-
-fn.showControls = function () {
-    var _this = this;
-    clearTimeout(hideControlsTimer);
-    dom.removeClass(this.controlsPanel, HIDE_CLASS);
-    if (dom.hasClass(this.volumePopup, HIDE_CLASS)) {
-        hideControlsTimer = setTimeout(function () {
-            _this.hideControls();
-        }, 5000);
-    }
     return this;
 };
 
@@ -353,6 +365,7 @@ fn.toggleVolumePopupInfo = function (volume) {
 };
 
 fn.keyDown = function (evt) {
+    if (dom.hasClass(this.controlsPanel, "rplayer-disabled")) return;
     var key = evt.key.toLowerCase(),
         //up,down, left, right为IE浏览器中的上，下按键
         //arrowup,arrowdown, arrowleft, arrowright为其他浏览器中的上，下按键
