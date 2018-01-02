@@ -336,8 +336,8 @@
     z-index: 10;
 }
 
-.rplayer-container .rplayer-loading.loading:before,
-.rplayer-container .rplayer-loading.loading:after {
+.rplayer-container .rplayer-loading:before,
+.rplayer-container .rplayer-loading:after {
     content: "";
     display: block;
     left: -5px;
@@ -347,11 +347,11 @@
     animation: spin 1.5s ease-in-out infinite, opacity 1s linear alternate infinite;
 }
 
-.rplayer-container .rplayer-loading.loading:before {
+.rplayer-container .rplayer-loading:before {
     border-top-color: #5185f3;
 }
 
-.rplayer-container .rplayer-loading.loading:after {
+.rplayer-container .rplayer-loading:after {
     border-bottom-color: #5185f3;
 }
 

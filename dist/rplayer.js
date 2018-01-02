@@ -45,15 +45,17 @@ var dom = {
     };
 
 dom.hasClass = function (el, cls) {
+    if (!el) return false;
     if (el.classList) {
         return el.classList.contains(cls);
     }
-    return new RegExp(cls).test(el.className);
+    //如果className为XXX-active, cls为active,
+    //如果不加空格判断则获取的结果不准确
+    return (" " + el.className + " ").indexOf(" " + cls + " ") > -1;
 };
 
 dom.addClass = function (el, cls) {
-    if (!el) return;
-    if (!this.hasClass(el, cls)) {
+    if (el && !this.hasClass(el, cls)) {
         if (el.classList) {
             el.classList.add(cls);
         } else {
@@ -64,13 +66,33 @@ dom.addClass = function (el, cls) {
 };
 
 dom.removeClass = function (el, cls) {
-    if (!el) return;
-    var reg = new RegExp("\\s*" + cls + "\\s*");
-    if (this.hasClass(el, cls)) {
+    var reg = new RegExp("\\s+" + cls + "\\s+"),
+        className;
+    if (el && this.hasClass(el, cls)) {
+        className = " " + el.className + " ";
         if (el.classList) {
             el.classList.remove(cls);
         } else {
-            el.className = el.className.replace(reg, " ").trim();
+            el.className = className.replace(reg, " ").trim();
+        }
+    }
+    return this;
+};
+
+dom.toggleClass = function (el, cls) {
+    var reg = new RegExp("\\s+" + cls + "\\s+"),
+        className;
+    if (el) {
+        if (el.classList) {
+            el.classList.toggle(cls);
+        } else {
+            className = " " + el.className + " ";
+            cls = " " + cls + " ";
+            if (className.indexOf(cls) > -1) {
+                el.className = className.replace(reg, " ").trim();
+            } else {
+                el.className += " " + cls;
+            }
         }
     }
     return this;
@@ -115,6 +137,7 @@ dom.selectElement = function (selector, context) {
     return ret;
 };
 
+//添加元素事件
 dom._on = function (el, type, callback) {
     var id = el.guid,
         handler;
@@ -154,6 +177,7 @@ dom.on = function (selector, type, callback, off) {
     return this;
 };
 
+//移除元素的事件
 dom._off = function (el, type, callback) {
     var id = el.guid,
         handlers = this.handlers[id],
@@ -175,7 +199,7 @@ dom._off = function (el, type, callback) {
                 });
                 dom.handlers[type] = [];
             }
-        } else if (!type) {
+        } else if (isUndefined(type)) {//如果没有type, 则移除该元素的所有事件
             for (i in handlers) {
                 this._off(el, i);
             }
@@ -299,7 +323,7 @@ var tpl = '<div class="rplayer-loading rplayer-hide"></div>' +
         '            </div>' +
         '        </div>';
 
-function VideoControl (config) {
+function VideoControl(config) {
     /*{
         autoPlay: !!options.autoPlay,
             defaultVolume: Math.abs(parseInt(options.defaultVolume)) || DEFAULT_OPTIONS.defaultVolume,
@@ -330,10 +354,13 @@ VideoControl.prototype = {
     },
     unMute: function () {
         this.el.muted = false;
-      return this;
+        return this;
     },
     isMuted: function () {
         return this.el.muted;
+    },
+    isAutoPlay: function () {
+        return this.el.autoplay;
     },
     play: function () {
         this.el.play();
@@ -345,6 +372,17 @@ VideoControl.prototype = {
     },
     isPaused: function () {
         return this.el.paused;
+    },
+    isLoop: function () {
+        return this.el.loop;
+    },
+    setPoster: function (poster) {
+        this.el.poster = poster;
+        return this;
+    },
+    setPreload: function (preload) {
+        this.el.preload = preload;
+        return this;
     },
     setCurrentTime: function (time, isPercent) {
         var duration = this.getDuration();
@@ -363,8 +401,14 @@ VideoControl.prototype = {
     getPlayedPercentage: function () {
         return this.getCurrentTime() / this.getDuration();
     },
-    getBuffered: function () {
-        return this.el.buffered;
+    getBuffered: function (percent) {
+        var buffered = this.el.buffered,
+            len = buffered.length;
+        if (percent && len) {
+            //缓冲的百分比
+            buffered = buffered.end(len - 1) / this.getDuration();
+        }
+        return buffered;
     },
     getReadyState: function () {
         return this.el.readyState;
@@ -403,7 +447,6 @@ VideoControl.prototype = {
     changeSource: function (src) {
         var paused = this.isPaused();
         if (this.source !== src) {
-            this.source = src;
             this.initSource();
             console.log(src)
         }
@@ -413,11 +456,10 @@ VideoControl.prototype = {
         return this;
     },
     getSource: function () {
-      return this.source;
+        return this.el.currentSrc;
     },
     initSource: function (source) {
         var frag = doc.createDocumentFragment();
-        source = source || this.source;
         if (typeof source === "string") {
             this.el.src = source;
         } else if (Array.isArray(source)) {
@@ -435,10 +477,13 @@ VideoControl.prototype = {
         var video = doc.createElement("video"),
             text = doc.createTextNode(this.config.msg.toString());
         this.el = video;
-        this.source = this.config.source;
+        this.el.loop = this.config.loop;
+        this.el.autoplay = this.config.autoPlay;
         video.appendChild(text);
         dom.addClass(this.el, "rplayer-video");
-        this.initSource()
+        this.initSource(this.config.source)
+            .setPoster(this.config.poster)
+            .setPreload(this.config.preload)
             .setVolume(this.config.defaultVolume);
         return this.el;
     }
@@ -451,9 +496,10 @@ function RPlayer(selector, options) {
             autoPlay: !!options.autoPlay,
             defaultVolume: Math.abs(parseInt(options.defaultVolume)) || DEFAULT_OPTIONS.defaultVolume,
             loop: !!options.loop,
+            msg: options.msg || DEFAULT_OPTIONS.msg,
             poster: options.poster || DEFAULT_OPTIONS.poster,
-            source: options.source,
-            msg: options.msg || DEFAULT_OPTIONS.msg
+            preload: options.preload || DEFAULT_OPTIONS.preload,
+            source: options.source
         };
     } else {
         config = DEFAULT_OPTIONS;
@@ -549,22 +595,10 @@ fn.updateVolumeStyle = function (volume) {
 //点击显示/隐藏设置音量面板
 fn.toggleVolumeSettingsPanel = function (evt) {
     if (!dom.hasClass(this.controlsPanel, "rplayer-disabled")) {
-        dom.hasClass(this.volumePopup, HIDE_CLASS) ?
-            this.showVolumeSettingsPanel() :
-            this.hideVolumeSettingsPanel();
+        dom.toggleClass(this.volumePopup, HIDE_CLASS);
     }
     //阻止冒泡到document, document点击事件点击面板外任意地方隐藏面板，如不阻止冒泡则显示不出来
     evt.stopPropagation();
-};
-
-fn.showVolumeSettingsPanel = function () {
-    dom.removeClass(this.volumePopup, HIDE_CLASS);
-    return this;
-};
-
-fn.hideVolumeSettingsPanel = function () {
-    dom.addClass(this.volumePopup, HIDE_CLASS);
-    return this;
 };
 
 //移动slider改变音量
@@ -591,7 +625,7 @@ fn.slideVolumeSlider = function (evt) {
 fn.initVolumeEvent = function () {
     var _this = this;
     dom.on(this.showVolumePopBtn, "click", this.toggleVolumeSettingsPanel.bind(this))
-        .on(this.volumePopup, "mouseleave", this.hideVolumeSettingsPanel.bind(this))
+        .on(this.volumePopup, "mouseleave", this.toggleVolumeSettingsPanel.bind(this))
         .on(this.volumeSlider, "mousedown", this.slideVolumeSlider.bind(this))
         .on(this.volumeProgress, "click", function (evt) {
             //点击音量轨道设置音量
@@ -616,13 +650,22 @@ fn.initVolumeEvent = function () {
 fn.togglePlay = function () {
     if (!dom.hasClass(this.controlsPanel, "rplayer-disabled")) {
         if (this.video.isPaused()) {
-            dom.addClass(this.playBtn, "paused");
-            this.video.play();
+            this.play();
         } else {
-            this.video.pause();
-            dom.removeClass(this.playBtn, "paused");
+            this.pause();
         }
     }
+};
+
+fn.play = function () {
+    dom.addClass(this.playBtn, "paused");
+    this.video.play();
+    return this;
+};
+
+fn.pause = function () {
+    this.video.pause();
+    dom.removeClass(this.playBtn, "paused");
 };
 
 fn.showPopupTimeInfo = function (evt) {
@@ -677,12 +720,13 @@ fn.slideVideoSlider = function (evt) {
     evt.preventDefault();
 };
 
-fn.showLoading = function () {
-    dom.addClass(this.loading, "loading").removeClass(this.loading, HIDE_CLASS);
+fn.toggleLoading = function () {
+    dom.toggleClass(this.loading, HIDE_CLASS);
+    return this;
 };
 
 fn.hideLoading = function () {
-    dom.removeClass(this.loading, "loading").addClass(this.loading, HIDE_CLASS);
+    dom.addClass(this.loading, HIDE_CLASS);
 };
 
 fn.progress = function () {
@@ -694,7 +738,7 @@ fn.progress = function () {
         this.bufferedBar.style.width = len + "%";
     }
     if (this.video.getReadyState() < 3) {
-        this.showLoading();
+        this.toggleLoading();
     }
 };
 
@@ -727,7 +771,7 @@ fn.updateTotalTime = function () {
 
 fn.updateMetaInfo = function () {
     this.updateTotalTime()
-        .enableControls();
+        .toggleEnableControls();
 };
 
 fn.hideControls = function () {
@@ -747,13 +791,8 @@ fn.showControls = function () {
     return this;
 };
 
-fn.disableControls = function () {
-    dom.addClass(this.controlsPanel, "rplayer-disabled");
-    return this;
-};
-
-fn.enableControls = function () {
-    dom.removeClass(this.controlsPanel, "rplayer-disabled");
+fn.toggleEnableControls = function () {
+    dom.toggleClass(this.controlsPanel, "rplayer-disabled");
     return this;
 };
 
@@ -778,7 +817,10 @@ fn.initPlayEvent = function () {
         .on(this.container, "mousemove", function () {
             _this.showControls();
         })
-        .on(videoEl, "loadstart", this.disableControls.bind(this))
+        .on(videoEl, "loadstart", function () {
+            _this.toggleLoading()
+                .toggleEnableControls();
+        })
         .on(videoEl, "loadedmetadata", this.updateMetaInfo.bind(this))
         .on(videoEl, "timeupdate", function () {
             _this.updateProgressPosition();
@@ -788,7 +830,7 @@ fn.initPlayEvent = function () {
         .on(videoEl, "error", function () {
         console.log("error")
     }).on(videoEl, "seeking", function () {
-        _this.showLoading();
+        _this.toggleLoading();
     }).on(videoEl, "ended", function () {
 
         console.log("end")
@@ -820,16 +862,17 @@ fn.keyDown = function (evt) {
         regUpOrDown = /(up)|(down)/,
         regLeftOrRight = /(left)|(right)/,
         //regEsc = /esc/,
-        STEP = 5,
+        VOLUME_STEP = 5,
+        VIDEO_STEP = 10,
         keyMap = {
-            up: STEP,
-            arrowup: STEP,
-            down: -STEP,
-            arrowdown: -STEP,
-            left: -STEP,
-            arrowleft: -STEP,
-            right: STEP,
-            arrowright: STEP,
+            up: VOLUME_STEP,
+            arrowup: VOLUME_STEP,
+            down: -VOLUME_STEP,
+            arrowdown: -VOLUME_STEP,
+            left: -VIDEO_STEP,
+            arrowleft: -VIDEO_STEP,
+            right: VIDEO_STEP,
+            arrowright: VIDEO_STEP,
             esc: "esc",
             escape: "escape"
         },
@@ -952,6 +995,7 @@ fn.initialize = function () {
     this.container = container
     container.appendChild(this.video.init());
     dom.addClass(this.container, "rplayer-container");
+    //播放控制与原生控制二选一，如果设置了useBroserControls为true，则优先使用原生控制
     if (this.controls && !this.useBrowserControls) {
         this.controlsPanel = doc.createElement("div");
         dom.addClass(this.controlsPanel, "rplayer-controls");

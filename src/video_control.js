@@ -1,4 +1,4 @@
-function VideoControl (config) {
+function VideoControl(config) {
     /*{
         autoPlay: !!options.autoPlay,
             defaultVolume: Math.abs(parseInt(options.defaultVolume)) || DEFAULT_OPTIONS.defaultVolume,
@@ -29,10 +29,13 @@ VideoControl.prototype = {
     },
     unMute: function () {
         this.el.muted = false;
-      return this;
+        return this;
     },
     isMuted: function () {
         return this.el.muted;
+    },
+    isAutoPlay: function () {
+        return this.el.autoplay;
     },
     play: function () {
         this.el.play();
@@ -44,6 +47,17 @@ VideoControl.prototype = {
     },
     isPaused: function () {
         return this.el.paused;
+    },
+    isLoop: function () {
+        return this.el.loop;
+    },
+    setPoster: function (poster) {
+        this.el.poster = poster;
+        return this;
+    },
+    setPreload: function (preload) {
+        this.el.preload = preload;
+        return this;
     },
     setCurrentTime: function (time, isPercent) {
         var duration = this.getDuration();
@@ -62,8 +76,14 @@ VideoControl.prototype = {
     getPlayedPercentage: function () {
         return this.getCurrentTime() / this.getDuration();
     },
-    getBuffered: function () {
-        return this.el.buffered;
+    getBuffered: function (percent) {
+        var buffered = this.el.buffered,
+            len = buffered.length;
+        if (percent && len) {
+            //缓冲的百分比
+            buffered = buffered.end(len - 1) / this.getDuration();
+        }
+        return buffered;
     },
     getReadyState: function () {
         return this.el.readyState;
@@ -102,7 +122,6 @@ VideoControl.prototype = {
     changeSource: function (src) {
         var paused = this.isPaused();
         if (this.source !== src) {
-            this.source = src;
             this.initSource();
             console.log(src)
         }
@@ -112,11 +131,10 @@ VideoControl.prototype = {
         return this;
     },
     getSource: function () {
-      return this.source;
+        return this.el.currentSrc;
     },
     initSource: function (source) {
         var frag = doc.createDocumentFragment();
-        source = source || this.source;
         if (typeof source === "string") {
             this.el.src = source;
         } else if (Array.isArray(source)) {
@@ -134,10 +152,13 @@ VideoControl.prototype = {
         var video = doc.createElement("video"),
             text = doc.createTextNode(this.config.msg.toString());
         this.el = video;
-        this.source = this.config.source;
+        this.el.loop = this.config.loop;
+        this.el.autoplay = this.config.autoPlay;
         video.appendChild(text);
         dom.addClass(this.el, "rplayer-video");
-        this.initSource()
+        this.initSource(this.config.source)
+            .setPoster(this.config.poster)
+            .setPreload(this.config.preload)
             .setVolume(this.config.defaultVolume);
         return this.el;
     }

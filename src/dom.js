@@ -3,15 +3,17 @@ var dom = {
     };
 
 dom.hasClass = function (el, cls) {
+    if (!el) return false;
     if (el.classList) {
         return el.classList.contains(cls);
     }
-    return new RegExp(cls).test(el.className);
+    //如果className为XXX-active, cls为active,
+    //如果不加空格判断则获取的结果不准确
+    return (" " + el.className + " ").indexOf(" " + cls + " ") > -1;
 };
 
 dom.addClass = function (el, cls) {
-    if (!el) return;
-    if (!this.hasClass(el, cls)) {
+    if (el && !this.hasClass(el, cls)) {
         if (el.classList) {
             el.classList.add(cls);
         } else {
@@ -22,13 +24,33 @@ dom.addClass = function (el, cls) {
 };
 
 dom.removeClass = function (el, cls) {
-    if (!el) return;
-    var reg = new RegExp("\\s*" + cls + "\\s*");
-    if (this.hasClass(el, cls)) {
+    var reg = new RegExp("\\s+" + cls + "\\s+"),
+        className;
+    if (el && this.hasClass(el, cls)) {
+        className = " " + el.className + " ";
         if (el.classList) {
             el.classList.remove(cls);
         } else {
-            el.className = el.className.replace(reg, " ").trim();
+            el.className = className.replace(reg, " ").trim();
+        }
+    }
+    return this;
+};
+
+dom.toggleClass = function (el, cls) {
+    var reg = new RegExp("\\s+" + cls + "\\s+"),
+        className;
+    if (el) {
+        if (el.classList) {
+            el.classList.toggle(cls);
+        } else {
+            className = " " + el.className + " ";
+            cls = " " + cls + " ";
+            if (className.indexOf(cls) > -1) {
+                el.className = className.replace(reg, " ").trim();
+            } else {
+                el.className += " " + cls;
+            }
         }
     }
     return this;
@@ -73,6 +95,7 @@ dom.selectElement = function (selector, context) {
     return ret;
 };
 
+//添加元素事件
 dom._on = function (el, type, callback) {
     var id = el.guid,
         handler;
@@ -112,6 +135,7 @@ dom.on = function (selector, type, callback, off) {
     return this;
 };
 
+//移除元素的事件
 dom._off = function (el, type, callback) {
     var id = el.guid,
         handlers = this.handlers[id],
@@ -133,7 +157,7 @@ dom._off = function (el, type, callback) {
                 });
                 dom.handlers[type] = [];
             }
-        } else if (!type) {
+        } else if (isUndefined(type)) {//如果没有type, 则移除该元素的所有事件
             for (i in handlers) {
                 this._off(el, i);
             }
