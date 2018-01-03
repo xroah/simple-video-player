@@ -121,6 +121,7 @@ dom.on = function (selector, type, callback, off) {
         i, t;
     if (el) {
         if (isFunction(callback)) {
+            //添加多个事件，以空格分开
             type = type.split(" ");
             i = type.length;
             for (; i--;) {

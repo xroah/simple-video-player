@@ -34,6 +34,10 @@ VideoControl.prototype = {
     isMuted: function () {
         return this.el.muted;
     },
+    autoPlay: function (play) {
+        this.el.autoplay = !!play;
+        return this;
+    },
     isAutoPlay: function () {
         return this.el.autoplay;
     },
@@ -47,6 +51,10 @@ VideoControl.prototype = {
     },
     isPaused: function () {
         return this.el.paused;
+    },
+    loop: function (isLoop) {
+        this.el.loop = !!isLoop;
+        return this;
     },
     isLoop: function () {
         return this.el.loop;
@@ -123,7 +131,6 @@ VideoControl.prototype = {
         var paused = this.isPaused();
         if (this.source !== src) {
             this.initSource();
-            console.log(src)
         }
         if (!paused) {
             this.play();
@@ -157,6 +164,7 @@ VideoControl.prototype = {
         video.appendChild(text);
         dom.addClass(this.el, "rplayer-video");
         this.initSource(this.config.source)
+            .autoPlay(this.config.autoPlay)
             .setPoster(this.config.poster)
             .setPreload(this.config.preload)
             .setVolume(this.config.defaultVolume);

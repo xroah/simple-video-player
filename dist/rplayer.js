@@ -163,6 +163,7 @@ dom.on = function (selector, type, callback, off) {
         i, t;
     if (el) {
         if (isFunction(callback)) {
+            //添加多个事件，以空格分开
             type = type.split(" ");
             i = type.length;
             for (; i--;) {
@@ -359,6 +360,10 @@ VideoControl.prototype = {
     isMuted: function () {
         return this.el.muted;
     },
+    autoPlay: function (play) {
+        this.el.autoplay = !!play;
+        return this;
+    },
     isAutoPlay: function () {
         return this.el.autoplay;
     },
@@ -372,6 +377,10 @@ VideoControl.prototype = {
     },
     isPaused: function () {
         return this.el.paused;
+    },
+    loop: function (isLoop) {
+        this.el.loop = !!isLoop;
+        return this;
     },
     isLoop: function () {
         return this.el.loop;
@@ -448,7 +457,6 @@ VideoControl.prototype = {
         var paused = this.isPaused();
         if (this.source !== src) {
             this.initSource();
-            console.log(src)
         }
         if (!paused) {
             this.play();
@@ -482,6 +490,7 @@ VideoControl.prototype = {
         video.appendChild(text);
         dom.addClass(this.el, "rplayer-video");
         this.initSource(this.config.source)
+            .autoPlay(this.config.autoPlay)
             .setPoster(this.config.poster)
             .setPreload(this.config.preload)
             .setVolume(this.config.defaultVolume);
@@ -513,7 +522,7 @@ function RPlayer(selector, options) {
     this.target = target;
     this.video = new VideoControl(config);
     this.controls = isUndefined(options.controls) ? true : !!options.controls;
-    this.useBrowserControls = isUndefined(options.useBrowserControls) ? false : options.useBrowserControls;
+    this.useNativeControls = isUndefined(options.useNativeControls) ? false : options.useNativeControls;
 }
 
 var fn = RPlayer.prototype;
@@ -622,6 +631,17 @@ fn.slideVolumeSlider = function (evt) {
     evt.preventDefault();
 };
 
+fn.mute = function () {
+    //点击静音键
+    if (this.video.isMuted()) {
+        this.video.unMute();
+        this.updateVolumeStyle(this.video.getVolume());
+    } else {
+        this.video.mute();
+        this.updateVolumeStyle(0);
+    }
+};
+
 fn.initVolumeEvent = function () {
     var _this = this;
     dom.on(this.showVolumePopBtn, "click", this.toggleVolumeSettingsPanel.bind(this))
@@ -631,19 +651,9 @@ fn.initVolumeEvent = function () {
             //点击音量轨道设置音量
             var rect = this.getBoundingClientRect(),
                 y = evt.clientY;
-            //if (evt.target === _this.volumeSlider) return;
             rect = (rect.height - y + rect.top) / rect.height * 100;
             _this.updateVolume(rect);
-        }).on(_this.muteBtn, "click", function () {
-        //点击静音键
-        if (_this.video.isMuted()) {
-            _this.video.unMute();
-            _this.updateVolumeStyle(_this.video.getVolume());
-        } else {
-            _this.video.mute();
-            _this.updateVolumeStyle(0);
-        }
-    });
+        }).on(_this.muteBtn, "click", this.mute.bind(this));
     return this;
 };
 
@@ -745,7 +755,6 @@ fn.progress = function () {
 fn.updateProgressPosition = function (progress) {
     isUndefined(progress) && (progress = this.video.getPlayedPercentage());
     this.videoProgress.style.width = this.videoSlider.style.left = progress * 100 + "%";
-    console.log(progress)
     this.updateCurrentTime();
     return this;
 };
@@ -796,6 +805,15 @@ fn.toggleEnableControls = function () {
     return this;
 };
 
+fn.loop = function () {
+    this.video.isLoop() ? this.play() :
+        this.pause();
+};
+
+fn.error = function () {
+
+};
+
 fn.initPlayEvent = function () {
     var _this = this,
         videoEl = this.video.el;
@@ -810,13 +828,12 @@ fn.initPlayEvent = function () {
         rect = (x - rect.left) / rect.width;
         _this.video.setCurrentTime(rect, true);
         _this.updateProgressPosition(rect);
-    }).on(this.videoTrack, "mouseover mousemove", this.showPopupTimeInfo.bind(this))
+    })
+        .on(this.videoTrack, "mouseover mousemove", this.showPopupTimeInfo.bind(this))
         .on(this.videoTrack, "mouseout", this.hidePopupTimeInfo.bind(this))
         .on(this.videoSlider, "mousedown", this.slideVideoSlider.bind(this))
         .on(this.container, "keydown", this.keyDown.bind(this))
-        .on(this.container, "mousemove", function () {
-            _this.showControls();
-        })
+        .on(this.container, "mousemove", this.showControls.bind(this))
         .on(videoEl, "loadstart", function () {
             _this.toggleLoading()
                 .toggleEnableControls();
@@ -827,14 +844,10 @@ fn.initPlayEvent = function () {
         })
         .on(videoEl, "canplay seeked", this.hideLoading.bind(this))
         .on(videoEl, "progress", this.progress.bind(this))
-        .on(videoEl, "error", function () {
-        console.log("error")
-    }).on(videoEl, "seeking", function () {
-        _this.toggleLoading();
-    }).on(videoEl, "ended", function () {
-
-        console.log("end")
-    }).on(videoEl, "click", this.togglePlay.bind(this))
+        .on(videoEl, "error", this.error.bind(this))
+        .on(videoEl, "seeking", this.toggleLoading.bind(this))
+        .on(videoEl, "ended", this.loop.bind(this))
+        .on(videoEl, "click", this.togglePlay.bind(this))
         .on(videoEl, "dblclick", this.toggleFullScreen.bind(this));
     return this;
 };
@@ -935,7 +948,7 @@ fn.removeProp = function () {
     delete this.controlsPanel;
     delete this.isFullScreen;
     delete this.loading;
-    delete this.useBrowserControls;
+    delete this.useNativeControls;
     delete this.controls;
     delete this.target;
     return this;
@@ -992,11 +1005,11 @@ fn.initialize = function () {
     this.isFullScreen = false;
     container.tabIndex = 100;
     container.innerHTML = tpl;
-    this.container = container
+    this.container = container;
     container.appendChild(this.video.init());
     dom.addClass(this.container, "rplayer-container");
-    //播放控制与原生控制二选一，如果设置了useBroserControls为true，则优先使用原生控制
-    if (this.controls && !this.useBrowserControls) {
+    //播放控制与原生控制二选一，如果设置了useNativeControls为true，则优先使用原生控制
+    if (this.controls && !this.useNativeControls) {
         this.controlsPanel = doc.createElement("div");
         dom.addClass(this.controlsPanel, "rplayer-controls");
         this.controlsPanel.innerHTML = controls;
@@ -1005,11 +1018,14 @@ fn.initialize = function () {
             .updateVolumeStyle(this.video.getVolume())
             .showControls()
             .initEvent();
-    } else if(this.useBrowserControls) {
+    } else if(this.useNativeControls) {
         this.video.showControls();
     }
     this.target.appendChild(this.container);
     this.initEssentialElements();
+    if (this.video.isAutoPlay()) {
+        this.play();
+    }
     return this;
 };
 
