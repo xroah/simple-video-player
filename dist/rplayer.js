@@ -11,6 +11,7 @@
 var doc = document,
     guid = 1,
     SLIDER_SIZE = 12,
+    DEFAULT_HEIGHT = 500,
     DEFAULT_OPTIONS = {
         autoPlay: false,
         defaultVolume: 50,
@@ -19,6 +20,12 @@ var doc = document,
         preload: "metadata",
         source: "",
         msg: ""
+    },
+    ERROR_TYPE = {
+        "1": "MEDIA_ERR_ABORTED",
+        "2": "MEDIA_ERR_NETWORK",
+        "3": "MEDIA_ERR_DECODE",
+        "4": "MEDIA_ERR_SRC_NOT_SUPPORTED"
     },
     hideVolumePopTimer = null,
     hideControlsTimer = null,
@@ -289,7 +296,8 @@ function isSupportFullScreen() {
 dom.fsApi = isSupportFullScreen();
 
 var tpl = '<div class="rplayer-loading rplayer-hide"></div>' +
-    '    <div class="rplayer-popup-info rplayer-popup-volume-info rplayer-hide">10:00</div>',
+          '<div class="rplayer-popup-info rplayer-popup-volume-info rplayer-hide">10:00</div>' +
+          '<div class="rplayer-error rplayer-hide"><div class="rplayer-msg">出错了</div></div>',
     controls = '<div class="rplayer-popup-info rplayer-popup-video-info rplayer-hide">10:00</div>' +
         '        <div class="rplayer-progress-panel">' +
         '            <div class="rplayer-progress rplayer-video-track">' +
@@ -377,6 +385,10 @@ VideoControl.prototype = {
     },
     isPaused: function () {
         return this.el.paused;
+    },
+    isError: function () {
+        var err = this.el.error;
+        return err ? err.code : err;
     },
     loop: function (isLoop) {
         this.el.loop = !!isLoop;
@@ -597,7 +609,7 @@ fn.updateVolumeStyle = function (volume) {
     }
     this.volumeSlider.style.bottom = this.volumeValue.style.height = volume + "%";
     this.showVolumePopBtn.className = this.muteBtn.className = cls;
-    this.currentVolume.innerHTML = Math.ceil(volume);
+    this.currentVolume.innerHTML = volume;
     return this;
 };
 
@@ -730,13 +742,14 @@ fn.slideVideoSlider = function (evt) {
     evt.preventDefault();
 };
 
-fn.toggleLoading = function () {
-    dom.toggleClass(this.loading, HIDE_CLASS);
+fn.showLoading = function () {
+    dom.removeClass(this.loading, HIDE_CLASS);
     return this;
 };
 
 fn.hideLoading = function () {
     dom.addClass(this.loading, HIDE_CLASS);
+    return this;
 };
 
 fn.progress = function () {
@@ -747,8 +760,9 @@ fn.progress = function () {
         len = len / this.video.getDuration() * 100;
         this.bufferedBar.style.width = len + "%";
     }
+    console.log(this.video.getReadyState())
     if (this.video.getReadyState() < 3) {
-        this.toggleLoading();
+        this.showLoading();
     }
 };
 
@@ -779,8 +793,11 @@ fn.updateTotalTime = function () {
 };
 
 fn.updateMetaInfo = function () {
+    if (this.video.isAutoPlay()) {
+        this.play();
+    }
     this.updateTotalTime()
-        .toggleEnableControls();
+        .enableControls();
 };
 
 fn.hideControls = function () {
@@ -789,7 +806,10 @@ fn.hideControls = function () {
 };
 
 fn.showControls = function () {
-    var _this = this;
+    var _this = this,
+        err = this.video.isError();
+    //出错了则不显示控制条
+    if (err != null) return;
     clearTimeout(hideControlsTimer);
     dom.removeClass(this.controlsPanel, HIDE_CLASS);
     if (dom.hasClass(this.volumePopup, HIDE_CLASS)) {
@@ -800,8 +820,13 @@ fn.showControls = function () {
     return this;
 };
 
-fn.toggleEnableControls = function () {
-    dom.toggleClass(this.controlsPanel, "rplayer-disabled");
+fn.enableControls = function () {
+    dom.removeClass(this.controlsPanel, "rplayer-disabled");
+    return this;
+};
+
+fn.disableControls = function () {
+    dom.addClass(this.controlsPanel, "rplayer-disabled");
     return this;
 };
 
@@ -810,8 +835,37 @@ fn.loop = function () {
         this.pause();
 };
 
-fn.error = function () {
+fn.toggleError = function () {
+    var el = this.errorMsg.parentNode;
+    dom.toggleClass(el, HIDE_CLASS);
+    this.hideLoading()
+        .hideControls();
+    return this;
+};
 
+fn.error = function () {
+    var err = this.video.isError(),
+        msg;
+    err = ERROR_TYPE[err];
+    switch (err) {
+        case "MEDIA_ERR_ABORTED":
+            msg = "出错了";
+            break;
+        case "MEDIA_ERR_NETWORK":
+            msg = "网络错误或视频地址无效";
+            break;
+        case "MEDIA_ERR_DECODE":
+        case "MEDIA_ERR_SRC_NOT_SUPPORTED":
+            msg = "解码失败,不支持的视频格式或地址无效";
+    }
+    msg += ",点击刷新";
+    this.errorMsg.innerHTML = msg;
+    this.toggleError();
+};
+
+fn.refresh = function () {
+    this.video.reload();
+    this.toggleError();
 };
 
 fn.initPlayEvent = function () {
@@ -820,11 +874,11 @@ fn.initPlayEvent = function () {
     dom.on(this.playBtn, "click", function () {
         //点击播放/暂停
         _this.togglePlay();
-    }).on(this.videoTrack, "click", function (evt) {
+    })
+        .on(this.videoTrack, "click", function (evt) {
         //点击视频轨道改变进度
         var rect = this.getBoundingClientRect(),
             x = evt.clientX;
-        //if (evt.target === _this.videoSlider) return;
         rect = (x - rect.left) / rect.width;
         _this.video.setCurrentTime(rect, true);
         _this.updateProgressPosition(rect);
@@ -834,9 +888,10 @@ fn.initPlayEvent = function () {
         .on(this.videoSlider, "mousedown", this.slideVideoSlider.bind(this))
         .on(this.container, "keydown", this.keyDown.bind(this))
         .on(this.container, "mousemove", this.showControls.bind(this))
-        .on(videoEl, "loadstart", function () {
-            _this.toggleLoading()
-                .toggleEnableControls();
+        .on(this.errorMsg, "click", this.refresh.bind(this))
+        .on(videoEl, "loadstart stalled", function () {
+            _this.showLoading()
+                .disableControls();
         })
         .on(videoEl, "loadedmetadata", this.updateMetaInfo.bind(this))
         .on(videoEl, "timeupdate", function () {
@@ -845,7 +900,7 @@ fn.initPlayEvent = function () {
         .on(videoEl, "canplay seeked", this.hideLoading.bind(this))
         .on(videoEl, "progress", this.progress.bind(this))
         .on(videoEl, "error", this.error.bind(this))
-        .on(videoEl, "seeking", this.toggleLoading.bind(this))
+        .on(videoEl, "seeking", this.showLoading.bind(this))
         .on(videoEl, "ended", this.loop.bind(this))
         .on(videoEl, "click", this.togglePlay.bind(this))
         .on(videoEl, "dblclick", this.toggleFullScreen.bind(this));
@@ -854,6 +909,7 @@ fn.initPlayEvent = function () {
 
 fn.toggleVolumePopupInfo = function (volume) {
     var _this = this;
+    //当音量设置面板隐藏是才显示当前音量
     if (dom.hasClass(this.volumePopup, HIDE_CLASS)) {
         clearTimeout(hideVolumePopTimer);
         this.volumePopupInfo.innerHTML = "当前音量: " + volume;
@@ -867,6 +923,7 @@ fn.toggleVolumePopupInfo = function (volume) {
 };
 
 fn.keyDown = function (evt) {
+    //控制条被禁用时，不做处理
     if (dom.hasClass(this.controlsPanel, "rplayer-disabled")) return;
     var key = evt.key.toLowerCase(),
         //up,down, left, right为IE浏览器中的上，下按键
@@ -921,7 +978,8 @@ fn.offEvent = function () {
         .off(this.playBtn)
         .off(this.videoTrack)
         .off(this.container)
-        .off(this.video.el);
+        .off(this.video.el)
+        .off(this.errorMsg);
     return this;
 };
 
@@ -951,6 +1009,7 @@ fn.removeProp = function () {
     delete this.useNativeControls;
     delete this.controls;
     delete this.target;
+    delete this.errorMsg;
     return this;
 };
 
@@ -987,7 +1046,8 @@ fn.initElements = function () {
     this.volumeProgress = dom.selectElement(".rplayer-volume-progress", context);
     this.volumeValue = dom.selectElement(".rplayer-volume-value", context);
     this.currentVolume = dom.selectElement(".rplayer-current-volume", context);
-    this.fullScreenBtn = dom.selectElement(".rplayer-fullscreen-btn", this.container);
+    this.fullScreenBtn = dom.selectElement(".rplayer-fullscreen-btn", context);
+    this.errorMsg = dom.selectElement(".rplayer-msg", context);
     return this;
 };
 
@@ -1001,10 +1061,12 @@ fn.getSource = function () {
 
 fn.initialize = function () {
     if(this.container) return;
-    var container = doc.createElement("div");
+    var container = doc.createElement("div"),
+        heihgt = parseInt(getComputedStyle(this.target).height);
     this.isFullScreen = false;
     container.tabIndex = 100;
     container.innerHTML = tpl;
+    container.style.height = (heihgt || DEFAULT_HEIGHT) + "px";
     this.container = container;
     container.appendChild(this.video.init());
     dom.addClass(this.container, "rplayer-container");
@@ -1016,16 +1078,12 @@ fn.initialize = function () {
         this.container.appendChild(this.controlsPanel);
         this.initElements()
             .updateVolumeStyle(this.video.getVolume())
-            .showControls()
             .initEvent();
     } else if(this.useNativeControls) {
         this.video.showControls();
     }
     this.target.appendChild(this.container);
     this.initEssentialElements();
-    if (this.video.isAutoPlay()) {
-        this.play();
-    }
     return this;
 };
 

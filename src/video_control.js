@@ -52,6 +52,10 @@ VideoControl.prototype = {
     isPaused: function () {
         return this.el.paused;
     },
+    isError: function () {
+        var err = this.el.error;
+        return err ? err.code : err;
+    },
     loop: function (isLoop) {
         this.el.loop = !!isLoop;
         return this;

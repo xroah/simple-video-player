@@ -2,6 +2,7 @@
 var doc = document,
     guid = 1,
     SLIDER_SIZE = 12,
+    DEFAULT_HEIGHT = 500,
     DEFAULT_OPTIONS = {
         autoPlay: false,
         defaultVolume: 50,
@@ -10,6 +11,12 @@ var doc = document,
         preload: "metadata",
         source: "",
         msg: ""
+    },
+    ERROR_TYPE = {
+        "1": "MEDIA_ERR_ABORTED",
+        "2": "MEDIA_ERR_NETWORK",
+        "3": "MEDIA_ERR_DECODE",
+        "4": "MEDIA_ERR_SRC_NOT_SUPPORTED"
     },
     hideVolumePopTimer = null,
     hideControlsTimer = null,
