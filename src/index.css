@@ -310,6 +310,7 @@
 
 .rplayer-controls .rplayer-fullscreen-btn:hover {
     background-image: url('data:image/svg+xml;base64,PHN2ZyB2aWV3Qm94PSIwIDAgMTAyNCAxMDI0IiB2ZXJzaW9uPSIxLjEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIj48cGF0aCBkPSJNNDcyLjU1MjU2OSA1ODMuNTAxNDc0IDQzOC4wMzEzMzUgNTQ4Ljk4NDMzMyAzNDQuMzQzNTU5IDY0Mi42NzMxMzIgMjUwLjY1MDY2NyA1NDguOTg0MzMzIDI1MC42NTA2NjcgNzc1LjgxNDQ3OCA0NzcuNDgwODEyIDc3NS44MTQ0NzggMzgzLjc5MjAxMyA2ODIuMTIyNjA5WiIgZmlsbD0iIzUxODVmMyI+PC9wYXRoPjxwYXRoIGQ9Ik01NTEuNDUwNTAxIDI0OC4xODQ0OTkgNjQ1LjEzOTMgMzQxLjg3NzM5MSA1NTEuNDUwNTAxIDQzNS41NjUxNjcgNTg1Ljk2NzY0MiA0NzAuMDg2NDAxIDY3OS42NTk1MTEgMzc2LjM5MzUwOSA3NzMuMzQ4MzEgNDcwLjA4NjQwMSA3NzMuMzQ4MzEgMjQ4LjE4NDQ5OVoiIGZpbGw9IiM1MTg1ZjMiPjwvcGF0aD48L3N2Zz4=');
+    cursor: pointer;
 }
 
 .rplayer-controls .rplayer-fullscreen-btn.fullscreen {
@@ -370,6 +371,34 @@
 .rplayer-container .rplayer-popup-volume-info {
     right: 20px;
     bottom: 60px;
+}
+
+.rplayer-container .rplayer-error{
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    color: #fff;
+    background: #000;
+    z-index: 10;
+}
+
+.rplayer-container .rplayer-msg {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    -webkit-transform: translate(-50%, -100%);
+    -moz-transform: translate(-50%, -100%);
+    -ms-transform: translate(-50%, -100%);
+    -o-transform: translate(-50%, -100%);
+    transform: translate(-50%, -100%);
+    line-height: 30px;
+    padding-left: 30px;
+    background: url(data:image/svg+xml;base64,PHN2ZyB2aWV3Qm94PSIwIDAgMTAyNCAxMDI0IiB2ZXJzaW9uPSIxLjEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIj48cGF0aCBkPSJNNTEyIDBDMjI5LjI0OCAwIDAgMjI5LjIxNiAwIDUxMnMyMjkuMjQ4IDUxMiA1MTIgNTEyIDUxMi0yMjkuMjQ4IDUxMi01MTJTNzk0Ljc1MiAwIDUxMiAweiBtMCA5NjBDMjY0LjU3NiA5NjAgNjQgNzU5LjQyNCA2NCA1MTJTMjY0LjU3NiA2NCA1MTIgNjRzNDQ4IDIwMC41NzYgNDQ4IDQ0OC0yMDAuNTc2IDQ0OC00NDggNDQ4eiBtNjQtMTc2YTY0IDY0IDAgMCAxLTEyOCAwVjQ2NGE2NCA2NCAwIDAgMSAxMjggMHYzMjB6IG0xNi01MjhhODAgODAgMCAwIDEtMTYwIDAgODAgODAgMCAxIDEgMTYwIDB6IiBmaWxsPSIjZmZmZmZmIj48L3BhdGg+PC9zdmc+) no-repeat left center/20px 20px;
+    font-size: 15px;
+    text-align: center;
+    cursor: pointer;
 }
 
 @keyframes opacity {
