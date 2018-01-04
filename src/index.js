@@ -21,6 +21,7 @@ function RPlayer(selector, options) {
         throw new Error("未选中任何元素");
     }
     this.target = target;
+    this.playedTime = 0;
     this.video = new VideoControl(config);
     this.controls = isUndefined(options.controls) ? true : !!options.controls;
     this.useNativeControls = isUndefined(options.useNativeControls) ? false : options.useNativeControls;
@@ -249,7 +250,6 @@ fn.progress = function () {
         len = len / this.video.getDuration() * 100;
         this.bufferedBar.style.width = len + "%";
     }
-    console.log(this.video.getReadyState())
     if (this.video.getReadyState() < 3) {
         this.showLoading();
     }
@@ -272,7 +272,13 @@ fn.updateProgressByStep = function (step) {
 };
 
 fn.updateCurrentTime = function () {
-    this.currentTime.innerHTML = this.video.convertTime(this.video.getCurrentTime());
+    var currentTime = this.video.getCurrentTime();
+    //出现错误刷新调用reload之后，会触发updatetime事件更新时间，时间为0
+    //则不能从中断处理开始播放,故时间不为0时保存，
+    if (currentTime) {
+        this.playedTime = currentTime
+    }
+    this.currentTime.innerHTML = this.video.convertTime(currentTime);
     return this;
 };
 
@@ -354,7 +360,8 @@ fn.error = function () {
 
 fn.refresh = function () {
     this.video.reload();
-    this.toggleError();
+    this.toggleError()
+        .updateProgressPosition(0);
 };
 
 fn.initPlayEvent = function () {
@@ -377,13 +384,18 @@ fn.initPlayEvent = function () {
         .on(this.videoSlider, "mousedown", this.slideVideoSlider.bind(this))
         .on(this.container, "keydown", this.keyDown.bind(this))
         .on(this.container, "mousemove", this.showControls.bind(this))
-        .on(this.errorMsg, "click", this.refresh.bind(this))
-        .on(videoEl, "loadstart stalled", function () {
+        .on(videoEl, "loadstart stalled", function (evt) {
+            console.log(_this.playedTime)
+            if (_this.playedTime && evt.type === "loadstart") {
+                _this.video.setCurrentTime(_this.playedTime);
+                console.log(this.playedTime)
+            }
             _this.showLoading()
                 .disableControls();
         })
         .on(videoEl, "loadedmetadata", this.updateMetaInfo.bind(this))
         .on(videoEl, "timeupdate", function () {
+            console.log("time update")
             _this.updateProgressPosition();
         })
         .on(videoEl, "canplay seeked", this.hideLoading.bind(this))
@@ -452,6 +464,11 @@ fn.keyDown = function (evt) {
 };
 
 fn.initEvent = function () {
+    dom.on(this.errorMsg, "click", this.refresh.bind(this));
+    return this;
+};
+
+fn.initControlEvent = function () {
     return this.initPlayEvent()
         .initVolumeEvent()
         .initFullScreenEvent();
@@ -551,11 +568,11 @@ fn.getSource = function () {
 fn.initialize = function () {
     if(this.container) return;
     var container = doc.createElement("div"),
-        heihgt = parseInt(getComputedStyle(this.target).height);
+        height = parseInt(getComputedStyle(this.target).height);
     this.isFullScreen = false;
     container.tabIndex = 100;
     container.innerHTML = tpl;
-    container.style.height = (heihgt || DEFAULT_HEIGHT) + "px";
+    container.style.height = (height || DEFAULT_HEIGHT) + "px";
     this.container = container;
     container.appendChild(this.video.init());
     dom.addClass(this.container, "rplayer-container");
@@ -567,12 +584,13 @@ fn.initialize = function () {
         this.container.appendChild(this.controlsPanel);
         this.initElements()
             .updateVolumeStyle(this.video.getVolume())
-            .initEvent();
+            .initControlEvent();
     } else if(this.useNativeControls) {
         this.video.showControls();
     }
     this.target.appendChild(this.container);
-    this.initEssentialElements();
+    this.initEssentialElements()
+        .initEvent();
     return this;
 };
 
