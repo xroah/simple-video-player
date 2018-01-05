@@ -13,6 +13,7 @@ function VideoControl(config) {
 VideoControl.prototype = {
     constructor: VideoControl,
     setVolume: function (volume) {
+        //音量只能设置0-1的值
         if (volume >= 1) {
             volume = volume / 100;
         }
@@ -23,12 +24,8 @@ VideoControl.prototype = {
     getVolume: function () {
         return Math.floor(this.el.volume * 100);
     },
-    mute: function () {
-        this.el.muted = true;
-        return this;
-    },
-    unMute: function () {
-        this.el.muted = false;
+    mute: function (mute) {
+        this.el.muted = !!mute;
         return this;
     },
     isMuted: function () {
@@ -41,12 +38,8 @@ VideoControl.prototype = {
     isAutoPlay: function () {
         return this.el.autoplay;
     },
-    play: function () {
-        this.el.play();
-        return this;
-    },
-    pause: function () {
-        this.el.pause();
+    play: function (play) {
+        play ? this.el.play() : this.el.pause();
         return this;
     },
     isPaused: function () {
@@ -133,11 +126,13 @@ VideoControl.prototype = {
     },
     changeSource: function (src) {
         var paused = this.isPaused();
+        console.log(this.source, src)
         if (this.source !== src) {
-            this.initSource();
+            this.source = src;
+            this.initSource(src);
         }
         if (!paused) {
-            this.play();
+            this.play(true);
         }
         return this;
     },
@@ -163,12 +158,12 @@ VideoControl.prototype = {
         var video = doc.createElement("video"),
             text = doc.createTextNode(this.config.msg.toString());
         this.el = video;
-        this.el.loop = this.config.loop;
-        this.el.autoplay = this.config.autoPlay;
+        this.source = this.config.source;
         video.appendChild(text);
         dom.addClass(this.el, "rplayer-video");
-        this.initSource(this.config.source)
+        this.initSource(this.source)
             .autoPlay(this.config.autoPlay)
+            .loop(this.config.loop)
             .setPoster(this.config.poster)
             .setPreload(this.config.preload)
             .setVolume(this.config.defaultVolume);

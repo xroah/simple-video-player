@@ -136,10 +136,10 @@ fn.slideVolumeSlider = function (evt) {
 fn.mute = function () {
     //点击静音键
     if (this.video.isMuted()) {
-        this.video.unMute();
+        this.video.mute(false);
         this.updateVolumeStyle(this.video.getVolume());
     } else {
-        this.video.mute();
+        this.video.mute(true);
         this.updateVolumeStyle(0);
     }
 };
@@ -171,12 +171,12 @@ fn.togglePlay = function () {
 
 fn.play = function () {
     dom.addClass(this.playBtn, "paused");
-    this.video.play();
+    this.video.play(true);
     return this;
 };
 
 fn.pause = function () {
-    this.video.pause();
+    this.video.play(false);
     dom.removeClass(this.playBtn, "paused");
 };
 
@@ -218,7 +218,7 @@ fn.slideVideoSlider = function (evt) {
             distance = distance / max;
             dom.addClass(_this.videoSlider, "moving");
             _this.updateProgressPosition(distance);
-            _this.video.pause();
+           // _this.video.play(false);
         };
     dom.on(doc, "mousemove", move)
         .on(doc, "mouseup", function () {
@@ -226,7 +226,7 @@ fn.slideVideoSlider = function (evt) {
             dom.removeClass(_this.videoSlider, "moving");
             distance && _this.video.setCurrentTime(distance, true);
             if (!paused) {
-                _this.video.play();
+                _this.video.play(true);
             }
         });
     evt.preventDefault();
@@ -273,11 +273,6 @@ fn.updateProgressByStep = function (step) {
 
 fn.updateCurrentTime = function () {
     var currentTime = this.video.getCurrentTime();
-    //出现错误刷新调用reload之后，会触发updatetime事件更新时间，时间为0
-    //则不能从中断处理开始播放,故时间不为0时保存，
-    if (currentTime) {
-        this.playedTime = currentTime
-    }
     this.currentTime.innerHTML = this.video.convertTime(currentTime);
     return this;
 };
@@ -340,7 +335,13 @@ fn.toggleError = function () {
 
 fn.error = function () {
     var err = this.video.isError(),
+        currentTime = this.video.getCurrentTime(),
         msg;
+    //出现错误刷新调用reload之后，会触发updatetime事件更新时间，时间为0
+    //则不能从中断处理开始播放,故时间不为0时保存，
+    if (currentTime) {
+        this.playedTime = currentTime
+    }
     err = ERROR_TYPE[err];
     switch (err) {
         case "MEDIA_ERR_ABORTED":
@@ -385,17 +386,15 @@ fn.initPlayEvent = function () {
         .on(this.container, "keydown", this.keyDown.bind(this))
         .on(this.container, "mousemove", this.showControls.bind(this))
         .on(videoEl, "loadstart stalled", function (evt) {
-            console.log(_this.playedTime)
             if (_this.playedTime && evt.type === "loadstart") {
                 _this.video.setCurrentTime(_this.playedTime);
-                console.log(this.playedTime)
+                this.playedTime = 0;
             }
             _this.showLoading()
                 .disableControls();
         })
         .on(videoEl, "loadedmetadata", this.updateMetaInfo.bind(this))
         .on(videoEl, "timeupdate", function () {
-            console.log("time update")
             _this.updateProgressPosition();
         })
         .on(videoEl, "canplay seeked", this.hideLoading.bind(this))
@@ -404,7 +403,10 @@ fn.initPlayEvent = function () {
         .on(videoEl, "seeking", this.showLoading.bind(this))
         .on(videoEl, "ended", this.loop.bind(this))
         .on(videoEl, "click", this.togglePlay.bind(this))
-        .on(videoEl, "dblclick", this.toggleFullScreen.bind(this));
+        .on(videoEl, "dblclick", this.toggleFullScreen.bind(this))
+        .on(videoEl, "contextmenu", function (evt) {
+            evt.preventDefault();
+        });
     return this;
 };
 
