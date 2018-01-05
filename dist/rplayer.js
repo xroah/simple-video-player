@@ -618,6 +618,10 @@ fn.toggleVolumeSettingsPanel = function (evt) {
     evt.stopPropagation();
 };
 
+fn.hideVolumeSettingsPanel = function () {
+    dom.addClass(this.volumePopup, HIDE_CLASS);
+};
+
 //移动slider改变音量
 fn.slideVolumeSlider = function (evt) {
     if (evt.button) return; //按下的鼠标不是左键则不作处理(左键evt.button=0)
@@ -653,7 +657,7 @@ fn.mute = function () {
 fn.initVolumeEvent = function () {
     var _this = this;
     dom.on(this.showVolumePopBtn, "click", this.toggleVolumeSettingsPanel.bind(this))
-        .on(this.volumePopup, "mouseleave", this.toggleVolumeSettingsPanel.bind(this))
+        .on(this.volumePopup, "mouseleave", this.hideVolumeSettingsPanel.bind(this))
         .on(this.volumeSlider, "mousedown", this.slideVolumeSlider.bind(this))
         .on(this.volumeProgress, "click", function (evt) {
             //点击音量轨道设置音量
@@ -661,7 +665,15 @@ fn.initVolumeEvent = function () {
                 y = evt.clientY;
             rect = (rect.height - y + rect.top) / rect.height * 100;
             _this.updateVolume(rect);
-        }).on(_this.muteBtn, "click", this.mute.bind(this));
+        }).on(_this.muteBtn, "click", this.mute.bind(this))
+        .on(doc, "click", function (evt) {
+            var tgt = evt.target;
+            //点击页面其他地方（点击的不是音量设置面板或者面板内的元素）则隐藏音量面板
+            console.log(11111)
+            if (tgt !== _this.volumePopup && !_this.volumePopup.contains(tgt)) {
+                _this.hideVolumeSettingsPanel();
+            }
+        });
     return this;
 };
 
