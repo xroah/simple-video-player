@@ -620,6 +620,7 @@ fn.toggleVolumeSettingsPanel = function (evt) {
 
 fn.hideVolumeSettingsPanel = function () {
     dom.addClass(this.volumePopup, HIDE_CLASS);
+    return this;
 };
 
 //移动slider改变音量
@@ -669,7 +670,6 @@ fn.initVolumeEvent = function () {
         .on(doc, "click", function (evt) {
             var tgt = evt.target;
             //点击页面其他地方（点击的不是音量设置面板或者面板内的元素）则隐藏音量面板
-            console.log(11111)
             if (tgt !== _this.volumePopup && !_this.volumePopup.contains(tgt)) {
                 _this.hideVolumeSettingsPanel();
             }
@@ -696,6 +696,7 @@ fn.play = function () {
 fn.pause = function () {
     this.video.play(false);
     dom.removeClass(this.playBtn, "paused");
+    return this;
 };
 
 fn.showPopupTimeInfo = function (evt) {
@@ -786,12 +787,11 @@ fn.updateProgressByStep = function (step) {
     currentTime += step;
     currentTime = currentTime < 0 ? 0 : currentTime > duration ? duration : currentTime;
     this.video.setCurrentTime(currentTime);
-    this.updateProgressPosition().updateCurrentTime();
+    this.updateProgressPosition();
 };
 
 fn.updateCurrentTime = function () {
-    var currentTime = this.video.getCurrentTime();
-    this.currentTime.innerHTML = this.video.convertTime(currentTime);
+    this.currentTime.innerHTML = this.video.convertTime(this.video.getCurrentTime());
     return this;
 };
 
@@ -913,7 +913,13 @@ fn.initPlayEvent = function () {
         })
         .on(videoEl, "loadedmetadata", this.updateMetaInfo.bind(this))
         .on(videoEl, "timeupdate", function () {
-            _this.updateProgressPosition();
+            //在拖动滑块改变播放进度时候不改变播放进度条位置，只改变播放的当前时间
+            //防止影响滑块以及进度条的位置
+            if (!dom.hasClass(_this.videoSlider, "moving")) {
+                _this.updateProgressPosition();
+            } else {
+                _this.updateCurrentTime();
+            }
         })
         .on(videoEl, "canplay seeked", this.hideLoading.bind(this))
         .on(videoEl, "progress", this.progress.bind(this))
@@ -977,7 +983,7 @@ fn.keyDown = function (evt) {
             this.toggleFullScreen();
         }
         evt.preventDefault();
-    } else if (key === " " || key === "space") {
+    } else if (key === " " || key === "spacebar") {//空格键
         this.togglePlay();
         evt.preventDefault();
     }
