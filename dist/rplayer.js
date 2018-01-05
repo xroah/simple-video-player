@@ -47,6 +47,16 @@ function isUndefined(v) {
 function  isWindow(obj) {
     return obj && obj.window === obj;
 }
+
+function inherit(child, parent) {
+    var f = function() {};
+    if (!isFunction(child) && isFunction(parent)) {
+        throw new Error("参数不是函数");
+    }
+    f.prototype = parent.prototype;
+    child.prototype = new f();
+    child.prototype.constructor = child;
+}
 var dom = {
         handlers: {}
     };
@@ -515,6 +525,39 @@ VideoControl.prototype = {
         return this.el;
     }
 };
+function Subscriber() {
+    this.handlers = {};
+}
+
+Subscriber.prototype = {
+    constructor: Subscriber,
+    on: function (type, fn) {
+        if (isFunction(fn)) {
+            if (!this.handlers[type]) {
+                this.handlers[type] = [];
+            }
+            this.handlers.push(fn);
+        }
+    },
+    off: function (type, fn) {
+        var h = this.handlers[type],
+            i, len;
+        if (h) {
+            len = h.length;
+            if (fn) {
+                if (isFunction(fn)) {
+                    for (; i < len)
+                }
+            }
+        }
+    },
+    once: function (type, fn) {
+
+    },
+    trigger: function (type) {
+
+    }
+};
 function RPlayer(selector, options) {
     var target = dom.selectElement(selector),
         config;
@@ -542,9 +585,11 @@ function RPlayer(selector, options) {
     this.video = new VideoControl(config);
     this.controls = isUndefined(options.controls) ? true : !!options.controls;
     this.useNativeControls = isUndefined(options.useNativeControls) ? false : options.useNativeControls;
+    Subscriber.call(this);
 }
 
-var fn = RPlayer.prototype;
+var fn = RPlayer.prototype = Object.create(Subscriber.prototype);
+fn.constructor = RPlayer;
 
 fn.toggleFullScreen = function () {
     if (this.isFullScreen = !this.isFullScreen) {

@@ -18,6 +18,7 @@ gulp.task("concat", () => {
         "./src/dom.js",
         "./src/template.js",
         "./src/video_control.js",
+        "./src/event.js",
         "./src/index.js"
     ])
         .pipe(concat("rplayer.js"))

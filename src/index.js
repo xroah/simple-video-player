@@ -25,9 +25,11 @@ function RPlayer(selector, options) {
     this.video = new VideoControl(config);
     this.controls = isUndefined(options.controls) ? true : !!options.controls;
     this.useNativeControls = isUndefined(options.useNativeControls) ? false : options.useNativeControls;
+    Subscriber.call(this);
 }
 
-var fn = RPlayer.prototype;
+var fn = RPlayer.prototype = Object.create(Subscriber.prototype);
+fn.constructor = RPlayer;
 
 fn.toggleFullScreen = function () {
     if (this.isFullScreen = !this.isFullScreen) {

@@ -38,3 +38,13 @@ function isUndefined(v) {
 function  isWindow(obj) {
     return obj && obj.window === obj;
 }
+
+function inherit(child, parent) {
+    var f = function() {};
+    if (!isFunction(child) && isFunction(parent)) {
+        throw new Error("参数不是函数");
+    }
+    f.prototype = parent.prototype;
+    child.prototype = new f();
+    child.prototype.constructor = child;
+}
