@@ -86,13 +86,24 @@ dom.selectElement = function (selector, context) {
         } else if (typeof selector === "string") {
             if (reg.test(selector)) {
                 ret = doc.getElementById(selector.substring(1));
-                console.log(selector, ret)
             } else {
                 ret = context.querySelector(selector);
             }
         }
     }
     return ret;
+};
+
+//创建元素
+dom.createElement = function (name, attrs) {
+    var el = doc.createElement(name),
+        key;
+    if (isObject(attrs)) {
+        for (key in attrs) {
+            el.setAttribute(key, attrs[key]);
+        }
+    }
+    return el;
 };
 
 //添加元素事件

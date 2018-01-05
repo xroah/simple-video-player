@@ -86,7 +86,7 @@ VideoControl.prototype = {
             len = buffered.length;
         if (percent && len) {
             //缓冲的百分比
-            buffered = buffered.end(len - 1) / this.getDuration();
+            buffered = buffered.end(len - 1) / this.getDuration() * 100;
         }
         return buffered;
     },

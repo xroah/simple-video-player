@@ -135,13 +135,24 @@ dom.selectElement = function (selector, context) {
         } else if (typeof selector === "string") {
             if (reg.test(selector)) {
                 ret = doc.getElementById(selector.substring(1));
-                console.log(selector, ret)
             } else {
                 ret = context.querySelector(selector);
             }
         }
     }
     return ret;
+};
+
+//创建元素
+dom.createElement = function (name, attrs) {
+    var el = doc.createElement(name),
+        key;
+    if (isObject(attrs)) {
+        for (key in attrs) {
+            el.setAttribute(key, attrs[key]);
+        }
+    }
+    return el;
 };
 
 //添加元素事件
@@ -420,7 +431,7 @@ VideoControl.prototype = {
             len = buffered.length;
         if (percent && len) {
             //缓冲的百分比
-            buffered = buffered.end(len - 1) / this.getDuration();
+            buffered = buffered.end(len - 1) / this.getDuration() * 100;
         }
         return buffered;
     },
@@ -714,6 +725,7 @@ fn.showPopupTimeInfo = function (evt) {
         popup.innerHTML = this.video.convertTime(distance / rect.width * duration);
         popup.style.left = left + "px";
     }
+    return this;
 };
 
 fn.hidePopupTimeInfo = function () {
@@ -762,13 +774,8 @@ fn.hideLoading = function () {
 };
 
 fn.progress = function () {
-    var b = this.video.getBuffered(),
-        len = b.length;
-    if (len && len < 100) {
-        len = b.end(len - 1);
-        len = len / this.video.getDuration() * 100;
-        this.bufferedBar.style.width = len + "%";
-    }
+    var b = this.video.getBuffered(true);
+    typeof  b === "number" && (this.bufferedBar.style.width = b + "%");
     if (this.video.getReadyState() < 3) {
         this.showLoading();
     }
@@ -839,7 +846,7 @@ fn.disableControls = function () {
 };
 
 fn.loop = function () {
-    this.video.isLoop() ? this.play() :
+    return this.video.isLoop() ? this.play() :
         this.pause();
 };
 
@@ -982,11 +989,10 @@ fn.keyDown = function (evt) {
         } else {// if (regEsc.test(key)) {
             this.toggleFullScreen();
         }
-        evt.preventDefault();
     } else if (key === " " || key === "spacebar") {//空格键
         this.togglePlay();
-        evt.preventDefault();
     }
+    evt.preventDefault();
 };
 
 fn.initEvent = function () {
@@ -1042,6 +1048,7 @@ fn.removeProp = function () {
     delete this.controls;
     delete this.target;
     delete this.errorMsg;
+    delete this.playedTime;
     return this;
 };
 

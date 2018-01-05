@@ -208,6 +208,7 @@ fn.showPopupTimeInfo = function (evt) {
         popup.innerHTML = this.video.convertTime(distance / rect.width * duration);
         popup.style.left = left + "px";
     }
+    return this;
 };
 
 fn.hidePopupTimeInfo = function () {
@@ -256,13 +257,8 @@ fn.hideLoading = function () {
 };
 
 fn.progress = function () {
-    var b = this.video.getBuffered(),
-        len = b.length;
-    if (len && len < 100) {
-        len = b.end(len - 1);
-        len = len / this.video.getDuration() * 100;
-        this.bufferedBar.style.width = len + "%";
-    }
+    var b = this.video.getBuffered(true);
+    typeof  b === "number" && (this.bufferedBar.style.width = b + "%");
     if (this.video.getReadyState() < 3) {
         this.showLoading();
     }
@@ -333,7 +329,7 @@ fn.disableControls = function () {
 };
 
 fn.loop = function () {
-    this.video.isLoop() ? this.play() :
+    return this.video.isLoop() ? this.play() :
         this.pause();
 };
 
@@ -476,11 +472,10 @@ fn.keyDown = function (evt) {
         } else {// if (regEsc.test(key)) {
             this.toggleFullScreen();
         }
-        evt.preventDefault();
     } else if (key === " " || key === "spacebar") {//空格键
         this.togglePlay();
-        evt.preventDefault();
     }
+    evt.preventDefault();
 };
 
 fn.initEvent = function () {
@@ -536,6 +531,7 @@ fn.removeProp = function () {
     delete this.controls;
     delete this.target;
     delete this.errorMsg;
+    delete this.playedTime;
     return this;
 };
 
