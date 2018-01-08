@@ -29,14 +29,13 @@ var doc = document,
     },
     isType = function (type) {
         return function (obj) {
-            return Object.prototype.toString.call(obj) === TYPE[type]
+            return Object.prototype.toString.call(obj) === TYPE[type];
         };
     },
     isFunction = isType("function"),
     isObject = isType("object"),
     isString = isType("string"),
-    isUndefined = isType("undef");
-
-function  isWindow(obj) {
-    return obj && obj.window === obj;
-}
+    isUndefined = isType("undef"),
+    isWindow = function (obj) {
+        return obj && obj.window === obj;
+    };

@@ -42,15 +42,15 @@ fn.toggleFullScreen = function () {
 fn.requestFullScreen = function () {
     this.isFullScreen = true;
     dom.fullScreen(this.container)
-        .addClass(this.fullScreenBtn, "fullscreen")
-        .addClass(this.container, "fullscreen");
+        .addClass(this.fullScreenBtn, "rplayer-fullscreen")
+        .addClass(this.container, "rplayer-fullscreen");
 };
 
 fn.exitFullScreen = function () {
     this.isFullScreen = false;
     dom.fullScreen(this.container, true)
-        .removeClass(this.fullScreenBtn, "fullscreen")
-        .removeClass(this.container, "fullscreen");
+        .removeClass(this.fullScreenBtn, "rplayer-fullscreen")
+        .removeClass(this.container, "rplayer-fullscreen");
 };
 
 fn.initFullScreenEvent = function () {

@@ -38,17 +38,16 @@ var doc = document,
     },
     isType = function (type) {
         return function (obj) {
-            return Object.prototype.toString.call(obj) === TYPE[type]
+            return Object.prototype.toString.call(obj) === TYPE[type];
         };
     },
     isFunction = isType("function"),
     isObject = isType("object"),
     isString = isType("string"),
-    isUndefined = isType("undef");
-
-function  isWindow(obj) {
-    return obj && obj.window === obj;
-}
+    isUndefined = isType("undef"),
+    isWindow = function (obj) {
+        return obj && obj.window === obj;
+    };
 var dom = {
         handlers: {}
     };
@@ -120,9 +119,9 @@ dom.fullScreen = function (el, exit) {
 //不支持全屏的浏览器，在网页内铺满窗口
 dom.fullPage = function (el, exit) {
     if (exit) {
-        dom.removeClass(el, "fixed");
+        dom.removeClass(el, "rplayer-fixed");
     } else {
-        dom.addClass(el, "fixed");
+        dom.addClass(el, "rplayer-fixed");
     }
 };
 
@@ -220,7 +219,7 @@ dom._off = function (el, type, callback) {
                 });
                 dom.handlers[type] = [];
             }
-        } else if (isUndefined(type)) {//如果没有type, 则移除该元素的所有事件
+        } else if (!type) {//如果没有type, 则移除该元素的所有事件
             for (i in handlers) {
                 this._off(el, i);
             }
@@ -547,16 +546,14 @@ Subscriber.prototype = {
         if (h) {
             len = h.length;
             i = len - 1;
-            if (fn) {
-                if (isFunction(fn)) {
-                    for (; i--;) {
-                        if (h[i] === fn) {
-                            h.splice(i, 1);
-                            break;
-                        }
+            if (isFunction(fn)) {
+                for (; i--;) {
+                    if (h[i] === fn) {
+                        h.splice(i, 1);
+                        break;
                     }
                 }
-            } else {
+            } else if (!fn){
                 this.handlers[type] = [];
             }
         }
@@ -631,15 +628,15 @@ fn.toggleFullScreen = function () {
 fn.requestFullScreen = function () {
     this.isFullScreen = true;
     dom.fullScreen(this.container)
-        .addClass(this.fullScreenBtn, "fullscreen")
-        .addClass(this.container, "fullscreen");
+        .addClass(this.fullScreenBtn, "rplayer-fullscreen")
+        .addClass(this.container, "rplayer-fullscreen");
 };
 
 fn.exitFullScreen = function () {
     this.isFullScreen = false;
     dom.fullScreen(this.container, true)
-        .removeClass(this.fullScreenBtn, "fullscreen")
-        .removeClass(this.container, "fullscreen");
+        .removeClass(this.fullScreenBtn, "rplayer-fullscreen")
+        .removeClass(this.container, "rplayer-fullscreen");
 };
 
 fn.initFullScreenEvent = function () {

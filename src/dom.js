@@ -69,9 +69,9 @@ dom.fullScreen = function (el, exit) {
 //不支持全屏的浏览器，在网页内铺满窗口
 dom.fullPage = function (el, exit) {
     if (exit) {
-        dom.removeClass(el, "fixed");
+        dom.removeClass(el, "rplayer-fixed");
     } else {
-        dom.addClass(el, "fixed");
+        dom.addClass(el, "rplayer-fixed");
     }
 };
 
@@ -169,7 +169,7 @@ dom._off = function (el, type, callback) {
                 });
                 dom.handlers[type] = [];
             }
-        } else if (isUndefined(type)) {//如果没有type, 则移除该元素的所有事件
+        } else if (!type) {//如果没有type, 则移除该元素的所有事件
             for (i in handlers) {
                 this._off(el, i);
             }

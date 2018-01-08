@@ -28,16 +28,14 @@ Subscriber.prototype = {
         if (h) {
             len = h.length;
             i = len - 1;
-            if (fn) {
-                if (isFunction(fn)) {
-                    for (; i--;) {
-                        if (h[i] === fn) {
-                            h.splice(i, 1);
-                            break;
-                        }
+            if (isFunction(fn)) {
+                for (; i--;) {
+                    if (h[i] === fn) {
+                        h.splice(i, 1);
+                        break;
                     }
                 }
-            } else {
+            } else if (!fn){
                 this.handlers[type] = [];
             }
         }
