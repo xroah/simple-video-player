@@ -20,31 +20,23 @@ var doc = document,
     },
     hideVolumePopTimer = null,
     hideControlsTimer = null,
-    HIDE_CLASS = "rplayer-hide";
-
-function isFunction(fn) {
-    return Object.prototype.toString.call(fn) === "[object Function]";
-}
-
-function isObject(obj) {
-    return Object.prototype.toString.call(obj) === "[object Object]";
-}
-
-function isUndefined(v) {
-    var tmpVar;
-    return v === tmpVar;
-}
+    HIDE_CLASS = "rplayer-hide",
+    TYPE = {
+        function: "[object Function]",
+        object: "[object Object]",
+        string: "[object String]",
+        undef: "[object Undefined]"
+    },
+    isType = function (type) {
+        return function (obj) {
+            return Object.prototype.toString.call(obj) === TYPE[type]
+        };
+    },
+    isFunction = isType("function"),
+    isObject = isType("object"),
+    isString = isType("string"),
+    isUndefined = isType("undef");
 
 function  isWindow(obj) {
     return obj && obj.window === obj;
-}
-
-function inherit(child, parent) {
-    var f = function() {};
-    if (!isFunction(child) && isFunction(parent)) {
-        throw new Error("参数不是函数");
-    }
-    f.prototype = parent.prototype;
-    child.prototype = new f();
-    child.prototype.constructor = child;
 }

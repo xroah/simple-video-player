@@ -1,3 +1,9 @@
+function CEvent(type) {
+    this.type = type;
+    this.data = null;
+    this.timeStamp = 0;
+}
+
 function Subscriber() {
     this.handlers = {};
 }
@@ -6,10 +12,13 @@ Subscriber.prototype = {
     constructor: Subscriber,
     on: function (type, fn) {
         if (isFunction(fn)) {
+            if (!isString(type)) {
+                type = String(type);
+            }
             if (!this.handlers[type]) {
                 this.handlers[type] = [];
             }
-            this.handlers.push(fn);
+            this.handlers[type].push(fn);
         }
         return this;
     },
@@ -45,5 +54,17 @@ Subscriber.prototype = {
         }
     },
     trigger: function (type) {
+        var args = Array.prototype.slice.call(arguments, 1),
+            h = this.handlers[type],
+            e;
+        if (h) {
+            e = new CEvent(type);
+            e.data = args;
+            e.timeStamp = Date.now();
+            args = [e].concat(args);
+            h.forEach(function (f) {
+                f.apply(this, args);
+            });
+        }
     }
 };

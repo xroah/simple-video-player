@@ -70,7 +70,15 @@
     change.onclick = function () {
         player.updateSource("test.mp4");
         console.log("click");
-    }
+    };
+
+    player.on("test.event", function (evt, a, b, c) {
+        console.log("test player event======>");
+        console.log(evt, a, b, c);
+    });
+    setTimeout(function () {
+player.trigger("test.event", 1, 2);
+    }, 20000);
 </script>
 </body>
 
