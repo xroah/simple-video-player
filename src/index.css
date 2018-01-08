@@ -12,28 +12,16 @@
 .rplayer-controls button::-moz-focus-inner,
 .rplayer-controls button::-moz-focus-outer,
 .rplayer-container::-moz-focus-inner,
-.rplayer-container::-moz-focus-outer{
+.rplayer-container::-moz-focus-outer,
+.rplayer-container:focus{
     outline: none;
     border: none;
 }
 
-.rplayer-container:focus {
-    outline: none;
-    border: none;
-}
 
-.rplayer-container.fullscreen{
+.rplayer-container.rplayer-fullscreen{
     width: 100% !important;
     height: 100% !important;
-}
-
-.rplayer-container.fixed {
-    position: fixed;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    margin: auto;
 }
 
 .rplayer-container .rplayer-video {
@@ -70,14 +58,6 @@
     -o-transition: all .3s;
     transition: all .3s;
     z-index: 2;
-}
-
-.rplayer-container .rplayer-controls.rplayer-transform {
-    -webkit-transform: translateY(100%);
-    -moz-transform: translateY(100%);
-    -ms-transform: translateY(100%);
-    -o-transform: translateY(100%);
-    transform: translateY(100%);
 }
 
 .rplayer-container .rplayer-controls:after {
@@ -313,25 +293,51 @@
     cursor: pointer;
 }
 
-.rplayer-controls .rplayer-fullscreen-btn.fullscreen {
+.rplayer-controls .rplayer-fullscreen-btn.rplayer-fullscreen {
     background-image: url('data:image/svg+xml;base64,PHN2ZyB2aWV3Qm94PSIwIDAgMTAyNCAxMDI0IiB2ZXJzaW9uPSIxLjEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIj48cGF0aCBkPSJNNjc3LjE5MzM0MyAzNzguODU5Njc3IDc3MC44ODIxNDIgMjg1LjE2NzgwOCA3MzEuNDMyNjY1IDI0NS43MTgzMzEgNjM3Ljc0NDg4OSAzMzkuNDEwMiA1NDguOTg0MzMzIDI1MC42NTA2NjcgNTQ4Ljk4NDMzMyA0NzcuNDgwODEyIDc3NS44MTQ0NzggNDc3LjQ4MDgxMloiIGZpbGw9IiM1YTVhNWEiPjwvcGF0aD48cGF0aCBkPSJNMzQxLjg3NzM5MSA2NDUuMTM5MyAyNDguMTg0NDk5IDczOC44MzIxOTIgMjg3LjYzMzk3NiA3NzguMjgwNjQ2IDM4MS4zMjU4NDUgNjg0LjU4ODc3NyA0NzUuMDE0NjQ0IDc3OC4yODA2NDYgNDc1LjAxNDY0NCA1NTEuNDUwNTAxIDI0OC4xODQ0OTkgNTUxLjQ1MDUwMVoiIGZpbGw9IiM1YTVhNWEiPjwvcGF0aD48L3N2Zz4=');
 }
 
-.rplayer-controls .rplayer-fullscreen-btn.fullscreen:hover {
+.rplayer-controls .rplayer-fullscreen-btn.rplayer-fullscreen:hover {
     background-image: url('data:image/svg+xml;base64,PHN2ZyB2aWV3Qm94PSIwIDAgMTAyNCAxMDI0IiB2ZXJzaW9uPSIxLjEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIj48cGF0aCBkPSJNNjc3LjE5MzM0MyAzNzguODU5Njc3IDc3MC44ODIxNDIgMjg1LjE2NzgwOCA3MzEuNDMyNjY1IDI0NS43MTgzMzEgNjM3Ljc0NDg4OSAzMzkuNDEwMiA1NDguOTg0MzMzIDI1MC42NTA2NjcgNTQ4Ljk4NDMzMyA0NzcuNDgwODEyIDc3NS44MTQ0NzggNDc3LjQ4MDgxMloiIGZpbGw9IiM1MTg1ZjMiPjwvcGF0aD48cGF0aCBkPSJNMzQxLjg3NzM5MSA2NDUuMTM5MyAyNDguMTg0NDk5IDczOC44MzIxOTIgMjg3LjYzMzk3NiA3NzguMjgwNjQ2IDM4MS4zMjU4NDUgNjg0LjU4ODc3NyA0NzUuMDE0NjQ0IDc3OC4yODA2NDYgNDc1LjAxNDY0NCA1NTEuNDUwNTAxIDI0OC4xODQ0OTkgNTUxLjQ1MDUwMVoiIGZpbGw9IiM1MTg1ZjMiPjwvcGF0aD48L3N2Zz4=');
+}
+
+.rplayer-container .rplayer-popup-info {
+    position: absolute;
+    padding: 3px;
+    border-radius: 3px;
+    background: #333;
+    color: #fff;
+}
+
+.rplayer-container .rplayer-popup-video-info {
+    top: -35px;
+}
+
+.rplayer-container .rplayer-popup-volume-info {
+    right: 20px;
+    bottom: 60px;
+}
+
+.rplayer-container.rplayer-fixed,
+.rplayer-container .rplayer-error,
+.rplayer-container .rplayer-loading,
+.rplayer-container .rplayer-loading:before,
+.rplayer-container .rplayer-loading:after {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    margin: auto;
+
 }
 
 .rplayer-container .rplayer-loading,
 .rplayer-container .rplayer-loading:before,
 .rplayer-container .rplayer-loading:after {
-    position: absolute;
-    left: 0;
-    right: 0;
-    top: 0;
     bottom: 100px;
     width: 50px;
     height: 50px;
-    margin: auto;
     border-radius: 50%;
     border: 5px solid rgba(43, 51, 63, .3);
     z-index: 10;
@@ -356,29 +362,11 @@
     border-bottom-color: #5185f3;
 }
 
-.rplayer-container .rplayer-popup-info {
-    position: absolute;
-    padding: 3px;
-    border-radius: 3px;
-    background: #333;
-    color: #fff;
+.rplayer-container .rplayer-fixed {
+    position: fixed;
 }
 
-.rplayer-container .rplayer-popup-video-info {
-    top: -35px;
-}
-
-.rplayer-container .rplayer-popup-volume-info {
-    right: 20px;
-    bottom: 60px;
-}
-
-.rplayer-container .rplayer-error{
-    position: absolute;
-    left: 0;
-    right: 0;
-    top: 0;
-    bottom: 0;
+.rplayer-container .rplayer-error {
     color: #fff;
     background: #000;
     z-index: 10;
