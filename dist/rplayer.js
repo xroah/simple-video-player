@@ -818,14 +818,14 @@ fn.slideVideoSlider = function (evt) {
             distance = x - startX + origLeft;
             distance = distance < 0 ? 0 : distance > max ? max : distance;
             distance = distance / max;
-            dom.addClass(_this.videoSlider, "moving");
+            dom.addClass(_this.videoSlider, "rplayer-moving");
             _this.updateProgressPosition(distance);
            // _this.video.play(false);
         };
     dom.on(doc, "mousemove", move)
         .on(doc, "mouseup", function () {
             dom.off(doc, "mousemove").off(doc, "mouseup");
-            dom.removeClass(_this.videoSlider, "moving");
+            dom.removeClass(_this.videoSlider, "rplayer-moving");
             distance && _this.video.setCurrentTime(distance, true);
             if (!paused) {
                 _this.video.play(true);
@@ -993,7 +993,7 @@ fn.initPlayEvent = function () {
         .on(videoEl, "timeupdate", function () {
             //在拖动滑块改变播放进度时候不改变播放进度条位置，只改变播放的当前时间
             //防止影响滑块以及进度条的位置
-            if (!dom.hasClass(_this.videoSlider, "moving")) {
+            if (!dom.hasClass(_this.videoSlider, "rplayer-moving")) {
                 _this.updateProgressPosition();
             } else {
                 _this.updateCurrentTime();

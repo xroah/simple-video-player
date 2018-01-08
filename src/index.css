@@ -12,14 +12,17 @@
 .rplayer-controls button::-moz-focus-inner,
 .rplayer-controls button::-moz-focus-outer,
 .rplayer-container::-moz-focus-inner,
-.rplayer-container::-moz-focus-outer,
-.rplayer-container:focus{
+.rplayer-container::-moz-focus-outer {
     outline: none;
     border: none;
 }
 
+.rplayer-container:focus {
+    outline: none;
+    border: none;
+}
 
-.rplayer-container.rplayer-fullscreen{
+.rplayer-container.rplayer-fullscreen {
     width: 100% !important;
     height: 100% !important;
 }
@@ -72,7 +75,6 @@
     width: 100%;
 }
 
-
 .rplayer-controls .rplayer-progress {
     position: absolute;
     left: 0;
@@ -105,7 +107,7 @@
 }
 
 .rplayer-controls:not(.rplayer-disabled) .rplayer-progress:hover .rplayer-video-slider,
-.rplayer-controls .rplayer-video-slider.moving {
+.rplayer-controls .rplayer-video-slider.rplayer-moving {
     display: block;
 }
 
