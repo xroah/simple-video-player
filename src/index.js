@@ -137,7 +137,6 @@ fn.slideVolumeSlider = function (evt) {
         .on(doc, "mouseup", function () {
             dom.off(doc, "mousemove").off(doc, "mouseup");
         });
-    evt.preventDefault();
 };
 
 fn.mute = function () {
@@ -153,16 +152,14 @@ fn.mute = function () {
 
 fn.initVolumeEvent = function () {
     var _this = this;
-    dom.on(this.showVolumePopBtn, "click", this.toggleVolumeSettingsPanel.bind(this))
-        .on(this.volumePopup, "mouseleave", this.hideVolumeSettingsPanel.bind(this))
+    dom.on(this.volumePopup, "mouseleave", this.hideVolumeSettingsPanel.bind(this))
         .on(this.volumeSlider, "mousedown", this.slideVolumeSlider.bind(this))
         .on(this.volumeProgress, "click", function (evt) {
-            //点击音量轨道设置音量
             var rect = this.getBoundingClientRect(),
                 y = evt.clientY;
             rect = (rect.height - y + rect.top) / rect.height * 100;
             _this.updateVolume(rect);
-        }).on(_this.muteBtn, "click", this.mute.bind(this))
+        })
         .on(doc, "click", function (evt) {
             var tgt = evt.target;
             //点击页面其他地方（点击的不是音量设置面板或者面板内的元素）则隐藏音量面板
@@ -234,7 +231,7 @@ fn.slideVideoSlider = function (evt) {
             distance = distance / max;
             dom.addClass(_this.videoSlider, "rplayer-moving");
             _this.updateProgressPosition(distance);
-           // _this.video.play(false);
+            // _this.video.play(false);
         };
     dom.on(doc, "mousemove", move)
         .on(doc, "mouseup", function () {
@@ -245,7 +242,6 @@ fn.slideVideoSlider = function (evt) {
                 _this.video.play(true);
             }
         });
-    evt.preventDefault();
 };
 
 fn.showLoading = function () {
@@ -378,20 +374,15 @@ fn.refresh = function () {
 fn.initPlayEvent = function () {
     var _this = this,
         videoEl = this.video.el;
-    dom.on(this.playBtn, "click", function () {
-        //点击播放/暂停
-        _this.togglePlay();
-    })
-        .on(this.videoTrack, "click", function (evt) {
-        //点击视频轨道改变进度
-        var rect = this.getBoundingClientRect(),
-            x = evt.clientX;
-        rect = (x - rect.left) / rect.width;
-        _this.video.setCurrentTime(rect, true);
-        _this.updateProgressPosition(rect);
-    })
-        .on(this.videoTrack, "mouseover mousemove", this.showPopupTimeInfo.bind(this))
+    dom .on(this.videoTrack, "mouseover mousemove", this.showPopupTimeInfo.bind(this))
         .on(this.videoTrack, "mouseout", this.hidePopupTimeInfo.bind(this))
+        .on(this.videoTrack, "click", function (evt) {
+           var rect = this.getBoundingClientRect(),
+                x = evt.clientX;
+            rect = (x - rect.left) / rect.width;
+            _this.video.setCurrentTime(rect, true);
+            _this.updateProgressPosition(rect);
+        })
         .on(this.videoSlider, "mousedown", this.slideVideoSlider.bind(this))
         .on(this.container, "keydown", this.keyDown.bind(this))
         .on(this.container, "mousemove", this.showControls.bind(this))
@@ -418,7 +409,6 @@ fn.initPlayEvent = function () {
         .on(videoEl, "error", this.error.bind(this))
         .on(videoEl, "seeking", this.showLoading.bind(this))
         .on(videoEl, "ended", this.loop.bind(this))
-        .on(videoEl, "click", this.togglePlay.bind(this))
         .on(videoEl, "dblclick", this.toggleFullScreen.bind(this))
         .on(videoEl, "contextmenu", function (evt) {
             evt.preventDefault();
@@ -463,7 +453,7 @@ fn.keyDown = function (evt) {
             right: VIDEO_STEP,
             arrowright: VIDEO_STEP,
             esc: "esc",
-            escape: "escape"
+            escape: "escape" //esc键盘
         },
         tmp = keyMap[key];
     if (tmp) {
@@ -480,8 +470,29 @@ fn.keyDown = function (evt) {
     evt.preventDefault();
 };
 
+fn.handleClick = function (evt) {
+    var tgt = evt.target;
+    switch (tgt) {
+        case this.showVolumePopBtn:
+            this.toggleVolumeSettingsPanel(evt);
+            break;
+        case this.muteBtn:
+            this.mute();
+            break;
+        case this.playBtn:
+            this.togglePlay();
+            break;
+        case this.video.el:
+            this.togglePlay();
+            break;
+        case this.errorMsg:
+            this.refresh();
+            break;
+    }
+};
+
 fn.initEvent = function () {
-    dom.on(this.errorMsg, "click", this.refresh.bind(this));
+    dom.on(this.container, "click", this.handleClick.bind(this));
     return this;
 };
 
@@ -493,47 +504,20 @@ fn.initControlEvent = function () {
 
 fn.offEvent = function () {
     dom.off(doc)
-        .off(this.showVolumePopBtn)
         .off(this.volumePopup)
         .off(this.volumeSlider)
         .off(this.volumeProgress)
-        .off(this.muteBtn)
-        .off(this.playBtn)
         .off(this.videoTrack)
         .off(this.container)
-        .off(this.video.el)
-        .off(this.errorMsg);
+        .off(this.video.el);
     return this;
 };
 
 fn.removeProp = function () {
-    delete this.playBtn;
-    delete this.videoTrack;
-    delete this.videoSlider;
-    delete this.videoProgress;
-    delete this.videoPopupTime;
-    delete this.currentTime;
-    delete this.totalTime;
-    delete this.bufferedBar;
-    delete this.showVolumePopBtn;
-    delete this.muteBtn;
-    delete this.volumePopup;
-    delete this.volumePopupInfo;
-    delete this.volumeSlider;
-    delete this.volumeProgress;
-    delete this.volumeValue;
-    delete this.currentVolume;
-    delete this.fullScreenBtn;
-    delete this.video;
-    delete this.container;
-    delete this.controlsPanel;
-    delete this.isFullScreen;
-    delete this.loading;
-    delete this.useNativeControls;
-    delete this.controls;
-    delete this.target;
-    delete this.errorMsg;
-    delete this.playedTime;
+    var key;
+    for (key in this) {
+        delete this[key];
+    }
     return this;
 };
 
@@ -584,7 +568,7 @@ fn.getSource = function () {
 };
 
 fn.initialize = function () {
-    if(this.container) return;
+    if (this.container) return;
     var container = doc.createElement("div"),
         height = parseInt(getComputedStyle(this.target).height);
     this.isFullScreen = false;
@@ -603,7 +587,7 @@ fn.initialize = function () {
         this.initElements()
             .updateVolumeStyle(this.video.getVolume())
             .initControlEvent();
-    } else if(this.useNativeControls) {
+    } else if (this.useNativeControls) {
         this.video.showControls();
     }
     this.target.appendChild(this.container);
