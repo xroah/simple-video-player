@@ -6,6 +6,7 @@ var tpl = '<div class="rplayer-loading rplayer-hide"></div>' +
         '            <div class="rplayer-progress rplayer-video-track">' +
         '                <div class="rplayer-bufferd-bar"></div>' +
         '                <div class="rplayer-bar rplayer-video-progress"></div>' +
+        '                <div class="rplayer-mark rplayer-hide"></div>' +
         '                <div class="rplayer-slider rplayer-video-slider"></div>' +
         '            </div>' +
         '        </div>' +

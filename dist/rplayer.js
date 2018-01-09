@@ -314,6 +314,7 @@ var tpl = '<div class="rplayer-loading rplayer-hide"></div>' +
         '            <div class="rplayer-progress rplayer-video-track">' +
         '                <div class="rplayer-bufferd-bar"></div>' +
         '                <div class="rplayer-bar rplayer-video-progress"></div>' +
+        '                <div class="rplayer-mark rplayer-hide"></div>' +
         '                <div class="rplayer-slider rplayer-video-slider"></div>' +
         '            </div>' +
         '        </div>' +
@@ -774,11 +775,14 @@ fn.pause = function () {
     return this;
 };
 
+//鼠标在进度条上移动显示时间信息
 fn.showPopupTimeInfo = function (evt) {
     var duration = this.video.getDuration(),
-        popup = this.videoPopupTime;
+        popup = this.videoPopupTime,
+        mark = this.mark;
     if (duration) {
-        dom.removeClass(popup, HIDE_CLASS);
+        dom.removeClass(popup, HIDE_CLASS)
+            .removeClass(mark, HIDE_CLASS);
         var rect = this.videoTrack.getBoundingClientRect(),
             x = evt.clientX,
             distance = x - rect.left,
@@ -786,14 +790,17 @@ fn.showPopupTimeInfo = function (evt) {
             left = distance - width / 2,
             max = rect.width - width;
         left = left < 0 ? 0 : left > max ? max : left;
-        popup.innerHTML = this.video.convertTime(distance / rect.width * duration);
+        max = distance / rect.width;
+        popup.innerHTML = this.video.convertTime(max * duration);
         popup.style.left = left + "px";
+        mark.style.left = max * 100 + "%";
     }
     return this;
 };
 
 fn.hidePopupTimeInfo = function () {
-    dom.addClass(this.videoPopupTime, HIDE_CLASS);
+    dom.addClass(this.videoPopupTime, HIDE_CLASS)
+        .addClass(this.mark, HIDE_CLASS);
     return this;
 };
 
@@ -1138,6 +1145,7 @@ fn.initElements = function () {
     this.volumeValue = dom.selectElement(".rplayer-volume-value", context);
     this.currentVolume = dom.selectElement(".rplayer-current-volume", context);
     this.fullScreenBtn = dom.selectElement(".rplayer-fullscreen-btn", context);
+    this.mark = dom.selectElement(".rplayer-mark", context);
     return this;
 };
 

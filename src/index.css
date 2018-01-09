@@ -82,7 +82,7 @@
     width: 100%;
     height: 4px;
     transition: height .3s;
-    background-color: #5a5a5a;
+    background-color: rgba(90, 90, 90, .6);
 }
 
 .rplayer-controls:not(.rplayer-disabled) .rplayer-progress {
@@ -113,12 +113,21 @@
 }
 
 .rplayer-controls .rplayer-bufferd-bar {
-    background: #afafaf;
+    background-color: rgba(175, 175, 175, .6);
 }
 
 .rplayer-controls .rplayer-bar {
     height: 100%;
-    background: #5185f3;
+    background-color: #5185f3;
+}
+
+.rplayer-controls .rplayer-mark {
+    position: absolute;
+    top: 0;
+    width: 1px;
+    height: 100%;
+    background-color: #000;
+    z-index: 3;
 }
 
 .rplayer-controls .rplayer-slider {
@@ -197,7 +206,7 @@
     -ms-transform: translateX(-50%);
     -o-transform: translateX(-50%);
     transform: translateX(-50%);
-    padding: 10px;
+    padding: 10px 5px;
     background-color: rgba(0, 0, 0, .8);
     transition: height .3s;
     text-align: center;
@@ -301,7 +310,7 @@
 
 .rplayer-container .rplayer-popup-info {
     position: absolute;
-    padding: 3px;
+    padding: 5px 8px;
     border-radius: 3px;
     background: #333;
 }
@@ -336,7 +345,7 @@
     width: 50px;
     height: 50px;
     border-radius: 50%;
-    border: 5px solid rgba(43, 51, 63, .3);
+    border: 5px solid rgba(43, 51, 63, .5);
     z-index: 10;
 }
 
