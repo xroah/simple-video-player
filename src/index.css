@@ -85,9 +85,12 @@
     background-color: #dadada;
 }
 
+.rplayer-controls:not(.rplayer-disabled) .rplayer-progress {
+    cursor: pointer;
+}
+
 .rplayer-controls:not(.rplayer-disabled) .rplayer-progress-panel .rplayer-progress:hover {
     height: 8px;
-    cursor: pointer;
 }
 
 .rplayer-controls .rplayer-bufferd-bar,
