@@ -17,6 +17,7 @@ VideoControl.prototype = {
         if (volume >= 1) {
             volume = volume / 100;
         }
+        volume > 1 && (volume = 1);
         this.el.volume = volume;
         this.el.muted = !volume;
         return this;

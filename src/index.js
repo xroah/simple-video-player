@@ -122,7 +122,7 @@ fn.hideVolumeSettingsPanel = function () {
 //移动slider改变音量
 fn.slideVolumeSlider = function (evt) {
     if (evt.button) return; //按下的鼠标不是左键则不作处理(左键evt.button=0)
-    var origTop = this.volumeSlider.offsetTop + SLIDER_SIZE,
+    var origTop = this.volumeSlider.offsetTop + this.volumeSlider.offsetHeight,
         startY = evt.clientY,
         max = this.volumeSlider.parentNode.offsetHeight,
         _this = this,

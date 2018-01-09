@@ -1,7 +1,6 @@
 "use strict";
 var doc = document,
     guid = 1,
-    SLIDER_SIZE = 12,
     DEFAULT_HEIGHT = 500,
     DEFAULT_OPTIONS = {
         autoPlay: false,
