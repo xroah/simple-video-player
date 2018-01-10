@@ -1001,8 +1001,7 @@ fn.error = function () {
 
 fn.refresh = function () {
     this.video.reload();
-    this.toggleError()
-        .updateProgressPosition(0);
+    this.toggleError();
 };
 
 //点击进度条改变播放进度
@@ -1099,8 +1098,6 @@ fn.handleClick = function (evt) {
             this.mute();
             break;
         case this.playBtn:
-            this.togglePlay();
-            break;
         case this.video.el:
             this.togglePlay();
             break;
