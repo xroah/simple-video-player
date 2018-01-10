@@ -131,18 +131,25 @@ dom.on = function (selector, type, callback, off) {
     var el = this.selectElement(selector),
         i, t;
     if (el) {
-        if (isFunction(callback)) {
+        if (type) {
             //添加多个事件，以空格分开
             type = type.split(" ");
             i = type.length;
-            for (; i--;) {
-                t = type[i];
-                off ? this._off(el, t, callback) :
-                    this._on(el, t, callback);
+            if (isFunction(callback)) {
+                for (; i--;) {
+                    t = type[i];
+                    off ? this._off(el, t, callback) :
+                        this._on(el, t, callback);
+                }
+            } else if(off){
+                for (; i--;) {
+                    this._off(el, type);
+                }
             }
         } else {
-            this._off(el, type);
+            off && this._off(el);
         }
+
     }
     return this;
 };
