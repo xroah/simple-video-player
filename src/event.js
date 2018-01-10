@@ -24,12 +24,10 @@ Subscriber.prototype = {
     },
     off: function (type, fn) {
         var h = this.handlers[type],
-            i, len;
+            i;
         if (h) {
-            len = h.length;
-            i = len - 1;
             if (isFunction(fn)) {
-                for (; i--;) {
+                for (i = h.length; i--;) {
                     if (h[i] === fn) {
                         h.splice(i, 1);
                         break;
@@ -54,15 +52,16 @@ Subscriber.prototype = {
     trigger: function (type) {
         var args = Array.prototype.slice.call(arguments, 1),
             h = this.handlers[type],
-            e;
+            e, i;
         if (h) {
             e = new CEvent(type);
             e.data = args;
             e.timeStamp = Date.now();
             args = [e].concat(args);
-            h.forEach(function (f) {
-                f.apply(this, args);
-            });
+            for (i = h.length; i--; ) {
+                h[i].apply(this, args);
+            }
         }
+        return this;
     }
 };

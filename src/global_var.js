@@ -1,6 +1,8 @@
 "use strict";
 var doc = document,
     guid = 1,
+    //根据这个变量判断是否移动滑块,如果移动滑块则阻止点击轨道改变进度/音量的执行
+    sliderMoving = false,
     DEFAULT_HEIGHT = 500,
     DEFAULT_OPTIONS = {
         autoPlay: false,

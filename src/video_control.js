@@ -14,7 +14,7 @@ VideoControl.prototype = {
     constructor: VideoControl,
     setVolume: function (volume) {
         //音量只能设置0-1的值
-        if (volume >= 1) {
+        if (volume > 1) {
             volume = volume / 100;
         }
         volume > 1 && (volume = 1);

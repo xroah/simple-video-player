@@ -143,7 +143,7 @@ dom.on = function (selector, type, callback, off) {
                 }
             } else if(off){
                 for (; i--;) {
-                    this._off(el, type);
+                    this._off(el, type[i]);
                 }
             }
         } else {
