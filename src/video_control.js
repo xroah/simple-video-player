@@ -147,8 +147,7 @@ VideoControl.prototype = {
         } else if (Array.isArray(source)) {
             this.el.innerHTML = "";
             source.forEach(function (src) {
-                var sourceEl = doc.createElement("source");
-                sourceEl.src = src;
+                var sourceEl = dom.createElement("source", {src: src});
                 frag.appendChild(sourceEl);
             });
             this.el.appendChild(frag);
@@ -156,7 +155,7 @@ VideoControl.prototype = {
         return this;
     },
     init: function () {
-        var video = doc.createElement("video"),
+        var video = dom.createElement("video"),
             text = doc.createTextNode(this.config.msg.toString());
         this.el = video;
         this.source = this.config.source;

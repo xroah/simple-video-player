@@ -498,8 +498,7 @@ VideoControl.prototype = {
         } else if (Array.isArray(source)) {
             this.el.innerHTML = "";
             source.forEach(function (src) {
-                var sourceEl = doc.createElement("source");
-                sourceEl.src = src;
+                var sourceEl = dom.createElement("source", {src: src});
                 frag.appendChild(sourceEl);
             });
             this.el.appendChild(frag);
@@ -507,7 +506,7 @@ VideoControl.prototype = {
         return this;
     },
     init: function () {
-        var video = doc.createElement("video"),
+        var video = dom.createElement("video"),
             text = doc.createTextNode(this.config.msg.toString());
         this.el = video;
         this.source = this.config.source;
@@ -1016,13 +1015,13 @@ fn.initPlayEvent = function () {
     var _this = this,
         videoEl = this.video.el;
     dom.on(videoEl, "loadstart stalled", function (evt) {
-            if (_this.playedTime && evt.type === "loadstart") {
-                _this.video.setCurrentTime(_this.playedTime);
-                this.playedTime = 0;
-            }
-            _this.showLoading()
-                .disableControls();
-        })
+        if (_this.playedTime && evt.type === "loadstart") {
+            _this.video.setCurrentTime(_this.playedTime);
+            this.playedTime = 0;
+        }
+        _this.showLoading()
+            .disableControls();
+    })
         .on(videoEl, "progress", this.progress.bind(this))
         .on(videoEl, "canplay seeked", this.hideLoading.bind(this))
         .on(videoEl, "ended", this.loop.bind(this))
@@ -1217,10 +1216,11 @@ fn.getSource = function () {
 
 fn.initialize = function () {
     if (!this.container) { //防止重复初始化
-        var container = doc.createElement("div"),
+        var container = dom.createElement("div", {
+                tabIndex: 100 //使元素能够获取焦点
+            }),
             height = parseInt(getComputedStyle(this.target).height);
         this.isFullScreen = false;
-        container.tabIndex = 100;//使元素能够获取焦点
         container.innerHTML = tpl;
         container.style.height = (height || DEFAULT_HEIGHT) + "px";
         this.container = container;
