@@ -56,6 +56,23 @@ dom.toggleClass = function (el, cls) {
     return this;
 };
 
+dom.css = function (el, prop, val) {
+    var css = "";
+    if (!isUndefined(val)) {
+        el.style[prop] = val;
+    } else {
+        if (isObject(prop)) {
+            for (val in prop) {
+                css += val + ":" + prop[val] + ";";
+            }
+            el.style.cssText += css;
+        } else if (isString(prop)) {
+            return getComputedStyle(el).getPropertyValue(prop);
+        }
+    }
+    return this;
+};
+
 dom.fullScreen = function (el, exit) {
     var fsApi = this.fsApi;
     if (fsApi) {
@@ -78,7 +95,7 @@ dom.fullPage = function (el, exit) {
 //选择元素， 只选中一个
 dom.selectElement = function (selector, context) {
     var ret,
-        reg = /^#[^>~+\[\]\s]+$/; //匹配id选择器
+        reg = /^#[^>~+\[\]\s:]+$/; //匹配id选择器
     context = context || doc;
     if (selector) {
         if (selector.nodeName || isWindow(selector)) {
@@ -146,8 +163,8 @@ dom.on = function (selector, type, callback, off) {
                     this._off(el, type[i]);
                 }
             }
-        } else {
-            off && this._off(el);
+        } else if(off) {
+            this._off(el);
         }
 
     }
@@ -198,9 +215,10 @@ dom.once = function (selector, type, callback) {
         };
         this.on(selector, type, cb);
     }
+    return this;
 };
 
-function isSupportFullScreen() {
+dom.fsApi = (function () {
     var fullScreenApi = [
             //W3C
             [
@@ -260,6 +278,4 @@ function isSupportFullScreen() {
         });
     }
     return fsApi;
-};
-
-dom.fsApi = isSupportFullScreen();
+})();
