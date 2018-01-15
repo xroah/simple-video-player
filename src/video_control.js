@@ -65,9 +65,9 @@ VideoControl.prototype = {
         this.el.preload = preload;
         return this;
     },
-    setCurrentTime: function (time, isPercent) {
+    setCurrentTime: function (time, scale) {
         var duration = this.getDuration();
-        if (isPercent) {
+        if (scale) {
             time = duration * time;
         }
         this.el.currentTime = time;
