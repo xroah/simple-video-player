@@ -5,10 +5,6 @@ var tpl = '<div class="rplayer-loading rplayer-hide"></div>' +
         '        <div class="rplayer-progress-panel">' +
         '            <div class="rplayer-bufferd-bar"></div>' +
         '            <div class="rplayer-mark rplayer-hide"></div>' +
-        '            <div class="rplayer-progress rplayer-video-track">' +
-        '                <div class="rplayer-bar rplayer-video-progress"></div>' +
-        '                <div class="rplayer-slider rplayer-video-slider"></div>' +
-        '            </div>' +
         '        </div>' +
         '        <div class="rplayer-play-control rplayer-lf">' +
         '            <button type="button" class="rplayer-play-btn"></button>' +
@@ -23,10 +19,6 @@ var tpl = '<div class="rplayer-loading rplayer-hide"></div>' +
         '                <button type="button" class="rplayer-audio-btn volume-1"></button>' +
         '                <div class="rplayer-volume-popup rplayer-hide">' +
         '                    <span class="rplayer-current-volume">12</span>' +
-        '                    <div class="rplayer-progress rplayer-volume-progress">' +
-        '                        <div class="rplayer-bar rplayer-volume-value"></div>' +
-        '                        <div class="rplayer-slider rplayer-volume-slider"></div>' +
-        '                    </div>' +
         '                    <button class="rplayer-mute volume-1"></button>' +
         '                </div>' +
         '            </div>' +

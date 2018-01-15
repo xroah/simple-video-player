@@ -340,10 +340,6 @@ var tpl = '<div class="rplayer-loading rplayer-hide"></div>' +
         '        <div class="rplayer-progress-panel">' +
         '            <div class="rplayer-bufferd-bar"></div>' +
         '            <div class="rplayer-mark rplayer-hide"></div>' +
-        '            <div class="rplayer-progress rplayer-video-track">' +
-        '                <div class="rplayer-bar rplayer-video-progress"></div>' +
-        '                <div class="rplayer-slider rplayer-video-slider"></div>' +
-        '            </div>' +
         '        </div>' +
         '        <div class="rplayer-play-control rplayer-lf">' +
         '            <button type="button" class="rplayer-play-btn"></button>' +
@@ -358,10 +354,6 @@ var tpl = '<div class="rplayer-loading rplayer-hide"></div>' +
         '                <button type="button" class="rplayer-audio-btn volume-1"></button>' +
         '                <div class="rplayer-volume-popup rplayer-hide">' +
         '                    <span class="rplayer-current-volume">12</span>' +
-        '                    <div class="rplayer-progress rplayer-volume-progress">' +
-        '                        <div class="rplayer-bar rplayer-volume-value"></div>' +
-        '                        <div class="rplayer-slider rplayer-volume-slider"></div>' +
-        '                    </div>' +
         '                    <button class="rplayer-mute volume-1"></button>' +
         '                </div>' +
         '            </div>' +
@@ -454,9 +446,9 @@ VideoControl.prototype = {
     getBuffered: function (percent) {
         var buffered = this.el.buffered,
             len = buffered.length;
-        if (percent && len) {
+        if (percent) {
             //缓冲的百分比
-            buffered = buffered.end(len - 1) / this.getDuration() * 100;
+            return len ? buffered = buffered.end(len - 1) / this.getDuration() * 100 : null;
         }
         return buffered;
     },
@@ -606,11 +598,10 @@ Subscriber.prototype = {
         return this;
     }
 };
-function Slider(el, vertical) {
+function Slider(vertical) {
     Subscriber.call(this);
     this.vertical = isUndefined(vertical) ? false : !!vertical;
-    this.el = el;
-    this.distance = this.pos = null;
+    this.moveDis = this.pos = null;
     this.moving = false;
 }
 
@@ -631,12 +622,26 @@ proto.getPosition = function () {
     }
 };
 
-proto.setPosition = function (prop, val, scale) {
+proto.updateHPosition = function (val, scale) {
     if (scale) {
         val = val * 100 + "%";
     }
-    dom.css(this.el, prop, val);
+    dom.css(this.bar, "width", val)
+        .css(this.el, "left", val);
     return this;
+};
+
+proto.updateVPosition = function (val, scale) {
+    if (scale) {
+        val = val * 100 + "%";
+    }
+    dom.css(this.bar, "height", val)
+        .css(this.el, "bottom", val);
+    return this;
+};
+
+proto.updatePosition = function (val, scale) {
+    this.vertical ? this.updateVPosition(val, scale) : this.updateHPosition(val, scale);
 };
 
 proto.mouseDown = function (evt) {
@@ -666,25 +671,75 @@ proto.mouseMove = function (evt) {
         distance = this.pos.maxY - (y - this.pos.offsetY) - this.pos.height;
         distance = distance < 0 ? 0 : distance > this.pos.maxY ? this.pos.maxY : distance;
         distance = distance / this.pos.maxY;
-        this.setPosition("bottom", distance, true);
+        this.updateVPosition(distance, true);
     } else {
         distance = x - this.pos.offsetX;
         distance = distance < 0 ? 0 : distance > this.pos.maxX ? this.pos.maxX : distance;
         distance = distance / this.pos.maxX;
-        this.setPosition("left", distance, true);
+        this.updateHPosition(distance, true);
     }
-    this.trigger("slider.moving", this.distance = distance);
+    this.trigger("slider.moving", this.moveDis = distance);
 };
 
 proto.mouseUp = function () {
     dom.off(doc, "mousemove moseup")
         .removeClass(this.el, "rplayer-moving");
-    this.moving && this.trigger("slider.move.done", this.distance);
+    this.moving && this.trigger("slider.move.done", this.moveDis);
 };
 
-proto.init = function () {
-    var el = this.el;
-    dom.on(el, "mousedown", this.mouseDown.bind(this));
+proto.clickTrack = function (evt) {
+    if (this.moving) {
+        this.moving = false;
+        return;
+    }
+    var rect = this.track.getBoundingClientRect(),
+        x = evt.clientX,
+        y = evt.clientY,
+        eType = "slider.moving";
+    if (this.vertical) {
+        rect = (rect.height - y + rect.top) / rect.height;
+        this.updateVPosition(rect, true);
+    } else {
+        rect = (x - rect.left) / rect.width;
+        eType = "slider.move.done";
+        this.updateHPosition(rect, true);
+    }
+    this.trigger(eType, rect);
+};
+
+proto.initEvent = function () {
+    dom.on(this.el, "mousedown", this.mouseDown.bind(this))
+        .on(this.track, "click", this.clickTrack.bind(this))
+};
+
+proto.destroy = function () {
+    dom.off(this.track)
+        .off(this.el);
+    delete this.track;
+    delete this.bar;
+    delete this.el;
+};
+
+proto.init = function (target, before) {
+    var cls = {
+            track: "rplayer-video-track",
+            bar: "rplayer-video-progress",
+            slider: "rplayer-video-slider"
+        };
+    if (this.vertical) {
+        cls = {
+            track: "rplayer-volume-progress",
+            bar: "rplayer-volume-value",
+            slider: "rplayer-volume-slider"
+        }
+    }
+    this.track = dom.createElement("div", {class: "rplayer-progress " + cls.track});
+    this.bar = dom.createElement("div", {class: "rplayer-bar " + cls.bar});
+    this.el = dom.createElement("div", {class: "rplayer-slider " + cls.slider});
+    this.track.appendChild(this.bar);
+    this.track.append(this.el);
+    before ? target.insertBefore(this.track, before) : target.appendChild(this.track);
+    this.initEvent();
 };
 function RPlayer(selector, options) {
     var target = dom.selectElement(selector),
@@ -757,250 +812,24 @@ fn.initFullScreenEvent = function () {
     return this;
 };
 
-fn.updateVolume = function (volume, scale) {
-    scale && (volume *= 100);
-    volume = Math.floor(volume);
-    this.video.setVolume(volume);
-    this.updateVolumeStyle(volume);
-    return this;
-};
-
-fn.mute = function () {
-    var volume = this.video.getVolume();
-    //点击静音键
-    if (this.video.isMuted()) {
-        this.video.mute(false);
-    } else {
-        this.video.mute(true);
-        volume = 0;
-    }
-    this.updateVolumeStyle(volume);
-    this.volumeSlider.setPosition("bottom", volume + "%");
-};
-
-fn.updateVolumeByStep = function (step) {
-    var volume = this.video.getVolume();
-    volume += step;
-    volume = volume > 100 ? 100 : volume < 0 ? 0 : volume;
-    this.updateVolume(volume);
-    this.toggleVolumePopupInfo(volume);
-};
-
-fn.updateVolumeStyle = function (volume) {
-    var cls = this.showVolumePopBtn.className,
-        reg = /volume-[^\s]*/;
-    cls = cls.replace(reg, "");
-    if (!volume) {
-        cls += "volume-mute";
-    } else if (volume <= 33) {
-        cls += "volume-1";
-    } else if (volume <= 66) {
-        cls += "volume-2";
-    } else {
-        cls += "volume-3";
-    }
-   // this.volumeSlider.style.bottom = this.volumeValue.style.height = volume + "%";
-    this.volumeValue.style.height = volume + "%";
-    this.showVolumePopBtn.className = this.muteBtn.className = cls;
-    this.currentVolume.innerHTML = volume;
-    return this;
-};
-
-//点击显示/隐藏设置音量面板
-fn.toggleVolumeSettingsPanel = function (evt) {
-    if (!this.controlsDisabled) {
-        dom.toggleClass(this.volumePopup, HIDE_CLASS);
-    }
-    //阻止冒泡到document, document点击事件点击面板外任意地方隐藏面板，如不阻止冒泡则显示不出来
-    evt.stopPropagation();
-};
-
-fn.hideVolumeSettingsPanel = function () {
-    dom.addClass(this.volumePopup, HIDE_CLASS);
-    return this;
-};
-
-//点击音量设置轨道/视频进度轨道回调
-fn.clickOnBar = function (evt, fn) {
-    if (sliderMoving) {
-        sliderMoving = false;
-        return;
-    }
-    fn.call(this, evt);
-};
-
-//点击音量轨道改变音量
-fn.clickVolumeTrack = function (evt) {
-    if (this.volumeSlider.moving) {
-        this.volumeSlider.moving = false;
-        return;
-    }
-    var rect = this.volumeProgress.getBoundingClientRect(),
-        y = evt.clientY;
-    rect = (rect.height - y + rect.top) / rect.height;
-    this.updateVolume(rect, true);
-    this.volumeSlider.setPosition("bottom", rect, true);
-};
-
-fn.initVolumeEvent = function () {
-    var _this = this;
-    dom.on(this.volumePopup, "mouseleave", this.hideVolumeSettingsPanel.bind(this))
-        .on(this.volumeProgress, "click", this.clickVolumeTrack.bind(this))
-        .on(doc, "click", function (evt) {
-            var tgt = evt.target;
-            //点击页面其他地方（点击的不是音量设置面板或者面板内的元素）则隐藏音量面板
-            if (tgt !== _this.volumePopup && !_this.volumePopup.contains(tgt)) {
-                _this.hideVolumeSettingsPanel();
-            }
-        });
-    return this;
-};
-
-fn.togglePlay = function () {
-    if (!this.controlsDisabled) {
-        if (this.video.isPaused()) {
-            this.play();
-        } else {
-            this.pause();
-        }
-    }
-};
-
-fn.play = function () {
-    dom.addClass(this.playBtn, "paused");
-    this.video.play(true);
-    return this;
-};
-
-fn.pause = function () {
-    this.video.play(false);
-    dom.removeClass(this.playBtn, "paused");
-    return this;
-};
-
-//鼠标在进度条上移动显示时间信息
-fn.showPopupTimeInfo = function (evt) {
-    var duration = this.video.getDuration(),
-        popup = this.videoPopupTime,
-        mark = this.mark;
-    if (duration) {
-        dom.removeClass(popup, HIDE_CLASS)
-            .removeClass(mark, HIDE_CLASS);
-        var rect = this.videoTrack.getBoundingClientRect(),
-            x = evt.clientX,
-            distance = x - rect.left,
-            width = popup.offsetWidth,
-            left = distance - width / 2,
-            max = rect.width - width;
-        left = left < 0 ? 0 : left > max ? max : left;
-        max = distance / rect.width;
-        popup.innerHTML = this.video.convertTime(max * duration);
-        popup.style.left = left + "px";
-        mark.style.left = max * 100 + "%";
-    }
-    return this;
-};
-
-fn.hidePopupTimeInfo = function () {
-    dom.addClass(this.videoPopupTime, HIDE_CLASS)
-        .addClass(this.mark, HIDE_CLASS);
-    return this;
-};
-
-fn.showLoading = function () {
-    dom.removeClass(this.loading, HIDE_CLASS);
-    return this;
-};
-
-fn.hideLoading = function () {
-    dom.addClass(this.loading, HIDE_CLASS);
-    return this;
-};
-
-fn.progress = function () {
-    var b = this.video.getBuffered(true);
-    typeof  b === "number" && this.bufferedBar && (this.bufferedBar.style.width = b + "%");
-    if (this.video.getReadyState() < 3) {
-        this.showLoading();
-    }
-};
-
-fn.updateProgressPosition = function (progress) {
-    isUndefined(progress) && (progress = this.video.getPlayedPercentage());
-    this.videoProgress.style.width = progress * 100 + "%";
-    this.updateCurrentTime();
-    return this;
-};
-
-fn.updateProgressByStep = function (step) {
-    var currentTime = this.video.getCurrentTime(),
-        duration = this.video.getDuration();
-    currentTime += step;
-    currentTime = currentTime < 0 ? 0 : currentTime > duration ? duration : currentTime;
-    this.video.setCurrentTime(currentTime);
-    this.updateProgressPosition();
-};
-
-fn.updateCurrentTime = function () {
-    this.currentTime.innerHTML = this.video.convertTime(this.video.getCurrentTime());
-    return this;
-};
-
-fn.updateTotalTime = function () {
-    this.totalTime.innerHTML = this.video.convertTime(this.video.getDuration());
-    return this;
-};
-
-fn.updateMetaInfo = function () {
-    if (this.video.isAutoPlay()) {
-        this.play();
-    }
-    this.updateTotalTime()
-        .enableControls();
-};
-
-fn.hideControls = function () {
-    dom.addClass(this.controlsPanel, HIDE_CLASS);
-    return this;
-};
-
-fn.showControls = function () {
-    var _this = this,
-        err = this.video.isError();
-    //出错了则不显示控制条
-    if (err != null) return;
-    clearTimeout(hideControlsTimer);
-    dom.removeClass(this.controlsPanel, HIDE_CLASS);
-    if (dom.hasClass(this.volumePopup, HIDE_CLASS)) {
-        hideControlsTimer = setTimeout(function () {
-            _this.hideControls();
-        }, 5000);
-    }
-    return this;
-};
-
-fn.enableControls = function () {
-    dom.removeClass(this.controlsPanel, "rplayer-disabled");
-    this.controlsDisabled = false;
-    return this;
-};
-
-fn.disableControls = function () {
-    dom.addClass(this.controlsPanel, "rplayer-disabled");
-    this.controlsDisabled = true;
-    return this;
-};
-
 fn.loop = function () {
     return this.video.isLoop() ? this.play() :
         this.pause();
 };
 
-fn.toggleError = function () {
+fn.showError = function () {
     var el = this.errorMsg.parentNode;
-    dom.toggleClass(el, HIDE_CLASS);
+    this.controlsDisabled = true;
+    dom.removeClass(el, HIDE_CLASS);
     this.hideLoading()
         .hideControls();
+    return this;
+};
+
+fn.hideError = function () {
+    var el = this.errorMsg.parentNode;
+    this.controlsDisabled = false;
+    dom.addClass(el, HIDE_CLASS);
     return this;
 };
 
@@ -1027,12 +856,12 @@ fn.error = function () {
     }
     msg += ",点击刷新";
     this.errorMsg.innerHTML = msg;
-    this.toggleError();
+    this.showError();
 };
 
 fn.refresh = function () {
     this.video.reload();
-    this.toggleError();
+    this.hideError();
 };
 
 fn.initPlayEvent = function () {
@@ -1040,6 +869,7 @@ fn.initPlayEvent = function () {
         videoEl = this.video.el;
     dom.on(videoEl, "loadstart stalled", function (evt) {
         if (_this.playedTime && evt.type === "loadstart") {
+            //出错了从出错的地方开始播放,重置播放时间
             _this.video.setCurrentTime(_this.playedTime);
             this.playedTime = 0;
         }
@@ -1073,7 +903,7 @@ fn.toggleVolumePopupInfo = function (volume) {
 };
 
 fn.keyDown = function (evt) {
-    //控制条被禁用时，不做处理
+    //控制条被禁用或出错时，不做处理
     if (this.controlsDisabled) return;
     var key = evt.key.toLowerCase(),
         //up,down, left, right为IE浏览器中的上，下按键
@@ -1081,7 +911,7 @@ fn.keyDown = function (evt) {
         //按上下键音量加减5
         regUpOrDown = /(up)|(down)/,
         regLeftOrRight = /(left)|(right)/,
-        //regEsc = /esc/,
+        regEsc = /esc/,
         VOLUME_STEP = 5,
         VIDEO_STEP = 10,
         keyMap = {
@@ -1094,7 +924,8 @@ fn.keyDown = function (evt) {
             right: VIDEO_STEP,
             arrowright: VIDEO_STEP,
             esc: "esc",
-            escape: "escape" //esc键盘
+            escape: "escape", //esc键盘
+            enter: "enter"
         },
         tmp = keyMap[key];
     if (tmp) {
@@ -1102,12 +933,15 @@ fn.keyDown = function (evt) {
             this.updateProgressByStep(tmp);
         } else if (regUpOrDown.test(key)) {
             this.updateVolumeByStep(tmp);
-        } else {// if (regEsc.test(key)) {
+        } else if (regEsc.test(key)) {
+            this.exitFullScreen();
+        } else {
             this.toggleFullScreen();
         }
     } else if (key === " " || key === "spacebar") {//空格键
         this.togglePlay();
     }
+    console.log(key)
     evt.preventDefault();
 };
 
@@ -1139,30 +973,217 @@ fn.initEvent = function () {
     return this;
 };
 
-fn.clickVideoTrack = function (evt) {
-    console.log("click")
-    if (this.videoSlider.moving) {
-        this.videoSlider.moving = false;
-        return;
-    }
-    var rect = this.videoTrack.getBoundingClientRect(),
-        x = evt.clientX;
-    rect = (x - rect.left) / rect.width;
-    this.video.setCurrentTime(rect, true);
-    this.updateProgressPosition(rect);
-    this.videoSlider.setPosition("left", rect, true);
-};
-
 fn.playing = function () {
     //在拖动滑块改变播放进度时候不改变播放进度条位置，只改变播放的当前时间
     //防止影响滑块以及进度条的位置
     var progress = this.video.getPlayedPercentage();
     if (!this.videoSlider.moving) {
-        this.updateProgressPosition(progress);
-        this.videoSlider.setPosition("left", progress, true);
-    } else {
-        this.updateCurrentTime();
+        this.videoSlider.updateHPosition(progress, true);
     }
+    this.updateCurrentTime();
+};
+
+fn.updateVolume = function (volume, scale) {
+    scale && (volume *= 100);
+    volume = Math.floor(volume);
+    this.video.setVolume(volume);
+    this.updateVolumeStyle(volume);
+    return this;
+};
+
+fn.mute = function () {
+    var volume = this.video.getVolume();
+    //点击静音键
+    if (this.video.isMuted()) {
+        this.video.mute(false);
+    } else {
+        this.video.mute(true);
+        volume = 0;
+    }
+    this.updateVolumeStyle(volume);
+};
+
+fn.updateVolumeByStep = function (step) {
+    var volume = this.video.getVolume();
+    volume += step;
+    volume = volume > 100 ? 100 : volume < 0 ? 0 : volume;
+    this.updateVolume(volume);
+    this.toggleVolumePopupInfo(volume);
+};
+
+fn.updateVolumeStyle = function (volume) {
+    var cls = this.showVolumePopBtn.className,
+        reg = /volume-[^\s]*/;
+    cls = cls.replace(reg, "");
+    if (!volume) {
+        cls += "volume-mute";
+    } else if (volume <= 33) {
+        cls += "volume-1";
+    } else if (volume <= 66) {
+        cls += "volume-2";
+    } else {
+        cls += "volume-3";
+    }
+    this.showVolumePopBtn.className = this.muteBtn.className = cls;
+    this.currentVolume.innerHTML = volume;
+    this.volumeSlider.updateVPosition(volume + "%");
+    return this;
+};
+
+//点击显示/隐藏设置音量面板
+fn.toggleVolumeSettingsPanel = function (evt) {
+    if (!this.controlsDisabled) {
+        dom.toggleClass(this.volumePopup, HIDE_CLASS);
+    }
+    //阻止冒泡到document, document点击事件点击面板外任意地方隐藏面板，如不阻止冒泡则显示不出来
+    evt.stopPropagation();
+};
+
+fn.hideVolumeSettingsPanel = function () {
+    dom.addClass(this.volumePopup, HIDE_CLASS);
+    return this;
+};
+
+fn.initVolumeEvent = function () {
+    var _this = this;
+    dom.on(this.volumePopup, "mouseleave", this.hideVolumeSettingsPanel.bind(this))
+        .on(doc, "click", function (evt) {
+            var tgt = evt.target;
+            //点击页面其他地方（点击的不是音量设置面板或者面板内的元素）则隐藏音量面板
+            if (tgt !== _this.volumePopup && !_this.volumePopup.contains(tgt)) {
+                _this.hideVolumeSettingsPanel();
+            }
+        });
+    return this;
+};
+
+
+fn.togglePlay = function () {
+    if (!this.controlsDisabled) {
+        if (this.video.isPaused()) {
+            this.play();
+        } else {
+            this.pause();
+        }
+    }
+};
+
+fn.play = function () {
+    dom.addClass(this.playBtn, "paused");
+    this.video.play(true);
+    return this;
+};
+
+fn.pause = function () {
+    this.video.play(false);
+    dom.removeClass(this.playBtn, "paused");
+    return this;
+};
+
+//鼠标在进度条上移动显示时间信息
+fn.showPopupTimeInfo = function (evt) {
+    var duration = this.video.getDuration(),
+        popup = this.videoPopupTime,
+        mark = this.mark;
+    if (duration) {
+        dom.removeClass(popup, HIDE_CLASS)
+            .removeClass(mark, HIDE_CLASS);
+        var rect = this.progressPanel.getBoundingClientRect(),
+            x = evt.clientX,
+            distance = x - rect.left,
+            width = popup.offsetWidth,
+            left = distance - width / 2,
+            max = rect.width - width;
+        left = left < 0 ? 0 : left > max ? max : left;
+        max = distance / rect.width;
+        popup.innerHTML = this.video.convertTime(max * duration);
+        dom.css(popup, "left", left + "px");
+        dom.css(mark, "left", max * 100 + "%");
+    }
+    return this;
+};
+
+fn.hidePopupTimeInfo = function () {
+    dom.addClass(this.videoPopupTime, HIDE_CLASS)
+        .addClass(this.mark, HIDE_CLASS);
+    return this;
+};
+
+fn.showLoading = function () {
+    dom.removeClass(this.loading, HIDE_CLASS);
+    return this;
+};
+
+fn.hideLoading = function () {
+    dom.addClass(this.loading, HIDE_CLASS);
+    return this;
+};
+
+fn.progress = function () {
+    var b = this.video.getBuffered(true);
+    this.bufferedBar && dom.css(this.bufferedBar, "width",  b + "%");
+    if (this.video.getReadyState() < 3) {
+        this.showLoading();
+    }
+};
+
+fn.updateProgressByStep = function (step) {
+    var currentTime = this.video.getCurrentTime(),
+        duration = this.video.getDuration();
+    currentTime += step;
+    currentTime = currentTime < 0 ? 0 : currentTime > duration ? duration : currentTime;
+    this.video.setCurrentTime(currentTime);
+    this.playing();
+};
+
+fn.updateCurrentTime = function () {
+    this.currentTime.innerHTML = this.video.convertTime(this.video.getCurrentTime());
+    return this;
+};
+
+fn.updateTotalTime = function () {
+    this.totalTime.innerHTML = this.video.convertTime(this.video.getDuration());
+    return this;
+};
+
+fn.updateMetaInfo = function () {
+    if (this.video.isAutoPlay()) {
+        this.play();
+    }
+    this.updateTotalTime()
+        .enableControls();
+};
+
+fn.hideControls = function () {
+    dom.addClass(this.controlsPanel, HIDE_CLASS);
+    return this;
+};
+
+fn.showControls = function () {
+    var _this = this,
+        err = this.video.isError();
+    //出错了则不显示控制条
+    if (err) return;
+    clearTimeout(hideControlsTimer);
+    dom.removeClass(this.controlsPanel, HIDE_CLASS);
+    if (dom.hasClass(this.volumePopup, HIDE_CLASS)) {
+        hideControlsTimer = setTimeout(function () {
+            _this.hideControls();
+        }, 5000);
+    }
+    return this;
+};
+
+fn.enableControls = function () {
+    dom.removeClass(this.controlsPanel, "rplayer-disabled");
+    this.controlsDisabled = false;
+    return this;
+};
+
+fn.disableControls = function () {
+    dom.addClass(this.controlsPanel, "rplayer-disabled");
+    this.controlsDisabled = true;
+    return this;
 };
 
 fn.initControlEvent = function () {
@@ -1171,18 +1192,13 @@ fn.initControlEvent = function () {
     //滑动改变进度/点击进度条改变进度
     this.videoSlider.on("slider.move.done", function (evt, distance) {
         _this.video.setCurrentTime(distance, true);
-        _this.updateProgressPosition(distance);
-    }).on("slider.moving", function (evt, distance) {
-        _this.updateProgressPosition(distance);
+        _this.updateCurrentTime();
     });
     this.volumeSlider.on("slider.moving", function (evt, distance) {
        _this.updateVolume(distance, true);
     });
-    this.videoSlider.init();
-    this.volumeSlider.init();
     dom.on(this.progressPanel, "mouseover mousemove", this.showPopupTimeInfo.bind(this))
         .on(this.progressPanel, "mouseout", this.hidePopupTimeInfo.bind(this))
-        .on(this.videoTrack, "click", this.clickVideoTrack.bind(this))
         .on(this.container, "keydown", this.keyDown.bind(this))
         .on(this.container, "mousemove", this.showControls.bind(this))
         .on(videoEl, "loadedmetadata", this.updateMetaInfo.bind(this))
@@ -1196,9 +1212,6 @@ fn.initControlEvent = function () {
 fn.offEvent = function () {
     dom.off(doc)
         .off(this.volumePopup)
-        //.off(this.volumeSlider)
-        .off(this.volumeProgress)
-        .off(this.videoTrack)
         .off(this.container)
         .off(this.video.el);
     return this;
@@ -1214,7 +1227,8 @@ fn.removeProp = function () {
 
 fn.destroy = function () {
     if (this.container) {
-        //this.target.removeChild(this.container);
+        this.videoSlider.destroy();
+        this.volumeSlider.destroy();
         this.offEvent()
             .removeProp();
     }
@@ -1229,15 +1243,9 @@ fn.initEssentialElements = function () {
 };
 
 fn.initElements = function () {
-    var context = this.container,
-        volumeSlider = dom.selectElement(".rplayer-volume-slider", context),
-        videoSlider = dom.selectElement(".rplayer-video-slider", context);
-    this.volumeSlider = new Slider(volumeSlider, true);
-    this.videoSlider = new Slider(videoSlider);
+    var context = this.container;
     this.playBtn = dom.selectElement(".rplayer-play-btn", context);
     this.progressPanel = dom.selectElement(".rplayer-progress-panel", context);
-    this.videoTrack = dom.selectElement(".rplayer-video-track", context);
-    this.videoProgress = dom.selectElement(".rplayer-video-progress", context);
     this.videoPopupTime = dom.selectElement(".rplayer-popup-video-info", context);
     this.currentTime = dom.selectElement(".rplayer-current-time", context);
     this.totalTime = dom.selectElement(".rplayer-total-time", context);
@@ -1246,11 +1254,13 @@ fn.initElements = function () {
     this.muteBtn = dom.selectElement(".rplayer-mute", context);
     this.volumePopup = dom.selectElement(".rplayer-volume-popup", context);
     this.volumePopupInfo = dom.selectElement(".rplayer-popup-volume-info", context);
-    this.volumeProgress = dom.selectElement(".rplayer-volume-progress", context);
-    this.volumeValue = dom.selectElement(".rplayer-volume-value", context);
     this.currentVolume = dom.selectElement(".rplayer-current-volume", context);
     this.fullScreenBtn = dom.selectElement(".rplayer-fullscreen-btn", context);
     this.mark = dom.selectElement(".rplayer-mark", context);
+    this.volumeSlider = new Slider(true);
+    this.videoSlider = new Slider();
+    this.videoSlider.init(this.progressPanel);
+    this.volumeSlider.init(this.volumePopup, this.muteBtn);
     return this;
 };
 
@@ -1266,13 +1276,13 @@ fn.initialize = function () {
             height = parseInt(getComputedStyle(this.target).height);
         this.isFullScreen = false;
         container.innerHTML = tpl;
-        container.style.height = (height || DEFAULT_HEIGHT) + "px";
+        dom.css(container, "height", (height || DEFAULT_HEIGHT) + "px");
         this.container = container;
         container.appendChild(this.video.init());
         dom.addClass(this.container, "rplayer-container");
         //播放控制与原生控制二选一，如果设置了useNativeControls为true，则优先使用原生控制
         if (this.controls && !this.useNativeControls) {
-            this.controlsPanel = doc.createElement("div");
+            this.controlsPanel = dom.createElement("div");
             dom.addClass(this.controlsPanel, "rplayer-controls");
             this.controlsPanel.innerHTML = controls;
             this.container.appendChild(this.controlsPanel);

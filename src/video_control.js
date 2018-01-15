@@ -85,9 +85,9 @@ VideoControl.prototype = {
     getBuffered: function (percent) {
         var buffered = this.el.buffered,
             len = buffered.length;
-        if (percent && len) {
+        if (percent) {
             //缓冲的百分比
-            buffered = buffered.end(len - 1) / this.getDuration() * 100;
+            return len ? buffered = buffered.end(len - 1) / this.getDuration() * 100 : null;
         }
         return buffered;
     },
