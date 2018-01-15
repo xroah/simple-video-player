@@ -72,8 +72,10 @@
 
 .rplayer-controls .rplayer-progress-panel {
     position: absolute;
-    top: 0;
+    bottom: 100%;
     width: 100%;
+    height: 4px;
+    transition: height .3s;
 }
 
 .rplayer-controls .rplayer-progress {
@@ -81,16 +83,16 @@
     left: 0;
     bottom: 0;
     width: 100%;
-    height: 4px;
-    transition: height .3s;
+    height: 100%;
     background-color: rgba(90, 90, 90, .6);
+    z-index: 5;
 }
 
 .rplayer-controls:not(.rplayer-disabled) .rplayer-progress {
     cursor: pointer;
 }
 
-.rplayer-controls:not(.rplayer-disabled) .rplayer-progress-panel .rplayer-progress:hover {
+.rplayer-controls:not(.rplayer-disabled) .rplayer-progress-panel:hover {
     height: 8px;
 }
 
@@ -108,7 +110,7 @@
     display: none;
 }
 
-.rplayer-controls:not(.rplayer-disabled) .rplayer-progress:hover .rplayer-video-slider,
+.rplayer-controls:not(.rplayer-disabled) .rplayer-progress-panel:hover .rplayer-video-slider,
 .rplayer-controls .rplayer-video-slider.rplayer-moving {
     display: block;
 }

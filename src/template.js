@@ -3,10 +3,10 @@ var tpl = '<div class="rplayer-loading rplayer-hide"></div>' +
           '<div class="rplayer-error rplayer-hide"><div class="rplayer-msg">出错了</div></div>',
     controls = '<div class="rplayer-popup-info rplayer-popup-video-info rplayer-hide">10:00</div>' +
         '        <div class="rplayer-progress-panel">' +
+        '            <div class="rplayer-bufferd-bar"></div>' +
+        '            <div class="rplayer-mark rplayer-hide"></div>' +
         '            <div class="rplayer-progress rplayer-video-track">' +
-        '                <div class="rplayer-bufferd-bar"></div>' +
         '                <div class="rplayer-bar rplayer-video-progress"></div>' +
-        '                <div class="rplayer-mark rplayer-hide"></div>' +
         '                <div class="rplayer-slider rplayer-video-slider"></div>' +
         '            </div>' +
         '        </div>' +

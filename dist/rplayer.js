@@ -338,10 +338,10 @@ var tpl = '<div class="rplayer-loading rplayer-hide"></div>' +
           '<div class="rplayer-error rplayer-hide"><div class="rplayer-msg">出错了</div></div>',
     controls = '<div class="rplayer-popup-info rplayer-popup-video-info rplayer-hide">10:00</div>' +
         '        <div class="rplayer-progress-panel">' +
+        '            <div class="rplayer-bufferd-bar"></div>' +
+        '            <div class="rplayer-mark rplayer-hide"></div>' +
         '            <div class="rplayer-progress rplayer-video-track">' +
-        '                <div class="rplayer-bufferd-bar"></div>' +
         '                <div class="rplayer-bar rplayer-video-progress"></div>' +
-        '                <div class="rplayer-mark rplayer-hide"></div>' +
         '                <div class="rplayer-slider rplayer-video-slider"></div>' +
         '            </div>' +
         '        </div>' +
@@ -1140,6 +1140,7 @@ fn.initEvent = function () {
 };
 
 fn.clickVideoTrack = function (evt) {
+    console.log("click")
     if (this.videoSlider.moving) {
         this.videoSlider.moving = false;
         return;
@@ -1152,39 +1153,40 @@ fn.clickVideoTrack = function (evt) {
     this.videoSlider.setPosition("left", rect, true);
 };
 
+fn.playing = function () {
+    //在拖动滑块改变播放进度时候不改变播放进度条位置，只改变播放的当前时间
+    //防止影响滑块以及进度条的位置
+    var progress = this.video.getPlayedPercentage();
+    if (!this.videoSlider.moving) {
+        this.updateProgressPosition(progress);
+        this.videoSlider.setPosition("left", progress, true);
+    } else {
+        this.updateCurrentTime();
+    }
+};
+
 fn.initControlEvent = function () {
     var _this = this,
         videoEl = this.video.el;
     //滑动改变进度/点击进度条改变进度
     this.videoSlider.on("slider.move.done", function (evt, distance) {
-        _this.video.setCurrentTime(distance);
+        _this.video.setCurrentTime(distance, true);
         _this.updateProgressPosition(distance);
     }).on("slider.moving", function (evt, distance) {
         _this.updateProgressPosition(distance);
     });
     this.volumeSlider.on("slider.moving", function (evt, distance) {
        _this.updateVolume(distance, true);
-       console.log(distance)
     });
     this.videoSlider.init();
     this.volumeSlider.init();
-    dom.on(this.videoTrack, "mouseover mousemove", this.showPopupTimeInfo.bind(this))
-        .on(this.videoTrack, "mouseout", this.hidePopupTimeInfo.bind(this))
+    dom.on(this.progressPanel, "mouseover mousemove", this.showPopupTimeInfo.bind(this))
+        .on(this.progressPanel, "mouseout", this.hidePopupTimeInfo.bind(this))
         .on(this.videoTrack, "click", this.clickVideoTrack.bind(this))
         .on(this.container, "keydown", this.keyDown.bind(this))
         .on(this.container, "mousemove", this.showControls.bind(this))
         .on(videoEl, "loadedmetadata", this.updateMetaInfo.bind(this))
-        .on(videoEl, "timeupdate", function () {
-            //在拖动滑块改变播放进度时候不改变播放进度条位置，只改变播放的当前时间
-            //防止影响滑块以及进度条的位置
-            var progress = _this.video.getPlayedPercentage()
-            if (!_this.videoSlider.moving) {
-                _this.updateProgressPosition(progress);
-                _this.videoSlider.setPosition("left", progress, true);
-            } else {
-                _this.updateCurrentTime();
-            }
-        })
+        .on(videoEl, "timeupdate", this.playing.bind(this))
         .on(videoEl, "dblclick", this.toggleFullScreen.bind(this))
         .on(videoEl, "seeking", this.showLoading.bind(this));
     return this.initVolumeEvent()
@@ -1233,6 +1235,7 @@ fn.initElements = function () {
     this.volumeSlider = new Slider(volumeSlider, true);
     this.videoSlider = new Slider(videoSlider);
     this.playBtn = dom.selectElement(".rplayer-play-btn", context);
+    this.progressPanel = dom.selectElement(".rplayer-progress-panel", context);
     this.videoTrack = dom.selectElement(".rplayer-video-track", context);
     this.videoProgress = dom.selectElement(".rplayer-video-progress", context);
     this.videoPopupTime = dom.selectElement(".rplayer-popup-video-info", context);
