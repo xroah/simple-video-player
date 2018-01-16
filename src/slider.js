@@ -11,12 +11,12 @@ proto.constructor = Slider;
 proto.getPosition = function () {
     var parent = this.el.parentNode,
         rect = parent.getBoundingClientRect(),
-        el = this.el;
+        pos = getComputedStyle(this.el);
     return {
-        width: el.offsetWidth,
-        height: el.offsetHeight,
-        origLeft: el.offsetLeft,
-        origTop: el.offsetTop,
+        width: parseFloat(pos.width),
+        height: parseFloat(pos.height),
+        origLeft: parseFloat(pos.left),
+        origTop: parseFloat(pos.top),
         maxX: rect.width,
         maxY: rect.height
     }
@@ -45,21 +45,23 @@ proto.updatePosition = function (val, scale) {
 };
 
 proto.mouseDown = function (evt) {
-    var x = evt.clientX,
-        y = evt.clientY,
-        pos = this.getPosition();
-    this.pos = {
-        width: pos.width,
-        height: pos.height,
-        offsetX: x - pos.origLeft,
-        offsetY: y - pos.origTop,
-        maxX: pos.maxX,
-        maxY: pos.maxY
-    };
-    evt.stopImmediatePropagation();
-    dom.addClass(this.el, "rplayer-moving")
-        .on(doc, "mousemove", this.mouseMove.bind(this))
-        .on(doc, "mouseup", this.mouseUp.bind(this))
+    //只有按鼠标左键时处理(evt.button=0)
+    if (!evt.button) {
+        var x = evt.clientX,
+            y = evt.clientY,
+            pos = this.getPosition();
+        this.pos = {
+            width: pos.width,
+            height: pos.height,
+            offsetX: x - pos.origLeft,
+            offsetY: y - pos.origTop,
+            maxX: pos.maxX,
+            maxY: pos.maxY
+        };
+        dom.addClass(this.el, "rplayer-moving")
+            .on(doc, "mousemove", this.mouseMove.bind(this))
+            .on(doc, "mouseup", this.mouseUp.bind(this))
+    }
 };
 
 proto.mouseMove = function (evt) {
@@ -88,6 +90,8 @@ proto.mouseUp = function () {
 };
 
 proto.clickTrack = function (evt) {
+    //移动滑块鼠标释放时会触发父元素点击事件,可能会导致鼠标释放后滑块位置改变
+    //如果移动滑块则点击事件不做处理
     if (this.moving) {
         this.moving = false;
         return;
@@ -122,10 +126,10 @@ proto.destroy = function () {
 
 proto.init = function (target, before) {
     var cls = {
-            track: "rplayer-video-track",
-            bar: "rplayer-video-progress",
-            slider: "rplayer-video-slider"
-        };
+        track: "rplayer-video-track",
+        bar: "rplayer-video-progress",
+        slider: "rplayer-video-slider"
+    };
     if (this.vertical) {
         cls = {
             track: "rplayer-volume-progress",

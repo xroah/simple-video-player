@@ -1,10 +1,6 @@
 "use strict";
 var doc = document,
     guid = 1,
-    //根据这个变量判断是否移动滑块,
-    //移动滑块鼠标释放时会触发父元素点击事件,可能会导致鼠标释放后滑块位置改变
-    //如果移动滑块则阻止点击轨道改变进度/音量的执行
-    sliderMoving = false,
     DEFAULT_HEIGHT = 500,
     DEFAULT_OPTIONS = {
         autoPlay: false,
