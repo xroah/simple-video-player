@@ -23,25 +23,17 @@ proto.getPosition = function () {
 };
 
 proto.updateHPosition = function (val, scale) {
-    if (scale) {
-        val = val * 100 + "%";
-    }
+    scale && (val = val * 100 + "%");
     dom.css(this.bar, "width", val)
         .css(this.el, "left", val);
     return this;
 };
 
 proto.updateVPosition = function (val, scale) {
-    if (scale) {
-        val = val * 100 + "%";
-    }
+    scale && (val = val * 100 + "%");
     dom.css(this.bar, "height", val)
         .css(this.el, "bottom", val);
     return this;
-};
-
-proto.updatePosition = function (val, scale) {
-    this.vertical ? this.updateVPosition(val, scale) : this.updateHPosition(val, scale);
 };
 
 proto.mouseDown = function (evt) {
@@ -49,7 +41,8 @@ proto.mouseDown = function (evt) {
     if (!evt.button) {
         var x = evt.clientX,
             y = evt.clientY,
-            pos = this.getPosition();
+            pos = this.getPosition(),
+            mouseMove = this.getMoveCallback().bind(this);
         this.pos = {
             width: pos.width,
             height: pos.height,
@@ -59,28 +52,45 @@ proto.mouseDown = function (evt) {
             maxY: pos.maxY
         };
         dom.addClass(this.el, "rplayer-moving")
-            .on(doc, "mousemove", this.mouseMove.bind(this))
+            .on(doc, "mousemove", mouseMove)
             .on(doc, "mouseup", this.mouseUp.bind(this))
     }
 };
 
-proto.mouseMove = function (evt) {
+proto.moveVertical = function (x, y) {
+    var distance;
+    distance = this.pos.maxY - (y - this.pos.offsetY) - this.pos.height;
+    distance = distance < 0 ? 0 : distance > this.pos.maxY ? this.pos.maxY : distance;
+    distance = distance / this.pos.maxY;
+    this.updateVPosition(distance, true);
+    return distance;
+};
+
+proto.moveHorizontal = function (x) {
+    var distance;
+    distance = x - this.pos.offsetX;
+    distance = distance < 0 ? 0 : distance > this.pos.maxX ? this.pos.maxX : distance;
+    distance = distance / this.pos.maxX;
+    this.updateHPosition(distance, true);
+    return distance;
+};
+
+proto.mouseMove = function (evt, fn) {
     var x = evt.clientX,
         y = evt.clientY,
-        distance;
+        distance = fn.call(this, x, y);
     this.moving = true;
-    if (this.vertical) {
-        distance = this.pos.maxY - (y - this.pos.offsetY) - this.pos.height;
-        distance = distance < 0 ? 0 : distance > this.pos.maxY ? this.pos.maxY : distance;
-        distance = distance / this.pos.maxY;
-        this.updateVPosition(distance, true);
-    } else {
-        distance = x - this.pos.offsetX;
-        distance = distance < 0 ? 0 : distance > this.pos.maxX ? this.pos.maxX : distance;
-        distance = distance / this.pos.maxX;
-        this.updateHPosition(distance, true);
-    }
     this.trigger("slider.moving", this.moveDis = distance);
+};
+
+proto.getMoveCallback = function () {
+    return this.vertical ?
+        function (evt) {
+            this.mouseMove(evt, this.moveVertical);
+        } :
+        function (evt) {
+            this.mouseMove(evt, this.moveHorizontal);
+        };
 };
 
 proto.mouseUp = function () {
