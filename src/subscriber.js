@@ -1,3 +1,4 @@
+import {isFunction} from "./global.js";
 function CEvent(type) {
     this.type = type;
     this.data = null;
@@ -23,11 +24,10 @@ Subscriber.prototype = {
         return this;
     },
     off: function (type, fn) {
-        var h = this.handlers[type],
-            i;
+        let  h = this.handlers[type];
         if (h) {
             if (isFunction(fn)) {
-                for (i = h.length; i--;) {
+                for (let i = h.length; i--;) {
                     if (h[i] === fn) {
                         h.splice(i, 1);
                         break;
@@ -41,7 +41,7 @@ Subscriber.prototype = {
     },
     once: function (type, fn) {
         if (isFunction(fn)) {
-            var self = this,
+            let self = this,
                 f = function () {
                     fn.apply(this, arguments);
                     self.off(type, f);
@@ -50,18 +50,20 @@ Subscriber.prototype = {
         }
     },
     trigger: function (type) {
-        var args = Array.prototype.slice.call(arguments, 1),
+        let args = Array.prototype.slice.call(arguments, 1),
             h = this.handlers[type],
-            e, i;
+            e;
         if (h) {
             e = new CEvent(type);
             e.data = args;
             e.timeStamp = Date.now();
             args = [e].concat(args);
-            for (i = h.length; i--; ) {
+            for (let i = h.length; i--; ) {
                 h[i].apply(this, args);
             }
         }
         return this;
     }
 };
+
+export default Subscriber;

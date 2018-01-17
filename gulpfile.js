@@ -1,9 +1,9 @@
 const gulp = require("gulp");
 const rename = require("gulp-rename");
 const uglify = require("gulp-uglify");
-const umd = require("gulp-umd");
 const css = require("gulp-clean-css");
-const concat = require("gulp-concat");
+const rollup = require("rollup");
+const babel = require("rollup-plugin-babel");
 
 gulp.task("minifyCss", () => {
     return gulp.src("./src/index.css")
@@ -12,25 +12,23 @@ gulp.task("minifyCss", () => {
         .pipe(gulp.dest("./dist"));
 });
 
-gulp.task("concat", () => {
-    return gulp.src([
-        "./src/global_var.js",
-        "./src/dom.js",
-        "./src/template.js",
-        "./src/video_control.js",
-        "./src/event.js",
-        "./src/slider.js",
-        "./src/index.js"
-    ])
-        .pipe(concat("rplayer.js"))
-        .pipe(umd({
-            exports: () => "RPlayer",
-            namespace: () => "RPlayer"
-        }))
-        .pipe(gulp.dest("./dist"))
-})
+gulp.task("bundle", () => {
+    return rollup.rollup({
+        input: "src/index.js",
+        plugins: [babel({
+            exclude: "node_modules/**"
+        })]
+    }).then(bundle => {
+        return bundle.write({
+            file: 'dist/rplayer.js',
+            format: 'umd',
+            name: 'RPlayer',
+            sourcemap: true
+        });
+    });
+});
 
-gulp.task("uglifyJs", ["concat"], () => {
+gulp.task("uglifyJs", ["bundle"], () => {
     return gulp.src("./dist/rplayer.js")
         .pipe(uglify({
             output: {
@@ -41,6 +39,6 @@ gulp.task("uglifyJs", ["concat"], () => {
         .pipe(gulp.dest("./dist"));
 });
 
-gulp.watch("./src/*.*", ["concat", "uglifyJs", "minifyCss"]);
+gulp.watch("./src/*.*", ["bundle", "uglifyJs", "minifyCss"]);
 
-gulp.task("default", ["concat", "uglifyJs", "minifyCss"]);
+gulp.task("default", ["bundle", "uglifyJs", "minifyCss"]);
