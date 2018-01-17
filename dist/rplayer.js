@@ -25,6 +25,23 @@ var TYPE = {
     string: "[object String]",
     undef: "[object Undefined]"
 };
+var VOLUME_STEP = 5;
+var VIDEO_STEP = 10;
+var KEY_MAP = {
+    "up": VOLUME_STEP, //IE
+    "arrowup": VOLUME_STEP,
+    "down": -VOLUME_STEP, //IE
+    "arrowdown": -VOLUME_STEP,
+    "left": -VIDEO_STEP, //IE
+    "arrowleft": -VIDEO_STEP,
+    "right": VIDEO_STEP, //IE
+    "arrowright": VIDEO_STEP,
+    "esc": "esc", //IE
+    "escape": "escape",
+    " ": "space",
+    "spacebar": "space", //IE
+    "enter": "enter"
+};
 var doc = document;
 var isType = function isType(type) {
     return function (obj) {
@@ -815,6 +832,8 @@ fn.initPlayEvent = function () {
 };
 
 fn.toggleVolumePopupInfo = function (volume) {
+    var _this3 = this;
+
     //当音量设置面板隐藏是才显示当前音量
     if (dom.hasClass(this.volumePopup, HIDE_CLASS)) {
         clearTimeout(hideVolumePopTimer);
@@ -822,9 +841,7 @@ fn.toggleVolumePopupInfo = function (volume) {
         this.currentVolume.innerHTML = volume;
         dom.removeClass(this.volumePopupInfo, HIDE_CLASS);
         hideVolumePopTimer = setTimeout(function () {
-            return function () {
-                dom.addClass(this.volumePopupInfo, HIDE_CLASS);
-            };
+            return dom.addClass(_this3.volumePopupInfo, HIDE_CLASS);
         }, 3000);
     }
     return this;
@@ -834,29 +851,11 @@ fn.keyDown = function (evt) {
     //控制条被禁用，不做处理
     if (this.controlsDisabled) return;
     var key = evt.key.toLowerCase(),
-
-    //up,down, left, right为IE浏览器中的上，下，左，右按键
-    //arrowup,arrowdown, arrowleft, arrowright为其他浏览器中的上，下， 左， 右按键
-    //按上下键音量加减5
-    regUpOrDown = /(up)|(down)/,
-        regLeftOrRight = /(left)|(right)/,
+        regUpOrDown = /(?:up)|(?:down)/,
+        regLeftOrRight = /(?:left)|(?:right)/,
         regEsc = /esc/,
-        VOLUME_STEP = 5,
-        VIDEO_STEP = 10,
-        keyMap = {
-        up: VOLUME_STEP,
-        arrowup: VOLUME_STEP,
-        down: -VOLUME_STEP,
-        arrowdown: -VOLUME_STEP,
-        left: -VIDEO_STEP,
-        arrowleft: -VIDEO_STEP,
-        right: VIDEO_STEP,
-        arrowright: VIDEO_STEP,
-        esc: "esc",
-        escape: "escape", //esc键盘
-        enter: "enter"
-    },
-        tmp = keyMap[key];
+        regSpace = /\s|(?:spacebar)/,
+        tmp = KEY_MAP[key];
     if (tmp) {
         if (regLeftOrRight.test(key)) {
             this.updateProgressByStep(tmp);
@@ -864,12 +863,11 @@ fn.keyDown = function (evt) {
             this.updateVolumeByStep(tmp);
         } else if (regEsc.test(key)) {
             this.exitFullScreen();
+        } else if (regSpace.test(key)) {
+            this.togglePlay();
         } else {
             this.toggleFullScreen();
         }
-    } else if (key === " " || key === "spacebar") {
-        //空格键
-        this.togglePlay();
     }
     evt.preventDefault();
 };
@@ -974,13 +972,13 @@ fn.hideVolumeSettingsPanel = function () {
 };
 
 fn.initVolumeEvent = function () {
-    var _this3 = this;
+    var _this4 = this;
 
     dom.on(this.volumePopup, "mouseleave", this.hideVolumeSettingsPanel.bind(this)).on(doc, "click", function (evt) {
         var tgt = evt.target;
         //点击页面其他地方（点击的不是音量设置面板或者面板内的元素）则隐藏音量面板
-        if (tgt !== _this3.volumePopup && !_this3.volumePopup.contains(tgt)) {
-            _this3.hideVolumeSettingsPanel();
+        if (tgt !== _this4.volumePopup && !_this4.volumePopup.contains(tgt)) {
+            _this4.hideVolumeSettingsPanel();
         }
     });
     return this;
@@ -1081,7 +1079,7 @@ fn.hideControls = function () {
 };
 
 fn.showControls = function () {
-    var _this4 = this;
+    var _this5 = this;
 
     var err = this.video.isError();
     //出错了则不显示控制条
@@ -1090,7 +1088,7 @@ fn.showControls = function () {
         dom.removeClass(this.controlsPanel, HIDE_CLASS);
         if (dom.hasClass(this.volumePopup, HIDE_CLASS)) {
             hideControlsTimer = setTimeout(function () {
-                _this4.hideControls();
+                return _this5.hideControls();
             }, 5000);
         }
     }
@@ -1110,16 +1108,16 @@ fn.disableControls = function () {
 };
 
 fn.initControlEvent = function () {
-    var _this5 = this;
+    var _this6 = this;
 
     var videoEl = this.video.el;
     //滑动改变进度/点击进度条改变进度
     this.videoSlider.on("slider.move.done", function (evt, distance) {
-        _this5.video.setCurrentTime(distance, true);
-        _this5.updateTime(true);
+        _this6.video.setCurrentTime(distance, true);
+        _this6.updateTime(true);
     });
     this.volumeSlider.on("slider.moving", function (evt, distance) {
-        _this5.updateVolume(distance, true);
+        _this6.updateVolume(distance, true);
     });
     dom.on(this.progressPanel, "mouseover mousemove", this.showPopupTimeInfo.bind(this)).on(this.progressPanel, "mouseout", this.hidePopupTimeInfo.bind(this)).on(this.container, "keydown", this.keyDown.bind(this)).on(this.container, "mousemove", this.showControls.bind(this)).on(videoEl, "loadedmetadata", this.updateMetaInfo.bind(this)).on(videoEl, "timeupdate", this.updateProgress.bind(this)).on(videoEl, "dblclick", this.toggleFullScreen.bind(this)).on(videoEl, "seeking", this.showLoading.bind(this));
     return this.initVolumeEvent().initFullScreenEvent();

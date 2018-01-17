@@ -19,6 +19,23 @@ const DEFAULT_OPTIONS = {
         object: "[object Object]",
         string: "[object String]",
         undef: "[object Undefined]"
+    },
+    VOLUME_STEP = 5,
+    VIDEO_STEP = 10,
+    KEY_MAP = {
+        "up": VOLUME_STEP, //IE
+        "arrowup": VOLUME_STEP,
+        "down": -VOLUME_STEP, //IE
+        "arrowdown": -VOLUME_STEP,
+        "left": -VIDEO_STEP, //IE
+        "arrowleft": -VIDEO_STEP,
+        "right": VIDEO_STEP, //IE
+        "arrowright": VIDEO_STEP,
+        "esc": "esc", //IE
+        "escape": "escape",
+        " ": "space",
+        "spacebar": "space", //IE
+        "enter": "enter"
     };
 let doc = document,
     isType = type => obj => Object.prototype.toString.call(obj) === TYPE[type],
@@ -32,6 +49,7 @@ export {
     doc,
     DEFAULT_OPTIONS,
     ERROR_TYPE,
+    KEY_MAP,
     isFunction,
     isObject,
     isString,

@@ -1,5 +1,5 @@
 import dom from "./dom.js";
-import {doc, DEFAULT_OPTIONS, isObject, isUndefined, ERROR_TYPE} from "./global.js";
+import {doc, DEFAULT_OPTIONS, ERROR_TYPE, KEY_MAP, isObject, isUndefined} from "./global.js";
 import Subscriber from "./subscriber.js";
 import Slider from "./slider.js";
 import {tpl, controls} from "./template.js";
@@ -157,9 +157,7 @@ fn.toggleVolumePopupInfo = function (volume) {
         this.volumePopupInfo.innerHTML = "当前音量: " + volume;
         this.currentVolume.innerHTML = volume;
         dom.removeClass(this.volumePopupInfo, HIDE_CLASS);
-        hideVolumePopTimer = setTimeout(() => function () {
-            dom.addClass(this.volumePopupInfo, HIDE_CLASS);
-        }, 3000);
+        hideVolumePopTimer = setTimeout(() => dom.addClass(this.volumePopupInfo, HIDE_CLASS), 3000);
     }
     return this;
 };
@@ -168,28 +166,11 @@ fn.keyDown = function (evt) {
     //控制条被禁用，不做处理
     if (this.controlsDisabled) return;
     let key = evt.key.toLowerCase(),
-        //up,down, left, right为IE浏览器中的上，下，左，右按键
-        //arrowup,arrowdown, arrowleft, arrowright为其他浏览器中的上，下， 左， 右按键
-        //按上下键音量加减5
-        regUpOrDown = /(up)|(down)/,
-        regLeftOrRight = /(left)|(right)/,
+        regUpOrDown = /(?:up)|(?:down)/,
+        regLeftOrRight = /(?:left)|(?:right)/,
         regEsc = /esc/,
-        VOLUME_STEP = 5,
-        VIDEO_STEP = 10,
-        keyMap = {
-            up: VOLUME_STEP,
-            arrowup: VOLUME_STEP,
-            down: -VOLUME_STEP,
-            arrowdown: -VOLUME_STEP,
-            left: -VIDEO_STEP,
-            arrowleft: -VIDEO_STEP,
-            right: VIDEO_STEP,
-            arrowright: VIDEO_STEP,
-            esc: "esc",
-            escape: "escape", //esc键盘
-            enter: "enter"
-        },
-        tmp = keyMap[key];
+        regSpace = /\s|(?:spacebar)/,
+        tmp = KEY_MAP[key];
     if (tmp) {
         if (regLeftOrRight.test(key)) {
             this.updateProgressByStep(tmp);
@@ -197,11 +178,11 @@ fn.keyDown = function (evt) {
             this.updateVolumeByStep(tmp);
         } else if (regEsc.test(key)) {
             this.exitFullScreen();
-        } else {
+        } else if (regSpace.test(key)) {
+            this.togglePlay();
+        }else {
             this.toggleFullScreen();
         }
-    } else if (key === " " || key === "spacebar") {//空格键
-        this.togglePlay();
     }
     evt.preventDefault();
 };
@@ -422,9 +403,7 @@ fn.showControls = function () {
         clearTimeout(hideControlsTimer);
         dom.removeClass(this.controlsPanel, HIDE_CLASS);
         if (dom.hasClass(this.volumePopup, HIDE_CLASS)) {
-            hideControlsTimer = setTimeout(() => {
-                this.hideControls();
-            }, 5000);
+            hideControlsTimer = setTimeout(() => this.hideControls(), 5000);
         }
     }
     return this;
