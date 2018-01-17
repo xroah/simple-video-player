@@ -1,3 +1,7 @@
+import Subscriber from "./subscriber.js"
+import {doc, isUndefined} from "./global.js";
+import dom from "./dom.js";
+
 function Slider(vertical) {
     Subscriber.call(this);
     this.vertical = isUndefined(vertical) ? false : !!vertical;
@@ -5,11 +9,11 @@ function Slider(vertical) {
     this.moving = false;
 }
 
-var proto = Slider.prototype = Object.create(Subscriber.prototype);
+let proto = Slider.prototype = Object.create(Subscriber.prototype);
 proto.constructor = Slider;
 
 proto.getPosition = function () {
-    var parent = this.el.parentNode,
+    let parent = this.el.parentNode,
         rect = parent.getBoundingClientRect(),
         pos = getComputedStyle(this.el);
     return {
@@ -39,7 +43,7 @@ proto.updateVPosition = function (val, scale) {
 proto.mouseDown = function (evt) {
     //只有按鼠标左键时处理(evt.button=0)
     if (!evt.button) {
-        var x = evt.clientX,
+        let x = evt.clientX,
             y = evt.clientY,
             pos = this.getPosition(),
             mouseMove = this.getMoveCallback().bind(this);
@@ -58,7 +62,7 @@ proto.mouseDown = function (evt) {
 };
 
 proto.moveVertical = function (x, y) {
-    var distance;
+    let distance;
     distance = this.pos.maxY - (y - this.pos.offsetY) - this.pos.height;
     distance = distance < 0 ? 0 : distance > this.pos.maxY ? this.pos.maxY : distance;
     distance = distance / this.pos.maxY;
@@ -67,7 +71,7 @@ proto.moveVertical = function (x, y) {
 };
 
 proto.moveHorizontal = function (x) {
-    var distance;
+    let distance;
     distance = x - this.pos.offsetX;
     distance = distance < 0 ? 0 : distance > this.pos.maxX ? this.pos.maxX : distance;
     distance = distance / this.pos.maxX;
@@ -76,7 +80,7 @@ proto.moveHorizontal = function (x) {
 };
 
 proto.mouseMove = function (evt, fn) {
-    var x = evt.clientX,
+    let x = evt.clientX,
         y = evt.clientY,
         distance = fn.call(this, x, y);
     this.moving = true;
@@ -85,12 +89,8 @@ proto.mouseMove = function (evt, fn) {
 
 proto.getMoveCallback = function () {
     return this.vertical ?
-        function (evt) {
-            this.mouseMove(evt, this.moveVertical);
-        } :
-        function (evt) {
-            this.mouseMove(evt, this.moveHorizontal);
-        };
+        evt => this.mouseMove(evt, this.moveVertical) :
+        evt => this.mouseMove(evt, this.moveHorizontal);
 };
 
 proto.mouseUp = function () {
@@ -106,7 +106,7 @@ proto.clickTrack = function (evt) {
         this.moving = false;
         return;
     }
-    var rect = this.track.getBoundingClientRect(),
+    let rect = this.track.getBoundingClientRect(),
         x = evt.clientX,
         y = evt.clientY,
         eType = "slider.moving";
@@ -135,7 +135,7 @@ proto.destroy = function () {
 };
 
 proto.init = function (target, before) {
-    var cls = {
+    let cls = {
         track: "rplayer-video-track",
         bar: "rplayer-video-progress",
         slider: "rplayer-video-slider"
@@ -147,11 +147,13 @@ proto.init = function (target, before) {
             slider: "rplayer-volume-slider"
         }
     }
-    this.track = dom.createElement("div", {class: "rplayer-progress " + cls.track});
-    this.bar = dom.createElement("div", {class: "rplayer-bar " + cls.bar});
-    this.el = dom.createElement("div", {class: "rplayer-slider " + cls.slider});
+    this.track = dom.createElement("div", {class: `rplayer-progress ${cls.track}`});
+    this.bar = dom.createElement("div", {class: `rplayer-bar ${cls.bar}`});
+    this.el = dom.createElement("div", {class: `rplayer-slider ${cls.slider}`});
     this.track.appendChild(this.bar);
     this.track.append(this.el);
     before ? target.insertBefore(this.track, before) : target.appendChild(this.track);
     this.initEvent();
 };
+
+export default Slider;

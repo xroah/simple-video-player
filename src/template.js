@@ -1,4 +1,4 @@
-var tpl = '<div class="rplayer-loading rplayer-hide"></div>' +
+let tpl = '<div class="rplayer-loading rplayer-hide"></div>' +
           '<div class="rplayer-popup-info rplayer-popup-volume-info rplayer-hide">10:00</div>' +
           '<div class="rplayer-error rplayer-hide"><div class="rplayer-msg">出错了</div></div>',
     controls = '<div class="rplayer-popup-info rplayer-popup-video-info rplayer-hide">10:00</div>' +
@@ -23,3 +23,4 @@ var tpl = '<div class="rplayer-loading rplayer-hide"></div>' +
         '                </div>' +
         '            </div>' +
         '        </div>';
+export {tpl, controls};

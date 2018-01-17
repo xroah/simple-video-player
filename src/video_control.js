@@ -1,12 +1,7 @@
+import dom from "./dom.js";
+import {doc} from "./global.js";
+
 function VideoControl(config) {
-    /*{
-        autoPlay: !!options.autoPlay,
-            defaultVolume: Math.abs(parseInt(options.defaultVolume)) || DEFAULT_OPTIONS.defaultVolume,
-        loop: !!options.loop,
-        poster: options.poster || DEFAULT_OPTIONS.poster,
-        source: options.source,
-        msg: options.msg || DEFAULT_OPTIONS.msg
-    };*/
     this.config = config;
 };
 
@@ -47,7 +42,7 @@ VideoControl.prototype = {
         return this.el.paused;
     },
     isError: function () {
-        var err = this.el.error;
+        let err = this.el.error;
         return err ? err.code : err;
     },
     loop: function (isLoop) {
@@ -66,7 +61,7 @@ VideoControl.prototype = {
         return this;
     },
     setCurrentTime: function (time, scale) {
-        var duration = this.getDuration();
+        let duration = this.getDuration();
         if (scale) {
             time = duration * time;
         }
@@ -83,7 +78,7 @@ VideoControl.prototype = {
         return this.getCurrentTime() / this.getDuration();
     },
     getBuffered: function (percent) {
-        var buffered = this.el.buffered,
+        let buffered = this.el.buffered,
             len = buffered.length;
         if (percent) {
             //缓冲的百分比
@@ -99,9 +94,7 @@ VideoControl.prototype = {
         return this;
     },
     convertTime: function (time) {
-        var changeLen = function (num) {
-                return num < 10 ? "0" + num : num.toString();
-            },
+        let changeLen = num => num < 10 ? "0" + num : num.toString(),
             str, h, m, s;
         time = Math.ceil(time);
         if (time <= 0) {
@@ -126,8 +119,7 @@ VideoControl.prototype = {
         return this;
     },
     changeSource: function (src) {
-        var paused = this.isPaused();
-        console.log(this.source, src)
+        let paused = this.isPaused();
         if (this.source !== src) {
             this.source = src;
             this.initSource(src);
@@ -141,13 +133,13 @@ VideoControl.prototype = {
         return this.el.currentSrc;
     },
     initSource: function (source) {
-        var frag = doc.createDocumentFragment();
+        let frag = doc.createDocumentFragment();
         if (typeof source === "string") {
             this.el.src = source;
         } else if (Array.isArray(source)) {
             this.el.innerHTML = "";
             source.forEach(function (src) {
-                var sourceEl = dom.createElement("source", {src: src});
+                let sourceEl = dom.createElement("source", {src: src});
                 frag.appendChild(sourceEl);
             });
             this.el.appendChild(frag);
@@ -155,7 +147,7 @@ VideoControl.prototype = {
         return this;
     },
     init: function () {
-        var video = dom.createElement("video"),
+        let video = dom.createElement("video"),
             text = doc.createTextNode(this.config.msg.toString());
         this.el = video;
         this.source = this.config.source;
@@ -170,3 +162,5 @@ VideoControl.prototype = {
         return this.el;
     }
 };
+
+export default VideoControl;

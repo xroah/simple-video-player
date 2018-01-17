@@ -1,6 +1,8 @@
-var dom = {
+import {doc, isFunction, isObject, isUndefined, isString, isWindow} from "./global.js";
+let dom = {
         handlers: {}
-    };
+    },
+    guid = 1;
 
 dom.hasClass = function (el, cls) {
     if (!el) return false;
@@ -24,7 +26,7 @@ dom.addClass = function (el, cls) {
 };
 
 dom.removeClass = function (el, cls) {
-    var reg = new RegExp("\\s+" + cls + "\\s+"),
+    let reg = new RegExp("\\s+" + cls + "\\s+"),
         className;
     if (el && this.hasClass(el, cls)) {
         className = " " + el.className + " ";
@@ -38,7 +40,7 @@ dom.removeClass = function (el, cls) {
 };
 
 dom.toggleClass = function (el, cls) {
-    var reg = new RegExp("\\s+" + cls + "\\s+"),
+    let reg = new RegExp("\\s+" + cls + "\\s+"),
         className;
     if (el) {
         if (el.classList) {
@@ -57,7 +59,7 @@ dom.toggleClass = function (el, cls) {
 };
 
 dom.css = function (el, prop, val) {
-    var css = "";
+    let css = "";
     if (!isUndefined(val)) {
         el.style[prop] = val;
     } else {
@@ -74,7 +76,7 @@ dom.css = function (el, prop, val) {
 };
 
 dom.fullScreen = function (el, exit) {
-    var fsApi = this.fsApi;
+    let fsApi = this.fsApi;
     if (fsApi) {
         exit ? doc[fsApi.exitFullscreen]() : el[fsApi.requestFullscreen]();
     } else {
@@ -94,7 +96,7 @@ dom.fullPage = function (el, exit) {
 
 //选择元素， 只选中一个
 dom.selectElement = function (selector, context) {
-    var ret,
+    let ret,
         reg = /^#[^>~+\[\]\s:]+$/; //匹配id选择器
     context = context || doc;
     if (selector) {
@@ -113,7 +115,7 @@ dom.selectElement = function (selector, context) {
 
 //创建元素
 dom.createElement = function (name, attrs) {
-    var el = doc.createElement(name),
+    let el = doc.createElement(name),
         key;
     if (isObject(attrs)) {
         for (key in attrs) {
@@ -125,7 +127,7 @@ dom.createElement = function (name, attrs) {
 
 //添加元素事件
 dom._on = function (el, type, callback) {
-    var id = el.guid,
+    let id = el.guid,
         handler;
     if (!id) {
         id = guid++;
@@ -145,8 +147,8 @@ dom._on = function (el, type, callback) {
 };
 
 dom.on = function (selector, type, callback, off) {
-    var el = this.selectElement(selector),
-        i, t;
+    let el = this.selectElement(selector),
+        i;
     if (el) {
         if (type) {
             //添加多个事件，以空格分开
@@ -154,7 +156,7 @@ dom.on = function (selector, type, callback, off) {
             i = type.length;
             if (isFunction(callback)) {
                 for (; i--;) {
-                    t = type[i];
+                    let t = type[i];
                     off ? this._off(el, t, callback) :
                         this._on(el, t, callback);
                 }
@@ -173,14 +175,11 @@ dom.on = function (selector, type, callback, off) {
 
 //移除元素的事件
 dom._off = function (el, type, callback) {
-    var id = el.guid,
-        handlers = this.handlers[id],
-        i = 0, len;
+    let handlers = this.handlers[el.guid];
     if (handlers) {
         if (type && (handlers = handlers[type])) {
-            len = handlers.length;
             if (callback) {
-                for (; i < len; i++ ) {
+                for (let i = 0, len = handlers.length; i < len; i++ ) {
                     if (handlers[i] === callback) {
                         handlers.splice(i, 1);
                         el.removeEventListener(type, callback);
@@ -194,8 +193,8 @@ dom._off = function (el, type, callback) {
                 dom.handlers[type] = [];
             }
         } else if (!type) {//如果没有type, 则移除该元素的所有事件
-            for (i in handlers) {
-                this._off(el, i);
+            for (let key in handlers) {
+                this._off(el, key);
             }
         }
     }
@@ -206,10 +205,10 @@ dom.off = function (selector, type, callback) {
 };
 
 dom.once = function (selector, type, callback) {
-    var cb, _this = this;
+    let cb, _this = this;
     if (isFunction(callback)) {
         cb = function () {
-            var args = Array.prototype.slice.call(arguments);
+            let args = Array.prototype.slice.call(arguments);
             callback.apply(this, args);
             _this.off(selector, type, cb);
         };
@@ -219,7 +218,7 @@ dom.once = function (selector, type, callback) {
 };
 
 dom.fsApi = (function () {
-    var fullScreenApi = [
+    let fullScreenApi = [
             //W3C
             [
                 "requestFullscreen",
@@ -260,10 +259,8 @@ dom.fsApi = (function () {
         ],
         fsApi = null,
         defApi = fullScreenApi[0],
-        i = 0,
-        len = fullScreenApi.length,
         tmp, support;
-    for (; i < len; i++) {
+    for (let i = 0, len = fullScreenApi.length; i < len; i++) {
         tmp = fullScreenApi[i];
         if (tmp[1] in document) {
             support = true;
@@ -279,3 +276,5 @@ dom.fsApi = (function () {
     }
     return fsApi;
 })();
+
+export default dom;

@@ -1,4 +1,5 @@
-import {isFunction} from "./global.js";
+import {isFunction, isString} from "./global.js";
+
 function CEvent(type) {
     this.type = type;
     this.data = null;

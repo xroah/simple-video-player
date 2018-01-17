@@ -1,8 +1,5 @@
 "use strict";
-var doc = document,
-    guid = 1,
-    DEFAULT_HEIGHT = 500,
-    DEFAULT_OPTIONS = {
+const DEFAULT_OPTIONS = {
         autoPlay: false,
         defaultVolume: 50,
         loop: false,
@@ -17,24 +14,27 @@ var doc = document,
         "3": "MEDIA_ERR_DECODE",
         "4": "MEDIA_ERR_SRC_NOT_SUPPORTED"
     },
-    hideVolumePopTimer = null,
-    hideControlsTimer = null,
-    HIDE_CLASS = "rplayer-hide",
     TYPE = {
         function: "[object Function]",
         object: "[object Object]",
         string: "[object String]",
         undef: "[object Undefined]"
-    },
-    isType = function (type) {
-        return function (obj) {
-            return Object.prototype.toString.call(obj) === TYPE[type];
-        };
-    },
+    };
+let doc = document,
+    isType = type => obj => Object.prototype.toString.call(obj) === TYPE[type],
     isFunction = isType("function"),
     isObject = isType("object"),
     isString = isType("string"),
     isUndefined = isType("undef"),
-    isWindow = function (obj) {
-        return obj && obj.window === obj;
-    };
+    isWindow = obj => obj && obj.window === obj;
+
+export {
+    doc,
+    DEFAULT_OPTIONS,
+    ERROR_TYPE,
+    isFunction,
+    isObject,
+    isString,
+    isUndefined,
+    isWindow
+};
