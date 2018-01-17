@@ -80,7 +80,8 @@ fn.initFullScreenEvent = function () {
     return this;
 };
 
-fn.loop = function () {
+fn.playEnd = function () {
+    this.trigger("play.end");
     return this.video.isLoop() ? this.play() :
         this.pause();
 };
@@ -105,11 +106,8 @@ fn.error = function () {
     let err = this.video.isError(),
         currentTime = this.video.getCurrentTime(),
         msg;
-    //出现错误刷新调用reload之后，会触发updatetime事件更新时间，时间为0
-    //则不能从中断处理开始播放,故时间不为0时保存，
-    if (currentTime) {
-        this.playedTime = currentTime
-    }
+    //出现错误保存当前播放进度，恢复后从当前进度继续播放
+    this.playedTime = currentTime;
     err = ERROR_TYPE[err];
     switch (err) {
         case "MEDIA_ERR_ABORTED":
@@ -145,11 +143,9 @@ fn.initPlayEvent = function () {
     })
         .on(videoEl, "progress", this.progress.bind(this))
         .on(videoEl, "canplay seeked", this.hideLoading.bind(this))
-        .on(videoEl, "ended", this.loop.bind(this))
+        .on(videoEl, "ended", this.playEnd.bind(this))
         .on(videoEl, "error", this.error.bind(this))
-        .on(videoEl, "contextmenu", function (evt) {
-            evt.preventDefault();
-        });
+        .on(videoEl, "contextmenu", evt => evt.preventDefault());
 
     return this;
 };
@@ -172,8 +168,8 @@ fn.keyDown = function (evt) {
     //控制条被禁用，不做处理
     if (this.controlsDisabled) return;
     let key = evt.key.toLowerCase(),
-        //up,down, left, right为IE浏览器中的上，下按键
-        //arrowup,arrowdown, arrowleft, arrowright为其他浏览器中的上，下按键
+        //up,down, left, right为IE浏览器中的上，下，左，右按键
+        //arrowup,arrowdown, arrowleft, arrowright为其他浏览器中的上，下， 左， 右按键
         //按上下键音量加减5
         regUpOrDown = /(up)|(down)/,
         regLeftOrRight = /(left)|(right)/,
@@ -396,12 +392,13 @@ fn.updateProgressByStep = function (step) {
 };
 
 fn.updateTime = function (current) {
-    let time = this.video.convertTime(this.video.getCurrentTime()),
+    let time = this.video.getDuration(),
         tmp = this.totalTime;
     if (current) {
         tmp = this.currentTime;
+        time = this.video.getCurrentTime();
     }
-    tmp.innerHTML = time;
+    tmp.innerHTML = this.video.convertTime(time);
     return this;
 };
 
@@ -530,7 +527,7 @@ fn.initControls = function () {
     dom.addClass(this.controlsPanel, "rplayer-controls");
     this.controlsPanel.innerHTML = controls;
     this.container.appendChild(this.controlsPanel);
-    this.initElements()
+    return this.initElements()
         .updateVolumeStyle(this.video.getVolume())
         .initControlEvent();
 };

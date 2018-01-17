@@ -1,5 +1,5 @@
 import dom from "./dom.js";
-import {doc} from "./global.js";
+import {doc, isUndefined} from "./global.js";
 
 function VideoControl(config) {
     this.config = config;
@@ -21,7 +21,7 @@ VideoControl.prototype = {
         return Math.floor(this.el.volume * 100);
     },
     mute: function (mute) {
-        this.el.muted = !!mute;
+        this.el.muted = isUndefined(mute) ? true : !!mute;
         return this;
     },
     isMuted: function () {
@@ -35,7 +35,11 @@ VideoControl.prototype = {
         return this.el.autoplay;
     },
     play: function (play) {
-        play ? this.el.play() : this.el.pause();
+        if (isUndefined(play) || !!play) {
+            this.el.play();
+        } else {
+            this.el.pause();
+        }
         return this;
     },
     isPaused: function () {

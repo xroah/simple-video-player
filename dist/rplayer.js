@@ -529,7 +529,7 @@ VideoControl.prototype = {
         return Math.floor(this.el.volume * 100);
     },
     mute: function mute(_mute) {
-        this.el.muted = !!_mute;
+        this.el.muted = isUndefined(_mute) ? true : !!_mute;
         return this;
     },
     isMuted: function isMuted() {
@@ -543,7 +543,11 @@ VideoControl.prototype = {
         return this.el.autoplay;
     },
     play: function play(_play) {
-        _play ? this.el.play() : this.el.pause();
+        if (isUndefined(_play) || !!_play) {
+            this.el.play();
+        } else {
+            this.el.pause();
+        }
         return this;
     },
     isPaused: function isPaused() {
@@ -744,7 +748,8 @@ fn.initFullScreenEvent = function () {
     return this;
 };
 
-fn.loop = function () {
+fn.playEnd = function () {
+    this.trigger("play.end");
     return this.video.isLoop() ? this.play() : this.pause();
 };
 
@@ -767,11 +772,8 @@ fn.error = function () {
     var err = this.video.isError(),
         currentTime = this.video.getCurrentTime(),
         msg = void 0;
-    //出现错误刷新调用reload之后，会触发updatetime事件更新时间，时间为0
-    //则不能从中断处理开始播放,故时间不为0时保存，
-    if (currentTime) {
-        this.playedTime = currentTime;
-    }
+    //出现错误保存当前播放进度，恢复后从当前进度继续播放
+    this.playedTime = currentTime;
     err = ERROR_TYPE[err];
     switch (err) {
         case "MEDIA_ERR_ABORTED":
@@ -805,8 +807,8 @@ fn.initPlayEvent = function () {
             _this2.playedTime = 0;
         }
         _this2.showLoading().disableControls();
-    }).on(videoEl, "progress", this.progress.bind(this)).on(videoEl, "canplay seeked", this.hideLoading.bind(this)).on(videoEl, "ended", this.loop.bind(this)).on(videoEl, "error", this.error.bind(this)).on(videoEl, "contextmenu", function (evt) {
-        evt.preventDefault();
+    }).on(videoEl, "progress", this.progress.bind(this)).on(videoEl, "canplay seeked", this.hideLoading.bind(this)).on(videoEl, "ended", this.playEnd.bind(this)).on(videoEl, "error", this.error.bind(this)).on(videoEl, "contextmenu", function (evt) {
+        return evt.preventDefault();
     });
 
     return this;
@@ -833,8 +835,8 @@ fn.keyDown = function (evt) {
     if (this.controlsDisabled) return;
     var key = evt.key.toLowerCase(),
 
-    //up,down, left, right为IE浏览器中的上，下按键
-    //arrowup,arrowdown, arrowleft, arrowright为其他浏览器中的上，下按键
+    //up,down, left, right为IE浏览器中的上，下，左，右按键
+    //arrowup,arrowdown, arrowleft, arrowright为其他浏览器中的上，下， 左， 右按键
     //按上下键音量加减5
     regUpOrDown = /(up)|(down)/,
         regLeftOrRight = /(left)|(right)/,
@@ -1056,12 +1058,13 @@ fn.updateProgressByStep = function (step) {
 };
 
 fn.updateTime = function (current) {
-    var time = this.video.convertTime(this.video.getCurrentTime()),
+    var time = this.video.getDuration(),
         tmp = this.totalTime;
     if (current) {
         tmp = this.currentTime;
+        time = this.video.getCurrentTime();
     }
-    tmp.innerHTML = time;
+    tmp.innerHTML = this.video.convertTime(time);
     return this;
 };
 
@@ -1181,7 +1184,7 @@ fn.initControls = function () {
     dom.addClass(this.controlsPanel, "rplayer-controls");
     this.controlsPanel.innerHTML = controls;
     this.container.appendChild(this.controlsPanel);
-    this.initElements().updateVolumeStyle(this.video.getVolume()).initControlEvent();
+    return this.initElements().updateVolumeStyle(this.video.getVolume()).initControlEvent();
 };
 
 fn.initialize = function () {
