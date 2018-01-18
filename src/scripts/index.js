@@ -14,9 +14,9 @@ import VideoControl, {
     VIDEO_LOADED_META,
     VIDEO_PROGRESS,
     VIDEO_SEEKING,
-    VIDEO_TIME_UPDATE,
-    VIDEO_VOLUME_CHANGE
+    VIDEO_TIME_UPDATE
 } from "./video_control.js";
+import VolumeControl, {VOLUME_CLASS_NAME_CHANGE, VOLUME_MUTE, VOLUME_UPDATE} from "./VolumeControl";
 
 let hideVolumePopTimer = null,
     hideControlsTimer = null;
@@ -51,6 +51,7 @@ function RPlayer(selector, options) {
     this.video = new VideoControl(config);
     this.loading = new Loading();
     this.error = new VideoError();
+    this.volumeControl = new VolumeControl(config.defaultVolume);
     this.controls = isUndefined(options.controls) ? true : !!options.controls;
     this.useNativeControls = isUndefined(options.useNativeControls) ? false : options.useNativeControls;
 }
@@ -95,14 +96,10 @@ fn.initFullScreenEvent = function () {
 };
 
 fn.toggleVolumePopupInfo = function (volume) {
-    //当音量设置面板隐藏是才显示当前音量
-    if (dom.hasClass(this.volumePopup, HIDE_CLASS)) {
-        clearTimeout(hideVolumePopTimer);
-        this.volumePopupInfo.innerHTML = "当前音量: " + volume;
-        this.currentVolume.innerHTML = volume;
-        dom.removeClass(this.volumePopupInfo, HIDE_CLASS);
-        hideVolumePopTimer = setTimeout(() => dom.addClass(this.volumePopupInfo, HIDE_CLASS), 3000);
-    }
+    clearTimeout(hideVolumePopTimer);
+    this.volumePopupInfo.innerHTML = "当前音量: " + volume;
+    dom.removeClass(this.volumePopupInfo, HIDE_CLASS);
+    hideVolumePopTimer = setTimeout(() => dom.addClass(this.volumePopupInfo, HIDE_CLASS), 3000);
     return this;
 };
 
@@ -119,7 +116,7 @@ fn.keyDown = function (evt) {
         if (regLeftOrRight.test(key)) {
             this.updateProgressByStep(tmp);
         } else if (regUpOrDown.test(key)) {
-            this.updateVolumeByStep(tmp);
+            this.volumeControl.updateVolumeByStep(tmp);
         } else if (regEsc.test(key)) {
             this.exitFullScreen();
         } else if (regSpace.test(key)) {
@@ -131,53 +128,10 @@ fn.keyDown = function (evt) {
     evt.preventDefault();
 };
 
-fn.updateVolume = function (volume, scale) {
-    scale && (volume *= 100);
-    volume = Math.floor(volume);
-    this.video.setVolume(volume);
-    return this;
-};
-
-fn.mute = function () {
-    //点击静音键
-    if (this.video.isMuted()) {
-        this.video.mute(false);
-    } else {
-        this.video.mute(true);
-    }
-};
-
-fn.updateVolumeByStep = function (step) {
-    let volume = this.video.getVolume();
-    volume += step;
-    volume = volume > 100 ? 100 : volume < 0 ? 0 : volume;
-    this.updateVolume(volume);
-    this.toggleVolumePopupInfo(volume);
-    return this.volumeSlider.trigger("position.change", "v", volume + "%");
-};
-
-fn.updateVolumeStyle = function (volume) {
-    let cls = this.showVolumePopBtn.className,
-        reg = /volume-[^\s]*/;
-    cls = cls.replace(reg, "");
-    if (!volume) {
-        cls += "volume-mute";
-    } else if (volume <= 33) {
-        cls += "volume-1";
-    } else if (volume <= 66) {
-        cls += "volume-2";
-    } else {
-        cls += "volume-3";
-    }
-    this.showVolumePopBtn.className = this.muteBtn.className = cls;
-    this.currentVolume.innerHTML = volume;
-    return this;
-};
-
 //点击显示/隐藏设置音量面板
 fn.toggleVolumeSettingsPanel = function (evt) {
     if (!this.controlsDisabled) {
-        dom.toggleClass(this.volumePopup, HIDE_CLASS);
+        this.volumeControl.toggle();
     }
     //阻止冒泡到document, document点击事件点击面板外任意地方隐藏面板，如不阻止冒泡则显示不出来
     evt.stopPropagation();
@@ -189,15 +143,14 @@ fn.hideVolumeSettingsPanel = function () {
 };
 
 fn.initVolumeEvent = function () {
-    dom.on(this.volumePopup, "mouseleave", this.hideVolumeSettingsPanel.bind(this))
-        .on(doc, "click", evt => {
-            let tgt = evt.target;
-            //点击页面其他地方（点击的不是音量设置面板或者面板内的元素）则隐藏音量面板
-            if (tgt !== this.volumePopup && !this.volumePopup.contains(tgt)) {
-                this.hideVolumeSettingsPanel();
-            }
-        });
-    this.video.on(VIDEO_VOLUME_CHANGE, (evt, volume) => this.updateVolumeStyle(volume));
+    this.volumeControl
+        .on(VOLUME_UPDATE, (evt, volume) => this.video.setVolume(volume))
+        .on(VOLUME_CLASS_NAME_CHANGE, (evt, cls) => {
+            let cn = this.showVolumePopBtn.className;
+            let reg = /volume-\S+/;
+            this.showVolumePopBtn.className = cn.replace(reg, "") + cls;
+        })
+        .on(VOLUME_MUTE, (evt, mute) => mute ? this.video.mute(true) : this.video.mute(false));
     return this;
 };
 
@@ -288,15 +241,10 @@ fn.disableControls = function () {
 };
 
 fn.initControlEvent = function () {
-    //初始化时通知slider改变样式
-    this.volumeSlider.trigger("position.change", "v", this.video.getVolume() + "%");
     //滑动改变进度/点击进度条改变进度
     this.videoSlider.on("slider.move.done", (evt, distance) => {
         this.video.setCurrentTime(distance, true);
         this.updateTime();
-    });
-    this.volumeSlider.on("slider.moving",  (evt, distance) => {
-       this.updateVolume(distance, true);
     });
     this.video
         .on(VIDEO_PROGRESS, (evt, buffered, readyState) => this.buffer(buffered, readyState))
@@ -395,7 +343,8 @@ fn.initEvent = function () {
 };
 
 fn.initElements = function () {
-    let context = this.container;
+    let context = this.container,
+        volumePanel = dom.selectElement(".rplayer-audio-control", context);
     this.playBtn = dom.selectElement(".rplayer-play-btn", context);
     this.progressPanel = dom.selectElement(".rplayer-progress-panel", context);
     this.videoPopupTime = dom.selectElement(".rplayer-popup-video-info", context);
@@ -403,16 +352,12 @@ fn.initElements = function () {
     this.totalTime = dom.selectElement(".rplayer-total-time", context);
     this.bufferedBar = dom.selectElement(".rplayer-bufferd-bar", context);
     this.showVolumePopBtn = dom.selectElement(".rplayer-audio-btn", context);
-    this.muteBtn = dom.selectElement(".rplayer-mute", context);
-    this.volumePopup = dom.selectElement(".rplayer-volume-popup", context);
     this.volumePopupInfo = dom.selectElement(".rplayer-popup-volume-info", context);
-    this.currentVolume = dom.selectElement(".rplayer-current-volume", context);
     this.fullScreenBtn = dom.selectElement(".rplayer-fullscreen-btn", context);
     this.mark = dom.selectElement(".rplayer-mark", context);
-    this.volumeSlider = new Slider(true);
+    this.volumeControl.init(volumePanel);
     this.videoSlider = new Slider();
     this.videoSlider.init(this.progressPanel);
-    this.volumeSlider.init(this.volumePopup, this.muteBtn);
     return this;
 };
 
@@ -437,7 +382,6 @@ fn.offEvent = function () {
 fn.destroy = function () {
     if (this.container) {
         this.videoSlider.destroy();
-        this.volumeSlider.destroy();
         this.video.destroy();
         removeProp(this);
         this.offEvent();

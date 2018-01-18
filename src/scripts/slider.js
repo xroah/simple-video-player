@@ -131,7 +131,8 @@ proto.clickTrack = function (evt) {
 
 proto.initEvent = function () {
     dom.on(this.el, "mousedown", this.mouseDown.bind(this))
-        .on(this.track, "click", this.clickTrack.bind(this))
+        .on(this.track, "click", this.clickTrack.bind(this));
+    return this;
 };
 
 proto.destroy = function () {
@@ -140,7 +141,7 @@ proto.destroy = function () {
     removeProp(this);
 };
 
-proto.init = function (target, before) {
+proto.init = function (target) {
     let cls = {
         track: "rplayer-video-track",
         bar: "rplayer-video-progress",
@@ -158,9 +159,9 @@ proto.init = function (target, before) {
     this.el = dom.createElement("div", {class: `rplayer-slider ${cls.slider}`});
     this.track.appendChild(this.bar);
     this.track.append(this.el);
-    before ? target.insertBefore(this.track, before) : target.appendChild(this.track);
+    target.appendChild(this.track);
     this.on("position.change", this.changePosition);
-    this.initEvent();
+    return this.initEvent();
 };
 
 export default Slider;

@@ -195,7 +195,7 @@ let fn = VideoControl.prototype = Object.create(Subscriber.prototype),
                 [VIDEO_TIME_UPDATE]: [this.getCurrentTime()],
                 [VIDEO_PROGRESS]: [this.getBuffered(true), this.getReadyState()],
                 [VIDEO_ERROR]: [this.handleError()],
-                [VIDEO_VOLUME_CHANGE]: [this.isMuted() ? 0 : this.getVolume()]
+               // [VIDEO_VOLUME_CHANGE]: [this.isMuted() ? 0 : this.getVolume()]
             },
                 a = args[type] || [];
             if (type === VIDEO_LOAD_START && this.playedTime) {
@@ -215,7 +215,7 @@ let fn = VideoControl.prototype = Object.create(Subscriber.prototype),
                 .on(el, "canplay seeked", this.notify.bind(this, VIDEO_CAN_PLAY))
                 .on(el, "ended", this.notify.bind(this, VIDEO_ENDED))
                 .on(el, "error", this.notify.bind(this, VIDEO_ERROR))
-                .on(el, "volumechange", this.notify.bind(this, VIDEO_VOLUME_CHANGE))
+                //.on(el, "volumechange", this.notify.bind(this, VIDEO_VOLUME_CHANGE))
                 .on(el, "contextmenu", evt => evt.preventDefault());
         },
         init(target) {
@@ -231,7 +231,6 @@ let fn = VideoControl.prototype = Object.create(Subscriber.prototype),
                 .loop(this.config.loop)
                 .setPoster(this.config.poster)
                 .setPreload(this.config.preload)
-                .setVolume(this.config.defaultVolume)
                 .initEvent();
             return this;
         },

@@ -556,6 +556,7 @@ proto.clickTrack = function (evt) {
 
 proto.initEvent = function () {
     dom.on(this.el, "mousedown", this.mouseDown.bind(this)).on(this.track, "click", this.clickTrack.bind(this));
+    return this;
 };
 
 proto.destroy = function () {
@@ -563,7 +564,7 @@ proto.destroy = function () {
     removeProp(this);
 };
 
-proto.init = function (target, before) {
+proto.init = function (target) {
     var cls = {
         track: "rplayer-video-track",
         bar: "rplayer-video-progress",
@@ -581,13 +582,13 @@ proto.init = function (target, before) {
     this.el = dom.createElement("div", { class: "rplayer-slider " + cls.slider });
     this.track.appendChild(this.bar);
     this.track.append(this.el);
-    before ? target.insertBefore(this.track, before) : target.appendChild(this.track);
+    target.appendChild(this.track);
     this.on("position.change", this.changePosition);
-    this.initEvent();
+    return this.initEvent();
 };
 
 var tpl = '<div class="rplayer-popup-info rplayer-popup-volume-info rplayer-hide">10:00</div>';
-var controls = '<div class="rplayer-popup-info rplayer-popup-video-info rplayer-hide">10:00</div>' + '        <div class="rplayer-progress-panel">' + '            <div class="rplayer-bufferd-bar"></div>' + '            <div class="rplayer-mark rplayer-hide"></div>' + '        </div>' + '        <div class="rplayer-play-control rplayer-lf">' + '            <button type="button" class="rplayer-play-btn"></button>' + '            <span class="rplayer-time-info">' + '               <span class="rplayer-current-time">00:00</span>/' + '               <span class="rplayer-total-time">00:00</span>' + '             </span>' + '        </div>' + '        <div class="rplayer-settings rplayer-rt">' + '            <button type="button" class="rplayer-fullscreen-btn rplayer-rt"></button>' + '            <div class="rplayer-audio-control rplayer-rt">' + '                <button type="button" class="rplayer-audio-btn volume-1"></button>' + '                <div class="rplayer-volume-popup rplayer-hide">' + '                    <span class="rplayer-current-volume">12</span>' + '                    <button class="rplayer-mute volume-1"></button>' + '                </div>' + '            </div>' + '        </div>';
+var controls = '<div class="rplayer-popup-info rplayer-popup-video-info rplayer-hide">10:00</div>' + '        <div class="rplayer-progress-panel">' + '            <div class="rplayer-bufferd-bar"></div>' + '            <div class="rplayer-mark rplayer-hide"></div>' + '        </div>' + '        <div class="rplayer-play-control rplayer-lf">' + '            <button type="button" class="rplayer-play-btn"></button>' + '            <span class="rplayer-time-info">' + '               <span class="rplayer-current-time">00:00</span>/' + '               <span class="rplayer-total-time">00:00</span>' + '             </span>' + '        </div>' + '        <div class="rplayer-settings rplayer-rt">' + '            <button type="button" class="rplayer-fullscreen-btn rplayer-rt"></button>' + '            <div class="rplayer-audio-control rplayer-rt">' + '                <button type="button" class="rplayer-audio-btn volume-1"></button>' + '            </div>' + '        </div>';
 
 function Loading() {
     this.el = dom.createElement("div", { "class": "rplayer-loading rplayer-hide" });
@@ -660,7 +661,7 @@ var VIDEO_PROGRESS = "video.progress";
 var VIDEO_CAN_PLAY = "video.can.play";
 var VIDEO_ENDED = "video.ended";
 var VIDEO_ERROR = "video.error";
-var VIDEO_VOLUME_CHANGE = "video.volume.change";
+
 
 var fn = VideoControl.prototype = Object.create(Subscriber.prototype);
 var proto$1 = {
@@ -840,7 +841,7 @@ var proto$1 = {
     notify: function notify(type) {
         var _args;
 
-        var args = (_args = {}, _defineProperty(_args, VIDEO_LOADED_META, [{ duration: this.getDuration() }]), _defineProperty(_args, VIDEO_TIME_UPDATE, [this.getCurrentTime()]), _defineProperty(_args, VIDEO_PROGRESS, [this.getBuffered(true), this.getReadyState()]), _defineProperty(_args, VIDEO_ERROR, [this.handleError()]), _defineProperty(_args, VIDEO_VOLUME_CHANGE, [this.isMuted() ? 0 : this.getVolume()]), _args),
+        var args = (_args = {}, _defineProperty(_args, VIDEO_LOADED_META, [{ duration: this.getDuration() }]), _defineProperty(_args, VIDEO_TIME_UPDATE, [this.getCurrentTime()]), _defineProperty(_args, VIDEO_PROGRESS, [this.getBuffered(true), this.getReadyState()]), _defineProperty(_args, VIDEO_ERROR, [this.handleError()]), _args),
             a = args[type] || [];
         if (type === VIDEO_LOAD_START && this.playedTime) {
             this.setCurrentTime(this.playedTime);
@@ -850,7 +851,9 @@ var proto$1 = {
     },
     initEvent: function initEvent() {
         var el = this.el;
-        dom.on(el, "loadedmetadata", this.notify.bind(this, VIDEO_LOADED_META)).on(el, "timeupdate", this.notify.bind(this, VIDEO_TIME_UPDATE)).on(el, "dblclick", this.notify.bind(this, VIDEO_DBLCLICK)).on(el, "seeking", this.notify.bind(this, VIDEO_SEEKING)).on(el, "loadstart", this.notify.bind(this, VIDEO_LOAD_START)).on(el, "progress", this.notify.bind(this, VIDEO_PROGRESS)).on(el, "canplay seeked", this.notify.bind(this, VIDEO_CAN_PLAY)).on(el, "ended", this.notify.bind(this, VIDEO_ENDED)).on(el, "error", this.notify.bind(this, VIDEO_ERROR)).on(el, "volumechange", this.notify.bind(this, VIDEO_VOLUME_CHANGE)).on(el, "contextmenu", function (evt) {
+        dom.on(el, "loadedmetadata", this.notify.bind(this, VIDEO_LOADED_META)).on(el, "timeupdate", this.notify.bind(this, VIDEO_TIME_UPDATE)).on(el, "dblclick", this.notify.bind(this, VIDEO_DBLCLICK)).on(el, "seeking", this.notify.bind(this, VIDEO_SEEKING)).on(el, "loadstart", this.notify.bind(this, VIDEO_LOAD_START)).on(el, "progress", this.notify.bind(this, VIDEO_PROGRESS)).on(el, "canplay seeked", this.notify.bind(this, VIDEO_CAN_PLAY)).on(el, "ended", this.notify.bind(this, VIDEO_ENDED)).on(el, "error", this.notify.bind(this, VIDEO_ERROR))
+        //.on(el, "volumechange", this.notify.bind(this, VIDEO_VOLUME_CHANGE))
+        .on(el, "contextmenu", function (evt) {
             return evt.preventDefault();
         });
     },
@@ -862,7 +865,7 @@ var proto$1 = {
         this.el = video;
         dom.addClass(this.el, "rplayer-video");
         target.appendChild(video);
-        this.initSource(this.source).autoPlay(this.config.autoPlay).loop(this.config.loop).setPoster(this.config.poster).setPreload(this.config.preload).setVolume(this.config.defaultVolume).initEvent();
+        this.initSource(this.source).autoPlay(this.config.autoPlay).loop(this.config.loop).setPoster(this.config.poster).setPreload(this.config.preload).initEvent();
         return this;
     },
     destroy: function destroy() {
@@ -873,6 +876,110 @@ var proto$1 = {
 };
 
 extend(fn, proto$1);
+
+var VOLUME_UPDATE = "volume.update";
+var VOLUME_MUTE = "volume.mute";
+var VOLUME_CLASS_NAME_CHANGE = "volume.className.change";
+
+function VolumeControl(volume) {
+    Subscriber.call(this);
+    this.el = dom.createElement("div", { "class": "rplayer-volume-popup rplayer-hide" });
+    this.valueEl = dom.createElement("div", { "class": "rplayer-current-volume" });
+    this.muteBtn = dom.createElement("button", { "class": "rplayer-mute volume-1" });
+    this.slider = new Slider(true);
+    this.volume = volume;
+    this.muted = false;
+}
+
+VolumeControl.prototype = Object.create(Subscriber.prototype);
+
+var proto$2 = {
+    constructor: VolumeControl,
+    show: function show() {
+        dom.removeClass(this.el, "rplayer-hide");
+        return this;
+    },
+    hide: function hide() {
+        dom.addClass(this.el, "rplayer-hide");
+        return this;
+    },
+    toggle: function toggle() {
+        dom.toggleClass(this.el, "rplayer-hide");
+        return this;
+    },
+    updateVolume: function updateVolume(volume, scale, sliderMove) {
+        scale && (volume *= 100);
+        volume = Math.floor(volume);
+        this.volume = volume;
+        if (!volume) {
+            this.muted = true;
+            this.trigger(VOLUME_MUTE, this.muted);
+        } else {
+            this.muted = false;
+            this.trigger(VOLUME_UPDATE, volume);
+        }
+        this.updateStyle(volume, sliderMove);
+        return this;
+    },
+    updateVolumeByStep: function updateVolumeByStep(step) {
+        var volume = this.volume + step;
+        volume = volume > 100 ? 100 : volume < 0 ? 0 : volume;
+        this.updateVolume(volume);
+    },
+    updateStyle: function updateStyle(volume, sliderMove) {
+        var cls = this.muteBtn.className,
+            reg = /volume-\S+/;
+        cls = cls.replace(reg, "");
+        if (!volume) {
+            reg = "volume-mute";
+        } else if (volume <= 33) {
+            reg = "volume-1";
+        } else if (volume <= 66) {
+            reg = "volume-2";
+        } else {
+            reg = "volume-3";
+        }
+        this.muteBtn.className = cls + reg;
+        this.valueEl.innerHTML = volume;
+        //如果通过移动滑块改变音量则不重复改变slider的位置
+        !sliderMove && this.slider.updateVPosition(volume + "%");
+        this.trigger(VOLUME_CLASS_NAME_CHANGE, reg);
+        return this;
+    },
+    mute: function mute() {
+        if (this.muted = !this.muted) {
+            this.updateStyle(0);
+        } else {
+            this.updateStyle(this.volume);
+        }
+        this.trigger(VOLUME_MUTE, this.muted);
+    },
+    initEvent: function initEvent() {
+        var _this = this;
+
+        dom.on(this.muteBtn, "click", this.mute.bind(this)).on(this.el, "mouseleave", this.hide.bind(this)).on(doc, "click", function (evt) {
+            var tgt = evt.target;
+            //点击页面其他地方（点击的不是音量设置面板或者面板内的元素）则隐藏音量面板
+            if (tgt !== _this.el && !_this.el.contains(tgt)) {
+                _this.hide();
+            }
+        });
+        this.slider.on("slider.moving", function (evt, distance) {
+            _this.updateVolume(distance, true, true);
+        });
+        return this;
+    },
+    init: function init(target) {
+        this.el.appendChild(this.valueEl);
+        this.slider.init(this.el);
+        this.el.appendChild(this.muteBtn);
+        target.appendChild(this.el);
+        this.updateVolume(this.volume).initEvent();
+        return this;
+    }
+};
+
+extend(VolumeControl.prototype, proto$2);
 
 var hideVolumePopTimer = null;
 var hideControlsTimer = null;
@@ -907,6 +1014,7 @@ function RPlayer(selector, options) {
     this.video = new VideoControl(config);
     this.loading = new Loading();
     this.error = new VideoError();
+    this.volumeControl = new VolumeControl(config.defaultVolume);
     this.controls = isUndefined(options.controls) ? true : !!options.controls;
     this.useNativeControls = isUndefined(options.useNativeControls) ? false : options.useNativeControls;
 }
@@ -951,16 +1059,12 @@ fn$1.initFullScreenEvent = function () {
 fn$1.toggleVolumePopupInfo = function (volume) {
     var _this2 = this;
 
-    //当音量设置面板隐藏是才显示当前音量
-    if (dom.hasClass(this.volumePopup, HIDE_CLASS)) {
-        clearTimeout(hideVolumePopTimer);
-        this.volumePopupInfo.innerHTML = "当前音量: " + volume;
-        this.currentVolume.innerHTML = volume;
-        dom.removeClass(this.volumePopupInfo, HIDE_CLASS);
-        hideVolumePopTimer = setTimeout(function () {
-            return dom.addClass(_this2.volumePopupInfo, HIDE_CLASS);
-        }, 3000);
-    }
+    clearTimeout(hideVolumePopTimer);
+    this.volumePopupInfo.innerHTML = "当前音量: " + volume;
+    dom.removeClass(this.volumePopupInfo, HIDE_CLASS);
+    hideVolumePopTimer = setTimeout(function () {
+        return dom.addClass(_this2.volumePopupInfo, HIDE_CLASS);
+    }, 3000);
     return this;
 };
 
@@ -977,7 +1081,7 @@ fn$1.keyDown = function (evt) {
         if (regLeftOrRight.test(key)) {
             this.updateProgressByStep(tmp);
         } else if (regUpOrDown.test(key)) {
-            this.updateVolumeByStep(tmp);
+            this.volumeControl.updateVolumeByStep(tmp);
         } else if (regEsc.test(key)) {
             this.exitFullScreen();
         } else if (regSpace.test(key)) {
@@ -989,53 +1093,10 @@ fn$1.keyDown = function (evt) {
     evt.preventDefault();
 };
 
-fn$1.updateVolume = function (volume, scale) {
-    scale && (volume *= 100);
-    volume = Math.floor(volume);
-    this.video.setVolume(volume);
-    return this;
-};
-
-fn$1.mute = function () {
-    //点击静音键
-    if (this.video.isMuted()) {
-        this.video.mute(false);
-    } else {
-        this.video.mute(true);
-    }
-};
-
-fn$1.updateVolumeByStep = function (step) {
-    var volume = this.video.getVolume();
-    volume += step;
-    volume = volume > 100 ? 100 : volume < 0 ? 0 : volume;
-    this.updateVolume(volume);
-    this.toggleVolumePopupInfo(volume);
-    return this.volumeSlider.trigger("position.change", "v", volume + "%");
-};
-
-fn$1.updateVolumeStyle = function (volume) {
-    var cls = this.showVolumePopBtn.className,
-        reg = /volume-[^\s]*/;
-    cls = cls.replace(reg, "");
-    if (!volume) {
-        cls += "volume-mute";
-    } else if (volume <= 33) {
-        cls += "volume-1";
-    } else if (volume <= 66) {
-        cls += "volume-2";
-    } else {
-        cls += "volume-3";
-    }
-    this.showVolumePopBtn.className = this.muteBtn.className = cls;
-    this.currentVolume.innerHTML = volume;
-    return this;
-};
-
 //点击显示/隐藏设置音量面板
 fn$1.toggleVolumeSettingsPanel = function (evt) {
     if (!this.controlsDisabled) {
-        dom.toggleClass(this.volumePopup, HIDE_CLASS);
+        this.volumeControl.toggle();
     }
     //阻止冒泡到document, document点击事件点击面板外任意地方隐藏面板，如不阻止冒泡则显示不出来
     evt.stopPropagation();
@@ -1049,15 +1110,14 @@ fn$1.hideVolumeSettingsPanel = function () {
 fn$1.initVolumeEvent = function () {
     var _this3 = this;
 
-    dom.on(this.volumePopup, "mouseleave", this.hideVolumeSettingsPanel.bind(this)).on(doc, "click", function (evt) {
-        var tgt = evt.target;
-        //点击页面其他地方（点击的不是音量设置面板或者面板内的元素）则隐藏音量面板
-        if (tgt !== _this3.volumePopup && !_this3.volumePopup.contains(tgt)) {
-            _this3.hideVolumeSettingsPanel();
-        }
-    });
-    this.video.on(VIDEO_VOLUME_CHANGE, function (evt, volume) {
-        return _this3.updateVolumeStyle(volume);
+    this.volumeControl.on(VOLUME_UPDATE, function (evt, volume) {
+        return _this3.video.setVolume(volume);
+    }).on(VOLUME_CLASS_NAME_CHANGE, function (evt, cls) {
+        var cn = _this3.showVolumePopBtn.className;
+        var reg = /volume-\S+/;
+        _this3.showVolumePopBtn.className = cn.replace(reg, "") + cls;
+    }).on(VOLUME_MUTE, function (evt, mute) {
+        return mute ? _this3.video.mute(true) : _this3.video.mute(false);
     });
     return this;
 };
@@ -1152,15 +1212,10 @@ fn$1.disableControls = function () {
 fn$1.initControlEvent = function () {
     var _this5 = this;
 
-    //初始化时通知slider改变样式
-    this.volumeSlider.trigger("position.change", "v", this.video.getVolume() + "%");
     //滑动改变进度/点击进度条改变进度
     this.videoSlider.on("slider.move.done", function (evt, distance) {
         _this5.video.setCurrentTime(distance, true);
         _this5.updateTime();
-    });
-    this.volumeSlider.on("slider.moving", function (evt, distance) {
-        _this5.updateVolume(distance, true);
     });
     this.video.on(VIDEO_PROGRESS, function (evt, buffered, readyState) {
         return _this5.buffer(buffered, readyState);
@@ -1261,7 +1316,8 @@ fn$1.initEvent = function () {
 };
 
 fn$1.initElements = function () {
-    var context = this.container;
+    var context = this.container,
+        volumePanel = dom.selectElement(".rplayer-audio-control", context);
     this.playBtn = dom.selectElement(".rplayer-play-btn", context);
     this.progressPanel = dom.selectElement(".rplayer-progress-panel", context);
     this.videoPopupTime = dom.selectElement(".rplayer-popup-video-info", context);
@@ -1269,16 +1325,12 @@ fn$1.initElements = function () {
     this.totalTime = dom.selectElement(".rplayer-total-time", context);
     this.bufferedBar = dom.selectElement(".rplayer-bufferd-bar", context);
     this.showVolumePopBtn = dom.selectElement(".rplayer-audio-btn", context);
-    this.muteBtn = dom.selectElement(".rplayer-mute", context);
-    this.volumePopup = dom.selectElement(".rplayer-volume-popup", context);
     this.volumePopupInfo = dom.selectElement(".rplayer-popup-volume-info", context);
-    this.currentVolume = dom.selectElement(".rplayer-current-volume", context);
     this.fullScreenBtn = dom.selectElement(".rplayer-fullscreen-btn", context);
     this.mark = dom.selectElement(".rplayer-mark", context);
-    this.volumeSlider = new Slider(true);
+    this.volumeControl.init(volumePanel);
     this.videoSlider = new Slider();
     this.videoSlider.init(this.progressPanel);
-    this.volumeSlider.init(this.volumePopup, this.muteBtn);
     return this;
 };
 
@@ -1298,7 +1350,6 @@ fn$1.offEvent = function () {
 fn$1.destroy = function () {
     if (this.container) {
         this.videoSlider.destroy();
-        this.volumeSlider.destroy();
         this.video.destroy();
         removeProp(this);
         this.offEvent();

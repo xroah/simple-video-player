@@ -15,10 +15,6 @@ let tpl = '<div class="rplayer-popup-info rplayer-popup-volume-info rplayer-hide
         '            <button type="button" class="rplayer-fullscreen-btn rplayer-rt"></button>' +
         '            <div class="rplayer-audio-control rplayer-rt">' +
         '                <button type="button" class="rplayer-audio-btn volume-1"></button>' +
-        '                <div class="rplayer-volume-popup rplayer-hide">' +
-        '                    <span class="rplayer-current-volume">12</span>' +
-        '                    <button class="rplayer-mute volume-1"></button>' +
-        '                </div>' +
         '            </div>' +
         '        </div>';
 export {tpl, controls};
