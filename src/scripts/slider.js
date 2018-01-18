@@ -99,6 +99,14 @@ proto.mouseUp = function () {
     this.moving && this.trigger("slider.move.done", this.moveDis);
 };
 
+proto.changePosition = function (evt, dir, dis) {
+    if (dir === "h") {
+        this.updateHPosition(dis, true);
+    } else {
+        this.updateVPosition(dis);
+    }
+};
+
 proto.clickTrack = function (evt) {
     //移动滑块鼠标释放时会触发父元素点击事件,可能会导致鼠标释放后滑块位置改变
     //如果移动滑块则点击事件不做处理
@@ -151,6 +159,7 @@ proto.init = function (target, before) {
     this.track.appendChild(this.bar);
     this.track.append(this.el);
     before ? target.insertBefore(this.track, before) : target.appendChild(this.track);
+    this.on("position.change", this.changePosition);
     this.initEvent();
 };
 

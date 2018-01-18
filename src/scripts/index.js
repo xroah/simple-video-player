@@ -131,21 +131,10 @@ fn.keyDown = function (evt) {
     evt.preventDefault();
 };
 
-fn.updateProgress = function () {
-    //在拖动滑块改变播放进度时候不改变播放进度条位置，只改变播放的当前时间
-    //防止影响滑块以及进度条的位置
-    let progress = this.video.getPlayedPercentage();
-    if (!this.videoSlider.moving) {
-        this.videoSlider.updateHPosition(progress, true);
-    }
-    this.updateTime();
-};
-
 fn.updateVolume = function (volume, scale) {
     scale && (volume *= 100);
     volume = Math.floor(volume);
     this.video.setVolume(volume);
-    console.log(volume)
     return this;
 };
 
@@ -164,6 +153,7 @@ fn.updateVolumeByStep = function (step) {
     volume = volume > 100 ? 100 : volume < 0 ? 0 : volume;
     this.updateVolume(volume);
     this.toggleVolumePopupInfo(volume);
+    return this.volumeSlider.trigger("position.change", "v", volume + "%");
 };
 
 fn.updateVolumeStyle = function (volume) {
@@ -181,7 +171,6 @@ fn.updateVolumeStyle = function (volume) {
     }
     this.showVolumePopBtn.className = this.muteBtn.className = cls;
     this.currentVolume.innerHTML = volume;
-    this.volumeSlider.updateVPosition(volume + "%");
     return this;
 };
 
@@ -265,7 +254,8 @@ fn.updateProgressByStep = function (step) {
     currentTime += step;
     currentTime = currentTime < 0 ? 0 : currentTime > duration ? duration : currentTime;
     this.video.setCurrentTime(currentTime);
-    this.updateProgress();
+    currentTime = this.video.getPlayedPercentage();
+    return this.videoSlider.trigger("position.change", "h", currentTime);
 };
 
 fn.hideControls = function () {
@@ -298,7 +288,8 @@ fn.disableControls = function () {
 };
 
 fn.initControlEvent = function () {
-    let videoEl = this.video.el;
+    //初始化时通知slider改变样式
+    this.volumeSlider.trigger("position.change", "v", this.video.getVolume() + "%");
     //滑动改变进度/点击进度条改变进度
     this.videoSlider.on("slider.move.done", (evt, distance) => {
         this.video.setCurrentTime(distance, true);

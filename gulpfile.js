@@ -39,6 +39,6 @@ gulp.task("uglifyJs", ["bundle"], () => {
         .pipe(gulp.dest("./dist"));
 });
 
-gulp.watch("./src/*.*", ["bundle", "uglifyJs", "minifyCss"]);
+gulp.watch("./src/**", ["bundle", "uglifyJs", "minifyCss"]);
 
 gulp.task("default", ["bundle", "uglifyJs", "minifyCss"]);
