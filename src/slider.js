@@ -1,5 +1,5 @@
 import Subscriber from "./subscriber.js"
-import {doc, isUndefined} from "./global.js";
+import {doc, isUndefined, removeProp} from "./global.js";
 import dom from "./dom.js";
 
 function Slider(vertical) {
@@ -129,9 +129,7 @@ proto.initEvent = function () {
 proto.destroy = function () {
     dom.off(this.track)
         .off(this.el);
-    delete this.track;
-    delete this.bar;
-    delete this.el;
+    removeProp(this);
 };
 
 proto.init = function (target, before) {

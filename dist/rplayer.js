@@ -71,6 +71,24 @@ function extend(target, source) {
     return target;
 }
 
+function toArray(likeArr) {
+    var start = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
+
+    return Array.isArray(likeArr) ? likeArr.slice(start) : likeArr.length ? Array.prototype.slice.call(likeArr) : [];
+}
+
+function removeProp(obj, prop) {
+    if (prop) {
+        try {
+            delete obj[prop];
+        } catch (e) {}
+    } else {
+        for (prop in obj) {
+            delete obj[prop];
+        }
+    }
+}
+
 var dom = {
     handlers: {}
 };
@@ -320,6 +338,8 @@ dom.fsApi = function () {
     return fsApi;
 }();
 
+function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
+
 function CEvent(type) {
     this.type = type;
     this.data = null;
@@ -332,31 +352,53 @@ function Subscriber() {
 
 Subscriber.prototype = {
     constructor: Subscriber,
+    _on: function _on(type, fn) {
+        if (!this.handlers[type]) {
+            this.handlers[type] = [];
+        }
+        this.handlers[type].push(fn);
+    },
     on: function on(type, fn) {
         if (isFunction(fn)) {
             if (!isString(type)) {
-                type = String(type);
+                throw new TypeError("事件类型只能为String");
             }
-            if (!this.handlers[type]) {
-                this.handlers[type] = [];
+            type = type.split(" ");
+            for (var i = type.length; i--;) {
+                this._on(type[i], fn);
             }
-            this.handlers[type].push(fn);
         }
         return this;
     },
-    off: function off(type, fn) {
-        var h = this.handlers[type];
-        if (h) {
+    _off: function _off(type, fn) {
+        var handlers = this.handlers[type];
+        if (handlers) {
             if (isFunction(fn)) {
-                for (var i = h.length; i--;) {
-                    if (h[i] === fn) {
-                        h.splice(i, 1);
+                for (var i = handlers.length; i--;) {
+                    if (fn === handlers[i]) {
+                        handlers.splice(i, 1);
                         break;
                     }
                 }
-            } else if (!fn) {
+            } else if (isUndefined(fn)) {
                 this.handlers[type] = [];
             }
+        }
+    },
+
+    off: function off(type, fn) {
+        var len = arguments.length;
+        if (len && isString(type)) {
+            var args = toArray(arguments, 1);
+            type = type.split(" ");
+            for (var i = type.length; i--;) {
+                var _off2;
+
+                (_off2 = this._off).call.apply(_off2, [this, type[i]].concat(_toConsumableArray(args)));
+            }
+        } else if (!len) {
+            //没传参数则移除所有绑定
+            this.handlers = {};
         }
         return this;
     },
@@ -371,7 +413,7 @@ Subscriber.prototype = {
         }
     },
     trigger: function trigger(type) {
-        var args = Array.prototype.slice.call(arguments, 1),
+        var args = toArray(arguments, 1),
             h = this.handlers[type],
             e = void 0;
         if (h) {
@@ -511,9 +553,7 @@ proto.initEvent = function () {
 
 proto.destroy = function () {
     dom.off(this.track).off(this.el);
-    delete this.track;
-    delete this.bar;
-    delete this.el;
+    removeProp(this);
 };
 
 proto.init = function (target, before) {
@@ -774,6 +814,11 @@ var proto$1 = {
         dom.addClass(this.el, "rplayer-video");
         this.initSource(this.source).autoPlay(this.config.autoPlay).loop(this.config.loop).setPoster(this.config.poster).setPreload(this.config.preload).setVolume(this.config.defaultVolume).initEvent();
         return this.el;
+    },
+    destroy: function destroy() {
+        dom.off(this.el);
+        this.off();
+        removeProp(this);
     }
 };
 
@@ -1190,18 +1235,13 @@ fn$1.offEvent = function () {
     return this;
 };
 
-fn$1.removeProp = function () {
-    for (var key in this) {
-        delete this[key];
-    }
-    return this;
-};
-
 fn$1.destroy = function () {
     if (this.container) {
         this.videoSlider.destroy();
         this.volumeSlider.destroy();
-        this.offEvent().removeProp();
+        this.video.destroy();
+        removeProp(this);
+        this.offEvent();
     }
     return this;
 };

@@ -60,6 +60,23 @@ export function extend(target, source) {
     return target;
 }
 
+export function toArray(likeArr, start = 0) {
+    return Array.isArray(likeArr) ? likeArr.slice(start) :
+        likeArr.length ?  Array.prototype.slice.call(likeArr) : [];
+}
+
+export function removeProp(obj, prop) {
+    if (prop) {
+        try{
+            delete obj[prop];
+        }catch (e){}
+    } else {
+        for (prop in obj) {
+            delete obj[prop];
+        }
+    }
+}
+
 export {
     doc,
     DEFAULT_OPTIONS,

@@ -1,5 +1,5 @@
 import dom from "./dom.js";
-import {doc, DEFAULT_OPTIONS, ERROR_TYPE, KEY_MAP, isObject, isUndefined} from "./global.js";
+import {doc, DEFAULT_OPTIONS, KEY_MAP, isObject, isUndefined, removeProp} from "./global.js";
 import Subscriber from "./subscriber.js";
 import Slider from "./slider.js";
 import {tpl, controls} from "./template.js";
@@ -427,19 +427,13 @@ fn.offEvent = function () {
     return this;
 };
 
-fn.removeProp = function () {
-    for (let key in this) {
-        delete this[key];
-    }
-    return this;
-};
-
 fn.destroy = function () {
     if (this.container) {
         this.videoSlider.destroy();
         this.volumeSlider.destroy();
-        this.offEvent()
-            .removeProp();
+        this.video.destroy();
+        removeProp(this);
+        this.offEvent();
     }
     return this;
 };

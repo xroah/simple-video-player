@@ -1,7 +1,7 @@
 import dom from "./dom.js";
 import {doc, isUndefined, extend} from "./global.js";
 import Subscriber from "./subscriber.js";
-import {ERROR_TYPE} from "./global";
+import {ERROR_TYPE, removeProp} from "./global";
 
 function VideoControl(config) {
     Subscriber.call(this);
@@ -243,6 +243,11 @@ let fn = VideoControl.prototype = Object.create(Subscriber.prototype),
                 .setVolume(this.config.defaultVolume)
                 .initEvent();
             return this.el;
+        },
+        destroy() {
+            dom.off(this.el);
+            this.off();
+            removeProp(this);
         }
     };
 

@@ -1,4 +1,5 @@
-import {isFunction, isString} from "./global.js";
+import {isFunction, isString, toArray} from "./global.js";
+import {isUndefined} from "./global";
 
 function CEvent(type) {
     this.type = type;
@@ -12,31 +13,50 @@ function Subscriber() {
 
 Subscriber.prototype = {
     constructor: Subscriber,
-    on: function (type, fn) {
+    _on(type, fn) {
+        if (!this.handlers[type]) {
+            this.handlers[type] = [];
+        }
+        this.handlers[type].push(fn);
+    },
+    on(type, fn) {
         if (isFunction(fn)) {
             if (!isString(type)) {
-                type = String(type);
+                throw new TypeError("事件类型只能为String");
             }
-            if (!this.handlers[type]) {
-                this.handlers[type] = [];
+            type = type.split(" ");
+            for (let i = type.length; i--;) {
+                this._on(type[i], fn);
             }
-            this.handlers[type].push(fn);
         }
         return this;
     },
-    off: function (type, fn) {
-        let  h = this.handlers[type];
-        if (h) {
+    _off(type, fn) {
+        let handlers = this.handlers[type];
+        if (handlers) {
             if (isFunction(fn)) {
-                for (let i = h.length; i--;) {
-                    if (h[i] === fn) {
-                        h.splice(i, 1);
+                for(let i = handlers.length; i--;) {
+                    if (fn === handlers[i]) {
+                        handlers.splice(i, 1);
                         break;
                     }
                 }
-            } else if (!fn){
+            } else if (isUndefined(fn)) {
                 this.handlers[type] = [];
             }
+        }
+    },
+    off: function (type, fn) {
+        let len = arguments.length;
+        if (len && isString(type)) {
+            let args = toArray(arguments, 1);
+            type = type.split(" ");
+            for (let i = type.length; i--;) {
+                this._off.call(this, type[i], ...args);
+            }
+        } else if (!len) {
+            //没传参数则移除所有绑定
+            this.handlers = {};
         }
         return this;
     },
@@ -51,7 +71,7 @@ Subscriber.prototype = {
         }
     },
     trigger: function (type) {
-        let args = Array.prototype.slice.call(arguments, 1),
+        let args = toArray(arguments, 1),
             h = this.handlers[type],
             e;
         if (h) {
