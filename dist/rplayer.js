@@ -808,7 +808,7 @@ function RPlayer(selector, options) {
         throw new Error("未选中任何元素");
     }
     this.target = target;
-    this.playedTime = 0;
+    this.error = false;
     this.controlsDisabled = false;
     this.video = new VideoControl(config);
     this.controls = isUndefined(options.controls) ? true : !!options.controls;
@@ -890,14 +890,6 @@ fn$1.playEnd = function () {
     return this.video.isLoop() ? this.play() : this.pause();
 };
 
-fn$1.showError = function () {
-    var el = this.errorMsg.parentNode;
-    this.controlsDisabled = true;
-    dom.removeClass(el, HIDE_CLASS);
-    this.hideLoading().hideControls();
-    return this;
-};
-
 fn$1.hideError = function () {
     var el = this.errorMsg.parentNode;
     this.controlsDisabled = false;
@@ -905,16 +897,18 @@ fn$1.hideError = function () {
     return this;
 };
 
-fn$1.error = function (error) {
+fn$1.handleError = function (error) {
     var el = this.errorMsg.parentNode;
     this.controlsDisabled = true;
     this.errorMsg.innerHTML = error.message;
+    this.error = true;
     dom.removeClass(el, HIDE_CLASS);
     this.hideLoading().hideControls();
     return this;
 };
 
 fn$1.refresh = function () {
+    this.error = false;
     this.video.reload();
     this.hideError();
 };
@@ -931,7 +925,7 @@ fn$1.initPlayEvent = function () {
     }).on(VIDEO_TIME_UPDATE, function (evt, currentTime) {
         return _this2.updateTime(currentTime, true);
     }).on(VIDEO_SEEKING, this.showLoading.bind(this)).on(VIDEO_CAN_PLAY, this.hideLoading.bind(this)).on(VIDEO_DBLCLICK, this.toggleFullScreen.bind(this)).on(VIDEO_ENDED, this.playEnd.bind(this)).on(VIDEO_ERROR, function (evt, error) {
-        return _this2.error(error);
+        return _this2.handleError(error);
     });
     return this;
 };
@@ -1150,9 +1144,8 @@ fn$1.hideControls = function () {
 fn$1.showControls = function () {
     var _this5 = this;
 
-    var err = this.video.isError();
     //出错了则不显示控制条
-    if (!err) {
+    if (!this.error) {
         clearTimeout(hideControlsTimer);
         dom.removeClass(this.controlsPanel, HIDE_CLASS);
         if (dom.hasClass(this.volumePopup, HIDE_CLASS)) {

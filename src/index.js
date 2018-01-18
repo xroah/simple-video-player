@@ -44,7 +44,7 @@ function RPlayer(selector, options) {
         throw new Error("未选中任何元素");
     }
     this.target = target;
-    this.playedTime = 0;
+    this.error = false;
     this.controlsDisabled = false;
     this.video = new VideoControl(config);
     this.controls = isUndefined(options.controls) ? true : !!options.controls;
@@ -130,15 +130,6 @@ fn.playEnd = function () {
         this.pause();
 };
 
-fn.showError = function () {
-    let el = this.errorMsg.parentNode;
-    this.controlsDisabled = true;
-    dom.removeClass(el, HIDE_CLASS);
-    this.hideLoading()
-        .hideControls();
-    return this;
-};
-
 fn.hideError = function () {
     let el = this.errorMsg.parentNode;
     this.controlsDisabled = false;
@@ -146,10 +137,11 @@ fn.hideError = function () {
     return this;
 };
 
-fn.error = function (error) {
+fn.handleError = function (error) {
     let el = this.errorMsg.parentNode;
     this.controlsDisabled = true;
     this.errorMsg.innerHTML = error.message;
+    this.error = true;
     dom.removeClass(el, HIDE_CLASS);
     this.hideLoading()
         .hideControls();
@@ -157,6 +149,7 @@ fn.error = function (error) {
 };
 
 fn.refresh = function () {
+    this.error = false;
     this.video.reload();
     this.hideError();
 };
@@ -171,7 +164,7 @@ fn.initPlayEvent = function () {
         .on(VIDEO_CAN_PLAY, this.hideLoading.bind(this))
         .on(VIDEO_DBLCLICK, this.toggleFullScreen.bind(this))
         .on(VIDEO_ENDED, this.playEnd.bind(this))
-        .on(VIDEO_ERROR, (evt, error) => this.error(error));
+        .on(VIDEO_ERROR, (evt, error) => this.handleError(error));
     return this;
 };
 
@@ -385,9 +378,8 @@ fn.hideControls = function () {
 };
 
 fn.showControls = function () {
-    let err = this.video.isError();
     //出错了则不显示控制条
-    if (!err) {
+    if (!this.error) {
         clearTimeout(hideControlsTimer);
         dom.removeClass(this.controlsPanel, HIDE_CLASS);
         if (dom.hasClass(this.volumePopup, HIDE_CLASS)) {
