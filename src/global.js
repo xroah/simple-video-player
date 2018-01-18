@@ -62,7 +62,7 @@ export function extend(target, source) {
 
 export function toArray(likeArr, start = 0) {
     return Array.isArray(likeArr) ? likeArr.slice(start) :
-        likeArr.length ?  Array.prototype.slice.call(likeArr) : [];
+        likeArr.length ?  Array.prototype.slice.call(likeArr, start) : [];
 }
 
 export function removeProp(obj, prop) {

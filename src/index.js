@@ -12,7 +12,8 @@ import VideoControl, {
     VIDEO_LOADED_META,
     VIDEO_PROGRESS,
     VIDEO_SEEKING,
-    VIDEO_TIME_UPDATE
+    VIDEO_TIME_UPDATE,
+    VIDEO_VOLUME_CHANGE
 } from "./video_control.js";
 
 let hideVolumePopTimer = null,
@@ -90,84 +91,6 @@ fn.initFullScreenEvent = function () {
     return this;
 };
 
-fn.showLoading = function () {
-    dom.removeClass(this.loading, HIDE_CLASS);
-    return this;
-};
-
-fn.hideLoading = function () {
-    dom.addClass(this.loading, HIDE_CLASS);
-    return this;
-};
-
-fn.buffer = function (buffered, readyState) {
-    this.bufferedBar && dom.css(this.bufferedBar, "width",  buffered + "%");
-    if (readyState < 3) {
-        this.showLoading();
-    }
-};
-
-fn.updateTime = function (time, current) {
-    let el = this.totalTime;
-    if (current) {
-        el = this.currentTime;
-    }
-    el.innerHTML = this.video.convertTime(time);
-    return this;
-};
-
-fn.updateMetaInfo = function (meta) {
-    if (this.video.isAutoPlay()) {
-        this.play();
-    }
-    this.updateTime(meta.duration)
-        .enableControls();
-};
-
-fn.playEnd = function () {
-    this.trigger("play.end");
-    return this.video.isLoop() ? this.play() :
-        this.pause();
-};
-
-fn.hideError = function () {
-    let el = this.errorMsg.parentNode;
-    this.controlsDisabled = false;
-    dom.addClass(el, HIDE_CLASS);
-    return this;
-};
-
-fn.handleError = function (error) {
-    let el = this.errorMsg.parentNode;
-    this.controlsDisabled = true;
-    this.errorMsg.innerHTML = error.message;
-    this.error = true;
-    dom.removeClass(el, HIDE_CLASS);
-    this.hideLoading()
-        .hideControls();
-    return this;
-};
-
-fn.refresh = function () {
-    this.error = false;
-    this.video.reload();
-    this.hideError();
-};
-
-fn.initPlayEvent = function () {
-    this.video
-        .on(VIDEO_LOAD_START, () => this.showLoading().disableControls())
-        .on(VIDEO_PROGRESS, (evt, buffered, readyState) => this.buffer(buffered, readyState))
-        .on(VIDEO_LOADED_META, (evt, meta) => this.updateMetaInfo(meta))
-        .on(VIDEO_TIME_UPDATE, (evt, currentTime) => this.updateTime(currentTime, true))
-        .on(VIDEO_SEEKING, this.showLoading.bind(this))
-        .on(VIDEO_CAN_PLAY, this.hideLoading.bind(this))
-        .on(VIDEO_DBLCLICK, this.toggleFullScreen.bind(this))
-        .on(VIDEO_ENDED, this.playEnd.bind(this))
-        .on(VIDEO_ERROR, (evt, error) => this.handleError(error));
-    return this;
-};
-
 fn.toggleVolumePopupInfo = function (volume) {
     //当音量设置面板隐藏是才显示当前音量
     if (dom.hasClass(this.volumePopup, HIDE_CLASS)) {
@@ -205,34 +128,6 @@ fn.keyDown = function (evt) {
     evt.preventDefault();
 };
 
-fn.handleClick = function (evt) {
-    let tgt = evt.target;
-    switch (tgt) {
-        case this.showVolumePopBtn:
-            this.toggleVolumeSettingsPanel(evt);
-            break;
-        case this.muteBtn:
-            this.mute();
-            break;
-        case this.playBtn:
-        case this.video.el:
-            this.togglePlay();
-            break;
-        case this.fullScreenBtn:
-            this.toggleFullScreen();
-            break;
-        case this.errorMsg:
-            this.refresh();
-            break;
-    }
-};
-
-fn.initEvent = function () {
-    dom.on(this.container, "click", this.handleClick.bind(this));
-    this.initPlayEvent();
-    return this;
-};
-
 fn.updateProgress = function () {
     //在拖动滑块改变播放进度时候不改变播放进度条位置，只改变播放的当前时间
     //防止影响滑块以及进度条的位置
@@ -240,27 +135,24 @@ fn.updateProgress = function () {
     if (!this.videoSlider.moving) {
         this.videoSlider.updateHPosition(progress, true);
     }
-    this.updateTime(true);
+    this.updateTime();
 };
 
 fn.updateVolume = function (volume, scale) {
     scale && (volume *= 100);
     volume = Math.floor(volume);
     this.video.setVolume(volume);
-    this.updateVolumeStyle(volume);
+    console.log(volume)
     return this;
 };
 
 fn.mute = function () {
-    let volume = this.video.getVolume();
     //点击静音键
     if (this.video.isMuted()) {
         this.video.mute(false);
     } else {
         this.video.mute(true);
-        volume = 0;
     }
-    this.updateVolumeStyle(volume);
 };
 
 fn.updateVolumeByStep = function (step) {
@@ -313,6 +205,7 @@ fn.initVolumeEvent = function () {
                 this.hideVolumeSettingsPanel();
             }
         });
+    this.video.on(VIDEO_VOLUME_CHANGE, (evt, volume) => this.updateVolumeStyle(volume));
     return this;
 };
 
@@ -406,11 +299,16 @@ fn.initControlEvent = function () {
     //滑动改变进度/点击进度条改变进度
     this.videoSlider.on("slider.move.done", (evt, distance) => {
         this.video.setCurrentTime(distance, true);
-        this.updateTime(true);
+        this.updateTime();
     });
     this.volumeSlider.on("slider.moving",  (evt, distance) => {
        this.updateVolume(distance, true);
     });
+    this.video
+        .on(VIDEO_PROGRESS, (evt, buffered, readyState) => this.buffer(buffered, readyState))
+        .on(VIDEO_LOADED_META, (evt, meta) => this.updateMetaInfo(meta))
+        .on(VIDEO_TIME_UPDATE, (evt, currentTime) => this.updateTime(currentTime))
+        .on(VIDEO_DBLCLICK, this.toggleFullScreen.bind(this))
     dom.on(this.progressPanel, "mouseover mousemove", this.showPopupTimeInfo.bind(this))
         .on(this.progressPanel, "mouseout", this.hidePopupTimeInfo.bind(this))
         .on(this.container, "keydown", this.keyDown.bind(this))
@@ -419,22 +317,101 @@ fn.initControlEvent = function () {
         .initFullScreenEvent();
 };
 
-fn.offEvent = function () {
-    dom.off(doc)
-        .off(this.volumePopup)
-        .off(this.container)
-        .off(this.video.el);
+fn.handleClick = function (evt) {
+    let tgt = evt.target;
+    switch (tgt) {
+        case this.showVolumePopBtn:
+            this.toggleVolumeSettingsPanel(evt);
+            break;
+        case this.muteBtn:
+            this.mute();
+            break;
+        case this.playBtn:
+        case this.video.el:
+            this.togglePlay();
+            break;
+        case this.fullScreenBtn:
+            this.toggleFullScreen();
+            break;
+        case this.errorMsg:
+            this.refresh();
+            break;
+    }
+};
+
+
+fn.showLoading = function () {
+    dom.removeClass(this.loading, HIDE_CLASS);
     return this;
 };
 
-fn.destroy = function () {
-    if (this.container) {
-        this.videoSlider.destroy();
-        this.volumeSlider.destroy();
-        this.video.destroy();
-        removeProp(this);
-        this.offEvent();
+fn.hideLoading = function () {
+    dom.addClass(this.loading, HIDE_CLASS);
+    return this;
+};
+
+fn.buffer = function (buffered, readyState) {
+    this.bufferedBar && dom.css(this.bufferedBar, "width",  buffered + "%");
+    if (readyState < 3) {
+        this.showLoading();
     }
+};
+
+fn.updateTime = function (time = this.video.getCurrentTime(), total) {
+    let el = this.currentTime;
+    if (total) {
+        el = this.totalTime;
+    }
+    el.innerHTML = this.video.convertTime(time);
+    return this;
+};
+
+fn.updateMetaInfo = function (meta) {
+    if (this.video.isAutoPlay()) {
+        this.play();
+    }
+    this.updateTime(meta.duration, true)
+        .enableControls();
+};
+
+fn.playEnd = function () {
+    this.trigger("play.end");
+    return this.video.isLoop() ? this.play() :
+        this.pause();
+};
+
+fn.hideError = function () {
+    let el = this.errorMsg.parentNode;
+    this.controlsDisabled = false;
+    dom.addClass(el, HIDE_CLASS);
+    return this;
+};
+
+fn.handleError = function (error) {
+    let el = this.errorMsg.parentNode;
+    this.controlsDisabled = true;
+    this.errorMsg.innerHTML = error.message;
+    this.error = true;
+    dom.removeClass(el, HIDE_CLASS);
+    this.hideLoading()
+        .hideControls();
+    return this;
+};
+
+fn.refresh = function () {
+    this.error = false;
+    this.video.reload();
+    this.hideError();
+};
+
+fn.initEvent = function () {
+    dom.on(this.container, "click", this.handleClick.bind(this));
+    this.video
+        .on(VIDEO_LOAD_START, () => this.showLoading().disableControls())
+        .on(VIDEO_SEEKING, this.showLoading.bind(this))
+        .on(VIDEO_CAN_PLAY, this.hideLoading.bind(this))
+        .on(VIDEO_ENDED, this.playEnd.bind(this))
+        .on(VIDEO_ERROR, (evt, error) => this.handleError(error));
     return this;
 };
 
@@ -467,18 +444,41 @@ fn.initElements = function () {
     return this;
 };
 
-fn.getSource = function () {
-    return this.video.getSource();
-};
-
 fn.initControls = function () {
     this.controlsPanel = dom.createElement("div");
     dom.addClass(this.controlsPanel, "rplayer-controls");
     this.controlsPanel.innerHTML = controls;
     this.container.appendChild(this.controlsPanel);
     return this.initElements()
-        .updateVolumeStyle(this.video.getVolume())
         .initControlEvent();
+};
+
+
+fn.offEvent = function () {
+    dom.off(doc)
+        .off(this.volumePopup)
+        .off(this.container)
+        .off(this.video.el);
+    return this;
+};
+
+fn.destroy = function () {
+    if (this.container) {
+        this.videoSlider.destroy();
+        this.volumeSlider.destroy();
+        this.video.destroy();
+        removeProp(this);
+        this.offEvent();
+    }
+    return this;
+};
+
+fn.getSource = function () {
+    return this.video.getSource();
+};
+
+fn.updateSource = function (src) {
+    this.video.changeSource(src);
 };
 
 fn.initialize = function () {
@@ -504,10 +504,6 @@ fn.initialize = function () {
             .initEvent();
     }
     return this;
-};
-
-fn.updateSource = function (src) {
-    this.video.changeSource(src);
 };
 
 RPlayer.init = function (selector, options) {

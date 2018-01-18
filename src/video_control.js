@@ -18,6 +18,7 @@ export const VIDEO_PROGRESS = "video.progress";
 export const VIDEO_CAN_PLAY = "video.can.play";
 export const VIDEO_ENDED = "video.ended";
 export const VIDEO_ERROR = "video.error";
+export const VIDEO_VOLUME_CHANGE = "video.volume.change";
 
 let fn = VideoControl.prototype = Object.create(Subscriber.prototype),
     proto = {
@@ -99,7 +100,6 @@ let fn = VideoControl.prototype = Object.create(Subscriber.prototype),
         getBuffered(percent) {
             let buffered = this.el.buffered,
                 len = buffered.length;
-            console.log(buffered)
             if (percent) {
                 //缓冲的百分比
                 return len ? buffered = buffered.end(len - 1) / this.getDuration() * 100 : null;
@@ -190,30 +190,19 @@ let fn = VideoControl.prototype = Object.create(Subscriber.prototype),
             };
         },
         notify(type) {
-            let args = [];
-            switch (type) {
-                case "video.loaded.meta":
-                    args.push({
-                        duration: this.getDuration()
-                    });
-                    break;
-                case "video.time.update":
-                    args.push(this.getCurrentTime());
-                    break;
-                case "video.load.start":
-                    if (this.playedTime) {
-                        this.setCurrentTime(this.playedTime);
-                        this.playedTime = 0;
-                    }
-                    break;
-                case "video.progress":
-                    args.push(this.getBuffered(true), this.getReadyState());
-                    break;
-                case "video.error":
-                    args.push(this.handleError());
-                    break;
+            let args = {
+                [VIDEO_LOADED_META]: [{duration: this.getDuration()}],
+                [VIDEO_TIME_UPDATE]: [this.getCurrentTime()],
+                [VIDEO_PROGRESS]: [this.getBuffered(true), this.getReadyState()],
+                [VIDEO_ERROR]: [this.handleError()],
+                [VIDEO_VOLUME_CHANGE]: [this.isMuted() ? 0 : this.getVolume()]
+            },
+                a = args[type] || [];
+            if (type === VIDEO_LOAD_START && this.playedTime) {
+                this.setCurrentTime(this.playedTime);
+                this.playedTime = 0;
             }
-            return this.trigger(type, ...args);
+            return this.trigger(type, ...a);
         },
         initEvent() {
             let el = this.el;
@@ -226,6 +215,7 @@ let fn = VideoControl.prototype = Object.create(Subscriber.prototype),
                 .on(el, "canplay seeked", this.notify.bind(this, VIDEO_CAN_PLAY))
                 .on(el, "ended", this.notify.bind(this, VIDEO_ENDED))
                 .on(el, "error", this.notify.bind(this, VIDEO_ERROR))
+                .on(el, "volumechange", this.notify.bind(this, VIDEO_VOLUME_CHANGE))
                 .on(el, "contextmenu", evt => evt.preventDefault());
         },
         init() {
