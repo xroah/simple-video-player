@@ -4,6 +4,7 @@ import Subscriber from "./subscriber.js";
 import Slider from "./slider.js";
 import {tpl, controls} from "./template.js";
 import Loading from "./loading.js";
+import VideoError from "./error.js";
 import VideoControl, {
     VIDEO_CAN_PLAY,
     VIDEO_DBLCLICK,
@@ -46,10 +47,10 @@ function RPlayer(selector, options) {
         throw new Error("未选中任何元素");
     }
     this.target = target;
-    this.error = false;
     this.controlsDisabled = false;
     this.video = new VideoControl(config);
     this.loading = new Loading();
+    this.error = new VideoError();
     this.controls = isUndefined(options.controls) ? true : !!options.controls;
     this.useNativeControls = isUndefined(options.useNativeControls) ? false : options.useNativeControls;
 }
@@ -274,7 +275,7 @@ fn.hideControls = function () {
 
 fn.showControls = function () {
     //出错了则不显示控制条
-    if (!this.error) {
+    if (!this.video.isError()) {
         clearTimeout(hideControlsTimer);
         dom.removeClass(this.controlsPanel, HIDE_CLASS);
         if (dom.hasClass(this.volumePopup, HIDE_CLASS)) {
@@ -335,7 +336,7 @@ fn.handleClick = function (evt) {
         case this.fullScreenBtn:
             this.toggleFullScreen();
             break;
-        case this.errorMsg:
+        case this.error.msgEl:
             this.refresh();
             break;
     }
@@ -372,26 +373,20 @@ fn.playEnd = function () {
 };
 
 fn.hideError = function () {
-    let el = this.errorMsg.parentNode;
     this.controlsDisabled = false;
-    dom.addClass(el, HIDE_CLASS);
     return this;
 };
 
 fn.handleError = function (error) {
-    let el = this.errorMsg.parentNode;
     this.controlsDisabled = true;
-    this.errorMsg.innerHTML = error.message;
-    this.error = true;
-    dom.removeClass(el, HIDE_CLASS);
     this.loading.hide();
+    this.error.show(error.message);
     return this;
 };
 
 fn.refresh = function () {
-    this.error = false;
     this.video.reload();
-    this.hideError();
+    this.error.hide();
 };
 
 fn.initEvent = function () {
@@ -405,12 +400,6 @@ fn.initEvent = function () {
         .on(VIDEO_CAN_PLAY, () => this.loading.hide())
         .on(VIDEO_ENDED, this.playEnd.bind(this))
         .on(VIDEO_ERROR, (evt, error) => this.handleError(error));
-    return this;
-};
-
-fn.initEssentialElements = function () {
-    let context = this.container;
-    this.errorMsg = dom.selectElement(".rplayer-msg", context);
     return this;
 };
 
@@ -485,16 +474,16 @@ fn.initialize = function () {
         this.container = container;
         this.video.init(container);
         this.loading.init(container);
-        dom.addClass(this.container, "rplayer-container");
+        this.error.init(container);
+        dom.addClass(container, "rplayer-container");
         //播放控制与原生控制二选一，如果设置了useNativeControls为true，则优先使用原生控制
         if (this.controls && !this.useNativeControls) {
             this.initControls();
         } else if (this.useNativeControls) {
             this.video.showControls();
         }
-        this.target.appendChild(this.container);
-        this.initEssentialElements()
-            .initEvent();
+        this.target.appendChild(container);
+        this.initEvent();
     }
     return this;
 };
