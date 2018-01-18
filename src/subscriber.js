@@ -46,7 +46,7 @@ Subscriber.prototype = {
             }
         }
     },
-    off: function (type, fn) {
+    off(type, fn) {
         let len = arguments.length;
         if (len && isString(type)) {
             let args = toArray(arguments, 1);
@@ -60,7 +60,7 @@ Subscriber.prototype = {
         }
         return this;
     },
-    once: function (type, fn) {
+    once(type, fn) {
         if (isFunction(fn)) {
             let self = this,
                 f = function () {
@@ -70,7 +70,7 @@ Subscriber.prototype = {
             this.on(type, f);
         }
     },
-    trigger: function (type) {
+    trigger(type) {
         let args = toArray(arguments, 1),
             h = this.handlers[type],
             e;

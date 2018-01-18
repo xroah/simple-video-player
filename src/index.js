@@ -491,7 +491,7 @@ fn.initialize = function () {
         container.innerHTML = tpl;
         dom.css(container, "height", (height || DEFAULT_HEIGHT) + "px");
         this.container = container;
-        container.appendChild(this.video.init());
+        this.video.init(container);
         dom.addClass(this.container, "rplayer-container");
         //播放控制与原生控制二选一，如果设置了useNativeControls为true，则优先使用原生控制
         if (this.controls && !this.useNativeControls) {

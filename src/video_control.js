@@ -218,13 +218,14 @@ let fn = VideoControl.prototype = Object.create(Subscriber.prototype),
                 .on(el, "volumechange", this.notify.bind(this, VIDEO_VOLUME_CHANGE))
                 .on(el, "contextmenu", evt => evt.preventDefault());
         },
-        init() {
+        init(target) {
             let video = dom.createElement("video"),
                 text = doc.createTextNode(this.config.msg.toString());
-            this.el = video;
             this.source = this.config.source;
             video.appendChild(text);
+            this.el = video;
             dom.addClass(this.el, "rplayer-video");
+            target.appendChild(video);
             this.initSource(this.source)
                 .autoPlay(this.config.autoPlay)
                 .loop(this.config.loop)
@@ -232,7 +233,7 @@ let fn = VideoControl.prototype = Object.create(Subscriber.prototype),
                 .setPreload(this.config.preload)
                 .setVolume(this.config.defaultVolume)
                 .initEvent();
-            return this.el;
+            return this;
         },
         destroy() {
             dom.off(this.el);
