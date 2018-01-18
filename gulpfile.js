@@ -6,7 +6,7 @@ const rollup = require("rollup");
 const babel = require("rollup-plugin-babel");
 
 gulp.task("minifyCss", () => {
-    return gulp.src("./src/index.css")
+    return gulp.src("./src/styles/index.css")
         .pipe(css())
         .pipe(rename("rplayer.min.css"))
         .pipe(gulp.dest("./dist"));
@@ -14,7 +14,7 @@ gulp.task("minifyCss", () => {
 
 gulp.task("bundle", () => {
     return rollup.rollup({
-        input: "src/index.js",
+        input: "src/scripts/index.js",
         plugins: [babel({
             exclude: "node_modules/**"
         })]
