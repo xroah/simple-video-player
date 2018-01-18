@@ -3,7 +3,17 @@ import {doc, DEFAULT_OPTIONS, ERROR_TYPE, KEY_MAP, isObject, isUndefined} from "
 import Subscriber from "./subscriber.js";
 import Slider from "./slider.js";
 import {tpl, controls} from "./template.js";
-import VideoControl from "./video_control.js";
+import VideoControl, {
+    VIDEO_CAN_PLAY,
+    VIDEO_DBLCLICK,
+    VIDEO_ENDED,
+    VIDEO_ERROR,
+    VIDEO_LOAD_START,
+    VIDEO_LOADED_META,
+    VIDEO_PROGRESS,
+    VIDEO_SEEKING,
+    VIDEO_TIME_UPDATE
+} from "./video_control.js";
 
 let hideVolumePopTimer = null,
     hideControlsTimer = null;
@@ -80,6 +90,40 @@ fn.initFullScreenEvent = function () {
     return this;
 };
 
+fn.showLoading = function () {
+    dom.removeClass(this.loading, HIDE_CLASS);
+    return this;
+};
+
+fn.hideLoading = function () {
+    dom.addClass(this.loading, HIDE_CLASS);
+    return this;
+};
+
+fn.buffer = function (buffered, readyState) {
+    this.bufferedBar && dom.css(this.bufferedBar, "width",  buffered + "%");
+    if (readyState < 3) {
+        this.showLoading();
+    }
+};
+
+fn.updateTime = function (time, current) {
+    let el = this.totalTime;
+    if (current) {
+        el = this.currentTime;
+    }
+    el.innerHTML = this.video.convertTime(time);
+    return this;
+};
+
+fn.updateMetaInfo = function (meta) {
+    if (this.video.isAutoPlay()) {
+        this.play();
+    }
+    this.updateTime(meta.duration)
+        .enableControls();
+};
+
 fn.playEnd = function () {
     this.trigger("play.end");
     return this.video.isLoop() ? this.play() :
@@ -102,27 +146,14 @@ fn.hideError = function () {
     return this;
 };
 
-fn.error = function () {
-    let err = this.video.isError(),
-        currentTime = this.video.getCurrentTime(),
-        msg;
-    //出现错误保存当前播放进度，恢复后从当前进度继续播放
-    this.playedTime = currentTime;
-    err = ERROR_TYPE[err];
-    switch (err) {
-        case "MEDIA_ERR_ABORTED":
-            msg = "出错了";
-            break;
-        case "MEDIA_ERR_NETWORK":
-            msg = "网络错误或视频地址无效";
-            break;
-        case "MEDIA_ERR_DECODE":
-        case "MEDIA_ERR_SRC_NOT_SUPPORTED":
-            msg = "解码失败,不支持的视频格式或地址无效";
-    }
-    msg += ",点击刷新";
-    this.errorMsg.innerHTML = msg;
-    this.showError();
+fn.error = function (error) {
+    let el = this.errorMsg.parentNode;
+    this.controlsDisabled = true;
+    this.errorMsg.innerHTML = error.message;
+    dom.removeClass(el, HIDE_CLASS);
+    this.hideLoading()
+        .hideControls();
+    return this;
 };
 
 fn.refresh = function () {
@@ -131,22 +162,16 @@ fn.refresh = function () {
 };
 
 fn.initPlayEvent = function () {
-    let videoEl = this.video.el;
-    dom.on(videoEl, "loadstart stalled", evt => {
-        if (this.playedTime && evt.type === "loadstart") {
-            //出错了从出错的地方开始播放,重置播放时间
-            this.video.setCurrentTime(this.playedTime);
-            this.playedTime = 0;
-        }
-        this.showLoading()
-            .disableControls();
-    })
-        .on(videoEl, "progress", this.progress.bind(this))
-        .on(videoEl, "canplay seeked", this.hideLoading.bind(this))
-        .on(videoEl, "ended", this.playEnd.bind(this))
-        .on(videoEl, "error", this.error.bind(this))
-        .on(videoEl, "contextmenu", evt => evt.preventDefault());
-
+    this.video
+        .on(VIDEO_LOAD_START, () => this.showLoading().disableControls())
+        .on(VIDEO_PROGRESS, (evt, buffered, readyState) => this.buffer(buffered, readyState))
+        .on(VIDEO_LOADED_META, (evt, meta) => this.updateMetaInfo(meta))
+        .on(VIDEO_TIME_UPDATE, (evt, currentTime) => this.updateTime(currentTime, true))
+        .on(VIDEO_SEEKING, this.showLoading.bind(this))
+        .on(VIDEO_CAN_PLAY, this.hideLoading.bind(this))
+        .on(VIDEO_DBLCLICK, this.toggleFullScreen.bind(this))
+        .on(VIDEO_ENDED, this.playEnd.bind(this))
+        .on(VIDEO_ERROR, (evt, error) => this.error(error));
     return this;
 };
 
@@ -345,24 +370,6 @@ fn.hidePopupTimeInfo = function () {
     return this;
 };
 
-fn.showLoading = function () {
-    dom.removeClass(this.loading, HIDE_CLASS);
-    return this;
-};
-
-fn.hideLoading = function () {
-    dom.addClass(this.loading, HIDE_CLASS);
-    return this;
-};
-
-fn.progress = function () {
-    let b = this.video.getBuffered(true);
-    this.bufferedBar && dom.css(this.bufferedBar, "width",  b + "%");
-    if (this.video.getReadyState() < 3) {
-        this.showLoading();
-    }
-};
-
 fn.updateProgressByStep = function (step) {
     let currentTime = this.video.getCurrentTime(),
         duration = this.video.getDuration();
@@ -370,25 +377,6 @@ fn.updateProgressByStep = function (step) {
     currentTime = currentTime < 0 ? 0 : currentTime > duration ? duration : currentTime;
     this.video.setCurrentTime(currentTime);
     this.updateProgress();
-};
-
-fn.updateTime = function (current) {
-    let time = this.video.getDuration(),
-        tmp = this.totalTime;
-    if (current) {
-        tmp = this.currentTime;
-        time = this.video.getCurrentTime();
-    }
-    tmp.innerHTML = this.video.convertTime(time);
-    return this;
-};
-
-fn.updateMetaInfo = function () {
-    if (this.video.isAutoPlay()) {
-        this.play();
-    }
-    this.updateTime()
-        .enableControls();
 };
 
 fn.hideControls = function () {
@@ -434,11 +422,7 @@ fn.initControlEvent = function () {
     dom.on(this.progressPanel, "mouseover mousemove", this.showPopupTimeInfo.bind(this))
         .on(this.progressPanel, "mouseout", this.hidePopupTimeInfo.bind(this))
         .on(this.container, "keydown", this.keyDown.bind(this))
-        .on(this.container, "mousemove", this.showControls.bind(this))
-        .on(videoEl, "loadedmetadata", this.updateMetaInfo.bind(this))
-        .on(videoEl, "timeupdate", this.updateProgress.bind(this))
-        .on(videoEl, "dblclick", this.toggleFullScreen.bind(this))
-        .on(videoEl, "seeking", this.showLoading.bind(this));
+        .on(this.container, "mousemove", this.showControls.bind(this));
     return this.initVolumeEvent()
         .initFullScreenEvent();
 };

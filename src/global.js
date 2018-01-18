@@ -45,6 +45,21 @@ let doc = document,
     isUndefined = isType("undef"),
     isWindow = obj => obj && obj.window === obj;
 
+export function extend(target, source) {
+    if (arguments.length) {
+        for (let key in source) {
+            let copy = source[key],
+                t = target[key];
+            if (isObject(copy) && isObject(t)) {
+                extend(target[key], source[key]);
+            } else {
+                target[key] = copy;
+            }
+        }
+    }
+    return target;
+}
+
 export {
     doc,
     DEFAULT_OPTIONS,
