@@ -3,6 +3,7 @@ import {doc, DEFAULT_OPTIONS, KEY_MAP, isObject, isUndefined, removeProp} from "
 import Subscriber from "./subscriber.js";
 import Slider from "./slider.js";
 import {tpl, controls} from "./template.js";
+import Loading from "./loading.js";
 import VideoControl, {
     VIDEO_CAN_PLAY,
     VIDEO_DBLCLICK,
@@ -48,6 +49,7 @@ function RPlayer(selector, options) {
     this.error = false;
     this.controlsDisabled = false;
     this.video = new VideoControl(config);
+    this.loading = new Loading();
     this.controls = isUndefined(options.controls) ? true : !!options.controls;
     this.useNativeControls = isUndefined(options.useNativeControls) ? false : options.useNativeControls;
 }
@@ -339,21 +341,10 @@ fn.handleClick = function (evt) {
     }
 };
 
-
-fn.showLoading = function () {
-    dom.removeClass(this.loading, HIDE_CLASS);
-    return this;
-};
-
-fn.hideLoading = function () {
-    dom.addClass(this.loading, HIDE_CLASS);
-    return this;
-};
-
 fn.buffer = function (buffered, readyState) {
     this.bufferedBar && dom.css(this.bufferedBar, "width",  buffered + "%");
     if (readyState < 3) {
-        this.showLoading();
+        this.loading.show();
     }
 };
 
@@ -393,8 +384,7 @@ fn.handleError = function (error) {
     this.errorMsg.innerHTML = error.message;
     this.error = true;
     dom.removeClass(el, HIDE_CLASS);
-    this.hideLoading()
-        .hideControls();
+    this.loading.hide();
     return this;
 };
 
@@ -407,9 +397,12 @@ fn.refresh = function () {
 fn.initEvent = function () {
     dom.on(this.container, "click", this.handleClick.bind(this));
     this.video
-        .on(VIDEO_LOAD_START, () => this.showLoading().disableControls())
-        .on(VIDEO_SEEKING, this.showLoading.bind(this))
-        .on(VIDEO_CAN_PLAY, this.hideLoading.bind(this))
+        .on(VIDEO_LOAD_START, () => {
+            this.loading.show();
+            this.disableControls();
+        })
+        .on(VIDEO_SEEKING, () => this.loading.show())
+        .on(VIDEO_CAN_PLAY, () => this.loading.hide())
         .on(VIDEO_ENDED, this.playEnd.bind(this))
         .on(VIDEO_ERROR, (evt, error) => this.handleError(error));
     return this;
@@ -417,7 +410,6 @@ fn.initEvent = function () {
 
 fn.initEssentialElements = function () {
     let context = this.container;
-    this.loading = dom.selectElement(".rplayer-loading", context);
     this.errorMsg = dom.selectElement(".rplayer-msg", context);
     return this;
 };
@@ -492,6 +484,7 @@ fn.initialize = function () {
         dom.css(container, "height", (height || DEFAULT_HEIGHT) + "px");
         this.container = container;
         this.video.init(container);
+        this.loading.init(container);
         dom.addClass(this.container, "rplayer-container");
         //播放控制与原生控制二选一，如果设置了useNativeControls为true，则优先使用原生控制
         if (this.controls && !this.useNativeControls) {
