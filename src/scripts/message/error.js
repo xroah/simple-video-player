@@ -1,4 +1,4 @@
-import dom from "./dom.js";
+import dom from "../dom/index.js";
 
 function VideoError() {
     this.el = dom.createElement("div", {"class": "rplayer-error rplayer-hide"});

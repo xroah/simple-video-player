@@ -1,6 +1,6 @@
-import Subscriber from "./subscriber.js"
-import {doc, isUndefined, removeProp} from "./global.js";
-import dom from "./dom.js";
+import Subscriber from "../subscriber.js"
+import {doc, isUndefined, removeProp} from "../global.js";
+import dom from "../dom/index.js";
 
 function Slider(vertical) {
     Subscriber.call(this);

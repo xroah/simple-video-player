@@ -1,4 +1,4 @@
-import {doc, isFunction, isObject, isUndefined, isString, isWindow} from "./global.js";
+import {doc, isFunction, isObject, isUndefined, isString, isWindow} from "../global.js";
 let dom = {
         handlers: {}
     },

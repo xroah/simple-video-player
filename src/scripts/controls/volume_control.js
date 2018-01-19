@@ -1,8 +1,8 @@
-import dom from "./dom.js";
+import dom from "../dom/index.js";
 import Slider from "./slider.js";
-import Subscriber from "./subscriber.js";
+import Subscriber from "../subscriber.js";
 import {VIDEO_VOLUME_CHANGE} from "./video_control";
-import {doc, extend} from "./global";
+import {doc, extend} from "../global";
 
 export const VOLUME_UPDATE = "volume.update";
 export const VOLUME_MUTE = "volume.mute";

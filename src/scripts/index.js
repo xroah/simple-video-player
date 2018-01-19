@@ -1,10 +1,10 @@
-import dom from "./dom.js";
+import dom from "./dom/index.js";
 import {doc, DEFAULT_OPTIONS, KEY_MAP, isObject, isUndefined, removeProp} from "./global.js";
 import Subscriber from "./subscriber.js";
-import Slider from "./slider.js";
+import Slider from "./controls/slider.js";
 import {tpl, controls} from "./template.js";
-import Loading from "./loading.js";
-import VideoError from "./error.js";
+import Loading from "./message/loading.js";
+import VideoError from "./message/error.js";
 import VideoControl, {
     VIDEO_CAN_PLAY,
     VIDEO_DBLCLICK,
@@ -15,8 +15,8 @@ import VideoControl, {
     VIDEO_PROGRESS,
     VIDEO_SEEKING,
     VIDEO_TIME_UPDATE
-} from "./video_control.js";
-import VolumeControl, {VOLUME_CLASS_NAME_CHANGE, VOLUME_MUTE, VOLUME_UPDATE} from "./VolumeControl";
+} from "./controls/video_control.js";
+import VolumeControl, {VOLUME_CLASS_NAME_CHANGE, VOLUME_MUTE, VOLUME_UPDATE} from "./controls/volume_control.js";
 
 let hideVolumePopTimer = null,
     hideControlsTimer = null;
@@ -135,11 +135,6 @@ fn.toggleVolumeSettingsPanel = function (evt) {
     }
     //阻止冒泡到document, document点击事件点击面板外任意地方隐藏面板，如不阻止冒泡则显示不出来
     evt.stopPropagation();
-};
-
-fn.hideVolumeSettingsPanel = function () {
-    dom.addClass(this.volumePopup, HIDE_CLASS);
-    return this;
 };
 
 fn.initVolumeEvent = function () {

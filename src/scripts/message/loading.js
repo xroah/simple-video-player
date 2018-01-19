@@ -1,4 +1,4 @@
-import dom from "./dom.js";
+import dom from "../dom/index.js";
 
 function Loading() {
     this.el = dom.createElement("div", {"class": "rplayer-loading rplayer-hide"});
