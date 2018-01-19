@@ -1,7 +1,6 @@
 import dom from "./dom/index.js";
 import {doc, DEFAULT_OPTIONS, KEY_MAP, isObject, isUndefined, removeProp} from "./global.js";
 import Subscriber from "./subscriber.js";
-import {tpl} from "./template.js";
 import Loading from "./message/loading.js";
 import VideoError from "./message/error.js";
 import FullScreen from "./controls/video/fullscreen.js";
@@ -19,6 +18,7 @@ import VolumeControl from "./controls/volume_control.js";
 import PlayControl from "./controls/video/play_control.js";
 import TimeInfo from "./message/time_info.js";
 import VideoProgress from "./controls/video/video_progress.js";
+import Popup from "./message/popup.js";
 
 let hideVolumePopTimer = null,
     hideControlsTimer = null;
@@ -57,20 +57,13 @@ function RPlayer(selector, options) {
     this.timeInfo = new TimeInfo();
     this.fullScreen = new FullScreen();
     this.progress = new VideoProgress();
+    this.volumePopup = new Popup(true);
     this.controls = isUndefined(options.controls) ? true : !!options.controls;
     this.useNativeControls = isUndefined(options.useNativeControls) ? false : options.useNativeControls;
 }
 
 let fn = RPlayer.prototype = Object.create(Subscriber.prototype);
 fn.constructor = RPlayer;
-
-fn.toggleVolumePopupInfo = function (volume) {
-    clearTimeout(hideVolumePopTimer);
-    this.volumePopupInfo.innerHTML = "当前音量: " + volume;
-    dom.removeClass(this.volumePopupInfo, HIDE_CLASS);
-    hideVolumePopTimer = setTimeout(() => dom.addClass(this.volumePopupInfo, HIDE_CLASS), 3000);
-    return this;
-};
 
 fn.keyDown = function (evt) {
     //控制条被禁用，不做处理
@@ -80,7 +73,6 @@ fn.keyDown = function (evt) {
         regEsc = /esc/,
         regSpace = /\s|(?:spacebar)/,
         tmp = KEY_MAP[key];
-    console.log(tmp)
     if (tmp) {
         if (regLeftOrRight.test(key)) {
             this.progress.updateByStep(tmp);
@@ -109,15 +101,6 @@ fn.showControls = function () {
         dom.removeClass(this.controlsPanel, HIDE_CLASS);
         hideControlsTimer = setTimeout(() => this.hideControls(), 5000);
     }
-    return this;
-};
-
-fn.initControlEvent = function () {
-    this.video
-        .on(VIDEO_PROGRESS, (evt, buffered, readyState) => this.buffer(buffered, readyState))
-        .on(VIDEO_DBLCLICK, () => this.fullScreen.toggle());
-    dom.on(this.container, "keydown", this.keyDown.bind(this))
-        .on(this.container, "mousemove", this.showControls.bind(this));
     return this;
 };
 
@@ -153,8 +136,7 @@ fn.initEvent = function () {
 };
 
 fn.initControls = function () {
-    let context = this.container,
-        settingsPanel = dom.createElement("div", {"class": "rplayer-settings rplayer-rt"}),
+    let settingsPanel = dom.createElement("div", {"class": "rplayer-settings rplayer-rt"}),
         playControl = dom.createElement("div", {"class": "rplayer-play-control rplayer-lf"});
     this.controlsPanel = dom.createElement("div", {"class": "rplayer-controls"});
     this.fullScreen.init(this.container, settingsPanel);
@@ -162,13 +144,31 @@ fn.initControls = function () {
     this.playControl.init(playControl, this.video);
     this.timeInfo.init(playControl, this.video);
     this.progress.init(this.controlsPanel, this.video);
+    this.volumePopup.init(this.container, "rplayer-popup-volume-info");
     this.controlsPanel.appendChild(settingsPanel);
     this.controlsPanel.appendChild(playControl);
     this.container.appendChild(this.controlsPanel);
-    this.volumePopupInfo = dom.selectElement(".rplayer-popup-volume-info", context);
     return this.initControlEvent();
 };
 
+fn.showVolumePopup = function (volume) {
+    let text = `当前音量: ${volume}`;
+    if (volume === 0) {
+        text = "静音";
+    }
+    this.volumePopup.show(text);
+    return this;
+};
+
+fn.initControlEvent = function () {
+    this.video
+        .on(VIDEO_PROGRESS, (evt, buffered, readyState) => this.buffer(buffered, readyState))
+        .on(VIDEO_VOLUME_CHANGE, (evt, muted, volume) => this.showVolumePopup(muted, volume))
+        .on(VIDEO_DBLCLICK, () => this.fullScreen.toggle());
+    dom.on(this.container, "keydown", this.keyDown.bind(this))
+        .on(this.container, "mousemove", this.showControls.bind(this));
+    return this;
+};
 
 fn.offEvent = function () {
     dom.off(doc)
@@ -200,7 +200,6 @@ fn.initialize = function () {
                 tabIndex: 100 //使元素能够获取焦点
             }),
             height = parseInt(getComputedStyle(this.target).height);
-        container.innerHTML = tpl;
         dom.css(container, "height", (height || DEFAULT_HEIGHT) + "px");
         this.container = container;
         this.video.init(container);

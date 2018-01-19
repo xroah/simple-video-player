@@ -30,7 +30,6 @@ VolumeControl.prototype = {
     },
     updateVolume(volume, sliderMove) {
         this.volume = volume;
-        this.media.mute(!volume);
         this.media.setVolume(volume);
         this.updateStyle(this.volume, sliderMove);
         return this;

@@ -409,8 +409,6 @@ Subscriber.prototype = {
     }
 };
 
-var tpl = '<div class="rplayer-popup-info rplayer-popup-volume-info rplayer-hide">10:00</div>';
-
 function Loading() {
     this.el = dom.createElement("div", { "class": "rplayer-loading rplayer-hide" });
 }
@@ -747,9 +745,7 @@ var proto = {
     },
     initEvent: function initEvent() {
         var el = this.el;
-        dom.on(el, "loadedmetadata", this.notify.bind(this, VIDEO_LOADED_META)).on(el, "timeupdate", this.notify.bind(this, VIDEO_TIME_UPDATE)).on(el, "seeking", this.notify.bind(this, VIDEO_SEEKING)).on(el, "loadstart", this.notify.bind(this, VIDEO_LOAD_START)).on(el, "progress", this.notify.bind(this, VIDEO_PROGRESS)).on(el, "canplay seeked", this.notify.bind(this, VIDEO_CAN_PLAY)).on(el, "ended", this.notify.bind(this, VIDEO_ENDED)).on(el, "error", this.notify.bind(this, VIDEO_ERROR)).on(el, "playing", this.notify.bind(this, VIDEO_PLAYING)).on(el, "pause", this.notify.bind(this, VIDEO_PAUSE))
-        //.on(el, "volumechange", this.notify.bind(this, VIDEO_VOLUME_CHANGE))
-        .on(el, "dblclick", this.notify.bind(this, VIDEO_DBLCLICK)).on(el, "click", this.notify.bind(this, VIDEO_CLICK)).on(el, "contextmenu", function (evt) {
+        dom.on(el, "loadedmetadata", this.notify.bind(this, VIDEO_LOADED_META)).on(el, "timeupdate", this.notify.bind(this, VIDEO_TIME_UPDATE)).on(el, "seeking", this.notify.bind(this, VIDEO_SEEKING)).on(el, "loadstart", this.notify.bind(this, VIDEO_LOAD_START)).on(el, "progress", this.notify.bind(this, VIDEO_PROGRESS)).on(el, "canplay seeked", this.notify.bind(this, VIDEO_CAN_PLAY)).on(el, "ended", this.notify.bind(this, VIDEO_ENDED)).on(el, "error", this.notify.bind(this, VIDEO_ERROR)).on(el, "playing", this.notify.bind(this, VIDEO_PLAYING)).on(el, "pause", this.notify.bind(this, VIDEO_PAUSE)).on(el, "volumechange", this.notify.bind(this, VIDEO_VOLUME_CHANGE)).on(el, "dblclick", this.notify.bind(this, VIDEO_DBLCLICK)).on(el, "click", this.notify.bind(this, VIDEO_CLICK)).on(el, "contextmenu", function (evt) {
             return evt.preventDefault();
         });
     },
@@ -964,7 +960,6 @@ VolumeControl.prototype = {
     },
     updateVolume: function updateVolume(volume, sliderMove) {
         this.volume = volume;
-        this.media.mute(!volume);
         this.media.setVolume(volume);
         this.updateStyle(this.volume, sliderMove);
         return this;
@@ -1102,15 +1097,29 @@ TimeInfo.prototype = {
     }
 };
 
-function Popup() {
+function Popup(autoHide) {
     this.el = dom.createElement("div", { "class": "rplayer-popup-info rplayer-hide" });
     this.visible = false;
+    this.autoHide = !!autoHide;
+    this.timer = null;
 }
 
 Popup.prototype = {
-    show: function show() {
+    show: function show(msg) {
+        var _this = this;
+
         this.visible = true;
+        if (this.timer) {
+            clearTimeout(this.timer);
+            this.timer = null;
+        }
+        if (this.autoHide) {
+            this.timer = setTimeout(function () {
+                return _this.hide();
+            }, 3000);
+        }
         dom.removeClass(this.el, "rplayer-hide");
+        msg && this.updateText(msg);
         return this;
     },
     hide: function hide() {
@@ -1245,7 +1254,6 @@ VideoProgress.prototype = {
     }
 };
 
-var hideVolumePopTimer = null;
 var hideControlsTimer = null;
 var HIDE_CLASS = "rplayer-hide";
 var DEFAULT_HEIGHT = 500;
@@ -1282,24 +1290,13 @@ function RPlayer(selector, options) {
     this.timeInfo = new TimeInfo();
     this.fullScreen = new FullScreen();
     this.progress = new VideoProgress();
+    this.volumePopup = new Popup(true);
     this.controls = isUndefined(options.controls) ? true : !!options.controls;
     this.useNativeControls = isUndefined(options.useNativeControls) ? false : options.useNativeControls;
 }
 
 var fn$1 = RPlayer.prototype = Object.create(Subscriber.prototype);
 fn$1.constructor = RPlayer;
-
-fn$1.toggleVolumePopupInfo = function (volume) {
-    var _this = this;
-
-    clearTimeout(hideVolumePopTimer);
-    this.volumePopupInfo.innerHTML = "当前音量: " + volume;
-    dom.removeClass(this.volumePopupInfo, HIDE_CLASS);
-    hideVolumePopTimer = setTimeout(function () {
-        return dom.addClass(_this.volumePopupInfo, HIDE_CLASS);
-    }, 3000);
-    return this;
-};
 
 fn$1.keyDown = function (evt) {
     //控制条被禁用，不做处理
@@ -1309,7 +1306,6 @@ fn$1.keyDown = function (evt) {
         regEsc = /esc/,
         regSpace = /\s|(?:spacebar)/,
         tmp = KEY_MAP[key];
-    console.log(tmp);
     if (tmp) {
         if (regLeftOrRight.test(key)) {
             this.progress.updateByStep(tmp);
@@ -1332,28 +1328,16 @@ fn$1.hideControls = function () {
 };
 
 fn$1.showControls = function () {
-    var _this2 = this;
+    var _this = this;
 
     //出错了则不显示控制条
     if (!this.video.isError()) {
         clearTimeout(hideControlsTimer);
         dom.removeClass(this.controlsPanel, HIDE_CLASS);
         hideControlsTimer = setTimeout(function () {
-            return _this2.hideControls();
+            return _this.hideControls();
         }, 5000);
     }
-    return this;
-};
-
-fn$1.initControlEvent = function () {
-    var _this3 = this;
-
-    this.video.on(VIDEO_PROGRESS, function (evt, buffered, readyState) {
-        return _this3.buffer(buffered, readyState);
-    }).on(VIDEO_DBLCLICK, function () {
-        return _this3.fullScreen.toggle();
-    });
-    dom.on(this.container, "keydown", this.keyDown.bind(this)).on(this.container, "mousemove", this.showControls.bind(this));
     return this;
 };
 
@@ -1379,23 +1363,22 @@ fn$1.refresh = function () {
 };
 
 fn$1.initEvent = function () {
-    var _this4 = this;
+    var _this2 = this;
 
     this.video.on(VIDEO_LOAD_START, function () {
-        return _this4.loading.show();
+        return _this2.loading.show();
     }).on(VIDEO_SEEKING, function () {
-        return _this4.loading.show();
+        return _this2.loading.show();
     }).on(VIDEO_CAN_PLAY, function () {
-        return _this4.loading.hide();
+        return _this2.loading.hide();
     }).on(VIDEO_ENDED, this.playEnd.bind(this)).on(VIDEO_ERROR, function (evt, error) {
-        return _this4.handleError(error);
+        return _this2.handleError(error);
     });
     return this;
 };
 
 fn$1.initControls = function () {
-    var context = this.container,
-        settingsPanel = dom.createElement("div", { "class": "rplayer-settings rplayer-rt" }),
+    var settingsPanel = dom.createElement("div", { "class": "rplayer-settings rplayer-rt" }),
         playControl = dom.createElement("div", { "class": "rplayer-play-control rplayer-lf" });
     this.controlsPanel = dom.createElement("div", { "class": "rplayer-controls" });
     this.fullScreen.init(this.container, settingsPanel);
@@ -1403,11 +1386,34 @@ fn$1.initControls = function () {
     this.playControl.init(playControl, this.video);
     this.timeInfo.init(playControl, this.video);
     this.progress.init(this.controlsPanel, this.video);
+    this.volumePopup.init(this.container, "rplayer-popup-volume-info");
     this.controlsPanel.appendChild(settingsPanel);
     this.controlsPanel.appendChild(playControl);
     this.container.appendChild(this.controlsPanel);
-    this.volumePopupInfo = dom.selectElement(".rplayer-popup-volume-info", context);
     return this.initControlEvent();
+};
+
+fn$1.showVolumePopup = function (volume) {
+    var text = "\u5F53\u524D\u97F3\u91CF: " + volume;
+    if (volume === 0) {
+        text = "静音";
+    }
+    this.volumePopup.show(text);
+    return this;
+};
+
+fn$1.initControlEvent = function () {
+    var _this3 = this;
+
+    this.video.on(VIDEO_PROGRESS, function (evt, buffered, readyState) {
+        return _this3.buffer(buffered, readyState);
+    }).on(VIDEO_VOLUME_CHANGE, function (evt, muted, volume) {
+        return _this3.showVolumePopup(muted, volume);
+    }).on(VIDEO_DBLCLICK, function () {
+        return _this3.fullScreen.toggle();
+    });
+    dom.on(this.container, "keydown", this.keyDown.bind(this)).on(this.container, "mousemove", this.showControls.bind(this));
+    return this;
 };
 
 fn$1.offEvent = function () {
@@ -1439,7 +1445,6 @@ fn$1.initialize = function () {
             tabIndex: 100 //使元素能够获取焦点
         }),
             height = parseInt(getComputedStyle(this.target).height);
-        container.innerHTML = tpl;
         dom.css(container, "height", (height || DEFAULT_HEIGHT) + "px");
         this.container = container;
         this.video.init(container);

@@ -205,7 +205,7 @@ let fn = VideoControl.prototype = Object.create(Subscriber.prototype),
                 .on(el, "error", this.notify.bind(this, VIDEO_ERROR))
                 .on(el, "playing", this.notify.bind(this, VIDEO_PLAYING))
                 .on(el, "pause", this.notify.bind(this, VIDEO_PAUSE))
-                //.on(el, "volumechange", this.notify.bind(this, VIDEO_VOLUME_CHANGE))
+                .on(el, "volumechange", this.notify.bind(this, VIDEO_VOLUME_CHANGE))
                 .on(el, "dblclick", this.notify.bind(this, VIDEO_DBLCLICK))
                 .on(el, "click", this.notify.bind(this, VIDEO_CLICK))
                 .on(el, "contextmenu", evt => evt.preventDefault());

@@ -1,15 +1,25 @@
 import dom from "../dom/index.js";
 import {isObject} from "../global.js";
 
-function Popup() {
+function Popup(autoHide) {
     this.el = dom.createElement("div", {"class": "rplayer-popup-info rplayer-hide"});
     this.visible = false;
+    this.autoHide = !!autoHide;
+    this.timer = null;
 }
 
 Popup.prototype = {
-    show() {
+    show(msg) {
         this.visible = true;
+        if (this.timer) {
+            clearTimeout(this.timer);
+            this.timer = null;
+        }
+        if (this.autoHide) {
+            this.timer = setTimeout(() => this.hide(), 3000);
+        }
         dom.removeClass(this.el, "rplayer-hide");
+        msg && this.updateText(msg);
         return this;
     },
     hide() {
