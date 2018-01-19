@@ -10,8 +10,5 @@ let tpl = '<div class="rplayer-popup-info rplayer-popup-volume-info rplayer-hide
         '               <span class="rplayer-current-time">00:00</span>/' +
         '               <span class="rplayer-total-time">00:00</span>' +
         '             </span>' +
-        '        </div>' +
-        '        <div class="rplayer-settings rplayer-rt">' +
-        '            <button type="button" class="rplayer-fullscreen-btn rplayer-rt"></button>' +
         '        </div>';
 export {tpl, controls};

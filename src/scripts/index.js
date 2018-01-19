@@ -5,6 +5,7 @@ import Slider from "./controls/slider.js";
 import {tpl, controls} from "./template.js";
 import Loading from "./message/loading.js";
 import VideoError from "./message/error.js";
+import FullScreen from "./controls/video/fullscreen.js";
 import VideoControl, {
     VIDEO_CAN_PLAY,
     VIDEO_DBLCLICK,
@@ -15,7 +16,7 @@ import VideoControl, {
     VIDEO_PROGRESS,
     VIDEO_SEEKING,
     VIDEO_TIME_UPDATE
-} from "./controls/video_control.js";
+} from "./controls/video/video_control.js";
 import VolumeControl, {VOLUME_MUTE, VOLUME_UPDATE} from "./controls/volume_control.js";
 
 let hideVolumePopTimer = null,
@@ -51,48 +52,13 @@ function RPlayer(selector, options) {
     this.loading = new Loading();
     this.error = new VideoError();
     this.volumeControl = new VolumeControl(config.defaultVolume);
+    this.fullScreen = new FullScreen();
     this.controls = isUndefined(options.controls) ? true : !!options.controls;
     this.useNativeControls = isUndefined(options.useNativeControls) ? false : options.useNativeControls;
 }
 
 let fn = RPlayer.prototype = Object.create(Subscriber.prototype);
 fn.constructor = RPlayer;
-
-fn.toggleFullScreen = function () {
-    if (this.isFullScreen = !this.isFullScreen) {
-        this.requestFullScreen();
-    } else {
-        this.exitFullScreen();
-    }
-};
-
-fn.requestFullScreen = function () {
-    this.isFullScreen = true;
-    dom.fullScreen(this.container)
-        .addClass(this.fullScreenBtn, "rplayer-fullscreen")
-        .addClass(this.container, "rplayer-fullscreen");
-};
-
-fn.exitFullScreen = function () {
-    this.isFullScreen = false;
-    dom.fullScreen(this.container, true)
-        .removeClass(this.fullScreenBtn, "rplayer-fullscreen")
-        .removeClass(this.container, "rplayer-fullscreen");
-};
-
-fn.initFullScreenEvent = function () {
-    let fsApi = dom.fsApi;
-    if (fsApi) {
-        dom.on(doc, fsApi.fullscreenchange, () => {
-            if (!doc[fsApi.fullscreenElement]) {
-                this.exitFullScreen();
-            }
-        }).on(doc, fsApi.fullscreenerror, () => {
-            this.exitFullScreen();
-        });
-    }
-    return this;
-};
 
 fn.toggleVolumePopupInfo = function (volume) {
     clearTimeout(hideVolumePopTimer);
@@ -116,11 +82,11 @@ fn.keyDown = function (evt) {
         } else if (regUpOrDown.test(key)) {
             this.volumeControl.updateVolumeByStep(tmp);
         } else if (regEsc.test(key)) {
-            this.exitFullScreen();
+            this.fullScreen.exit();
         } else if (regSpace.test(key)) {
             this.togglePlay();
         }else {
-            this.toggleFullScreen();
+            this.fullScreen.toggle();
         }
     }
     evt.preventDefault();
@@ -215,13 +181,12 @@ fn.initControlEvent = function () {
         .on(VIDEO_PROGRESS, (evt, buffered, readyState) => this.buffer(buffered, readyState))
         .on(VIDEO_LOADED_META, (evt, meta) => this.updateMetaInfo(meta))
         .on(VIDEO_TIME_UPDATE, (evt, currentTime) => this.updateTime(currentTime))
-        .on(VIDEO_DBLCLICK, this.toggleFullScreen.bind(this))
+        .on(VIDEO_DBLCLICK, () => this.fullScreen.toggle());
     dom.on(this.progressPanel, "mouseover mousemove", this.showPopupTimeInfo.bind(this))
         .on(this.progressPanel, "mouseout", this.hidePopupTimeInfo.bind(this))
         .on(this.container, "keydown", this.keyDown.bind(this))
         .on(this.container, "mousemove", this.showControls.bind(this));
-    return this.initVolumeEvent()
-        .initFullScreenEvent();
+    return this.initVolumeEvent();
 };
 
 fn.handleClick = function (evt) {
@@ -233,9 +198,6 @@ fn.handleClick = function (evt) {
         case this.playBtn:
         case this.video.el:
             this.togglePlay();
-            break;
-        case this.fullScreenBtn:
-            this.toggleFullScreen();
             break;
         case this.error.msgEl:
             this.refresh();
@@ -296,9 +258,17 @@ fn.initEvent = function () {
     return this;
 };
 
-fn.initElements = function () {
+
+fn.initControls = function () {
     let context = this.container,
-        settingsPanel = dom.selectElement(".rplayer-settings", context);
+        settingsPanel = dom.createElement("div", {"class": "rplayer-settings rplayer-rt"});
+    this.controlsPanel = dom.createElement("div");
+    dom.addClass(this.controlsPanel, "rplayer-controls");
+    this.controlsPanel.innerHTML = controls;
+    this.fullScreen.init(this.container, settingsPanel);
+    this.volumeControl.init(settingsPanel);
+    this.controlsPanel.appendChild(settingsPanel);
+    this.container.appendChild(this.controlsPanel);
     this.playBtn = dom.selectElement(".rplayer-play-btn", context);
     this.progressPanel = dom.selectElement(".rplayer-progress-panel", context);
     this.videoPopupTime = dom.selectElement(".rplayer-popup-video-info", context);
@@ -306,21 +276,10 @@ fn.initElements = function () {
     this.totalTime = dom.selectElement(".rplayer-total-time", context);
     this.bufferedBar = dom.selectElement(".rplayer-bufferd-bar", context);
     this.volumePopupInfo = dom.selectElement(".rplayer-popup-volume-info", context);
-    this.fullScreenBtn = dom.selectElement(".rplayer-fullscreen-btn", context);
     this.mark = dom.selectElement(".rplayer-mark", context);
-    this.volumeControl.init(settingsPanel);
-    this.videoSlider = new Slider();
+    this.videoSlider = new Slider();;
     this.videoSlider.init(this.progressPanel);
-    return this;
-};
-
-fn.initControls = function () {
-    this.controlsPanel = dom.createElement("div");
-    dom.addClass(this.controlsPanel, "rplayer-controls");
-    this.controlsPanel.innerHTML = controls;
-    this.container.appendChild(this.controlsPanel);
-    return this.initElements()
-        .initControlEvent();
+    return this.initControlEvent();
 };
 
 
@@ -356,7 +315,6 @@ fn.initialize = function () {
                 tabIndex: 100 //使元素能够获取焦点
             }),
             height = parseInt(getComputedStyle(this.target).height);
-        this.isFullScreen = false;
         container.innerHTML = tpl;
         dom.css(container, "height", (height || DEFAULT_HEIGHT) + "px");
         this.container = container;
@@ -380,4 +338,4 @@ RPlayer.init = function (selector, options) {
     return new RPlayer(selector, options).initialize();
 };
 
-export default RPlayer;
+export default RPlayer;st

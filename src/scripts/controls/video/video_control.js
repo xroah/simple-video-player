@@ -1,7 +1,7 @@
-import dom from "../dom/index.js";
-import {doc, isUndefined, extend} from "../global.js";
-import Subscriber from "../subscriber.js";
-import {ERROR_TYPE, removeProp} from "../global";
+import dom from "../../dom/index.js";
+import {doc, isUndefined, extend} from "../../global.js";
+import Subscriber from "../../subscriber.js";
+import {ERROR_TYPE, removeProp} from "../../global";
 
 function VideoControl(config) {
     Subscriber.call(this);

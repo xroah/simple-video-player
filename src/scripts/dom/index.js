@@ -75,25 +75,6 @@ dom.css = function (el, prop, val) {
     return this;
 };
 
-dom.fullScreen = function (el, exit) {
-    let fsApi = this.fsApi;
-    if (fsApi) {
-        exit ? doc[fsApi.exitFullscreen]() : el[fsApi.requestFullscreen]();
-    } else {
-        this.fullPage(el, exit);
-    }
-    return this;
-};
-
-//不支持全屏的浏览器，在网页内铺满窗口
-dom.fullPage = function (el, exit) {
-    if (exit) {
-        dom.removeClass(el, "rplayer-fixed");
-    } else {
-        dom.addClass(el, "rplayer-fixed");
-    }
-};
-
 //选择元素， 只选中一个
 dom.selectElement = function (selector, context) {
     let ret,
@@ -216,65 +197,5 @@ dom.once = function (selector, type, callback) {
     }
     return this;
 };
-
-dom.fsApi = (function () {
-    let fullScreenApi = [
-            //W3C
-            [
-                "requestFullscreen",
-                "exitFullscreen",
-                "fullscreenElement",
-                "fullscreenEnabled",
-                "fullscreenchange",
-                "fullscreenerror"
-            ],
-            // WebKit
-            [
-                "webkitRequestFullscreen",
-                "webkitExitFullscreen",
-                "webkitFullscreenElement",
-                "webkitFullscreenEnabled",
-                "webkitfullscreenchange",
-                "webkitfullscreenerror"
-            ],
-            // Firefox
-            [
-                "mozRequestFullScreen",
-                "mozCancelFullScreen",
-                "mozFullScreenElement",
-                "mozFullScreenEnabled",
-                "mozfullscreenchange",
-                "mozfullscreenerror"
-            ],
-            // IE
-            [
-                "msRequestFullscreen",
-                "msExitFullscreen",
-                "msFullscreenElement",
-                "msFullscreenEnabled",
-                "MSFullscreenChange",
-                "MSFullscreenError"
-            ]
-
-        ],
-        fsApi = null,
-        defApi = fullScreenApi[0],
-        tmp, support;
-    for (let i = 0, len = fullScreenApi.length; i < len; i++) {
-        tmp = fullScreenApi[i];
-        if (tmp[1] in document) {
-            support = true;
-            break;
-        }
-    }
-
-    if (support) {
-        fsApi = {};
-        tmp.forEach(function (prop, i) {
-            fsApi[defApi[i]] = prop;
-        });
-    }
-    return fsApi;
-})();
 
 export default dom;
