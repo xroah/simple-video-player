@@ -47,7 +47,6 @@ function RPlayer(selector, options) {
         throw new Error("未选中任何元素");
     }
     this.target = target;
-    this.controlsDisabled = false;
     this.video = new VideoControl(config);
     this.loading = new Loading();
     this.error = new VideoError();
@@ -105,7 +104,6 @@ fn.toggleVolumePopupInfo = function (volume) {
 
 fn.keyDown = function (evt) {
     //控制条被禁用，不做处理
-    if (this.controlsDisabled) return;
     let key = evt.key.toLowerCase(),
         regUpOrDown = /(?:up)|(?:down)/,
         regLeftOrRight = /(?:left)|(?:right)/,
@@ -137,9 +135,7 @@ fn.initVolumeEvent = function () {
 
 
 fn.togglePlay = function () {
-    if (!this.controlsDisabled) {
-        this.video.isPaused() ? this.play(): this.pause();
-    }
+    this.video.isPaused() ? this.play(): this.pause();
 };
 
 fn.play = function () {
@@ -209,18 +205,6 @@ fn.showControls = function () {
     return this;
 };
 
-fn.enableControls = function () {
-    dom.removeClass(this.controlsPanel, "rplayer-disabled");
-    this.controlsDisabled = false;
-    return this;
-};
-
-fn.disableControls = function () {
-    dom.addClass(this.controlsPanel, "rplayer-disabled");
-    this.controlsDisabled = true;
-    return this;
-};
-
 fn.initControlEvent = function () {
     //滑动改变进度/点击进度条改变进度
     this.videoSlider.on("slider.move.done", (evt, distance) => {
@@ -279,8 +263,7 @@ fn.updateMetaInfo = function (meta) {
     if (this.video.isAutoPlay()) {
         this.play();
     }
-    this.updateTime(meta.duration, true)
-        .enableControls();
+    this.updateTime(meta.duration, true);
 };
 
 fn.playEnd = function () {
@@ -289,13 +272,7 @@ fn.playEnd = function () {
         this.pause();
 };
 
-fn.hideError = function () {
-    this.controlsDisabled = false;
-    return this;
-};
-
 fn.handleError = function (error) {
-    this.controlsDisabled = true;
     this.loading.hide();
     this.error.show(error.message);
     return this;
@@ -311,7 +288,6 @@ fn.initEvent = function () {
     this.video
         .on(VIDEO_LOAD_START, () => {
             this.loading.show();
-            this.disableControls();
         })
         .on(VIDEO_SEEKING, () => this.loading.show())
         .on(VIDEO_CAN_PLAY, () => this.loading.hide())
