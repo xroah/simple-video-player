@@ -19,6 +19,7 @@ import VideoControl, {
 } from "./controls/video/video_control.js";
 import VolumeControl from "./controls/volume_control.js";
 import PlayControl from "./controls/video/play_control.js";
+import TimeInfo from "./message/time_info.js";
 
 let hideVolumePopTimer = null,
     hideControlsTimer = null;
@@ -43,7 +44,7 @@ function RPlayer(selector, options) {
         config = DEFAULT_OPTIONS;
     }
     if (!config.source) {
-        new Error("没有设置视频链接");
+        throw new Error("没有设置视频链接");
     }
     if (!target) {
         throw new Error("未选中任何元素");
@@ -54,6 +55,7 @@ function RPlayer(selector, options) {
     this.error = new VideoError();
     this.volumeControl = new VolumeControl(config.defaultVolume);
     this.playControl = new PlayControl();
+    this.timeInfo = new TimeInfo();
     this.fullScreen = new FullScreen();
     this.controls = isUndefined(options.controls) ? true : !!options.controls;
     this.useNativeControls = isUndefined(options.useNativeControls) ? false : options.useNativeControls;
@@ -86,7 +88,7 @@ fn.keyDown = function (evt) {
         } else if (regEsc.test(key)) {
             this.fullScreen.exit();
         } else if (regSpace.test(key)) {
-            this.togglePlay();
+            this.playControl.toggle();
         }else {
             this.fullScreen.toggle();
         }
@@ -109,7 +111,7 @@ fn.showPopupTimeInfo = function (evt) {
         width = rect.width - width;
         left = left < 0 ? 0 : left > width ? width : left;
         width = distance / rect.width;
-        popup.innerHTML = this.video.convertTime(width * duration);
+        //popup.innerHTML = this.video.convertTime(width * duration);
         dom.css(popup, "left", left + "px");
         dom.css(mark, "left", width * 100 + "%");
     }
@@ -151,12 +153,9 @@ fn.initControlEvent = function () {
     //滑动改变进度/点击进度条改变进度
     this.videoSlider.on("slider.move.done", (evt, distance) => {
         this.video.setCurrentTime(distance, true);
-        this.updateTime();
     });
     this.video
         .on(VIDEO_PROGRESS, (evt, buffered, readyState) => this.buffer(buffered, readyState))
-        .on(VIDEO_LOADED_META, (evt, meta) => this.updateMetaInfo(meta))
-        .on(VIDEO_TIME_UPDATE, (evt, currentTime) => this.updateTime(currentTime))
         .on(VIDEO_DBLCLICK, () => this.fullScreen.toggle());
     dom.on(this.progressPanel, "mouseover mousemove", this.showPopupTimeInfo.bind(this))
         .on(this.progressPanel, "mouseout", this.hidePopupTimeInfo.bind(this))
@@ -170,19 +169,6 @@ fn.buffer = function (buffered, readyState) {
     if (readyState < 3) {
         this.loading.show();
     }
-};
-
-fn.updateTime = function (time = this.video.getCurrentTime(), total) {
-    /*let el = this.currentTime;
-    if (total) {
-        el = this.totalTime;
-    }
-    el.innerHTML = this.video.convertTime(time);*/
-    return this;
-};
-
-fn.updateMetaInfo = function (meta) {
-    this.updateTime(meta.duration, true);
 };
 
 fn.playEnd = function () {
@@ -202,16 +188,13 @@ fn.refresh = function () {
 
 fn.initEvent = function () {
     this.video
-        .on(VIDEO_LOAD_START, () => {
-            this.loading.show();
-        })
+        .on(VIDEO_LOAD_START, () => this.loading.show())
         .on(VIDEO_SEEKING, () => this.loading.show())
         .on(VIDEO_CAN_PLAY, () => this.loading.hide())
         .on(VIDEO_ENDED, this.playEnd.bind(this))
         .on(VIDEO_ERROR, (evt, error) => this.handleError(error));
     return this;
 };
-
 
 fn.initControls = function () {
     let context = this.container,
@@ -223,17 +206,16 @@ fn.initControls = function () {
     this.fullScreen.init(this.container, settingsPanel);
     this.volumeControl.init(settingsPanel, this.video);
     this.playControl.init(playControl, this.video);
+    this.timeInfo.init(playControl, this.video);
     this.controlsPanel.appendChild(settingsPanel);
     this.controlsPanel.appendChild(playControl);
     this.container.appendChild(this.controlsPanel);
     this.progressPanel = dom.selectElement(".rplayer-progress-panel", context);
     this.videoPopupTime = dom.selectElement(".rplayer-popup-video-info", context);
-    this.currentTime = dom.selectElement(".rplayer-current-time", context);
-    this.totalTime = dom.selectElement(".rplayer-total-time", context);
     this.bufferedBar = dom.selectElement(".rplayer-bufferd-bar", context);
     this.volumePopupInfo = dom.selectElement(".rplayer-popup-volume-info", context);
     this.mark = dom.selectElement(".rplayer-mark", context);
-    this.videoSlider = new Slider();;
+    this.videoSlider = new Slider();
     this.videoSlider.init(this.progressPanel);
     return this.initControlEvent();
 };

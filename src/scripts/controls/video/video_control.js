@@ -120,27 +120,6 @@ let fn = VideoControl.prototype = Object.create(Subscriber.prototype),
             this.el.controls = true;
             return this;
         },
-        convertTime(time) {
-            let changeLen = num => num < 10 ? "0" + num : num.toString(),
-                str, h, m, s;
-            time = Math.ceil(time);
-            if (time <= 0) {
-                str = "00:00";
-            } else if (time < 60) {
-                str = "00:" + changeLen(time);
-            } else if (time < 3600) {
-                m = Math.floor(time / 60);
-                s = time % 60;
-                str = changeLen(m) + ":" + changeLen(s);
-            } else {
-                h = Math.floor(time / 3600);
-                str = time % 3600;
-                m = Math.floor(str / 60);
-                s = str % 60;
-                str = changeLen(h) + ":" + changeLen(m) + ":" + changeLen(s);
-            }
-            return str;
-        },
         reload() {
             this.el.load();
             return this;
