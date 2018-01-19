@@ -89,6 +89,37 @@ function removeProp(obj, prop) {
     }
 }
 
+function noop() {
+    return function () {};
+}
+
+function convertTime(time) {
+    var changeLen = function changeLen(num) {
+        return num < 10 ? "0" + num : num.toString();
+    },
+        str = void 0,
+        h = void 0,
+        m = void 0,
+        s = void 0;
+    time = Math.ceil(time);
+    if (time <= 0) {
+        str = "00:00";
+    } else if (time < 60) {
+        str = "00:" + changeLen(time);
+    } else if (time < 3600) {
+        m = Math.floor(time / 60);
+        s = time % 60;
+        str = changeLen(m) + ":" + changeLen(s);
+    } else {
+        h = Math.floor(time / 3600);
+        str = time % 3600;
+        m = Math.floor(str / 60);
+        s = str % 60;
+        str = changeLen(h) + ":" + changeLen(m) + ":" + changeLen(s);
+    }
+    return str;
+}
+
 var dom = {
     handlers: {}
 };
@@ -163,25 +194,6 @@ dom.css = function (el, prop, val) {
         }
     }
     return this;
-};
-
-dom.fullScreen = function (el, exit) {
-    var fsApi = this.fsApi;
-    if (fsApi) {
-        exit ? doc[fsApi.exitFullscreen]() : el[fsApi.requestFullscreen]();
-    } else {
-        this.fullPage(el, exit);
-    }
-    return this;
-};
-
-//不支持全屏的浏览器，在网页内铺满窗口
-dom.fullPage = function (el, exit) {
-    if (exit) {
-        dom.removeClass(el, "rplayer-fixed");
-    } else {
-        dom.addClass(el, "rplayer-fixed");
-    }
 };
 
 //选择元素， 只选中一个
@@ -307,37 +319,6 @@ dom.once = function (selector, type, callback) {
     return this;
 };
 
-dom.fsApi = function () {
-    var fullScreenApi = [
-    //W3C
-    ["requestFullscreen", "exitFullscreen", "fullscreenElement", "fullscreenEnabled", "fullscreenchange", "fullscreenerror"],
-    // WebKit
-    ["webkitRequestFullscreen", "webkitExitFullscreen", "webkitFullscreenElement", "webkitFullscreenEnabled", "webkitfullscreenchange", "webkitfullscreenerror"],
-    // Firefox
-    ["mozRequestFullScreen", "mozCancelFullScreen", "mozFullScreenElement", "mozFullScreenEnabled", "mozfullscreenchange", "mozfullscreenerror"],
-    // IE
-    ["msRequestFullscreen", "msExitFullscreen", "msFullscreenElement", "msFullscreenEnabled", "MSFullscreenChange", "MSFullscreenError"]],
-        fsApi = null,
-        defApi = fullScreenApi[0],
-        tmp = void 0,
-        support = void 0;
-    for (var i = 0, len = fullScreenApi.length; i < len; i++) {
-        tmp = fullScreenApi[i];
-        if (tmp[1] in document) {
-            support = true;
-            break;
-        }
-    }
-
-    if (support) {
-        fsApi = {};
-        tmp.forEach(function (prop, i) {
-            fsApi[defApi[i]] = prop;
-        });
-    }
-    return fsApi;
-}();
-
 function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
 function CEvent(type) {
@@ -428,167 +409,7 @@ Subscriber.prototype = {
     }
 };
 
-function Slider(vertical) {
-    Subscriber.call(this);
-    this.vertical = isUndefined(vertical) ? false : !!vertical;
-    this.moveDis = this.pos = null;
-    this.moving = false;
-}
-
-var proto = Slider.prototype = Object.create(Subscriber.prototype);
-proto.constructor = Slider;
-
-proto.getPosition = function () {
-    var parent = this.el.parentNode,
-        rect = parent.getBoundingClientRect(),
-        pos = getComputedStyle(this.el);
-    return {
-        width: parseFloat(pos.width),
-        height: parseFloat(pos.height),
-        origLeft: parseFloat(pos.left),
-        origTop: parseFloat(pos.top),
-        maxX: rect.width,
-        maxY: rect.height
-    };
-};
-
-proto.updateHPosition = function (val, scale) {
-    scale && (val = val * 100 + "%");
-    dom.css(this.bar, "width", val).css(this.el, "left", val);
-    return this;
-};
-
-proto.updateVPosition = function (val, scale) {
-    scale && (val = val * 100 + "%");
-    dom.css(this.bar, "height", val).css(this.el, "bottom", val);
-    return this;
-};
-
-proto.mouseDown = function (evt) {
-    //只有按鼠标左键时处理(evt.button=0)
-    if (!evt.button) {
-        var x = evt.clientX,
-            y = evt.clientY,
-            pos = this.getPosition(),
-            mouseMove = this.getMoveCallback().bind(this);
-        this.pos = {
-            width: pos.width,
-            height: pos.height,
-            offsetX: x - pos.origLeft,
-            offsetY: y - pos.origTop,
-            maxX: pos.maxX,
-            maxY: pos.maxY
-        };
-        dom.addClass(this.el, "rplayer-moving").on(doc, "mousemove", mouseMove).on(doc, "mouseup", this.mouseUp.bind(this));
-    }
-};
-
-proto.moveVertical = function (x, y) {
-    var distance = void 0;
-    distance = this.pos.maxY - (y - this.pos.offsetY) - this.pos.height;
-    distance = distance < 0 ? 0 : distance > this.pos.maxY ? this.pos.maxY : distance;
-    distance = distance / this.pos.maxY;
-    this.updateVPosition(distance, true);
-    return distance;
-};
-
-proto.moveHorizontal = function (x) {
-    var distance = void 0;
-    distance = x - this.pos.offsetX;
-    distance = distance < 0 ? 0 : distance > this.pos.maxX ? this.pos.maxX : distance;
-    distance = distance / this.pos.maxX;
-    this.updateHPosition(distance, true);
-    return distance;
-};
-
-proto.mouseMove = function (evt, fn) {
-    var x = evt.clientX,
-        y = evt.clientY,
-        distance = fn.call(this, x, y);
-    this.moving = true;
-    this.trigger("slider.moving", this.moveDis = distance);
-};
-
-proto.getMoveCallback = function () {
-    var _this = this;
-
-    return this.vertical ? function (evt) {
-        return _this.mouseMove(evt, _this.moveVertical);
-    } : function (evt) {
-        return _this.mouseMove(evt, _this.moveHorizontal);
-    };
-};
-
-proto.mouseUp = function () {
-    dom.off(doc, "mousemove moseup").removeClass(this.el, "rplayer-moving");
-    this.moving && this.trigger("slider.move.done", this.moveDis);
-};
-
-proto.changePosition = function (evt, dir, dis) {
-    if (dir === "h") {
-        this.updateHPosition(dis, true);
-    } else {
-        this.updateVPosition(dis);
-    }
-};
-
-proto.clickTrack = function (evt) {
-    //移动滑块鼠标释放时会触发父元素点击事件,可能会导致鼠标释放后滑块位置改变
-    //如果移动滑块则点击事件不做处理
-    if (this.moving) {
-        this.moving = false;
-        return;
-    }
-    var rect = this.track.getBoundingClientRect(),
-        x = evt.clientX,
-        y = evt.clientY,
-        eType = "slider.moving";
-    if (this.vertical) {
-        rect = (rect.height - y + rect.top) / rect.height;
-        this.updateVPosition(rect, true);
-    } else {
-        rect = (x - rect.left) / rect.width;
-        eType = "slider.move.done";
-        this.updateHPosition(rect, true);
-    }
-    this.trigger(eType, rect);
-};
-
-proto.initEvent = function () {
-    dom.on(this.el, "mousedown", this.mouseDown.bind(this)).on(this.track, "click", this.clickTrack.bind(this));
-    return this;
-};
-
-proto.destroy = function () {
-    dom.off(this.track).off(this.el);
-    removeProp(this);
-};
-
-proto.init = function (target) {
-    var cls = {
-        track: "rplayer-video-track",
-        bar: "rplayer-video-progress",
-        slider: "rplayer-video-slider"
-    };
-    if (this.vertical) {
-        cls = {
-            track: "rplayer-volume-progress",
-            bar: "rplayer-volume-value",
-            slider: "rplayer-volume-slider"
-        };
-    }
-    this.track = dom.createElement("div", { class: "rplayer-progress " + cls.track });
-    this.bar = dom.createElement("div", { class: "rplayer-bar " + cls.bar });
-    this.el = dom.createElement("div", { class: "rplayer-slider " + cls.slider });
-    this.track.appendChild(this.bar);
-    this.track.append(this.el);
-    target.appendChild(this.track);
-    this.on("position.change", this.changePosition);
-    return this.initEvent();
-};
-
 var tpl = '<div class="rplayer-popup-info rplayer-popup-volume-info rplayer-hide">10:00</div>';
-var controls = '<div class="rplayer-popup-info rplayer-popup-video-info rplayer-hide">10:00</div>' + '        <div class="rplayer-progress-panel">' + '            <div class="rplayer-bufferd-bar"></div>' + '            <div class="rplayer-mark rplayer-hide"></div>' + '        </div>' + '        <div class="rplayer-play-control rplayer-lf">' + '            <button type="button" class="rplayer-play-btn"></button>' + '            <span class="rplayer-time-info">' + '               <span class="rplayer-current-time">00:00</span>/' + '               <span class="rplayer-total-time">00:00</span>' + '             </span>' + '        </div>' + '        <div class="rplayer-settings rplayer-rt">' + '            <button type="button" class="rplayer-fullscreen-btn rplayer-rt"></button>' + '            <div class="rplayer-audio-control rplayer-rt">' + '                <button type="button" class="rplayer-audio-btn volume-1"></button>' + '            </div>' + '        </div>';
 
 function Loading() {
     this.el = dom.createElement("div", { "class": "rplayer-loading rplayer-hide" });
@@ -618,6 +439,7 @@ Loading.prototype = {
 function VideoError() {
     this.el = dom.createElement("div", { "class": "rplayer-error rplayer-hide" });
     this.msgEl = dom.createElement("div", { "class": "rplayer-msg" });
+    this.callback = noop();
 }
 
 VideoError.prototype = {
@@ -635,10 +457,100 @@ VideoError.prototype = {
         this.msgEl.innerHTML = msg;
         return this;
     },
-    init: function init(target) {
+    initEvent: function initEvent() {
+        dom.on(this.msgEl, "click", this.callback);
+        return this;
+    },
+    init: function init(target, callback) {
         this.el.appendChild(this.msgEl);
         target.appendChild(this.el);
+        if (isFunction(callback)) {
+            this.callback = callback;
+        }
+        return this.initEvent();
+    }
+};
+
+var fsApi = function () {
+    var fullScreenApi = [
+    //W3C
+    ["requestFullscreen", "exitFullscreen", "fullscreenElement", "fullscreenEnabled", "fullscreenchange", "fullscreenerror"],
+    // WebKit
+    ["webkitRequestFullscreen", "webkitExitFullscreen", "webkitFullscreenElement", "webkitFullscreenEnabled", "webkitfullscreenchange", "webkitfullscreenerror"],
+    // Firefox
+    ["mozRequestFullScreen", "mozCancelFullScreen", "mozFullScreenElement", "mozFullScreenEnabled", "mozfullscreenchange", "mozfullscreenerror"],
+    // IE
+    ["msRequestFullscreen", "msExitFullscreen", "msFullscreenElement", "msFullscreenEnabled", "MSFullscreenChange", "MSFullscreenError"]],
+        fsApi = null,
+        defApi = fullScreenApi[0],
+        tmp = void 0,
+        support = void 0;
+    for (var i = 0, len = fullScreenApi.length; i < len; i++) {
+        tmp = fullScreenApi[i];
+        if (tmp[1] in document) {
+            support = true;
+            break;
+        }
+    }
+
+    if (support) {
+        fsApi = {};
+        tmp.forEach(function (prop, i) {
+            fsApi[defApi[i]] = prop;
+        });
+    }
+    return fsApi;
+}();
+
+var FULL_SCREEN_CLASS = "rplayer-fullscreen";
+
+function FullScreen(el) {
+    this.el = el;
+    this.isFullScreen = false;
+    this.btn = dom.createElement("button", { "class": "rplayer-fullscreen-btn rplayer-rt" });
+}
+
+FullScreen.prototype = {
+    constructor: FullScreen,
+    request: function request() {
+        this.isFullScreen = true;
+        fsApi ? this.el[fsApi.requestFullscreen]() : this.fullPage();
+        dom.addClass(this.el, FULL_SCREEN_CLASS).addClass(this.btn, FULL_SCREEN_CLASS);
         return this;
+    },
+    exit: function exit() {
+        this.isFullScreen = false;
+        fsApi ? doc[fsApi.exitFullscreen]() : this.fullPage(true);
+        dom.removeClass(this.btn, FULL_SCREEN_CLASS).removeClass(this.el, FULL_SCREEN_CLASS);
+        return this;
+    },
+    toggle: function toggle() {
+        return this.isFullScreen = !this.isFullScreen ? this.request() : this.exit();
+    },
+    fullPage: function fullPage(exit) {
+        //不支持全屏的浏览器铺满页面可视区域
+        exit ? dom.removeClass(this.el, "rplayer-fixed") : dom.addClass(this.el, "rplayer-fixed");
+        return this;
+    },
+    initEvent: function initEvent() {
+        var _this = this;
+
+        if (fsApi) {
+            dom.on(doc, fsApi.fullscreenchange, function () {
+                if (!doc[fsApi.fullscreenElement]) {
+                    _this.exit();
+                }
+            }).on(doc, fsApi.fullscreenerror, function () {
+                _this.exit();
+            });
+        }
+        dom.on(this.btn, "click", this.toggle.bind(this));
+        return this;
+    },
+    init: function init(el, target) {
+        this.el = el;
+        target.appendChild(this.btn);
+        return this.initEvent();
     }
 };
 
@@ -646,32 +558,34 @@ function _toConsumableArray$1(arr) { if (Array.isArray(arr)) { for (var i = 0, a
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
-function VideoControl(config) {
-    Subscriber.call(this);
-    this.config = config;
-    this.playedTime = null;
-}
-
 var VIDEO_LOADED_META = "video.loaded.meta";
 var VIDEO_TIME_UPDATE = "video.time.update";
-var VIDEO_DBLCLICK = "video.dblclick";
 var VIDEO_SEEKING = "video.seeking";
 var VIDEO_LOAD_START = "video.load.start";
 var VIDEO_PROGRESS = "video.progress";
 var VIDEO_CAN_PLAY = "video.can.play";
 var VIDEO_ENDED = "video.ended";
 var VIDEO_ERROR = "video.error";
+var VIDEO_PLAYING = "video.playing";
+var VIDEO_PAUSE = "video.pause";
+var VIDEO_DBLCLICK = "video.dblclick";
+var VIDEO_CLICK = "video.click";
+var VIDEO_VOLUME_CHANGE = "video.volume.change";
 
+function VideoControl(config) {
+    Subscriber.call(this);
+    this.config = config;
+    this.playedTime = null;
+}
 
 var fn = VideoControl.prototype = Object.create(Subscriber.prototype);
-var proto$1 = {
+var proto = {
     constructor: VideoControl,
     setVolume: function setVolume(volume) {
         //音量只能设置0-1的值
         if (volume > 1) {
             volume = volume / 100;
         }
-        volume > 1 && (volume = 1);
         this.el.volume = volume;
         this.el.muted = !volume;
         return this;
@@ -698,6 +612,14 @@ var proto$1 = {
             this.el.play();
         } else {
             this.el.pause();
+        }
+        return this;
+    },
+    togglePlay: function togglePlay() {
+        //当开始加载视频还不能播放时点击播放会报错
+        if (this.getDuration()) {
+            var paused = this.isPaused();
+            this.play(paused);
         }
         return this;
     },
@@ -755,32 +677,6 @@ var proto$1 = {
     showControls: function showControls() {
         this.el.controls = true;
         return this;
-    },
-    convertTime: function convertTime(time) {
-        var changeLen = function changeLen(num) {
-            return num < 10 ? "0" + num : num.toString();
-        },
-            str = void 0,
-            h = void 0,
-            m = void 0,
-            s = void 0;
-        time = Math.ceil(time);
-        if (time <= 0) {
-            str = "00:00";
-        } else if (time < 60) {
-            str = "00:" + changeLen(time);
-        } else if (time < 3600) {
-            m = Math.floor(time / 60);
-            s = time % 60;
-            str = changeLen(m) + ":" + changeLen(s);
-        } else {
-            h = Math.floor(time / 3600);
-            str = time % 3600;
-            m = Math.floor(str / 60);
-            s = str % 60;
-            str = changeLen(h) + ":" + changeLen(m) + ":" + changeLen(s);
-        }
-        return str;
     },
     reload: function reload() {
         this.el.load();
@@ -841,7 +737,7 @@ var proto$1 = {
     notify: function notify(type) {
         var _args;
 
-        var args = (_args = {}, _defineProperty(_args, VIDEO_LOADED_META, [{ duration: this.getDuration() }]), _defineProperty(_args, VIDEO_TIME_UPDATE, [this.getCurrentTime()]), _defineProperty(_args, VIDEO_PROGRESS, [this.getBuffered(true), this.getReadyState()]), _defineProperty(_args, VIDEO_ERROR, [this.handleError()]), _args),
+        var args = (_args = {}, _defineProperty(_args, VIDEO_LOADED_META, [{ duration: this.getDuration() }]), _defineProperty(_args, VIDEO_TIME_UPDATE, [this.getCurrentTime()]), _defineProperty(_args, VIDEO_PROGRESS, [this.getBuffered(true), this.getReadyState()]), _defineProperty(_args, VIDEO_ERROR, [this.handleError()]), _defineProperty(_args, VIDEO_VOLUME_CHANGE, [this.isMuted() ? 0 : this.getVolume()]), _args),
             a = args[type] || [];
         if (type === VIDEO_LOAD_START && this.playedTime) {
             this.setCurrentTime(this.playedTime);
@@ -851,9 +747,9 @@ var proto$1 = {
     },
     initEvent: function initEvent() {
         var el = this.el;
-        dom.on(el, "loadedmetadata", this.notify.bind(this, VIDEO_LOADED_META)).on(el, "timeupdate", this.notify.bind(this, VIDEO_TIME_UPDATE)).on(el, "dblclick", this.notify.bind(this, VIDEO_DBLCLICK)).on(el, "seeking", this.notify.bind(this, VIDEO_SEEKING)).on(el, "loadstart", this.notify.bind(this, VIDEO_LOAD_START)).on(el, "progress", this.notify.bind(this, VIDEO_PROGRESS)).on(el, "canplay seeked", this.notify.bind(this, VIDEO_CAN_PLAY)).on(el, "ended", this.notify.bind(this, VIDEO_ENDED)).on(el, "error", this.notify.bind(this, VIDEO_ERROR))
+        dom.on(el, "loadedmetadata", this.notify.bind(this, VIDEO_LOADED_META)).on(el, "timeupdate", this.notify.bind(this, VIDEO_TIME_UPDATE)).on(el, "seeking", this.notify.bind(this, VIDEO_SEEKING)).on(el, "loadstart", this.notify.bind(this, VIDEO_LOAD_START)).on(el, "progress", this.notify.bind(this, VIDEO_PROGRESS)).on(el, "canplay seeked", this.notify.bind(this, VIDEO_CAN_PLAY)).on(el, "ended", this.notify.bind(this, VIDEO_ENDED)).on(el, "error", this.notify.bind(this, VIDEO_ERROR)).on(el, "playing", this.notify.bind(this, VIDEO_PLAYING)).on(el, "pause", this.notify.bind(this, VIDEO_PAUSE))
         //.on(el, "volumechange", this.notify.bind(this, VIDEO_VOLUME_CHANGE))
-        .on(el, "contextmenu", function (evt) {
+        .on(el, "dblclick", this.notify.bind(this, VIDEO_DBLCLICK)).on(el, "click", this.notify.bind(this, VIDEO_CLICK)).on(el, "contextmenu", function (evt) {
             return evt.preventDefault();
         });
     },
@@ -875,50 +771,202 @@ var proto$1 = {
     }
 };
 
-extend(fn, proto$1);
+extend(fn, proto);
 
-var VOLUME_UPDATE = "volume.update";
-var VOLUME_MUTE = "volume.mute";
-var VOLUME_CLASS_NAME_CHANGE = "volume.className.change";
+var SLIDER_MOVING = "slider.moving";
+var SLIDER_MOVE_DONE = "slider.move.done";
+//滑块状态改变(是否可以滑动/点击),视频加载时候为获取到元信息禁止改变进度
+var SLIDER_STATUS_CHANGE = "slider.status.change";
 
-function VolumeControl(volume) {
+function Slider(vertical) {
     Subscriber.call(this);
-    this.el = dom.createElement("div", { "class": "rplayer-volume-popup rplayer-hide" });
-    this.valueEl = dom.createElement("div", { "class": "rplayer-current-volume" });
-    this.muteBtn = dom.createElement("button", { "class": "rplayer-mute volume-1" });
-    this.slider = new Slider(true);
-    this.volume = volume;
-    this.muted = false;
+    this.vertical = isUndefined(vertical) ? false : !!vertical;
+    this.moveDis = this.pos = null;
+    this.moving = false;
+    this.enabled = true; //初始默认可以滑动/点击
 }
 
-VolumeControl.prototype = Object.create(Subscriber.prototype);
+var proto$1 = Slider.prototype = Object.create(Subscriber.prototype);
+proto$1.constructor = Slider;
 
-var proto$2 = {
+proto$1.getPosition = function () {
+    var parent = this.el.parentNode,
+        rect = parent.getBoundingClientRect(),
+        pos = getComputedStyle(this.el);
+    return {
+        width: parseFloat(pos.width),
+        height: parseFloat(pos.height),
+        origLeft: parseFloat(pos.left),
+        origTop: parseFloat(pos.top),
+        maxX: rect.width,
+        maxY: rect.height
+    };
+};
+
+proto$1.updateHPosition = function (val, scale) {
+    scale && (val = val * 100 + "%");
+    dom.css(this.bar, "width", val).css(this.el, "left", val);
+    return this;
+};
+
+proto$1.updateVPosition = function (val, scale) {
+    scale && (val = val * 100 + "%");
+    dom.css(this.bar, "height", val).css(this.el, "bottom", val);
+    return this;
+};
+
+proto$1.mouseDown = function (evt) {
+    //只有按鼠标左键时处理(evt.button=0)
+    if (!evt.button && this.enabled) {
+        var x = evt.clientX,
+            y = evt.clientY,
+            pos = this.getPosition(),
+            mouseMove = this.getMoveCallback().bind(this);
+        this.pos = {
+            width: pos.width,
+            height: pos.height,
+            offsetX: x - pos.origLeft,
+            offsetY: y - pos.origTop,
+            maxX: pos.maxX,
+            maxY: pos.maxY
+        };
+        dom.addClass(this.el, "rplayer-moving").on(doc, "mousemove", mouseMove).on(doc, "mouseup", this.mouseUp.bind(this));
+    }
+};
+
+proto$1.moveVertical = function (x, y) {
+    var distance = void 0;
+    distance = this.pos.maxY - (y - this.pos.offsetY) - this.pos.height;
+    distance = distance < 0 ? 0 : distance > this.pos.maxY ? this.pos.maxY : distance;
+    distance = distance / this.pos.maxY;
+    this.updateVPosition(distance, true);
+    return distance;
+};
+
+proto$1.moveHorizontal = function (x) {
+    var distance = void 0;
+    distance = x - this.pos.offsetX;
+    distance = distance < 0 ? 0 : distance > this.pos.maxX ? this.pos.maxX : distance;
+    distance = distance / this.pos.maxX;
+    this.updateHPosition(distance, true);
+    return distance;
+};
+
+proto$1.mouseMove = function (evt, fn) {
+    var x = evt.clientX,
+        y = evt.clientY,
+        distance = fn.call(this, x, y);
+    this.moving = true;
+    this.trigger(SLIDER_MOVING, this.moveDis = distance);
+};
+
+proto$1.getMoveCallback = function () {
+    var _this = this;
+
+    return this.vertical ? function (evt) {
+        return _this.mouseMove(evt, _this.moveVertical);
+    } : function (evt) {
+        return _this.mouseMove(evt, _this.moveHorizontal);
+    };
+};
+
+proto$1.mouseUp = function () {
+    var _this2 = this;
+
+    dom.off(doc, "mousemove moseup").removeClass(this.el, "rplayer-moving");
+    this.moving && this.trigger(SLIDER_MOVE_DONE, this.moveDis);
+    setTimeout(function () {
+        return _this2.moving = false;
+    });
+};
+
+proto$1.clickTrack = function (evt) {
+    //移动滑块鼠标释放时会触发父元素点击事件,可能会导致鼠标释放后滑块位置改变
+    //如果移动滑块/被禁用则点击事件不做处理
+    if (!this.moving && this.enabled) {
+        var rect = this.track.getBoundingClientRect(),
+            x = evt.clientX,
+            y = evt.clientY,
+            eType = "slider.moving";
+        if (this.vertical) {
+            rect = (rect.height - y + rect.top) / rect.height;
+            this.updateVPosition(rect, true);
+        } else {
+            rect = (x - rect.left) / rect.width;
+            eType = "slider.move.done";
+            this.updateHPosition(rect, true);
+        }
+        this.trigger(eType, rect);
+    }
+};
+
+proto$1.initEvent = function () {
+    var _this3 = this;
+
+    dom.on(this.el, "mousedown", this.mouseDown.bind(this)).on(this.track, "click", this.clickTrack.bind(this));
+    this.on(SLIDER_STATUS_CHANGE, function (evt, enable) {
+        return _this3.enabled = !!enable;
+    });
+    return this;
+};
+
+proto$1.destroy = function () {
+    dom.off(this.track).off(this.el);
+    removeProp(this);
+};
+
+proto$1.init = function (target) {
+    var cls = {
+        track: "rplayer-video-track",
+        bar: "rplayer-video-progress",
+        slider: "rplayer-video-slider"
+    };
+    if (this.vertical) {
+        cls = {
+            track: "rplayer-volume-progress",
+            bar: "rplayer-volume-value",
+            slider: "rplayer-volume-slider"
+        };
+    }
+    this.track = dom.createElement("div", { class: "rplayer-progress " + cls.track });
+    this.bar = dom.createElement("div", { class: "rplayer-bar " + cls.bar });
+    this.el = dom.createElement("div", { class: "rplayer-slider " + cls.slider });
+    this.track.appendChild(this.bar);
+    this.track.append(this.el);
+    target.appendChild(this.track);
+    return this.initEvent();
+};
+
+function VolumeControl(volume) {
+    this.panel = dom.createElement("div", { "class": "rplayer-volume-popup rplayer-hide" });
+    this.valueEl = dom.createElement("div", { "class": "rplayer-current-volume" });
+    this.muteBtn = dom.createElement("button", { "class": "rplayer-mute volume-1" });
+    this.showBtn = dom.createElement("button", { "class": "rplayer-audio-btn volume-1" });
+    this.slider = new Slider(true);
+    this.volume = volume;
+}
+
+VolumeControl.prototype = {
     constructor: VolumeControl,
     show: function show() {
-        dom.removeClass(this.el, "rplayer-hide");
+        dom.removeClass(this.panel, "rplayer-hide");
         return this;
     },
     hide: function hide() {
-        dom.addClass(this.el, "rplayer-hide");
+        dom.addClass(this.panel, "rplayer-hide");
         return this;
     },
-    toggle: function toggle() {
-        dom.toggleClass(this.el, "rplayer-hide");
+    toggle: function toggle(evt) {
+        dom.toggleClass(this.panel, "rplayer-hide");
+        //document click事件点击音量设置面板之外隐藏,如果不阻止冒泡则面板显示不出来
+        evt.stopPropagation();
         return this;
     },
-    updateVolume: function updateVolume(volume, scale, sliderMove) {
-        scale && (volume *= 100);
-        volume = Math.floor(volume);
+    updateVolume: function updateVolume(volume, sliderMove) {
         this.volume = volume;
-        if (!volume) {
-            this.muted = true;
-            this.trigger(VOLUME_MUTE, this.muted);
-        } else {
-            this.muted = false;
-            this.trigger(VOLUME_UPDATE, volume);
-        }
-        this.updateStyle(volume, sliderMove);
+        this.media.mute(!volume);
+        this.media.setVolume(volume);
+        this.updateStyle(this.volume, sliderMove);
         return this;
     },
     updateVolumeByStep: function updateVolumeByStep(step) {
@@ -927,9 +975,11 @@ var proto$2 = {
         this.updateVolume(volume);
     },
     updateStyle: function updateStyle(volume, sliderMove) {
-        var cls = this.muteBtn.className,
+        var muteCls = this.muteBtn.className,
+            showCls = this.showBtn.className,
             reg = /volume-\S+/;
-        cls = cls.replace(reg, "");
+        muteCls = muteCls.replace(reg, "");
+        showCls = showCls.replace(reg, "");
         if (!volume) {
             reg = "volume-mute";
         } else if (volume <= 33) {
@@ -939,47 +989,261 @@ var proto$2 = {
         } else {
             reg = "volume-3";
         }
-        this.muteBtn.className = cls + reg;
+        this.muteBtn.className = muteCls + reg;
+        this.showBtn.className = showCls + reg;
         this.valueEl.innerHTML = volume;
         //如果通过移动滑块改变音量则不重复改变slider的位置
         !sliderMove && this.slider.updateVPosition(volume + "%");
-        this.trigger(VOLUME_CLASS_NAME_CHANGE, reg);
         return this;
     },
     mute: function mute() {
-        if (this.muted = !this.muted) {
-            this.updateStyle(0);
-        } else {
+        if (this.media.isMuted()) {
             this.updateStyle(this.volume);
+            this.media.mute(false);
+        } else {
+            this.updateStyle(0);
+            this.media.mute(true);
         }
-        this.trigger(VOLUME_MUTE, this.muted);
     },
     initEvent: function initEvent() {
         var _this = this;
 
-        dom.on(this.muteBtn, "click", this.mute.bind(this)).on(this.el, "mouseleave", this.hide.bind(this)).on(doc, "click", function (evt) {
+        dom.on(this.muteBtn, "click", this.mute.bind(this)).on(this.panel, "mouseleave", this.hide.bind(this)).on(this.showBtn, "click", this.toggle.bind(this)).on(doc, "click", function (evt) {
             var tgt = evt.target;
             //点击页面其他地方（点击的不是音量设置面板或者面板内的元素）则隐藏音量面板
-            if (tgt !== _this.el && !_this.el.contains(tgt)) {
+            if (tgt !== _this.panel && !_this.panel.contains(tgt)) {
                 _this.hide();
             }
         });
-        this.slider.on("slider.moving", function (evt, distance) {
-            _this.updateVolume(distance, true, true);
+        this.slider.on(SLIDER_MOVING, function (evt, distance) {
+            _this.updateVolume(Math.floor(100 * distance), true);
         });
         return this;
     },
-    init: function init(target) {
-        this.el.appendChild(this.valueEl);
-        this.slider.init(this.el);
-        this.el.appendChild(this.muteBtn);
-        target.appendChild(this.el);
+    init: function init(target, media) {
+        var panel = dom.createElement("div", { "class": "rplayer-audio-control rplayer-rt" });
+        this.media = media;
+        this.panel.appendChild(this.valueEl);
+        this.slider.init(this.panel);
+        this.panel.appendChild(this.muteBtn);
+        panel.appendChild(this.showBtn);
+        panel.append(this.panel);
+        target.appendChild(panel);
         this.updateVolume(this.volume).initEvent();
         return this;
     }
 };
 
-extend(VolumeControl.prototype, proto$2);
+function PlayControl() {
+    this.btn = dom.createElement("button", { "class": "rplayer-play-btn" });
+}
+
+PlayControl.prototype = {
+    play: function play() {
+        dom.addClass(this.btn, "paused");
+        return this;
+    },
+    pause: function pause() {
+        dom.removeClass(this.btn, "paused");
+        return this;
+    },
+    toggle: function toggle() {
+        this.media.togglePlay();
+        return this;
+    },
+    initEvent: function initEvent() {
+        var toggle = this.toggle.bind(this);
+        dom.on(this.btn, "click", toggle);
+        this.media.on(VIDEO_PLAYING, this.play.bind(this)).on(VIDEO_PAUSE, this.pause.bind(this)).on(VIDEO_CLICK, toggle);
+        return this;
+    },
+    init: function init(target, media) {
+        target.appendChild(this.btn);
+        this.media = media;
+        return this.initEvent();
+    }
+};
+
+function TimeInfo() {
+    this.currentEl = dom.createElement("span", { "class": "rplayer-current-time" });
+    this.totalEl = dom.createElement("span", { "class": "rplayer-total-time" });
+}
+
+TimeInfo.prototype = {
+    constructor: TimeInfo,
+    updateTime: function updateTime() {
+        var time = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 0;
+        var total = arguments[1];
+
+        var el = total ? this.totalEl : this.currentEl;
+        el.innerHTML = convertTime(time);
+        return this;
+    },
+    initEvent: function initEvent() {
+        var _this = this;
+
+        this.media.on(VIDEO_TIME_UPDATE, function (evt, current) {
+            return _this.updateTime(current);
+        }).on(VIDEO_LOADED_META, function (evt, meta) {
+            return _this.updateTime(meta.duration, true);
+        });
+        return this;
+    },
+    init: function init(target, media) {
+        var el = dom.createElement("span", { "class": "rplayer-time-info" }),
+            text = doc.createTextNode("/");
+        this.media = media;
+        el.appendChild(this.currentEl);
+        el.appendChild(text);
+        el.appendChild(this.totalEl);
+        target.appendChild(el);
+        this.updateTime(0).updateTime(0, true);
+        return this.initEvent();
+    }
+};
+
+function Popup() {
+    this.el = dom.createElement("div", { "class": "rplayer-popup-info rplayer-hide" });
+    this.visible = false;
+}
+
+Popup.prototype = {
+    show: function show() {
+        this.visible = true;
+        dom.removeClass(this.el, "rplayer-hide");
+        return this;
+    },
+    hide: function hide() {
+        this.visible = false;
+        dom.addClass(this.el, "rplayer-hide");
+        return this;
+    },
+    updatePosition: function updatePosition(prop) {
+        var pos = {
+            left: "left",
+            right: "right",
+            top: "top",
+            bottom: "bottom"
+        };
+        if (isObject(prop)) {
+            for (var key in prop) {
+                if (pos[key]) {
+                    dom.css(this.el, key, prop[key]);
+                }
+            }
+        }
+        return this;
+    },
+    updateText: function updateText(content) {
+        this.el.innerHTML = content;
+        return this;
+    },
+    getSize: function getSize(prop) {
+        //隐藏元素获取不到尺寸信息，隐藏时先将元素显示出来获取之后再隐藏
+        var visible = this.visible;
+        !visible && this.show();
+        var style = getComputedStyle(this.el);
+        !visible && this.hide();
+        return prop ? parseFloat(style[prop]) : {
+            left: parseFloat(style.left),
+            right: parseFloat(style.right),
+            top: parseFloat(style.top),
+            bottom: parseFloat(style.bottom),
+            width: parseFloat(style.width)
+
+        };
+    },
+    width: function width() {
+        return this.getSize("width");
+    },
+    height: function height() {
+        return this.getSize("height");
+    },
+    init: function init(target, cls) {
+        cls = cls || "";
+        dom.addClass(this.el, cls);
+        target.appendChild(this.el);
+        return this;
+    }
+};
+
+function VideoProgress() {
+    this.slider = new Slider();
+    this.panel = dom.createElement("div", { "class": "rplayer-progress-panel" });
+    this.bufferEl = dom.createElement("div", { "class": "rplayer-bufferd-bar" });
+    this.popup = new Popup();
+    this.currentTime = this.duration = 0;
+}
+
+VideoProgress.prototype = {
+    constructor: VideoProgress,
+    update: function update(current) {
+        if (this.currentTime !== current) {
+            this.currentTime = current;
+            var percent = current / this.duration * 100 || 0;
+            this.slider.updateHPosition(percent + "%");
+        }
+        return this;
+    },
+    updateByStep: function updateByStep(step) {
+        var currentTime = this.currentTime,
+            duration = this.duration;
+        currentTime += step;
+        this.currentTime = currentTime < 0 ? 0 : currentTime > duration ? duration : currentTime;
+        this.media.setCurrentTime(this.currentTime).trigger(VIDEO_TIME_UPDATE, this.currentTime);
+        return this;
+    },
+    buffer: function buffer(buffered) {
+        dom.css(this.bufferEl, buffered + "%");
+    },
+    mouseMove: function mouseMove(evt) {
+        if (this.duration) {
+            this.popup.show();
+            var rect = this.panel.getBoundingClientRect(),
+                distance = evt.clientX - rect.left,
+                width = this.popup.width(),
+                left = distance - width / 2;
+            width = rect.width - width;
+            left = left < 0 ? 0 : left > width ? width : left;
+            width = distance / rect.width;
+            this.popup.updatePosition({ left: left + "px" }).updateText(convertTime(width * this.duration));
+        }
+    },
+    mouseOut: function mouseOut() {
+        this.popup.hide();
+    },
+    initEvent: function initEvent() {
+        var _this = this;
+
+        //滑动改变进度/点击进度条改变进度
+        this.slider.on(SLIDER_MOVE_DONE, function (evt, distance) {
+            var time = distance * _this.duration;
+            _this.media.setCurrentTime(time);
+            _this.media.trigger(VIDEO_TIME_UPDATE, time);
+        });
+        dom.on(this.panel, "mouseover mousemove", this.mouseMove.bind(this)).on(this.panel, "mouseout", this.mouseOut.bind(this));
+        this.media.on(VIDEO_LOAD_START, function () {
+            return _this.slider.trigger(SLIDER_STATUS_CHANGE, false);
+        }).on(VIDEO_LOADED_META, function (evt, meta) {
+            _this.duration = meta.duration;
+            _this.slider.trigger(SLIDER_STATUS_CHANGE, true);
+        }).on(VIDEO_TIME_UPDATE, function (evt, current) {
+            return _this.update(current);
+        }).on(VIDEO_PROGRESS, function (evt, buffered) {
+            return _this.buffer(buffered);
+        });
+        return this;
+    },
+    init: function init(target, media) {
+        var el = this.panel;
+        this.media = media;
+        el.appendChild(this.bufferEl);
+        this.slider.init(el);
+        this.popup.init(el, "rplayer-popup-video-info");
+        target.appendChild(el);
+        return this.initEvent();
+    }
+};
 
 var hideVolumePopTimer = null;
 var hideControlsTimer = null;
@@ -1004,17 +1268,20 @@ function RPlayer(selector, options) {
         config = DEFAULT_OPTIONS;
     }
     if (!config.source) {
-        
+        throw new Error("没有设置视频链接");
     }
     if (!target) {
         throw new Error("未选中任何元素");
     }
     this.target = target;
-    this.controlsDisabled = false;
     this.video = new VideoControl(config);
     this.loading = new Loading();
     this.error = new VideoError();
     this.volumeControl = new VolumeControl(config.defaultVolume);
+    this.playControl = new PlayControl();
+    this.timeInfo = new TimeInfo();
+    this.fullScreen = new FullScreen();
+    this.progress = new VideoProgress();
     this.controls = isUndefined(options.controls) ? true : !!options.controls;
     this.useNativeControls = isUndefined(options.useNativeControls) ? false : options.useNativeControls;
 }
@@ -1022,158 +1289,41 @@ function RPlayer(selector, options) {
 var fn$1 = RPlayer.prototype = Object.create(Subscriber.prototype);
 fn$1.constructor = RPlayer;
 
-fn$1.toggleFullScreen = function () {
-    if (this.isFullScreen = !this.isFullScreen) {
-        this.requestFullScreen();
-    } else {
-        this.exitFullScreen();
-    }
-};
-
-fn$1.requestFullScreen = function () {
-    this.isFullScreen = true;
-    dom.fullScreen(this.container).addClass(this.fullScreenBtn, "rplayer-fullscreen").addClass(this.container, "rplayer-fullscreen");
-};
-
-fn$1.exitFullScreen = function () {
-    this.isFullScreen = false;
-    dom.fullScreen(this.container, true).removeClass(this.fullScreenBtn, "rplayer-fullscreen").removeClass(this.container, "rplayer-fullscreen");
-};
-
-fn$1.initFullScreenEvent = function () {
-    var _this = this;
-
-    var fsApi = dom.fsApi;
-    if (fsApi) {
-        dom.on(doc, fsApi.fullscreenchange, function () {
-            if (!doc[fsApi.fullscreenElement]) {
-                _this.exitFullScreen();
-            }
-        }).on(doc, fsApi.fullscreenerror, function () {
-            _this.exitFullScreen();
-        });
-    }
-    return this;
-};
-
 fn$1.toggleVolumePopupInfo = function (volume) {
-    var _this2 = this;
+    var _this = this;
 
     clearTimeout(hideVolumePopTimer);
     this.volumePopupInfo.innerHTML = "当前音量: " + volume;
     dom.removeClass(this.volumePopupInfo, HIDE_CLASS);
     hideVolumePopTimer = setTimeout(function () {
-        return dom.addClass(_this2.volumePopupInfo, HIDE_CLASS);
+        return dom.addClass(_this.volumePopupInfo, HIDE_CLASS);
     }, 3000);
     return this;
 };
 
 fn$1.keyDown = function (evt) {
     //控制条被禁用，不做处理
-    if (this.controlsDisabled) return;
     var key = evt.key.toLowerCase(),
         regUpOrDown = /(?:up)|(?:down)/,
         regLeftOrRight = /(?:left)|(?:right)/,
         regEsc = /esc/,
         regSpace = /\s|(?:spacebar)/,
         tmp = KEY_MAP[key];
+    console.log(tmp);
     if (tmp) {
         if (regLeftOrRight.test(key)) {
-            this.updateProgressByStep(tmp);
+            this.progress.updateByStep(tmp);
         } else if (regUpOrDown.test(key)) {
             this.volumeControl.updateVolumeByStep(tmp);
         } else if (regEsc.test(key)) {
-            this.exitFullScreen();
+            this.fullScreen.exit();
         } else if (regSpace.test(key)) {
-            this.togglePlay();
+            this.playControl.toggle();
         } else {
-            this.toggleFullScreen();
+            this.fullScreen.toggle();
         }
     }
     evt.preventDefault();
-};
-
-//点击显示/隐藏设置音量面板
-fn$1.toggleVolumeSettingsPanel = function (evt) {
-    if (!this.controlsDisabled) {
-        this.volumeControl.toggle();
-    }
-    //阻止冒泡到document, document点击事件点击面板外任意地方隐藏面板，如不阻止冒泡则显示不出来
-    evt.stopPropagation();
-};
-
-fn$1.hideVolumeSettingsPanel = function () {
-    dom.addClass(this.volumePopup, HIDE_CLASS);
-    return this;
-};
-
-fn$1.initVolumeEvent = function () {
-    var _this3 = this;
-
-    this.volumeControl.on(VOLUME_UPDATE, function (evt, volume) {
-        return _this3.video.setVolume(volume);
-    }).on(VOLUME_CLASS_NAME_CHANGE, function (evt, cls) {
-        var cn = _this3.showVolumePopBtn.className;
-        var reg = /volume-\S+/;
-        _this3.showVolumePopBtn.className = cn.replace(reg, "") + cls;
-    }).on(VOLUME_MUTE, function (evt, mute) {
-        return mute ? _this3.video.mute(true) : _this3.video.mute(false);
-    });
-    return this;
-};
-
-fn$1.togglePlay = function () {
-    if (!this.controlsDisabled) {
-        this.video.isPaused() ? this.play() : this.pause();
-    }
-};
-
-fn$1.play = function () {
-    dom.addClass(this.playBtn, "paused");
-    this.video.play(true);
-    return this;
-};
-
-fn$1.pause = function () {
-    this.video.play(false);
-    dom.removeClass(this.playBtn, "paused");
-    return this;
-};
-
-//鼠标在进度条上移动显示时间信息
-fn$1.showPopupTimeInfo = function (evt) {
-    var duration = this.video.getDuration(),
-        popup = this.videoPopupTime,
-        mark = this.mark;
-    if (duration) {
-        dom.removeClass(popup, HIDE_CLASS).removeClass(mark, HIDE_CLASS);
-        var rect = this.progressPanel.getBoundingClientRect(),
-            distance = evt.clientX - rect.left,
-            width = popup.offsetWidth,
-            left = distance - width / 2;
-        width = rect.width - width;
-        left = left < 0 ? 0 : left > width ? width : left;
-        width = distance / rect.width;
-        popup.innerHTML = this.video.convertTime(width * duration);
-        dom.css(popup, "left", left + "px");
-        dom.css(mark, "left", width * 100 + "%");
-    }
-    return this;
-};
-
-fn$1.hidePopupTimeInfo = function () {
-    dom.addClass(this.videoPopupTime, HIDE_CLASS).addClass(this.mark, HIDE_CLASS);
-    return this;
-};
-
-fn$1.updateProgressByStep = function (step) {
-    var currentTime = this.video.getCurrentTime(),
-        duration = this.video.getDuration();
-    currentTime += step;
-    currentTime = currentTime < 0 ? 0 : currentTime > duration ? duration : currentTime;
-    this.video.setCurrentTime(currentTime);
-    currentTime = this.video.getPlayedPercentage();
-    return this.videoSlider.trigger("position.change", "h", currentTime);
 };
 
 fn$1.hideControls = function () {
@@ -1182,112 +1332,42 @@ fn$1.hideControls = function () {
 };
 
 fn$1.showControls = function () {
-    var _this4 = this;
+    var _this2 = this;
 
     //出错了则不显示控制条
     if (!this.video.isError()) {
         clearTimeout(hideControlsTimer);
         dom.removeClass(this.controlsPanel, HIDE_CLASS);
-        if (dom.hasClass(this.volumePopup, HIDE_CLASS)) {
-            hideControlsTimer = setTimeout(function () {
-                return _this4.hideControls();
-            }, 5000);
-        }
+        hideControlsTimer = setTimeout(function () {
+            return _this2.hideControls();
+        }, 5000);
     }
-    return this;
-};
-
-fn$1.enableControls = function () {
-    dom.removeClass(this.controlsPanel, "rplayer-disabled");
-    this.controlsDisabled = false;
-    return this;
-};
-
-fn$1.disableControls = function () {
-    dom.addClass(this.controlsPanel, "rplayer-disabled");
-    this.controlsDisabled = true;
     return this;
 };
 
 fn$1.initControlEvent = function () {
-    var _this5 = this;
+    var _this3 = this;
 
-    //滑动改变进度/点击进度条改变进度
-    this.videoSlider.on("slider.move.done", function (evt, distance) {
-        _this5.video.setCurrentTime(distance, true);
-        _this5.updateTime();
-    });
     this.video.on(VIDEO_PROGRESS, function (evt, buffered, readyState) {
-        return _this5.buffer(buffered, readyState);
-    }).on(VIDEO_LOADED_META, function (evt, meta) {
-        return _this5.updateMetaInfo(meta);
-    }).on(VIDEO_TIME_UPDATE, function (evt, currentTime) {
-        return _this5.updateTime(currentTime);
-    }).on(VIDEO_DBLCLICK, this.toggleFullScreen.bind(this));
-    dom.on(this.progressPanel, "mouseover mousemove", this.showPopupTimeInfo.bind(this)).on(this.progressPanel, "mouseout", this.hidePopupTimeInfo.bind(this)).on(this.container, "keydown", this.keyDown.bind(this)).on(this.container, "mousemove", this.showControls.bind(this));
-    return this.initVolumeEvent().initFullScreenEvent();
-};
-
-fn$1.handleClick = function (evt) {
-    var tgt = evt.target;
-    switch (tgt) {
-        case this.showVolumePopBtn:
-            this.toggleVolumeSettingsPanel(evt);
-            break;
-        case this.muteBtn:
-            this.mute();
-            break;
-        case this.playBtn:
-        case this.video.el:
-            this.togglePlay();
-            break;
-        case this.fullScreenBtn:
-            this.toggleFullScreen();
-            break;
-        case this.error.msgEl:
-            this.refresh();
-            break;
-    }
+        return _this3.buffer(buffered, readyState);
+    }).on(VIDEO_DBLCLICK, function () {
+        return _this3.fullScreen.toggle();
+    });
+    dom.on(this.container, "keydown", this.keyDown.bind(this)).on(this.container, "mousemove", this.showControls.bind(this));
+    return this;
 };
 
 fn$1.buffer = function (buffered, readyState) {
-    this.bufferedBar && dom.css(this.bufferedBar, "width", buffered + "%");
     if (readyState < 3) {
         this.loading.show();
     }
 };
 
-fn$1.updateTime = function () {
-    var time = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : this.video.getCurrentTime();
-    var total = arguments[1];
-
-    var el = this.currentTime;
-    if (total) {
-        el = this.totalTime;
-    }
-    el.innerHTML = this.video.convertTime(time);
-    return this;
-};
-
-fn$1.updateMetaInfo = function (meta) {
-    if (this.video.isAutoPlay()) {
-        this.play();
-    }
-    this.updateTime(meta.duration, true).enableControls();
-};
-
 fn$1.playEnd = function () {
     this.trigger("play.end");
-    return this.video.isLoop() ? this.play() : this.pause();
-};
-
-fn$1.hideError = function () {
-    this.controlsDisabled = false;
-    return this;
 };
 
 fn$1.handleError = function (error) {
-    this.controlsDisabled = true;
     this.loading.hide();
     this.error.show(error.message);
     return this;
@@ -1299,57 +1379,44 @@ fn$1.refresh = function () {
 };
 
 fn$1.initEvent = function () {
-    var _this6 = this;
+    var _this4 = this;
 
-    dom.on(this.container, "click", this.handleClick.bind(this));
     this.video.on(VIDEO_LOAD_START, function () {
-        _this6.loading.show();
-        _this6.disableControls();
+        return _this4.loading.show();
     }).on(VIDEO_SEEKING, function () {
-        return _this6.loading.show();
+        return _this4.loading.show();
     }).on(VIDEO_CAN_PLAY, function () {
-        return _this6.loading.hide();
+        return _this4.loading.hide();
     }).on(VIDEO_ENDED, this.playEnd.bind(this)).on(VIDEO_ERROR, function (evt, error) {
-        return _this6.handleError(error);
+        return _this4.handleError(error);
     });
     return this;
 };
 
-fn$1.initElements = function () {
-    var context = this.container,
-        volumePanel = dom.selectElement(".rplayer-audio-control", context);
-    this.playBtn = dom.selectElement(".rplayer-play-btn", context);
-    this.progressPanel = dom.selectElement(".rplayer-progress-panel", context);
-    this.videoPopupTime = dom.selectElement(".rplayer-popup-video-info", context);
-    this.currentTime = dom.selectElement(".rplayer-current-time", context);
-    this.totalTime = dom.selectElement(".rplayer-total-time", context);
-    this.bufferedBar = dom.selectElement(".rplayer-bufferd-bar", context);
-    this.showVolumePopBtn = dom.selectElement(".rplayer-audio-btn", context);
-    this.volumePopupInfo = dom.selectElement(".rplayer-popup-volume-info", context);
-    this.fullScreenBtn = dom.selectElement(".rplayer-fullscreen-btn", context);
-    this.mark = dom.selectElement(".rplayer-mark", context);
-    this.volumeControl.init(volumePanel);
-    this.videoSlider = new Slider();
-    this.videoSlider.init(this.progressPanel);
-    return this;
-};
-
 fn$1.initControls = function () {
-    this.controlsPanel = dom.createElement("div");
-    dom.addClass(this.controlsPanel, "rplayer-controls");
-    this.controlsPanel.innerHTML = controls;
+    var context = this.container,
+        settingsPanel = dom.createElement("div", { "class": "rplayer-settings rplayer-rt" }),
+        playControl = dom.createElement("div", { "class": "rplayer-play-control rplayer-lf" });
+    this.controlsPanel = dom.createElement("div", { "class": "rplayer-controls" });
+    this.fullScreen.init(this.container, settingsPanel);
+    this.volumeControl.init(settingsPanel, this.video);
+    this.playControl.init(playControl, this.video);
+    this.timeInfo.init(playControl, this.video);
+    this.progress.init(this.controlsPanel, this.video);
+    this.controlsPanel.appendChild(settingsPanel);
+    this.controlsPanel.appendChild(playControl);
     this.container.appendChild(this.controlsPanel);
-    return this.initElements().initControlEvent();
+    this.volumePopupInfo = dom.selectElement(".rplayer-popup-volume-info", context);
+    return this.initControlEvent();
 };
 
 fn$1.offEvent = function () {
-    dom.off(doc).off(this.volumePopup).off(this.container).off(this.video.el);
+    dom.off(doc).off(this.container).off(this.video.el);
     return this;
 };
 
 fn$1.destroy = function () {
     if (this.container) {
-        this.videoSlider.destroy();
         this.video.destroy();
         removeProp(this);
         this.offEvent();
@@ -1372,13 +1439,12 @@ fn$1.initialize = function () {
             tabIndex: 100 //使元素能够获取焦点
         }),
             height = parseInt(getComputedStyle(this.target).height);
-        this.isFullScreen = false;
         container.innerHTML = tpl;
         dom.css(container, "height", (height || DEFAULT_HEIGHT) + "px");
         this.container = container;
         this.video.init(container);
         this.loading.init(container);
-        this.error.init(container);
+        this.error.init(container, this.refresh.bind(this));
         dom.addClass(container, "rplayer-container");
         //播放控制与原生控制二选一，如果设置了useNativeControls为true，则优先使用原生控制
         if (this.controls && !this.useNativeControls) {
