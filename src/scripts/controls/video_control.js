@@ -18,7 +18,7 @@ export const VIDEO_PROGRESS = "video.progress";
 export const VIDEO_CAN_PLAY = "video.can.play";
 export const VIDEO_ENDED = "video.ended";
 export const VIDEO_ERROR = "video.error";
-export const VIDEO_VOLUME_CHANGE = "video.volume.change";
+// export const VIDEO_VOLUME_CHANGE = "video.volume.change";
 
 let fn = VideoControl.prototype = Object.create(Subscriber.prototype),
     proto = {

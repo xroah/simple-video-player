@@ -16,7 +16,7 @@ import VideoControl, {
     VIDEO_SEEKING,
     VIDEO_TIME_UPDATE
 } from "./controls/video_control.js";
-import VolumeControl, {VOLUME_CLASS_NAME_CHANGE, VOLUME_MUTE, VOLUME_UPDATE} from "./controls/volume_control.js";
+import VolumeControl, {VOLUME_MUTE, VOLUME_UPDATE} from "./controls/volume_control.js";
 
 let hideVolumePopTimer = null,
     hideControlsTimer = null;
@@ -128,23 +128,9 @@ fn.keyDown = function (evt) {
     evt.preventDefault();
 };
 
-//点击显示/隐藏设置音量面板
-fn.toggleVolumeSettingsPanel = function (evt) {
-    if (!this.controlsDisabled) {
-        this.volumeControl.toggle();
-    }
-    //阻止冒泡到document, document点击事件点击面板外任意地方隐藏面板，如不阻止冒泡则显示不出来
-    evt.stopPropagation();
-};
-
 fn.initVolumeEvent = function () {
     this.volumeControl
         .on(VOLUME_UPDATE, (evt, volume) => this.video.setVolume(volume))
-        .on(VOLUME_CLASS_NAME_CHANGE, (evt, cls) => {
-            let cn = this.showVolumePopBtn.className;
-            let reg = /volume-\S+/;
-            this.showVolumePopBtn.className = cn.replace(reg, "") + cls;
-        })
         .on(VOLUME_MUTE, (evt, mute) => mute ? this.video.mute(true) : this.video.mute(false));
     return this;
 };
@@ -257,9 +243,6 @@ fn.initControlEvent = function () {
 fn.handleClick = function (evt) {
     let tgt = evt.target;
     switch (tgt) {
-        case this.showVolumePopBtn:
-            this.toggleVolumeSettingsPanel(evt);
-            break;
         case this.muteBtn:
             this.mute();
             break;
@@ -339,18 +322,17 @@ fn.initEvent = function () {
 
 fn.initElements = function () {
     let context = this.container,
-        volumePanel = dom.selectElement(".rplayer-audio-control", context);
+        settingsPanel = dom.selectElement(".rplayer-settings", context);
     this.playBtn = dom.selectElement(".rplayer-play-btn", context);
     this.progressPanel = dom.selectElement(".rplayer-progress-panel", context);
     this.videoPopupTime = dom.selectElement(".rplayer-popup-video-info", context);
     this.currentTime = dom.selectElement(".rplayer-current-time", context);
     this.totalTime = dom.selectElement(".rplayer-total-time", context);
     this.bufferedBar = dom.selectElement(".rplayer-bufferd-bar", context);
-    this.showVolumePopBtn = dom.selectElement(".rplayer-audio-btn", context);
     this.volumePopupInfo = dom.selectElement(".rplayer-popup-volume-info", context);
     this.fullScreenBtn = dom.selectElement(".rplayer-fullscreen-btn", context);
     this.mark = dom.selectElement(".rplayer-mark", context);
-    this.volumeControl.init(volumePanel);
+    this.volumeControl.init(settingsPanel);
     this.videoSlider = new Slider();
     this.videoSlider.init(this.progressPanel);
     return this;
