@@ -97,6 +97,7 @@ proto.mouseUp = function () {
     dom.off(doc, "mousemove moseup")
         .removeClass(this.el, "rplayer-moving");
     this.moving && this.trigger("slider.move.done", this.moveDis);
+    setTimeout(() => this.moving = false);
 };
 
 proto.changePosition = function (evt, dir, dis) {
@@ -110,23 +111,21 @@ proto.changePosition = function (evt, dir, dis) {
 proto.clickTrack = function (evt) {
     //移动滑块鼠标释放时会触发父元素点击事件,可能会导致鼠标释放后滑块位置改变
     //如果移动滑块则点击事件不做处理
-    if (this.moving) {
-        this.moving = false;
-        return;
+    if (!this.moving) {
+        let rect = this.track.getBoundingClientRect(),
+            x = evt.clientX,
+            y = evt.clientY,
+            eType = "slider.moving";
+        if (this.vertical) {
+            rect = (rect.height - y + rect.top) / rect.height;
+            this.updateVPosition(rect, true);
+        } else {
+            rect = (x - rect.left) / rect.width;
+            eType = "slider.move.done";
+            this.updateHPosition(rect, true);
+        }
+        this.trigger(eType, rect);
     }
-    let rect = this.track.getBoundingClientRect(),
-        x = evt.clientX,
-        y = evt.clientY,
-        eType = "slider.moving";
-    if (this.vertical) {
-        rect = (rect.height - y + rect.top) / rect.height;
-        this.updateVPosition(rect, true);
-    } else {
-        rect = (x - rect.left) / rect.width;
-        eType = "slider.move.done";
-        this.updateHPosition(rect, true);
-    }
-    this.trigger(eType, rect);
 };
 
 proto.initEvent = function () {

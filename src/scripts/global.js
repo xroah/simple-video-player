@@ -77,6 +77,10 @@ export function removeProp(obj, prop) {
     }
 }
 
+export function noop() {
+    return function () {};
+}
+
 export {
     doc,
     DEFAULT_OPTIONS,

@@ -1,52 +1,40 @@
 import dom from "../dom/index.js";
 import Slider from "./slider.js";
-import Subscriber from "../subscriber.js";
-import {doc, extend} from "../global";
+import {doc} from "../global";
 
-export const VOLUME_UPDATE = "volume.update";
-export const VOLUME_MUTE = "volume.mute";
 
 function VolumeControl(volume) {
-    Subscriber.call(this);
-    this.el = dom.createElement("div", {"class": "rplayer-volume-popup rplayer-hide"});
+    this.panel = dom.createElement("div", {"class": "rplayer-volume-popup rplayer-hide"});
     this.valueEl = dom.createElement("div", {"class": "rplayer-current-volume"});
     this.muteBtn = dom.createElement("button", {"class": "rplayer-mute volume-1"});
     this.showBtn = dom.createElement("button", {"class": "rplayer-audio-btn volume-1"});
     this.slider = new Slider(true);
     this.volume = volume;
-    this.muted = false;
 }
 
-VolumeControl.prototype = Object.create(Subscriber.prototype);
-
-let proto = {
+VolumeControl.prototype = {
     constructor: VolumeControl,
     show() {
-        dom.removeClass(this.el, "rplayer-hide");
+        dom.removeClass(this.panel, "rplayer-hide");
         return this;
     },
     hide() {
-        dom.addClass(this.el, "rplayer-hide");
+        dom.addClass(this.panel, "rplayer-hide");
         return this;
     },
     toggle(evt) {
-        dom.toggleClass(this.el, "rplayer-hide");
+        dom.toggleClass(this.panel, "rplayer-hide");
         //document click事件点击音量设置面板之外隐藏,如果不阻止冒泡则面板显示不出来
         evt.stopPropagation();
         return this;
     },
     updateVolume(volume, scale, sliderMove) {
-        scale && (volume *= 100);
-        volume = Math.floor(volume);
-        this.volume = volume;
-        if (!volume) {
-            this.muted = true;
-            this.trigger(VOLUME_MUTE, this.muted);
-        } else {
-            this.muted = false;
-            this.trigger(VOLUME_UPDATE, volume);
-        }
-        this.updateStyle(volume, sliderMove);
+        !scale && (volume /= 100);
+        volume = parseFloat(volume.toFixed(2));
+        this.volume = Math.floor(volume * 100);
+        this.media.mute(!volume);
+        this.media.setVolume(volume);
+        this.updateStyle(this.volume, sliderMove);
         return this;
     },
     updateVolumeByStep(step) {
@@ -77,21 +65,22 @@ let proto = {
         return this;
     },
     mute() {
-        if (this.muted = !this.muted) {
-            this.updateStyle(0);
-        } else {
+        if (this.media.isMuted()) {
             this.updateStyle(this.volume);
+            this.media.mute(false);
+        } else {
+            this.updateStyle(0);
+            this.media.mute(true);
         }
-        this.trigger(VOLUME_MUTE, this.muted);
     },
     initEvent() {
         dom.on(this.muteBtn, "click", this.mute.bind(this))
-            .on(this.el, "mouseleave", this.hide.bind(this))
+            .on(this.panel, "mouseleave", this.hide.bind(this))
             .on(this.showBtn, "click", this.toggle.bind(this))
             .on(doc, "click", evt => {
                 let tgt = evt.target;
                 //点击页面其他地方（点击的不是音量设置面板或者面板内的元素）则隐藏音量面板
-                if (tgt !== this.el && !this.el.contains(tgt)) {
+                if (tgt !== this.panel && !this.panel.contains(tgt)) {
                     this.hide();
                 }
             });
@@ -100,23 +89,19 @@ let proto = {
         });
         return this;
     },
-    init(target) {
-    // <div class="rplayer-audio-control rplayer-rt">' +
-    //     '                <button type="button" class="rplayer-audio-btn volume-1"></button>' +
-    //     '            </div>';
+    init(target, media) {
         let panel = dom.createElement("div", {"class": "rplayer-audio-control rplayer-rt"});
-        this.el.appendChild(this.valueEl);
-        this.slider.init(this.el);
-        this.el.appendChild(this.muteBtn);
+        this.media = media;
+        this.panel.appendChild(this.valueEl);
+        this.slider.init(this.panel);
+        this.panel.appendChild(this.muteBtn);
         panel.appendChild(this.showBtn);
-        panel.append(this.el);
+        panel.append(this.panel);
         target.appendChild(panel);
         this.updateVolume(this.volume)
             .initEvent();
         return this;
     }
 };
-
-extend(VolumeControl.prototype, proto);
 
 export default VolumeControl;

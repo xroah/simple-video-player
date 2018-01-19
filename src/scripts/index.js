@@ -17,7 +17,7 @@ import VideoControl, {
     VIDEO_SEEKING,
     VIDEO_TIME_UPDATE
 } from "./controls/video/video_control.js";
-import VolumeControl, {VOLUME_MUTE, VOLUME_UPDATE} from "./controls/volume_control.js";
+import VolumeControl from "./controls/volume_control.js";
 
 let hideVolumePopTimer = null,
     hideControlsTimer = null;
@@ -92,14 +92,6 @@ fn.keyDown = function (evt) {
     evt.preventDefault();
 };
 
-fn.initVolumeEvent = function () {
-    this.volumeControl
-        .on(VOLUME_UPDATE, (evt, volume) => this.video.setVolume(volume))
-        .on(VOLUME_MUTE, (evt, mute) => mute ? this.video.mute(true) : this.video.mute(false));
-    return this;
-};
-
-
 fn.togglePlay = function () {
     this.video.isPaused() ? this.play(): this.pause();
 };
@@ -164,9 +156,7 @@ fn.showControls = function () {
     if (!this.video.isError()) {
         clearTimeout(hideControlsTimer);
         dom.removeClass(this.controlsPanel, HIDE_CLASS);
-        if (dom.hasClass(this.volumePopup, HIDE_CLASS)) {
-            hideControlsTimer = setTimeout(() => this.hideControls(), 5000);
-        }
+        hideControlsTimer = setTimeout(() => this.hideControls(), 5000);
     }
     return this;
 };
@@ -186,21 +176,15 @@ fn.initControlEvent = function () {
         .on(this.progressPanel, "mouseout", this.hidePopupTimeInfo.bind(this))
         .on(this.container, "keydown", this.keyDown.bind(this))
         .on(this.container, "mousemove", this.showControls.bind(this));
-    return this.initVolumeEvent();
+    return this;
 };
 
 fn.handleClick = function (evt) {
     let tgt = evt.target;
     switch (tgt) {
-        case this.muteBtn:
-            this.mute();
-            break;
         case this.playBtn:
         case this.video.el:
             this.togglePlay();
-            break;
-        case this.error.msgEl:
-            this.refresh();
             break;
     }
 };
@@ -261,12 +245,13 @@ fn.initEvent = function () {
 
 fn.initControls = function () {
     let context = this.container,
-        settingsPanel = dom.createElement("div", {"class": "rplayer-settings rplayer-rt"});
+        settingsPanel = dom.createElement("div", {"class": "rplayer-settings rplayer-rt"}),
+        playControl = dom.createElement("div", {"class": "rplayer-play-control rplayer-lf"});
     this.controlsPanel = dom.createElement("div");
     dom.addClass(this.controlsPanel, "rplayer-controls");
     this.controlsPanel.innerHTML = controls;
     this.fullScreen.init(this.container, settingsPanel);
-    this.volumeControl.init(settingsPanel);
+    this.volumeControl.init(settingsPanel, this.video);
     this.controlsPanel.appendChild(settingsPanel);
     this.container.appendChild(this.controlsPanel);
     this.playBtn = dom.selectElement(".rplayer-play-btn", context);
@@ -285,7 +270,6 @@ fn.initControls = function () {
 
 fn.offEvent = function () {
     dom.off(doc)
-        .off(this.volumePopup)
         .off(this.container)
         .off(this.video.el);
     return this;
@@ -320,7 +304,7 @@ fn.initialize = function () {
         this.container = container;
         this.video.init(container);
         this.loading.init(container);
-        this.error.init(container);
+        this.error.init(container, this.refresh.bind(this));
         dom.addClass(container, "rplayer-container");
         //播放控制与原生控制二选一，如果设置了useNativeControls为true，则优先使用原生控制
         if (this.controls && !this.useNativeControls) {
@@ -338,4 +322,4 @@ RPlayer.init = function (selector, options) {
     return new RPlayer(selector, options).initialize();
 };
 
-export default RPlayer;st
+export default RPlayer;

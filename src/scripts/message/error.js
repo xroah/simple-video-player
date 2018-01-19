@@ -1,8 +1,10 @@
 import dom from "../dom/index.js";
+import {isFunction, noop} from "../global.js";
 
 function VideoError() {
     this.el = dom.createElement("div", {"class": "rplayer-error rplayer-hide"});
     this.msgEl = dom.createElement("div", {"class": "rplayer-msg"});
+    this.callback = noop();
 }
 
 VideoError.prototype = {
@@ -20,10 +22,17 @@ VideoError.prototype = {
         this.msgEl.innerHTML = msg;
         return this;
     },
-    init(target) {
+    initEvent() {
+        dom.on(this.msgEl, "click", this.callback);
+        return this;
+    },
+    init(target, callback) {
         this.el.appendChild(this.msgEl);
         target.appendChild(this.el);
-        return this;
+        if (isFunction(callback)) {
+            this.callback = callback;
+        }
+        return this.initEvent();
     }
 };
 
