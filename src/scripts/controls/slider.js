@@ -2,11 +2,17 @@ import Subscriber from "../subscriber.js"
 import {doc, isUndefined, removeProp} from "../global.js";
 import dom from "../dom/index.js";
 
+export const SLIDER_MOVING = "slider.moving";
+export const SLIDER_MOVE_DONE = "slider.move.done";
+//滑块状态改变(是否可以滑动/点击),视频加载时候为获取到元信息禁止改变进度
+export const SLIDER_STATUS_CHANGE = "slider.status.change";
+
 function Slider(vertical) {
     Subscriber.call(this);
     this.vertical = isUndefined(vertical) ? false : !!vertical;
     this.moveDis = this.pos = null;
     this.moving = false;
+    this.enabled = true; //初始默认可以滑动/点击
 }
 
 let proto = Slider.prototype = Object.create(Subscriber.prototype);
@@ -42,7 +48,7 @@ proto.updateVPosition = function (val, scale) {
 
 proto.mouseDown = function (evt) {
     //只有按鼠标左键时处理(evt.button=0)
-    if (!evt.button) {
+    if (!evt.button && this.enabled) {
         let x = evt.clientX,
             y = evt.clientY,
             pos = this.getPosition(),
@@ -84,7 +90,7 @@ proto.mouseMove = function (evt, fn) {
         y = evt.clientY,
         distance = fn.call(this, x, y);
     this.moving = true;
-    this.trigger("slider.moving", this.moveDis = distance);
+    this.trigger(SLIDER_MOVING, this.moveDis = distance);
 };
 
 proto.getMoveCallback = function () {
@@ -96,22 +102,14 @@ proto.getMoveCallback = function () {
 proto.mouseUp = function () {
     dom.off(doc, "mousemove moseup")
         .removeClass(this.el, "rplayer-moving");
-    this.moving && this.trigger("slider.move.done", this.moveDis);
+    this.moving && this.trigger(SLIDER_MOVE_DONE, this.moveDis);
     setTimeout(() => this.moving = false);
-};
-
-proto.changePosition = function (evt, dir, dis) {
-    if (dir === "h") {
-        this.updateHPosition(dis, true);
-    } else {
-        this.updateVPosition(dis);
-    }
 };
 
 proto.clickTrack = function (evt) {
     //移动滑块鼠标释放时会触发父元素点击事件,可能会导致鼠标释放后滑块位置改变
-    //如果移动滑块则点击事件不做处理
-    if (!this.moving) {
+    //如果移动滑块/被禁用则点击事件不做处理
+    if (!this.moving && this.enabled) {
         let rect = this.track.getBoundingClientRect(),
             x = evt.clientX,
             y = evt.clientY,
@@ -131,6 +129,7 @@ proto.clickTrack = function (evt) {
 proto.initEvent = function () {
     dom.on(this.el, "mousedown", this.mouseDown.bind(this))
         .on(this.track, "click", this.clickTrack.bind(this));
+    this.on(SLIDER_STATUS_CHANGE, (evt, enable) => this.enabled = !!enable);
     return this;
 };
 
@@ -159,7 +158,6 @@ proto.init = function (target) {
     this.track.appendChild(this.bar);
     this.track.append(this.el);
     target.appendChild(this.track);
-    this.on("position.change", this.changePosition);
     return this.initEvent();
 };
 

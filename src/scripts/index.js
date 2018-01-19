@@ -1,8 +1,7 @@
 import dom from "./dom/index.js";
 import {doc, DEFAULT_OPTIONS, KEY_MAP, isObject, isUndefined, removeProp} from "./global.js";
 import Subscriber from "./subscriber.js";
-import Slider from "./controls/slider.js";
-import {tpl, controls} from "./template.js";
+import {tpl} from "./template.js";
 import Loading from "./message/loading.js";
 import VideoError from "./message/error.js";
 import FullScreen from "./controls/video/fullscreen.js";
@@ -12,14 +11,14 @@ import VideoControl, {
     VIDEO_ENDED,
     VIDEO_ERROR,
     VIDEO_LOAD_START,
-    VIDEO_LOADED_META,
     VIDEO_PROGRESS,
     VIDEO_SEEKING,
-    VIDEO_TIME_UPDATE
+    VIDEO_VOLUME_CHANGE
 } from "./controls/video/video_control.js";
 import VolumeControl from "./controls/volume_control.js";
 import PlayControl from "./controls/video/play_control.js";
 import TimeInfo from "./message/time_info.js";
+import VideoProgress from "./controls/video/video_progress.js";
 
 let hideVolumePopTimer = null,
     hideControlsTimer = null;
@@ -57,6 +56,7 @@ function RPlayer(selector, options) {
     this.playControl = new PlayControl();
     this.timeInfo = new TimeInfo();
     this.fullScreen = new FullScreen();
+    this.progress = new VideoProgress();
     this.controls = isUndefined(options.controls) ? true : !!options.controls;
     this.useNativeControls = isUndefined(options.useNativeControls) ? false : options.useNativeControls;
 }
@@ -80,9 +80,10 @@ fn.keyDown = function (evt) {
         regEsc = /esc/,
         regSpace = /\s|(?:spacebar)/,
         tmp = KEY_MAP[key];
+    console.log(tmp)
     if (tmp) {
         if (regLeftOrRight.test(key)) {
-            this.updateProgressByStep(tmp);
+            this.progress.updateByStep(tmp);
         } else if (regUpOrDown.test(key)) {
             this.volumeControl.updateVolumeByStep(tmp);
         } else if (regEsc.test(key)) {
@@ -94,44 +95,6 @@ fn.keyDown = function (evt) {
         }
     }
     evt.preventDefault();
-};
-
-//鼠标在进度条上移动显示时间信息
-fn.showPopupTimeInfo = function (evt) {
-    let duration = this.video.getDuration(),
-        popup = this.videoPopupTime,
-        mark = this.mark;
-    if (duration) {
-        dom.removeClass(popup, HIDE_CLASS)
-            .removeClass(mark, HIDE_CLASS);
-        let rect = this.progressPanel.getBoundingClientRect(),
-            distance = evt.clientX - rect.left,
-            width = popup.offsetWidth,
-            left = distance - width / 2;
-        width = rect.width - width;
-        left = left < 0 ? 0 : left > width ? width : left;
-        width = distance / rect.width;
-        //popup.innerHTML = this.video.convertTime(width * duration);
-        dom.css(popup, "left", left + "px");
-        dom.css(mark, "left", width * 100 + "%");
-    }
-    return this;
-};
-
-fn.hidePopupTimeInfo = function () {
-    dom.addClass(this.videoPopupTime, HIDE_CLASS)
-        .addClass(this.mark, HIDE_CLASS);
-    return this;
-};
-
-fn.updateProgressByStep = function (step) {
-    let currentTime = this.video.getCurrentTime(),
-        duration = this.video.getDuration();
-    currentTime += step;
-    currentTime = currentTime < 0 ? 0 : currentTime > duration ? duration : currentTime;
-    this.video.setCurrentTime(currentTime);
-    currentTime = this.video.getPlayedPercentage();
-    return this.videoSlider.trigger("position.change", "h", currentTime);
 };
 
 fn.hideControls = function () {
@@ -150,22 +113,15 @@ fn.showControls = function () {
 };
 
 fn.initControlEvent = function () {
-    //滑动改变进度/点击进度条改变进度
-    this.videoSlider.on("slider.move.done", (evt, distance) => {
-        this.video.setCurrentTime(distance, true);
-    });
     this.video
         .on(VIDEO_PROGRESS, (evt, buffered, readyState) => this.buffer(buffered, readyState))
         .on(VIDEO_DBLCLICK, () => this.fullScreen.toggle());
-    dom.on(this.progressPanel, "mouseover mousemove", this.showPopupTimeInfo.bind(this))
-        .on(this.progressPanel, "mouseout", this.hidePopupTimeInfo.bind(this))
-        .on(this.container, "keydown", this.keyDown.bind(this))
+    dom.on(this.container, "keydown", this.keyDown.bind(this))
         .on(this.container, "mousemove", this.showControls.bind(this));
     return this;
 };
 
 fn.buffer = function (buffered, readyState) {
-    this.bufferedBar && dom.css(this.bufferedBar, "width",  buffered + "%");
     if (readyState < 3) {
         this.loading.show();
     }
@@ -200,23 +156,16 @@ fn.initControls = function () {
     let context = this.container,
         settingsPanel = dom.createElement("div", {"class": "rplayer-settings rplayer-rt"}),
         playControl = dom.createElement("div", {"class": "rplayer-play-control rplayer-lf"});
-    this.controlsPanel = dom.createElement("div");
-    dom.addClass(this.controlsPanel, "rplayer-controls");
-    this.controlsPanel.innerHTML = controls;
+    this.controlsPanel = dom.createElement("div", {"class": "rplayer-controls"});
     this.fullScreen.init(this.container, settingsPanel);
     this.volumeControl.init(settingsPanel, this.video);
     this.playControl.init(playControl, this.video);
     this.timeInfo.init(playControl, this.video);
+    this.progress.init(this.controlsPanel, this.video);
     this.controlsPanel.appendChild(settingsPanel);
     this.controlsPanel.appendChild(playControl);
     this.container.appendChild(this.controlsPanel);
-    this.progressPanel = dom.selectElement(".rplayer-progress-panel", context);
-    this.videoPopupTime = dom.selectElement(".rplayer-popup-video-info", context);
-    this.bufferedBar = dom.selectElement(".rplayer-bufferd-bar", context);
     this.volumePopupInfo = dom.selectElement(".rplayer-popup-volume-info", context);
-    this.mark = dom.selectElement(".rplayer-mark", context);
-    this.videoSlider = new Slider();
-    this.videoSlider.init(this.progressPanel);
     return this.initControlEvent();
 };
 
@@ -230,7 +179,6 @@ fn.offEvent = function () {
 
 fn.destroy = function () {
     if (this.container) {
-        this.videoSlider.destroy();
         this.video.destroy();
         removeProp(this);
         this.offEvent();

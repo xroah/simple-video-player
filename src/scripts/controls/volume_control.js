@@ -1,5 +1,5 @@
 import dom from "../dom/index.js";
-import Slider from "./slider.js";
+import Slider, {SLIDER_MOVING} from "./slider.js";
 import {doc} from "../global";
 
 
@@ -82,7 +82,7 @@ VolumeControl.prototype = {
                     this.hide();
                 }
             });
-        this.slider.on("slider.moving", (evt, distance) => {
+        this.slider.on(SLIDER_MOVING, (evt, distance) => {
             this.updateVolume(Math.floor(100 * distance), true);
         });
         return this;

@@ -3,12 +3,6 @@ import {doc, isUndefined, extend} from "../../global.js";
 import Subscriber from "../../subscriber.js";
 import {ERROR_TYPE, removeProp} from "../../global";
 
-function VideoControl(config) {
-    Subscriber.call(this);
-    this.config = config;
-    this.playedTime = null;
-}
-
 export const VIDEO_LOADED_META = "video.loaded.meta";
 export const VIDEO_TIME_UPDATE = "video.time.update";
 export const VIDEO_SEEKING = "video.seeking";
@@ -21,7 +15,13 @@ export const VIDEO_PLAYING = "video.playing";
 export const VIDEO_PAUSE = "video.pause";
 export const VIDEO_DBLCLICK = "video.dblclick";
 export const VIDEO_CLICK = "video.click";
-// export const VIDEO_VOLUME_CHANGE = "video.volume.change";
+export const VIDEO_VOLUME_CHANGE = "video.volume.change";
+
+function VideoControl(config) {
+    Subscriber.call(this);
+    this.config = config;
+    this.playedTime = null;
+}
 
 let fn = VideoControl.prototype = Object.create(Subscriber.prototype),
     proto = {
@@ -61,8 +61,11 @@ let fn = VideoControl.prototype = Object.create(Subscriber.prototype),
             return this;
         },
         togglePlay() {
-            let paused = this.isPaused();
-            this.play(paused);
+            //当开始加载视频还不能播放时点击播放会报错
+            if (this.getDuration()) {
+                let paused = this.isPaused();
+                this.play(paused);
+            }
             return this;
         },
         isPaused() {
@@ -181,7 +184,7 @@ let fn = VideoControl.prototype = Object.create(Subscriber.prototype),
                 [VIDEO_TIME_UPDATE]: [this.getCurrentTime()],
                 [VIDEO_PROGRESS]: [this.getBuffered(true), this.getReadyState()],
                 [VIDEO_ERROR]: [this.handleError()],
-               // [VIDEO_VOLUME_CHANGE]: [this.isMuted() ? 0 : this.getVolume()]
+                [VIDEO_VOLUME_CHANGE]: [this.isMuted() ? 0 : this.getVolume()]
             },
                 a = args[type] || [];
             if (type === VIDEO_LOAD_START && this.playedTime) {
