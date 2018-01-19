@@ -198,4 +198,20 @@ dom.once = function (selector, type, callback) {
     return this;
 };
 
+/**
+ * 判断一个坐标是否再元素内部（例如鼠标移动后判鼠标指针是否再元素上）
+ * @param {HTMLElement} el html元素
+ * @param {number} x x偏移量
+ * @param {number} y y偏移量
+ * @param {boolean} relative 为true时候x,y相对视口的坐标,否则相对于元素
+ */
+dom.isPositionInEl = function (el, x, y, relative) {
+    let rect = el.getBoundingClientRect();
+    if (relative) {
+        x = x - rect.left;
+        y = x - rect.top;
+    }
+    return x > 0 && x < rect.width && y > 0 && y < rect.height;
+};
+
 export default dom;
