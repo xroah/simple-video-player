@@ -3,12 +3,11 @@ let tpl = '<div class="rplayer-popup-info rplayer-popup-volume-info rplayer-hide
         '        <div class="rplayer-progress-panel">' +
         '            <div class="rplayer-bufferd-bar"></div>' +
         '            <div class="rplayer-mark rplayer-hide"></div>' +
-        '        </div>' +
+        '        </div>'/* +
         '        <div class="rplayer-play-control rplayer-lf">' +
-        '            <button type="button" class="rplayer-play-btn"></button>' +
         '            <span class="rplayer-time-info">' +
         '               <span class="rplayer-current-time">00:00</span>/' +
         '               <span class="rplayer-total-time">00:00</span>' +
         '             </span>' +
-        '        </div>';
+        '        </div>'*/;
 export {tpl, controls};

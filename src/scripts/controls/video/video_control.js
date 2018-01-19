@@ -11,13 +11,16 @@ function VideoControl(config) {
 
 export const VIDEO_LOADED_META = "video.loaded.meta";
 export const VIDEO_TIME_UPDATE = "video.time.update";
-export const VIDEO_DBLCLICK = "video.dblclick";
 export const VIDEO_SEEKING = "video.seeking";
 export const VIDEO_LOAD_START = "video.load.start";
 export const VIDEO_PROGRESS = "video.progress";
 export const VIDEO_CAN_PLAY = "video.can.play";
 export const VIDEO_ENDED = "video.ended";
 export const VIDEO_ERROR = "video.error";
+export const VIDEO_PLAYING = "video.playing";
+export const VIDEO_PAUSE = "video.pause";
+export const VIDEO_DBLCLICK = "video.dblclick";
+export const VIDEO_CLICK = "video.click";
 // export const VIDEO_VOLUME_CHANGE = "video.volume.change";
 
 let fn = VideoControl.prototype = Object.create(Subscriber.prototype),
@@ -28,7 +31,6 @@ let fn = VideoControl.prototype = Object.create(Subscriber.prototype),
             if (volume > 1) {
                 volume = volume / 100;
             }
-            volume > 1 && (volume = 1);
             this.el.volume = volume;
             this.el.muted = !volume;
             return this;
@@ -56,6 +58,11 @@ let fn = VideoControl.prototype = Object.create(Subscriber.prototype),
             } else {
                 this.el.pause();
             }
+            return this;
+        },
+        togglePlay() {
+            let paused = this.isPaused();
+            this.play(paused);
             return this;
         },
         isPaused() {
@@ -208,14 +215,17 @@ let fn = VideoControl.prototype = Object.create(Subscriber.prototype),
             let el = this.el;
             dom.on(el, "loadedmetadata", this.notify.bind(this, VIDEO_LOADED_META))
                 .on(el, "timeupdate", this.notify.bind(this, VIDEO_TIME_UPDATE))
-                .on(el, "dblclick", this.notify.bind(this, VIDEO_DBLCLICK))
                 .on(el, "seeking", this.notify.bind(this, VIDEO_SEEKING))
                 .on(el, "loadstart", this.notify.bind(this, VIDEO_LOAD_START))
                 .on(el, "progress", this.notify.bind(this, VIDEO_PROGRESS))
                 .on(el, "canplay seeked", this.notify.bind(this, VIDEO_CAN_PLAY))
                 .on(el, "ended", this.notify.bind(this, VIDEO_ENDED))
                 .on(el, "error", this.notify.bind(this, VIDEO_ERROR))
+                .on(el, "playing", this.notify.bind(this, VIDEO_PLAYING))
+                .on(el, "pause", this.notify.bind(this, VIDEO_PAUSE))
                 //.on(el, "volumechange", this.notify.bind(this, VIDEO_VOLUME_CHANGE))
+                .on(el, "dblclick", this.notify.bind(this, VIDEO_DBLCLICK))
+                .on(el, "click", this.notify.bind(this, VIDEO_CLICK))
                 .on(el, "contextmenu", evt => evt.preventDefault());
         },
         init(target) {

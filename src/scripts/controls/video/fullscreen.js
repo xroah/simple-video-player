@@ -1,6 +1,6 @@
 import dom from "../../dom/index.js";
 import {doc} from "../../global.js";
-import fsApi from "../../dom/fullscreenApi.js";
+import fsApi from "../../dom/fullscreen_api.js";
 
 const FULL_SCREEN_CLASS = "rplayer-fullscreen";
 

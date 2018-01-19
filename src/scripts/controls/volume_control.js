@@ -28,10 +28,8 @@ VolumeControl.prototype = {
         evt.stopPropagation();
         return this;
     },
-    updateVolume(volume, scale, sliderMove) {
-        !scale && (volume /= 100);
-        volume = parseFloat(volume.toFixed(2));
-        this.volume = Math.floor(volume * 100);
+    updateVolume(volume, sliderMove) {
+        this.volume = volume;
         this.media.mute(!volume);
         this.media.setVolume(volume);
         this.updateStyle(this.volume, sliderMove);
@@ -85,7 +83,7 @@ VolumeControl.prototype = {
                 }
             });
         this.slider.on("slider.moving", (evt, distance) => {
-            this.updateVolume(distance, true, true);
+            this.updateVolume(Math.floor(100 * distance), true);
         });
         return this;
     },

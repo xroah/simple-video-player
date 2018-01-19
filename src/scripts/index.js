@@ -18,6 +18,7 @@ import VideoControl, {
     VIDEO_TIME_UPDATE
 } from "./controls/video/video_control.js";
 import VolumeControl from "./controls/volume_control.js";
+import PlayControl from "./controls/video/play_control.js";
 
 let hideVolumePopTimer = null,
     hideControlsTimer = null;
@@ -52,6 +53,7 @@ function RPlayer(selector, options) {
     this.loading = new Loading();
     this.error = new VideoError();
     this.volumeControl = new VolumeControl(config.defaultVolume);
+    this.playControl = new PlayControl();
     this.fullScreen = new FullScreen();
     this.controls = isUndefined(options.controls) ? true : !!options.controls;
     this.useNativeControls = isUndefined(options.useNativeControls) ? false : options.useNativeControls;
@@ -90,22 +92,6 @@ fn.keyDown = function (evt) {
         }
     }
     evt.preventDefault();
-};
-
-fn.togglePlay = function () {
-    this.video.isPaused() ? this.play(): this.pause();
-};
-
-fn.play = function () {
-    dom.addClass(this.playBtn, "paused");
-    this.video.play(true);
-    return this;
-};
-
-fn.pause = function () {
-    this.video.play(false);
-    dom.removeClass(this.playBtn, "paused");
-    return this;
 };
 
 //鼠标在进度条上移动显示时间信息
@@ -179,16 +165,6 @@ fn.initControlEvent = function () {
     return this;
 };
 
-fn.handleClick = function (evt) {
-    let tgt = evt.target;
-    switch (tgt) {
-        case this.playBtn:
-        case this.video.el:
-            this.togglePlay();
-            break;
-    }
-};
-
 fn.buffer = function (buffered, readyState) {
     this.bufferedBar && dom.css(this.bufferedBar, "width",  buffered + "%");
     if (readyState < 3) {
@@ -197,25 +173,20 @@ fn.buffer = function (buffered, readyState) {
 };
 
 fn.updateTime = function (time = this.video.getCurrentTime(), total) {
-    let el = this.currentTime;
+    /*let el = this.currentTime;
     if (total) {
         el = this.totalTime;
     }
-    el.innerHTML = this.video.convertTime(time);
+    el.innerHTML = this.video.convertTime(time);*/
     return this;
 };
 
 fn.updateMetaInfo = function (meta) {
-    if (this.video.isAutoPlay()) {
-        this.play();
-    }
     this.updateTime(meta.duration, true);
 };
 
 fn.playEnd = function () {
     this.trigger("play.end");
-    return this.video.isLoop() ? this.play() :
-        this.pause();
 };
 
 fn.handleError = function (error) {
@@ -230,7 +201,6 @@ fn.refresh = function () {
 };
 
 fn.initEvent = function () {
-    dom.on(this.container, "click", this.handleClick.bind(this));
     this.video
         .on(VIDEO_LOAD_START, () => {
             this.loading.show();
@@ -252,9 +222,10 @@ fn.initControls = function () {
     this.controlsPanel.innerHTML = controls;
     this.fullScreen.init(this.container, settingsPanel);
     this.volumeControl.init(settingsPanel, this.video);
+    this.playControl.init(playControl, this.video);
     this.controlsPanel.appendChild(settingsPanel);
+    this.controlsPanel.appendChild(playControl);
     this.container.appendChild(this.controlsPanel);
-    this.playBtn = dom.selectElement(".rplayer-play-btn", context);
     this.progressPanel = dom.selectElement(".rplayer-progress-panel", context);
     this.videoPopupTime = dom.selectElement(".rplayer-popup-video-info", context);
     this.currentTime = dom.selectElement(".rplayer-current-time", context);
