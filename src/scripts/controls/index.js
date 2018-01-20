@@ -23,6 +23,7 @@ function Controls(parent, media, volume) {
 }
 
 Controls.prototype = {
+    constructor: Controls,
     show() {
         let error = this.media.isError();
         if (!error) {

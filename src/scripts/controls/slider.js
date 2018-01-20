@@ -100,10 +100,12 @@ proto.getMoveCallback = function () {
 };
 
 proto.mouseUp = function () {
-    dom.off(doc, "mousemove moseup")
+    dom.off(doc, "mousemove mouseup")
         .removeClass(this.el, "rplayer-moving");
-    this.moving && this.trigger(SLIDER_MOVE_DONE, this.moveDis);
-    setTimeout(() => this.moving = false);
+    if (this.moving) {
+        this.trigger(SLIDER_MOVE_DONE, this.moveDis);
+        setTimeout(() => this.moving = false);
+    }
 };
 
 proto.clickTrack = function (evt) {

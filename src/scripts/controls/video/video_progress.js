@@ -23,7 +23,7 @@ VideoProgress.prototype = {
         if (this.currentTime !== current) {
             this.currentTime = current;
             let percent = current / this.duration * 100 || 0;
-            this.slider.updateHPosition(percent + "%");
+            !this.slider.moving && this.slider.updateHPosition(percent + "%");
         }
         return this;
     },
@@ -87,15 +87,5 @@ VideoProgress.prototype = {
         return this.initEvent();
     }
 };
-
-/*fn.updateProgressByStep = function (step) {
-    let currentTime = this.video.getCurrentTime(),
-        duration = this.video.getDuration();
-    currentTime += step;
-    currentTime = currentTime < 0 ? 0 : currentTime > duration ? duration : currentTime;
-    this.video.setCurrentTime(currentTime);
-    currentTime = this.video.getPlayedPercentage();
-    return this.videoSlider.trigger("position.change", "h", currentTime);
-};*/
 
 export default VideoProgress;

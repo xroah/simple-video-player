@@ -15,12 +15,9 @@ import Controls from "./controls/index.js";
 
 const DEFAULT_HEIGHT = 500;
 
-function RPlayer(selector, options) {
-    let target = dom.selectElement(selector),
-        config;
-    Subscriber.call(this);
-    if (isObject(options)) {
-        config = {
+function handleConfig(options) {
+    return isObject(options) ?
+        {
             autoPlay: !!options.autoPlay,
             loop: !!options.loop,
             defaultVolume: Math.abs(parseInt(options.defaultVolume)) || DEFAULT_OPTIONS.defaultVolume,
@@ -29,10 +26,13 @@ function RPlayer(selector, options) {
             preload: options.preload || DEFAULT_OPTIONS.preload,
             source: options.source,
             useNativeControls: isUndefined(options.useNativeControls) ? false : options.useNativeControls
-        };
-    } else {
-        config = DEFAULT_OPTIONS;
-    }
+        } : DEFAULT_OPTIONS;
+}
+
+function RPlayer(selector, options) {
+    let target = dom.selectElement(selector),
+        config = handleConfig(options);
+    Subscriber.call(this);
     if (!config.source) {
         throw new Error("没有设置视频链接");
     }
@@ -41,15 +41,13 @@ function RPlayer(selector, options) {
     }
     this.target = target;
     this.loading = new Loading();
-    this.error = new VideoError();
     this.video = new VideoControl(config);
     this.container = dom.createElement("div", {
         "tabIndex": 100, //使元素能够获取焦点
         "class": "rplayer-container"
     });
-    console.log(this.container.parentNode)
     //播放控制与原生控制二选一，如果设置了useNativeControls为true，则优先使用原生控制
-    if(isUndefined(options.controls) ? true : !!options.controls && !config.useNativeControls) {
+    if((isUndefined(options.controls) ? true : !!options.controls) && !config.useNativeControls) {
         this.controls = new Controls(this.container, this.video, config.defaultVolume);
     }
 }
@@ -68,6 +66,10 @@ fn.playEnd = function () {
 };
 
 fn.handleError = function (error) {
+    if (!this.error) {
+        this.error = new VideoError();
+        this.error.init(this.container, this.refresh.bind(this));
+    }
     this.loading.hide();
     this.error.show(error.message);
     return this;
@@ -100,13 +102,14 @@ fn.updateSource = function (src) {
 fn.initialize = function () {
     let container = this.container,
         height = parseInt(getComputedStyle(this.target).height);
-    dom.css(container, "height", (height || DEFAULT_HEIGHT) + "px");
-    this.video.init(container);
-    this.loading.init(container);
-    this.error.init(container, this.refresh.bind(this));
-    this.controls && this.controls.init();
-    this.target.appendChild(container);
-    this.initEvent();
+    if (!container.parentNode) {
+        dom.css(container, "height", (height || DEFAULT_HEIGHT) + "px");
+        this.video.init(container);
+        this.loading.init(container);
+        this.controls && this.controls.init();
+        this.target.appendChild(container);
+        this.initEvent();
+    }
     return this;
 };
 

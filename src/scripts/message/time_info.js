@@ -23,13 +23,12 @@ TimeInfo.prototype = {
     init(target, media) {
         let el = dom.createElement("span", {"class": "rplayer-time-info"}),
             text = doc.createTextNode("/");
+        this.currentEl.innerHTML = this.totalEl.innerHTML = "00:00";
         this.media = media;
         el.appendChild(this.currentEl);
         el.appendChild(text);
         el.appendChild(this.totalEl);
         target.appendChild(el);
-        this.updateTime(0)
-            .updateTime(0, true);
         return this.initEvent();
     }
 };

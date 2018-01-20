@@ -8,7 +8,7 @@ function CEvent(type) {
 }
 
 function Subscriber() {
-    this.handlers = {};
+    Object.defineProperty(this, "handlers", {value: {}});
 }
 
 Subscriber.prototype = {
