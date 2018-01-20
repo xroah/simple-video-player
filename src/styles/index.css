@@ -334,7 +334,7 @@
 
 .rplayer-container .rplayer-popup-volume-info {
     left: 20px;
-    bottom: 60px;
+    top: -45px;
 }
 
 .rplayer-container.rplayer-fixed,
