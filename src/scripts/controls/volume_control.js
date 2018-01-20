@@ -62,13 +62,9 @@ VolumeControl.prototype = {
         return this;
     },
     mute() {
-        if (this.media.isMuted()) {
-            this.updateStyle(this.volume);
-            this.media.mute(false);
-        } else {
-            this.updateStyle(0);
-            this.media.mute(true);
-        }
+        let muted = this.media.isMuted();
+        muted ? this.updateStyle(this.volume) : this.updateStyle(0);
+        this.media.mute(!muted);
     },
     initEvent() {
         dom.on(this.muteBtn, "click", this.mute.bind(this))

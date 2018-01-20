@@ -6,7 +6,12 @@ import TimeInfo from "../message/time_info.js";
 import PlayControl from "./video/play_control.js";
 import dom from "../dom/index.js";
 import {KEY_MAP} from "../global.js";
-import {VIDEO_DBLCLICK, VIDEO_VOLUME_CHANGE} from "./video/video_control.js";
+import {
+    VIDEO_DBLCLICK,
+    VIDEO_VOLUME_CHANGE,
+    VIDEO_LOADED_META,
+    VIDEO_TIME_UPDATE
+} from "./video/video_control.js";
 
 
 function Controls(parent, media, volume) {
@@ -19,7 +24,7 @@ function Controls(parent, media, volume) {
     this.timeInfo = new TimeInfo();
     this.fullScreen = new FullScreen();
     this.progress = new VideoProgress();
-    this.volumePopup = new Popup(true);
+    this.volumePopup = new Popup("rplayer-popup-volume-info", true);
 }
 
 Controls.prototype = {
@@ -76,6 +81,8 @@ Controls.prototype = {
     },
     initEvent() {
         this.media
+            .on(VIDEO_TIME_UPDATE, (evt, current) => this.timeInfo.updateCurrentTime(current))
+            .on(VIDEO_LOADED_META, (evt, meta) => this.timeInfo.updateTotalTime(meta.duration, true))
             .on(VIDEO_VOLUME_CHANGE, (evt, muted, volume) => this.showVolumePopup(muted, volume))
             .on(VIDEO_DBLCLICK, () => this.fullScreen.toggle());
         dom.on(this.parentEl, "keydown", this.keyDown.bind(this))
@@ -89,9 +96,9 @@ Controls.prototype = {
         this.fullScreen.init(this.container, settingsPanel);
         this.volumeControl.init(settingsPanel, this.media);
         this.playControl.init(playControl, this.media);
-        this.timeInfo.init(playControl, this.media);
+        this.timeInfo.init(playControl);
         this.progress.init(el, this.media);
-        this.volumePopup.init(el, "rplayer-popup-volume-info");
+        this.volumePopup.init(el);
         el.appendChild(settingsPanel);
         el.appendChild(playControl);
         this.parentEl.appendChild(el);

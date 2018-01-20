@@ -1,8 +1,8 @@
 import dom from "../dom/index.js";
 import {isObject} from "../global.js";
 
-function Popup(autoHide) {
-    this.el = dom.createElement("div", {"class": "rplayer-popup-info rplayer-hide"});
+function Popup(cls, autoHide) {
+    this.el = dom.createElement("div", {"class": `rplayer-popup-info rplayer-hide ${cls}`});
     this.visible = false;
     this.autoHide = !!autoHide;
     this.timer = null;
@@ -70,9 +70,7 @@ Popup.prototype = {
     height() {
         return this.getSize("height");
     },
-    init(target, cls) {
-        cls = cls || "";
-        dom.addClass(this.el, cls);
+    init(target) {
         target.appendChild(this.el);
         return this;
     }

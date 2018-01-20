@@ -160,7 +160,6 @@ let fn = VideoControl.prototype = Object.create(Subscriber.prototype),
             let code = this.isError(),
                 err, message;
             //出现错误保存当前播放进度，恢复后从当前进度继续播放
-            this.playedTime = this.getCurrentTime();
             err = ERROR_TYPE[code];
             switch (err) {
                 case "MEDIA_ERR_ABORTED":
@@ -188,9 +187,15 @@ let fn = VideoControl.prototype = Object.create(Subscriber.prototype),
                 [VIDEO_VOLUME_CHANGE]: [this.isMuted() ? 0 : this.getVolume()]
             },
                 a = args[type] || [];
-            if (type === VIDEO_LOAD_START && this.playedTime) {
-                this.setCurrentTime(this.playedTime);
-                this.playedTime = 0;
+            switch (type) {
+                case VIDEO_LOAD_START:
+                    if (this.playedTime) {
+                        this.setCurrentTime(this.playedTime);
+                        this.playedTime = 0;
+                    }
+                    break;
+                case VIDEO_ERROR:
+                    this.playedTime = this.getCurrentTime();
             }
             return this.trigger(type, ...a);
         },

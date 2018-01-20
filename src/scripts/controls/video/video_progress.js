@@ -13,7 +13,7 @@ function VideoProgress() {
     this.slider = new Slider();
     this.panel = dom.createElement("div", {"class": "rplayer-progress-panel"});
     this.bufferEl = dom.createElement("div", {"class": "rplayer-bufferd-bar"});
-    this.popup = new Popup();
+    this.popup = new Popup("rplayer-popup-video-info");
     this.currentTime = this.duration = 0;
 }
 
@@ -82,7 +82,7 @@ VideoProgress.prototype = {
         this.media = media;
         el.appendChild(this.bufferEl);
         this.slider.init(el);
-        this.popup.init(el, "rplayer-popup-video-info");
+        this.popup.init(el);
         target.appendChild(el);
         return this.initEvent();
     }
