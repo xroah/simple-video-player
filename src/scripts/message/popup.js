@@ -1,14 +1,14 @@
 import dom from "../dom/index.js";
 import {isObject} from "../global.js";
 
-function Popup(cls, autoHide) {
-    this.el = dom.createElement("div", {"class": `rplayer-popup-info rplayer-hide ${cls}`});
-    this.visible = false;
-    this.autoHide = !!autoHide;
-    this.timer = null;
-}
+export default class Popup {
+    constructor(cls, autoHide) {
+        this.el = dom.createElement("div", {"class": `rplayer-popup-info rplayer-hide ${cls}`});
+        this.visible = false;
+        this.autoHide = !!autoHide;
+        this.timer = null;
+    }
 
-Popup.prototype = {
     show(msg) {
         this.visible = true;
         if (this.timer) {
@@ -21,12 +21,14 @@ Popup.prototype = {
         dom.removeClass(this.el, "rplayer-hide");
         msg && this.updateText(msg);
         return this;
-    },
+    }
+
     hide() {
         this.visible = false;
         dom.addClass(this.el, "rplayer-hide");
         return this;
-    },
+    }
+
     updatePosition(prop) {
         let pos = {
             left: "left",
@@ -42,11 +44,13 @@ Popup.prototype = {
             }
         }
         return this;
-    },
+    }
+
     updateText(content) {
         this.el.innerHTML = content;
         return this;
-    },
+    }
+
     getSize(prop) {
         //隐藏元素获取不到尺寸信息，隐藏时先将元素显示出来获取之后再隐藏
         let visible = this.visible;
@@ -63,17 +67,18 @@ Popup.prototype = {
                 width: parseFloat(style.width),
 
             }
-    },
+    }
+
     width() {
-      return this.getSize("width");
-    },
+        return this.getSize("width");
+    }
+
     height() {
         return this.getSize("height");
-    },
+    }
+
     init(target) {
         target.appendChild(this.el);
         return this;
     }
-};
-
-export default Popup;
+}

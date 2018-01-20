@@ -9,16 +9,15 @@ import {
 import Popup from "../../message/popup.js";
 import {convertTime} from "../../global.js";
 
-function VideoProgress() {
-    this.slider = new Slider();
-    this.panel = dom.createElement("div", {"class": "rplayer-progress-panel"});
-    this.bufferEl = dom.createElement("div", {"class": "rplayer-bufferd-bar"});
-    this.popup = new Popup("rplayer-popup-video-info");
-    this.currentTime = this.duration = 0;
-}
+export default class VideoProgress {
+    constructor() {
+        this.slider = new Slider();
+        this.panel = dom.createElement("div", {"class": "rplayer-progress-panel"});
+        this.bufferEl = dom.createElement("div", {"class": "rplayer-bufferd-bar"});
+        this.popup = new Popup("rplayer-popup-video-info");
+        this.currentTime = this.duration = 0;
+    }
 
-VideoProgress.prototype = {
-    constructor: VideoProgress,
     update(current) {
         if (this.currentTime !== current) {
             this.currentTime = current;
@@ -26,7 +25,8 @@ VideoProgress.prototype = {
             !this.slider.moving && this.slider.updateHPosition(percent + "%");
         }
         return this;
-    },
+    }
+
     updateByStep(step) {
         let currentTime = this.currentTime,
             duration = this.duration;
@@ -36,10 +36,12 @@ VideoProgress.prototype = {
             .setCurrentTime(this.currentTime)
             .trigger(VIDEO_TIME_UPDATE, this.currentTime);
         return this;
-    },
+    }
+
     buffer(buffered) {
         dom.css(this.bufferEl, buffered + "%");
-    },
+    }
+
     mouseMove(evt) {
         if (this.duration) {
             this.popup.show();
@@ -54,10 +56,12 @@ VideoProgress.prototype = {
                 .updatePosition({left: left + "px"})
                 .updateText(convertTime(width * this.duration));
         }
-    },
+    }
+
     mouseOut() {
-      this.popup.hide();
-    },
+        this.popup.hide();
+    }
+
     initEvent() {
         //滑动改变进度/点击进度条改变进度
         this.slider.on(SLIDER_MOVE_DONE, (evt, distance) => {
@@ -76,7 +80,8 @@ VideoProgress.prototype = {
             .on(VIDEO_TIME_UPDATE, (evt, current) => this.update(current))
             .on(VIDEO_PROGRESS, (evt, buffered) => this.buffer(buffered));
         return this;
-    },
+    }
+
     init(target, media) {
         let el = this.panel;
         this.media = media;
@@ -86,6 +91,4 @@ VideoProgress.prototype = {
         target.appendChild(el);
         return this.initEvent();
     }
-};
-
-export default VideoProgress;
+}

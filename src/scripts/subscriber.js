@@ -7,18 +7,18 @@ function CEvent(type) {
     this.timeStamp = 0;
 }
 
-function Subscriber() {
-    Object.defineProperty(this, "handlers", {value: {}});
-}
+export default class Subscriber {
+    constructor() {
+        Object.defineProperty(this, "handlers", {value: {}});
+    }
 
-Subscriber.prototype = {
-    constructor: Subscriber,
     _on(type, fn) {
         if (!this.handlers[type]) {
             this.handlers[type] = [];
         }
         this.handlers[type].push(fn);
-    },
+    }
+
     on(type, fn) {
         if (isFunction(fn)) {
             if (!isString(type)) {
@@ -30,7 +30,8 @@ Subscriber.prototype = {
             }
         }
         return this;
-    },
+    }
+
     _off(type, fn) {
         let handlers = this.handlers[type];
         if (handlers) {
@@ -45,7 +46,8 @@ Subscriber.prototype = {
                 this.handlers[type] = [];
             }
         }
-    },
+    }
+
     off(type, fn) {
         let len = arguments.length;
         if (len && isString(type)) {
@@ -59,7 +61,8 @@ Subscriber.prototype = {
             this.handlers = {};
         }
         return this;
-    },
+    }
+
     once(type, fn) {
         if (isFunction(fn)) {
             let self = this,
@@ -69,7 +72,8 @@ Subscriber.prototype = {
                 };
             this.on(type, f);
         }
-    },
+    }
+
     trigger(type) {
         let args = toArray(arguments, 1),
             h = this.handlers[type],
@@ -85,6 +89,4 @@ Subscriber.prototype = {
         }
         return this;
     }
-};
-
-export default Subscriber;
+}

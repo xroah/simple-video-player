@@ -3,42 +3,46 @@ import Slider, {SLIDER_MOVING} from "./slider.js";
 import {doc} from "../global";
 
 
-function VolumeControl(volume) {
-    this.panel = dom.createElement("div", {"class": "rplayer-volume-popup rplayer-hide"});
-    this.valueEl = dom.createElement("div", {"class": "rplayer-current-volume"});
-    this.muteBtn = dom.createElement("button", {"class": "rplayer-mute volume-1"});
-    this.showBtn = dom.createElement("button", {"class": "rplayer-audio-btn volume-1"});
-    this.slider = new Slider(true);
-    this.volume = volume;
-}
+export default class VolumeControl {
+    constructor(volume) {
+        this.panel = dom.createElement("div", {"class": "rplayer-volume-popup rplayer-hide"});
+        this.valueEl = dom.createElement("div", {"class": "rplayer-current-volume"});
+        this.muteBtn = dom.createElement("button", {"class": "rplayer-mute volume-1"});
+        this.showBtn = dom.createElement("button", {"class": "rplayer-audio-btn volume-1"});
+        this.slider = new Slider(true);
+        this.volume = volume;
+    }
 
-VolumeControl.prototype = {
-    constructor: VolumeControl,
     show() {
         dom.removeClass(this.panel, "rplayer-hide");
         return this;
-    },
+    }
+
     hide() {
         dom.addClass(this.panel, "rplayer-hide");
         return this;
-    },
+    }
+
     toggle(evt) {
         dom.toggleClass(this.panel, "rplayer-hide");
         //document click事件点击音量设置面板之外隐藏,如果不阻止冒泡则面板显示不出来
         evt.stopPropagation();
         return this;
-    },
+    }
+
     updateVolume(volume, sliderMove) {
         this.volume = volume;
         this.media.setVolume(volume);
         this.updateStyle(this.volume, sliderMove);
         return this;
-    },
+    }
+
     updateVolumeByStep(step) {
         let volume = this.volume + step;
         volume = volume > 100 ? 100 : volume < 0 ? 0 : volume;
         this.updateVolume(volume);
-    },
+    }
+
     updateStyle(volume, sliderMove) {
         let muteCls = this.muteBtn.className,
             showCls = this.showBtn.className,
@@ -60,12 +64,14 @@ VolumeControl.prototype = {
         //如果通过移动滑块改变音量则不重复改变slider的位置
         !sliderMove && this.slider.updateVPosition(volume + "%");
         return this;
-    },
+    }
+
     mute() {
         let muted = this.media.isMuted();
         muted ? this.updateStyle(this.volume) : this.updateStyle(0);
         this.media.mute(!muted);
-    },
+    }
+
     initEvent() {
         dom.on(this.muteBtn, "click", this.mute.bind(this))
             .on(this.panel, "mouseleave", this.hide.bind(this))
@@ -81,7 +87,8 @@ VolumeControl.prototype = {
             this.updateVolume(Math.floor(100 * distance), true);
         });
         return this;
-    },
+    }
+
     init(target, media) {
         let panel = dom.createElement("div", {"class": "rplayer-audio-control rplayer-rt"});
         this.media = media;
@@ -95,6 +102,4 @@ VolumeControl.prototype = {
             .initEvent();
         return this;
     }
-};
-
-export default VolumeControl;
+}

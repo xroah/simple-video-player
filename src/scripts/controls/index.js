@@ -14,21 +14,20 @@ import {
 } from "./video/video_control.js";
 
 
-function Controls(parent, media, volume) {
-    this.parentEl = parent;
-    this.media = media;
-    this.timer = null;
-    this.el = dom.createElement("div", {"class": "rplayer-controls"});
-    this.volumeControl = new VolumeControl(volume);
-    this.playControl = new PlayControl();
-    this.timeInfo = new TimeInfo();
-    this.fullScreen = new FullScreen();
-    this.progress = new VideoProgress();
-    this.volumePopup = new Popup("rplayer-popup-volume-info", true);
-}
+export default class Controls {
+    constructor(parent, media, volume) {
+        this.parentEl = parent;
+        this.media = media;
+        this.timer = null;
+        this.el = dom.createElement("div", {"class": "rplayer-controls"});
+        this.volumeControl = new VolumeControl(volume);
+        this.playControl = new PlayControl();
+        this.timeInfo = new TimeInfo();
+        this.fullScreen = new FullScreen();
+        this.progress = new VideoProgress();
+        this.volumePopup = new Popup("rplayer-popup-volume-info", true);
+    }
 
-Controls.prototype = {
-    constructor: Controls,
     show() {
         let error = this.media.isError();
         if (!error) {
@@ -44,11 +43,13 @@ Controls.prototype = {
             }
         }
         return this;
-    },
+    }
+
     hide() {
         dom.addClass(this.el, "rplayer-hide");
         return this;
-    },
+    }
+
     keyDown(evt) {
         let key = evt.key.toLowerCase(),
             regUpOrDown = /(?:up)|(?:down)/,
@@ -70,7 +71,8 @@ Controls.prototype = {
             }
         }
         evt.preventDefault();
-    },
+    }
+
     showVolumePopup(volume) {
         let text = `当前音量: ${volume}`;
         if (volume === 0) {
@@ -78,7 +80,8 @@ Controls.prototype = {
         }
         this.volumePopup.show(text);
         return this;
-    },
+    }
+
     initEvent() {
         this.media
             .on(VIDEO_TIME_UPDATE, (evt, current) => this.timeInfo.updateCurrentTime(current))
@@ -88,7 +91,8 @@ Controls.prototype = {
         dom.on(this.parentEl, "keydown", this.keyDown.bind(this))
             .on(this.parentEl, "mousemove", this.show.bind(this));
         return this;
-    },
+    }
+
     init() {
         let settingsPanel = dom.createElement("div", {"class": "rplayer-settings rplayer-rt"}),
             playControl = dom.createElement("div", {"class": "rplayer-play-control rplayer-lf"}),
@@ -104,6 +108,4 @@ Controls.prototype = {
         this.parentEl.appendChild(el);
         return this.initEvent();
     }
-};
-
-export default Controls;
+}
