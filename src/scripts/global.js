@@ -6,7 +6,8 @@ const DEFAULT_OPTIONS = {
         poster: "",
         preload: "metadata",
         source: "",
-        msg: ""
+        msg: "",
+        useNativeControls: false
     },
     ERROR_TYPE = { //视频播放错误类型
         "1": "MEDIA_ERR_ABORTED",

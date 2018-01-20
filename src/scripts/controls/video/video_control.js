@@ -21,6 +21,7 @@ function VideoControl(config) {
     Subscriber.call(this);
     this.config = config;
     this.playedTime = null;
+    this.el = dom.createElement("video", {"class": "rplayer-video"});
 }
 
 let fn = VideoControl.prototype = Object.create(Subscriber.prototype),
@@ -211,12 +212,13 @@ let fn = VideoControl.prototype = Object.create(Subscriber.prototype),
                 .on(el, "contextmenu", evt => evt.preventDefault());
         },
         init(target) {
-            let video = dom.createElement("video"),
+            let video = this.el,
                 text = doc.createTextNode(this.config.msg.toString());
             this.source = this.config.source;
+            if (this.config.useNativeControls) {
+                this.showControls();
+            }
             video.appendChild(text);
-            this.el = video;
-            dom.addClass(this.el, "rplayer-video");
             target.appendChild(video);
             this.initSource(this.source)
                 .autoPlay(this.config.autoPlay)
