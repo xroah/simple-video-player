@@ -1,5 +1,5 @@
 import dom from "../../dom/index.js";
-import {doc, isUndefined, extend} from "../../global.js";
+import {doc, isUndefined} from "../../global.js";
 import Subscriber from "../../subscriber.js";
 import {ERROR_TYPE, removeProp} from "../../global";
 

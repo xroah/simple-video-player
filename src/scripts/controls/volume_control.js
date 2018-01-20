@@ -1,16 +1,21 @@
 import dom from "../dom/index.js";
 import Slider, {SLIDER_MOVING} from "./slider.js";
 import {doc} from "../global";
+import Subscriber from "../subscriber.js";
 
+export const VOLUME_CONTROL_UPDATE = "volume.control.update";
+export const VOLUME_CONTROL_MUTE = "volume.control.mute";
 
-export default class VolumeControl {
+export default class VolumeControl extends Subscriber {
     constructor(volume) {
+        super();
         this.panel = dom.createElement("div", {"class": "rplayer-volume-popup rplayer-hide"});
         this.valueEl = dom.createElement("div", {"class": "rplayer-current-volume"});
         this.muteBtn = dom.createElement("button", {"class": "rplayer-mute volume-1"});
         this.showBtn = dom.createElement("button", {"class": "rplayer-audio-btn volume-1"});
         this.slider = new Slider(true);
         this.volume = volume;
+        this.muted = false;
     }
 
     show() {
@@ -32,8 +37,8 @@ export default class VolumeControl {
 
     updateVolume(volume, sliderMove) {
         this.volume = volume;
-        this.media.setVolume(volume);
         this.updateStyle(this.volume, sliderMove);
+        this.trigger(VOLUME_CONTROL_UPDATE, this.volume);
         return this;
     }
 
@@ -67,9 +72,9 @@ export default class VolumeControl {
     }
 
     mute() {
-        let muted = this.media.isMuted();
-        muted ? this.updateStyle(this.volume) : this.updateStyle(0);
-        this.media.mute(!muted);
+        this.muted = !this.muted;
+        this.muted ? this.updateStyle(0) : this.updateStyle(this.volume);
+        this.trigger(VOLUME_CONTROL_MUTE, this.muted);
     }
 
     initEvent() {
@@ -89,9 +94,8 @@ export default class VolumeControl {
         return this;
     }
 
-    init(target, media) {
+    init(target) {
         let panel = dom.createElement("div", {"class": "rplayer-audio-control rplayer-rt"});
-        this.media = media;
         this.panel.appendChild(this.valueEl);
         this.slider.init(this.panel);
         this.panel.appendChild(this.muteBtn);

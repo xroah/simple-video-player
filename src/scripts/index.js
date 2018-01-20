@@ -31,10 +31,9 @@ function handleConfig(options) {
 
 export default class RPlayer extends Subscriber {
     constructor(selector, options) {
-        super();
         let target = dom.selectElement(selector),
             config = handleConfig(options);
-        Subscriber.call(this);
+        super();
         if (!config.source) {
             throw new Error("没有设置视频链接");
         }
