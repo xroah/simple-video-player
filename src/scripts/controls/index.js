@@ -34,7 +34,7 @@ export default class Controls {
         this.volumeControl = new VolumeControl(volume);
         this.playControl = new PlayControl();
         this.timeInfo = new TimeInfo();
-        this.fullScreen = new FullScreen();
+        this.fullScreen = new FullScreen(parent);
         this.progress = new VideoProgress();
         this.volumePopup = new Popup("rplayer-popup-volume-info", true);
     }

@@ -207,12 +207,10 @@ dom.once = function (selector, type, callback) {
  */
 dom.isPositionInEl = function (el, x, y, relative) {
     let rect = el.getBoundingClientRect();
-    console.log(rect, x, y)
     if (relative) {
         x = x - rect.left;
         y = y - rect.top;
     }
-    console.log(x, y)
     return x > 0 && x < rect.width && y > 0 && y < rect.height;
 };
 

@@ -31,7 +31,6 @@ export default class VideoControl extends Subscriber {
             volume = volume / 100;
         }
         this.el.volume = volume;
-        this.el.muted = !volume;
         return this;
     }
     
@@ -54,20 +53,13 @@ export default class VideoControl extends Subscriber {
     }
 
     play(play) {
-        if (isUndefined(play) || !!play) {
-            this.el.play();
-        } else {
-            this.el.pause();
-        }
+        isUndefined(play) ? this.el.play() : this.el.pause();
         return this;
     }
 
     togglePlay() {
         //当开始加载视频还不能播放时点击播放会报错
-        if (this.getDuration()) {
-            let paused = this.isPaused();
-            this.play(paused);
-        }
+        this.getDuration() && this.play(this.isPaused());
         return this;
     }
 
@@ -98,7 +90,7 @@ export default class VideoControl extends Subscriber {
     setCurrentTime(time, scale) {
         let duration = this.getDuration();
         if (scale) {
-            time = duration * time;
+            time = duration * scale;
         }
         this.el.currentTime = time;
         return this;

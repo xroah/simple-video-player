@@ -2,8 +2,6 @@ import dom from "../../dom/index.js";
 import {doc} from "../../global.js";
 import fsApi from "../../dom/fullscreen_api.js";
 
-const FULL_SCREEN_CLASS = "rplayer-fullscreen";
-
 export default class FullScreen {
     constructor(el) {
         this.el = el;
@@ -15,8 +13,8 @@ export default class FullScreen {
         fsApi ?
             this.el[fsApi.requestFullscreen]() :
             this.fullPage();
-        dom.addClass(this.el, FULL_SCREEN_CLASS)
-            .addClass(this.btn, FULL_SCREEN_CLASS);
+        dom.addClass(this.el, "rplayer-fullscreen")
+            .addClass(this.btn, "rplayer-fullscreen");
         return this;
     }
 
@@ -25,8 +23,8 @@ export default class FullScreen {
         fsApi ?
             doc[fsApi.exitFullscreen]() :
             this.fullPage(true);
-        dom.removeClass(this.btn, FULL_SCREEN_CLASS)
-            .removeClass(this.el, FULL_SCREEN_CLASS);
+        dom.removeClass(this.btn, "rplayer-fullscreen")
+            .removeClass(this.el, "rplayer-fullscreen");
         return this;
     }
 
@@ -58,8 +56,7 @@ export default class FullScreen {
         return this;
     }
 
-    init(el, target) {
-        this.el = el;
+    init(target) {
         target.appendChild(this.btn);
         return this.initEvent();
     }
