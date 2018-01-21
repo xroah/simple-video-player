@@ -4,12 +4,20 @@ const uglify = require("gulp-uglify");
 const css = require("gulp-clean-css");
 const rollup = require("rollup");
 const babel = require("rollup-plugin-babel");
+let dir = "";
+
+function setDir() {
+    let cmd = process.argv[2];
+    dir = cmd === "build" ? "dist" : "tmp";
+}
+
+setDir();
 
 gulp.task("minifyCss", () => {
     return gulp.src("./src/styles/index.css")
         .pipe(css())
         .pipe(rename("rplayer.min.css"))
-        .pipe(gulp.dest("./dist"));
+        .pipe(gulp.dest(`${dir}`));
 });
 
 gulp.task("bundle", () => {
@@ -20,25 +28,27 @@ gulp.task("bundle", () => {
         })]
     }).then(bundle => {
         return bundle.write({
-            file: 'dist/rplayer.js',
+            file: `${dir}/rplayer.js`,
             format: 'umd',
             name: 'RPlayer',
-            sourcemap: true
+            sourcemap: dir === "dist"
         });
     });
 });
 
 gulp.task("uglifyJs", ["bundle"], () => {
-    return gulp.src("./dist/rplayer.js")
+    return gulp.src(`./${dir}/rplayer.js`)
         .pipe(uglify({
             output: {
                 comments: /^!/
             }
         }))
         .pipe(rename("rplayer.min.js"))
-        .pipe(gulp.dest("./dist"));
+        .pipe(gulp.dest(`${dir}`));
 });
 
-gulp.watch("./src/**", ["bundle", "uglifyJs", "minifyCss"]);
+gulp.watch("./src/scripts/**", ["bundle"]);
 
-gulp.task("default", ["bundle", "uglifyJs", "minifyCss"]);
+gulp.task("build", ["uglifyJs", "minifyCss"]);
+
+gulp.task("default", ["bundle"]);
