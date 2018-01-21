@@ -72,6 +72,7 @@ function removeProp(obj, prop) {
         } catch (e) {}
     } else {
         for (prop in obj) {
+            obj[prop] = null;
             delete obj[prop];
         }
     }
@@ -316,12 +317,10 @@ dom.once = function (selector, type, callback) {
  */
 dom.isPositionInEl = function (el, x, y, relative) {
     var rect = el.getBoundingClientRect();
-    console.log(rect, x, y);
     if (relative) {
         x = x - rect.left;
         y = y - rect.top;
     }
-    console.log(x, y);
     return x > 0 && x < rect.width && y > 0 && y < rect.height;
 };
 
@@ -576,7 +575,6 @@ var VideoControl = function (_Subscriber) {
                 volume = volume / 100;
             }
             this.el.volume = volume;
-            this.el.muted = !volume;
             return this;
         }
     }, {
@@ -604,21 +602,14 @@ var VideoControl = function (_Subscriber) {
     }, {
         key: "play",
         value: function play(_play) {
-            if (isUndefined(_play) || !!_play) {
-                this.el.play();
-            } else {
-                this.el.pause();
-            }
+            isUndefined(_play) ? this.el.play() : this.el.pause();
             return this;
         }
     }, {
         key: "togglePlay",
         value: function togglePlay() {
             //当开始加载视频还不能播放时点击播放会报错
-            if (this.getDuration()) {
-                var paused = this.isPaused();
-                this.play(paused);
-            }
+            this.getDuration() && this.play(this.isPaused());
             return this;
         }
     }, {
@@ -655,7 +646,7 @@ var VideoControl = function (_Subscriber) {
         value: function setCurrentTime(time, scale) {
             var duration = this.getDuration();
             if (scale) {
-                time = duration * time;
+                time = duration * scale;
             }
             this.el.currentTime = time;
             return this;
@@ -1389,8 +1380,6 @@ var _createClass$8 = function () { function defineProperties(target, props) { fo
 
 function _classCallCheck$8(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var FULL_SCREEN_CLASS = "rplayer-fullscreen";
-
 var FullScreen = function () {
     function FullScreen(el) {
         _classCallCheck$8(this, FullScreen);
@@ -1405,7 +1394,7 @@ var FullScreen = function () {
         value: function request() {
             this.isFullScreen = true;
             fsApi ? this.el[fsApi.requestFullscreen]() : this.fullPage();
-            dom.addClass(this.el, FULL_SCREEN_CLASS).addClass(this.btn, FULL_SCREEN_CLASS);
+            dom.addClass(this.el, "rplayer-fullscreen").addClass(this.btn, "rplayer-fullscreen");
             return this;
         }
     }, {
@@ -1413,7 +1402,7 @@ var FullScreen = function () {
         value: function exit() {
             this.isFullScreen = false;
             fsApi ? doc[fsApi.exitFullscreen]() : this.fullPage(true);
-            dom.removeClass(this.btn, FULL_SCREEN_CLASS).removeClass(this.el, FULL_SCREEN_CLASS);
+            dom.removeClass(this.btn, "rplayer-fullscreen").removeClass(this.el, "rplayer-fullscreen");
             return this;
         }
     }, {
@@ -1447,8 +1436,7 @@ var FullScreen = function () {
         }
     }, {
         key: "init",
-        value: function init(el, target) {
-            this.el = el;
+        value: function init(target) {
             target.appendChild(this.btn);
             return this.initEvent();
         }
@@ -1574,7 +1562,7 @@ var Controls = function () {
         this.volumeControl = new VolumeControl(volume);
         this.playControl = new PlayControl();
         this.timeInfo = new TimeInfo();
-        this.fullScreen = new FullScreen();
+        this.fullScreen = new FullScreen(parent);
         this.progress = new VideoProgress();
         this.volumePopup = new Popup("rplayer-popup-volume-info", true);
     }
@@ -1605,7 +1593,6 @@ var Controls = function () {
     }, {
         key: "hide",
         value: function hide(mouseX, mouseY) {
-            console.log(dom.isPositionInEl(this.el, mouseX, mouseY, true));
             if (!dom.isPositionInEl(this.el, mouseX, mouseY, true)) {
                 dom.addClass(this.el, "rplayer-hide");
             }
@@ -1646,6 +1633,27 @@ var Controls = function () {
             return this;
         }
     }, {
+        key: "updateMeta",
+        value: function updateMeta(meta) {
+            var duration = meta.duration,
+                progress = this.progress;
+            this.timeInfo.updateTotalTime(duration);
+            progress.trigger(VIDEO_PROGRESS_ENABLE, true);
+            progress.trigger(VIDEO_PROGRESS_DURATION, duration);
+        }
+    }, {
+        key: "updateTime",
+        value: function updateTime(current) {
+            this.timeInfo.updateCurrentTime(current);
+            this.progress.trigger(VIDEO_PROGRESS_UPDATED, current);
+        }
+    }, {
+        key: "updateProgress",
+        value: function updateProgress(time) {
+            this.media.setCurrentTime(time);
+            this.timeInfo.updateCurrentTime(time);
+        }
+    }, {
         key: "initEvent",
         value: function initEvent() {
             var _this2 = this;
@@ -1662,13 +1670,9 @@ var Controls = function () {
             }).on(VIDEO_LOAD_START, function () {
                 return progress.trigger(VIDEO_PROGRESS_ENABLE, false);
             }).on(VIDEO_LOADED_META, function (evt, meta) {
-                var duration = meta.duration;
-                _this2.timeInfo.updateTotalTime(duration);
-                progress.trigger(VIDEO_PROGRESS_ENABLE, true);
-                progress.trigger(VIDEO_PROGRESS_DURATION, duration);
+                return _this2.updateMeta(meta);
             }).on(VIDEO_TIME_UPDATE, function (evt, current) {
-                _this2.timeInfo.updateCurrentTime(current);
-                progress.trigger(VIDEO_PROGRESS_UPDATED, current);
+                return _this2.updateTime(current);
             }).on(VIDEO_PROGRESS, function (evt, buffered) {
                 return progress.trigger(VIDEO_PROGRESS_BUFFER, buffered);
             }).on(VIDEO_CLICK, function () {
@@ -1680,8 +1684,7 @@ var Controls = function () {
                 return media.play(paused);
             });
             progress.on(VIDEO_PROGRESS_UPDATE, function (evt, time) {
-                media.setCurrentTime(time);
-                _this2.timeInfo.updateCurrentTime(time);
+                return _this2.updateProgress(time);
             });
             this.volumeControl.on(VOLUME_CONTROL_MUTE, function (evt, muted) {
                 return media.mute(muted);
