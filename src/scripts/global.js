@@ -73,6 +73,7 @@ export function removeProp(obj, prop) {
         }catch (e){}
     } else {
         for (prop in obj) {
+            obj[prop] = null;
             delete obj[prop];
         }
     }

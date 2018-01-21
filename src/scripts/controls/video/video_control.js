@@ -1,7 +1,6 @@
 import dom from "../../dom/index.js";
-import {doc, isUndefined} from "../../global.js";
+import {doc, isUndefined, ERROR_TYPE, removeProp} from "../../global.js";
 import Subscriber from "../../subscriber.js";
-import {ERROR_TYPE, removeProp} from "../../global";
 
 export const VIDEO_LOADED_META = "video.loaded.meta";
 export const VIDEO_TIME_UPDATE = "video.time.update";

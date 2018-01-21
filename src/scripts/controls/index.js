@@ -58,7 +58,6 @@ export default class Controls {
     }
 
     hide(mouseX, mouseY) {
-        console.log(dom.isPositionInEl(this.el, mouseX, mouseY, true))
         if (!dom.isPositionInEl(this.el, mouseX, mouseY, true)) {
             dom.addClass(this.el, "rplayer-hide");
         }
@@ -97,6 +96,24 @@ export default class Controls {
         return this;
     }
 
+    updateMeta(meta) {
+        let duration = meta.duration,
+            progress = this.progress;
+        this.timeInfo.updateTotalTime(duration);
+        progress.trigger(VIDEO_PROGRESS_ENABLE, true);
+        progress.trigger(VIDEO_PROGRESS_DURATION, duration);
+    }
+
+    updateTime(current) {
+        this.timeInfo.updateCurrentTime(current);
+        this.progress.trigger(VIDEO_PROGRESS_UPDATED, current)
+    }
+
+    updateProgress(time) {
+        this.media.setCurrentTime(time);
+        this.timeInfo.updateCurrentTime(time);
+    }
+
     initEvent() {
         let media = this.media,
             playCtrl = this.playControl,
@@ -105,24 +122,13 @@ export default class Controls {
             .on(VIDEO_PLAYING, () => playCtrl.trigger(PLAY_CONTROL_PLAY))
             .on(VIDEO_PAUSE, () => playCtrl.trigger(PLAY_CONTROL_PAUSE))
             .on(VIDEO_LOAD_START, () => progress.trigger(VIDEO_PROGRESS_ENABLE, false))
-            .on(VIDEO_LOADED_META, (evt, meta) => {
-                let duration = meta.duration;
-                this.timeInfo.updateTotalTime(duration);
-                progress.trigger(VIDEO_PROGRESS_ENABLE, true);
-                progress.trigger(VIDEO_PROGRESS_DURATION, duration);
-            })
-            .on(VIDEO_TIME_UPDATE, (evt, current) => {
-                this.timeInfo.updateCurrentTime(current);
-                progress.trigger(VIDEO_PROGRESS_UPDATED, current)
-            })
+            .on(VIDEO_LOADED_META, (evt, meta) => this.updateMeta(meta))
+            .on(VIDEO_TIME_UPDATE, (evt, current) => this.updateTime(current))
             .on(VIDEO_PROGRESS, (evt, buffered) => progress.trigger(VIDEO_PROGRESS_BUFFER, buffered))
             .on(VIDEO_CLICK, () => media.togglePlay())
             .on(VIDEO_DBLCLICK, () => this.fullScreen.toggle());
         playCtrl.on(PLAY_CONTROL_TOGGLE, (evt, paused) => media.play(paused));
-        progress.on(VIDEO_PROGRESS_UPDATE, (evt, time) => {
-            media.setCurrentTime(time);
-            this.timeInfo.updateCurrentTime(time);
-        });
+        progress.on(VIDEO_PROGRESS_UPDATE, (evt, time) => this.updateProgress(time));
         this.volumeControl
             .on(VOLUME_CONTROL_MUTE, (evt, muted) => media.mute(muted))
             .on(VOLUME_CONTROL_UPDATE, (evt, volume) => media.setVolume(volume));
