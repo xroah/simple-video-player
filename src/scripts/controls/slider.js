@@ -153,7 +153,7 @@ export default class Slider extends Subscriber {
             .addClass(this.bar, cls.bar)
             .addClass(this.el, cls.slider);
         this.track.appendChild(this.bar);
-        this.track.append(this.el);
+        this.track.appendChild(this.el);
         target.appendChild(this.track);
         return this.initEvent();
     };
