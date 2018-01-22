@@ -29,7 +29,7 @@ export default class FullScreen {
     }
 
     toggle() {
-        return this.isFullScreen = !this.isFullScreen ?
+        return (this.isFullScreen = !this.isFullScreen) ?
             this.request() :
             this.exit();
     }

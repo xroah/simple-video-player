@@ -54,8 +54,8 @@ export default class VideoControl extends Subscriber {
 
     play() {
         this.paused = false;
-        if (this.el.networkState !== 2) {
-            //networkState=2（视频正在缓冲不能播放）时候反复点击播放按钮会报DomException错误
+        if (this.getReadyState() >= 3) {
+            //readyState<3（视频正在缓冲不能播放）时候反复点击播放按钮会报DomException错误
             //此时不执行video元素的播放/暂停,只改变paused（video元素paused为只读）状态
             //当触发canplay事件时，如果paused为true则进行播放
             this.el.play();
@@ -65,7 +65,7 @@ export default class VideoControl extends Subscriber {
 
     pause() {
         this.paused = true;
-        if (this.el.networkState !== 2) {
+        if (this.getReadyState() >= 3) {
             this.el.pause();
         }
     }

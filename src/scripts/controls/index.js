@@ -79,7 +79,7 @@ export default class Controls {
             } else if (regEsc.test(key)) {
                 this.fullScreen.exit();
             } else if (regSpace.test(key)) {
-                this.playControl.toggle();
+                this.togglePlay();
             }else {
                 this.fullScreen.toggle();
             }
