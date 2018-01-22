@@ -100,7 +100,7 @@ export default class VolumeControl extends Subscriber {
         this.slider.init(this.panel);
         this.panel.appendChild(this.muteBtn);
         panel.appendChild(this.showBtn);
-        panel.append(this.panel);
+        panel.appendChild(this.panel);
         target.appendChild(panel);
         this.updateVolume(this.volume)
             .initEvent();
