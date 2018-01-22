@@ -1,5 +1,5 @@
 import Subscriber from "../subscriber.js"
-import {doc, isUndefined, removeProp} from "../global.js";
+import {doc, isUndefined} from "../global.js";
 import dom from "../dom/index.js";
 
 export const SLIDER_MOVING = "slider.moving";
@@ -135,12 +135,6 @@ export default class Slider extends Subscriber {
             .on(this.track, "click", this.clickTrack.bind(this));
         return this;
     }
-
-    destroy() {
-        dom.off(this.track)
-            .off(this.el);
-        removeProp(this);
-    };
 
     init(target) {
         let cls = {

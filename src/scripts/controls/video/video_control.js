@@ -1,5 +1,5 @@
 import dom from "../../dom/index.js";
-import {doc, isUndefined, ERROR_TYPE, removeProp} from "../../global.js";
+import {doc, isUndefined, ERROR_TYPE} from "../../global.js";
 import Subscriber from "../../subscriber.js";
 
 export const VIDEO_LOADED_META = "video.loaded.meta";
@@ -255,11 +255,5 @@ export default class VideoControl extends Subscriber {
             .setPreload(this.config.preload)
             .initEvent();
         return this;
-    }
-
-    destroy() {
-        dom.off(this.el);
-        this.off();
-        removeProp(this);
     }
 }

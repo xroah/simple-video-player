@@ -1,5 +1,5 @@
 import dom from "../../dom/index.js";
-import Slider, {SLIDER_MOVE_DONE, SLIDER_STATUS_CHANGE} from "../slider.js";
+import Slider, {SLIDER_MOVE_DONE} from "../slider.js";
 import Popup from "../../message/popup.js";
 import {convertTime} from "../../global.js";
 import Subscriber from "../../subscriber.js";
