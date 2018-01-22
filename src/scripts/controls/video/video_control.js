@@ -22,6 +22,7 @@ export default class VideoControl extends Subscriber {
         this.config = config;
         this.playedTime = null;
         this.el = dom.createElement("video", {"class": "rplayer-video"});
+        this.paused = this.el.paused;
     }
 
     setVolume(volume) {
@@ -51,19 +52,28 @@ export default class VideoControl extends Subscriber {
         return this;
     }
 
-    play(play) {
-        isUndefined(play) ? this.el.play() : this.el.pause();
+    play() {
+        this.paused = false;
+        if (this.el.networkState !== 2) {
+            //networkState=2（视频正在缓冲不能播放）时候反复点击播放按钮会报DomException错误
+            //此时不执行video元素的播放/暂停,只改变paused（video元素paused为只读）状态
+            //当触发canplay事件时，如果paused为true则进行播放
+            this.el.play();
+        }
         return this;
+    }
+
+    pause() {
+        this.paused = true;
+        if (this.el.networkState !== 2) {
+            this.el.pause();
+        }
     }
 
     togglePlay() {
         //当开始加载视频还不能播放时点击播放会报错
-        this.getDuration() && this.play(this.isPaused());
+        this.paused ? this.play() : this.pause();
         return this;
-    }
-
-    isPaused() {
-        return this.el.paused;
     }
 
     isError() {
@@ -196,6 +206,9 @@ export default class VideoControl extends Subscriber {
                     this.setCurrentTime(this.playedTime);
                     this.playedTime = 0;
                 }
+                break;
+            case VIDEO_CAN_PLAY:
+                !this.paused && this.el.play();
                 break;
             case VIDEO_ERROR:
                 this.playedTime = this.getCurrentTime();

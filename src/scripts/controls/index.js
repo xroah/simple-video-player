@@ -9,7 +9,6 @@ import VolumeControl, {VOLUME_CONTROL_MUTE, VOLUME_CONTROL_UPDATE} from "./volum
 import FullScreen from "./video/fullscreen.js";
 import Popup from "../message/popup.js";
 import TimeInfo from "../message/time_info.js";
-import PlayControl, {PLAY_CONTROL_PAUSE, PLAY_CONTROL_PLAY, PLAY_CONTROL_TOGGLE} from "./video/play_control.js";
 import dom from "../dom/index.js";
 import {KEY_MAP} from "../global.js";
 import {
@@ -31,8 +30,8 @@ export default class Controls {
         this.media = media;
         this.timer = null;
         this.el = dom.createElement("div", {"class": "rplayer-controls"});
+        this.playBtn = dom.createElement("button", {"class": "rplayer-play-btn"});
         this.volumeControl = new VolumeControl(volume);
-        this.playControl = new PlayControl();
         this.timeInfo = new TimeInfo();
         this.fullScreen = new FullScreen(parent);
         this.progress = new VideoProgress();
@@ -114,26 +113,41 @@ export default class Controls {
         this.timeInfo.updateCurrentTime(time);
     }
 
+    play() {
+        dom.addClass(this.playBtn, "rplayer-paused");
+        return this;
+    }
+
+    pause() {
+        dom.removeClass(this.playBtn, "rplayer-paused");
+        return this;
+    }
+
+    togglePlay() {
+        this.media.togglePlay();
+        this.media.paused ? this.pause() : this.play();
+    }
+
     initEvent() {
         let media = this.media,
-            playCtrl = this.playControl,
-            progress = this.progress;
+            progress = this.progress,
+            toggle = this.togglePlay.bind(this);
         media.on(VIDEO_VOLUME_CHANGE, (evt, volume) => this.showVolumePopup(volume))
-            .on(VIDEO_PLAYING, () => playCtrl.trigger(PLAY_CONTROL_PLAY))
-            .on(VIDEO_PAUSE, () => playCtrl.trigger(PLAY_CONTROL_PAUSE))
             .on(VIDEO_LOAD_START, () => progress.trigger(VIDEO_PROGRESS_ENABLE, false))
             .on(VIDEO_LOADED_META, (evt, meta) => this.updateMeta(meta))
             .on(VIDEO_TIME_UPDATE, (evt, current) => this.updateTime(current))
             .on(VIDEO_PROGRESS, (evt, buffered) => progress.trigger(VIDEO_PROGRESS_BUFFER, buffered))
-            .on(VIDEO_CLICK, () => media.togglePlay())
+            .on(VIDEO_PLAYING, this.play.bind(this))
+            .on(VIDEO_PAUSE, this.pause.bind(this))
+            .on(VIDEO_CLICK, toggle)
             .on(VIDEO_DBLCLICK, () => this.fullScreen.toggle());
-        playCtrl.on(PLAY_CONTROL_TOGGLE, (evt, paused) => media.play(paused));
         progress.on(VIDEO_PROGRESS_UPDATE, (evt, time) => this.updateProgress(time));
         this.volumeControl
             .on(VOLUME_CONTROL_MUTE, (evt, muted) => media.mute(muted))
             .on(VOLUME_CONTROL_UPDATE, (evt, volume) => media.setVolume(volume));
         dom.on(this.parentEl, "keydown", this.keyDown.bind(this))
-            .on(this.parentEl, "mousemove", this.show.bind(this));
+            .on(this.parentEl, "mousemove", this.show.bind(this))
+            .on(this.playBtn, "click", toggle);
         return this;
     }
 
@@ -141,17 +155,16 @@ export default class Controls {
         let settingsPanel = dom.createElement("div", {"class": "rplayer-settings rplayer-rt"}),
             playControl = dom.createElement("div", {"class": "rplayer-play-control rplayer-lf"}),
             el = this.el;
-        this.initEvent();
-        this.fullScreen.init(this.parentEl, settingsPanel);
+        this.fullScreen.init(settingsPanel);
         this.volumeControl.init(settingsPanel);
-        this.playControl.init(playControl);
+        playControl.appendChild(this.playBtn);
         this.timeInfo.init(playControl);
         this.progress.init(el);
         this.volumePopup.init(el);
-        el.appendChild(settingsPanel);
         el.appendChild(playControl);
+        el.appendChild(settingsPanel);
         this.parentEl.appendChild(el);
         this.show();
-        return this;
+        return this.initEvent();
     }
 }
