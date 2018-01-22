@@ -65,18 +65,7 @@ function toArray(likeArr) {
     return Array.isArray(likeArr) ? likeArr.slice(start) : likeArr.length ? Array.prototype.slice.call(likeArr, start) : [];
 }
 
-function removeProp(obj, prop) {
-    if (prop) {
-        try {
-            delete obj[prop];
-        } catch (e) {}
-    } else {
-        for (prop in obj) {
-            obj[prop] = null;
-            delete obj[prop];
-        }
-    }
-}
+
 
 function noop() {
     return function () {};
@@ -564,6 +553,7 @@ var VideoControl = function (_Subscriber) {
         _this.config = config;
         _this.playedTime = null;
         _this.el = dom.createElement("video", { "class": "rplayer-video" });
+        _this.paused = _this.el.paused;
         return _this;
     }
 
@@ -601,21 +591,29 @@ var VideoControl = function (_Subscriber) {
         }
     }, {
         key: "play",
-        value: function play(_play) {
-            isUndefined(_play) ? this.el.play() : this.el.pause();
+        value: function play() {
+            this.paused = false;
+            if (this.el.networkState !== 2) {
+                //networkState=2（视频正在缓冲不能播放）时候反复点击播放按钮会报DomException错误
+                //此时不执行video元素的播放/暂停,只改变paused（video元素paused为只读）状态
+                //当触发canplay事件时，如果paused为true则进行播放
+                this.el.play();
+            }
             return this;
+        }
+    }, {
+        key: "pause",
+        value: function pause() {
+            this.paused = true;
+            if (this.el.networkState !== 2) {
+                this.el.pause();
+            }
         }
     }, {
         key: "togglePlay",
         value: function togglePlay() {
-            //当开始加载视频还不能播放时点击播放会报错
-            this.getDuration() && this.play(this.isPaused());
+            this.paused ? this.play() : this.pause();
             return this;
-        }
-    }, {
-        key: "isPaused",
-        value: function isPaused() {
-            return this.el.paused;
         }
     }, {
         key: "isError",
@@ -692,7 +690,7 @@ var VideoControl = function (_Subscriber) {
     }, {
         key: "changeSource",
         value: function changeSource(src) {
-            var paused = this.isPaused();
+            var paused = this.paused;
             if (this.source !== src) {
                 this.source = src;
                 this.initSource(src);
@@ -762,6 +760,15 @@ var VideoControl = function (_Subscriber) {
                         this.playedTime = 0;
                     }
                     break;
+                case VIDEO_CAN_PLAY:
+                    !this.paused && this.el.play();
+                    break;
+                case VIDEO_PLAYING:
+                    this.paused = false;
+                    break;
+                case VIDEO_PAUSE:
+                    this.paused = true;
+                    break;
                 case VIDEO_ERROR:
                     this.playedTime = this.getCurrentTime();
             }
@@ -789,13 +796,6 @@ var VideoControl = function (_Subscriber) {
             this.initSource(this.source).autoPlay(this.config.autoPlay).loop(this.config.loop).setPoster(this.config.poster).setPreload(this.config.preload).initEvent();
             return this;
         }
-    }, {
-        key: "destroy",
-        value: function destroy() {
-            dom.off(this.el);
-            this.off();
-            removeProp(this);
-        }
     }]);
 
     return VideoControl;
@@ -811,8 +811,6 @@ function _inherits$1(subClass, superClass) { if (typeof superClass !== "function
 
 var SLIDER_MOVING = "slider.moving";
 var SLIDER_MOVE_DONE = "slider.move.done";
-//滑块状态改变(是否可以滑动/点击),视频加载时候为获取到元信息禁止改变进度
-var SLIDER_STATUS_CHANGE = "slider.status.change";
 
 var Slider = function (_Subscriber) {
     _inherits$1(Slider, _Subscriber);
@@ -825,7 +823,9 @@ var Slider = function (_Subscriber) {
         _this.vertical = isUndefined(vertical) ? false : !!vertical;
         _this.moveDis = _this.pos = null;
         _this.moving = false;
-        _this.enabled = true; //初始默认可以滑动/点击
+        //滑块状态改变(是否可以滑动/点击),视频加载时候没有获取到元信息禁止改变进度
+        //初始默认可以滑动/点击
+        _this.enabled = true;
         _this.track = dom.createElement("div", { "class": "rplayer-progress" });
         _this.bar = dom.createElement("div", { "class": "rplayer-bar" });
         _this.el = dom.createElement("div", { "class": "rplayer-slider" });
@@ -958,19 +958,8 @@ var Slider = function (_Subscriber) {
     }, {
         key: "initEvent",
         value: function initEvent() {
-            var _this4 = this;
-
             dom.on(this.el, "mousedown", this.mouseDown.bind(this)).on(this.track, "click", this.clickTrack.bind(this));
-            this.on(SLIDER_STATUS_CHANGE, function (evt, enable) {
-                return _this4.enabled = !!enable;
-            });
             return this;
-        }
-    }, {
-        key: "destroy",
-        value: function destroy() {
-            dom.off(this.track).off(this.el);
-            removeProp(this);
         }
     }, {
         key: "init",
@@ -1108,11 +1097,11 @@ function _possibleConstructorReturn$2(self, call) { if (!self) { throw new Refer
 
 function _inherits$2(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
+//滑动/点击改变进度后设置视频播放时间
 var VIDEO_PROGRESS_UPDATE = "video.progress.update";
+//视频播放时时间改变
 var VIDEO_PROGRESS_UPDATED = "video.progress.updated";
-var VIDEO_PROGRESS_ENABLE = "video.progress.enable";
 var VIDEO_PROGRESS_BUFFER = "video.progress.buffer";
-var VIDEO_PROGRESS_DURATION = "video.progress.duration";
 
 var VideoProgress = function (_Subscriber) {
     _inherits$2(VideoProgress, _Subscriber);
@@ -1150,6 +1139,12 @@ var VideoProgress = function (_Subscriber) {
                 this.currentTime = currentTime < 0 ? 0 : currentTime > duration ? duration : currentTime;
                 this.trigger(VIDEO_PROGRESS_UPDATE, this.currentTime);
             }
+            return this;
+        }
+    }, {
+        key: "enable",
+        value: function enable(_enable) {
+            this.slider.enabled = !!_enable;
             return this;
         }
     }, {
@@ -1191,12 +1186,8 @@ var VideoProgress = function (_Subscriber) {
             dom.on(this.panel, "mouseover mousemove", this.mouseMove.bind(this)).on(this.panel, "mouseout", this.mouseOut.bind(this));
             this.on(VIDEO_PROGRESS_UPDATED, function (evt, time) {
                 return _this2.update(time);
-            }).on(VIDEO_PROGRESS_ENABLE, function (evt, enabled) {
-                return _this2.slider.trigger(SLIDER_STATUS_CHANGE, enabled);
             }).on(VIDEO_PROGRESS_BUFFER, function (evt, buffer) {
                 return _this2.buffer(buffer);
-            }).on(VIDEO_PROGRESS_DURATION, function (evt, duration) {
-                return _this2.duration = duration;
             });
             return this;
         }
@@ -1490,84 +1481,26 @@ var _createClass$10 = function () { function defineProperties(target, props) { f
 
 function _classCallCheck$10(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-function _possibleConstructorReturn$4(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits$4(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var PLAY_CONTROL_PLAY = "play.control.play";
-var PLAY_CONTROL_PAUSE = "play.control.pause";
-var PLAY_CONTROL_TOGGLE = "play.control.toggle";
-
-var PlayControl = function (_Subscriber) {
-    _inherits$4(PlayControl, _Subscriber);
-
-    function PlayControl() {
-        _classCallCheck$10(this, PlayControl);
-
-        var _this = _possibleConstructorReturn$4(this, (PlayControl.__proto__ || Object.getPrototypeOf(PlayControl)).call(this));
-
-        _this.btn = dom.createElement("button", { "class": "rplayer-play-btn" });
-        _this.paused = true;
-        return _this;
-    }
-
-    _createClass$10(PlayControl, [{
-        key: "play",
-        value: function play() {
-            dom.addClass(this.btn, "paused");
-            return this;
-        }
-    }, {
-        key: "pause",
-        value: function pause() {
-            dom.removeClass(this.btn, "paused");
-            return this;
-        }
-    }, {
-        key: "toggle",
-        value: function toggle() {
-            this.trigger(PLAY_CONTROL_TOGGLE, this.paused = !this.paused);
-            return this;
-        }
-    }, {
-        key: "initEvent",
-        value: function initEvent() {
-            dom.on(this.btn, "click", this.toggle.bind(this));
-            this.on(PLAY_CONTROL_PAUSE, this.pause.bind(this)).on(PLAY_CONTROL_PLAY, this.play.bind(this));
-            return this;
-        }
-    }, {
-        key: "init",
-        value: function init(target) {
-            target.appendChild(this.btn);
-            return this.initEvent();
-        }
-    }]);
-
-    return PlayControl;
-}(Subscriber);
-
-var _createClass$11 = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck$11(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
 var Controls = function () {
     function Controls(parent, media, volume) {
-        _classCallCheck$11(this, Controls);
+        _classCallCheck$10(this, Controls);
 
         this.parentEl = parent;
         this.media = media;
         this.timer = null;
+        //视频是否允许点击播放/改变进度
+        //第一次开始加载是不允许改变
+        this.enabled = false;
         this.el = dom.createElement("div", { "class": "rplayer-controls" });
+        this.playBtn = dom.createElement("button", { "class": "rplayer-play-btn" });
         this.volumeControl = new VolumeControl(volume);
-        this.playControl = new PlayControl();
         this.timeInfo = new TimeInfo();
         this.fullScreen = new FullScreen(parent);
         this.progress = new VideoProgress();
         this.volumePopup = new Popup("rplayer-popup-volume-info", true);
     }
 
-    _createClass$11(Controls, [{
+    _createClass$10(Controls, [{
         key: "show",
         value: function show() {
             var _this = this;
@@ -1638,8 +1571,8 @@ var Controls = function () {
             var duration = meta.duration,
                 progress = this.progress;
             this.timeInfo.updateTotalTime(duration);
-            progress.trigger(VIDEO_PROGRESS_ENABLE, true);
-            progress.trigger(VIDEO_PROGRESS_DURATION, duration);
+            progress.enable(this.enabled = true);
+            progress.duration = duration;
         }
     }, {
         key: "updateTime",
@@ -1654,34 +1587,46 @@ var Controls = function () {
             this.timeInfo.updateCurrentTime(time);
         }
     }, {
+        key: "play",
+        value: function play() {
+            dom.addClass(this.playBtn, "rplayer-paused");
+            return this;
+        }
+    }, {
+        key: "pause",
+        value: function pause() {
+            dom.removeClass(this.playBtn, "rplayer-paused");
+            return this;
+        }
+    }, {
+        key: "togglePlay",
+        value: function togglePlay() {
+            if (this.enabled) {
+                this.media.togglePlay();
+                this.media.paused ? this.pause() : this.play();
+            }
+        }
+    }, {
         key: "initEvent",
         value: function initEvent() {
             var _this2 = this;
 
             var media = this.media,
-                playCtrl = this.playControl,
-                progress = this.progress;
+                progress = this.progress,
+                toggle = this.togglePlay.bind(this);
             media.on(VIDEO_VOLUME_CHANGE, function (evt, volume) {
                 return _this2.showVolumePopup(volume);
-            }).on(VIDEO_PLAYING, function () {
-                return playCtrl.trigger(PLAY_CONTROL_PLAY);
-            }).on(VIDEO_PAUSE, function () {
-                return playCtrl.trigger(PLAY_CONTROL_PAUSE);
             }).on(VIDEO_LOAD_START, function () {
-                return progress.trigger(VIDEO_PROGRESS_ENABLE, false);
+                _this2.pause();
+                _this2.progress.enable(_this2.enabled = false);
             }).on(VIDEO_LOADED_META, function (evt, meta) {
                 return _this2.updateMeta(meta);
             }).on(VIDEO_TIME_UPDATE, function (evt, current) {
                 return _this2.updateTime(current);
             }).on(VIDEO_PROGRESS, function (evt, buffered) {
                 return progress.trigger(VIDEO_PROGRESS_BUFFER, buffered);
-            }).on(VIDEO_CLICK, function () {
-                return media.togglePlay();
-            }).on(VIDEO_DBLCLICK, function () {
+            }).on(VIDEO_PLAYING, this.play.bind(this)).on(VIDEO_PAUSE, this.pause.bind(this)).on(VIDEO_CLICK, toggle).on(VIDEO_DBLCLICK, function () {
                 return _this2.fullScreen.toggle();
-            });
-            playCtrl.on(PLAY_CONTROL_TOGGLE, function (evt, paused) {
-                return media.play(paused);
             });
             progress.on(VIDEO_PROGRESS_UPDATE, function (evt, time) {
                 return _this2.updateProgress(time);
@@ -1691,7 +1636,7 @@ var Controls = function () {
             }).on(VOLUME_CONTROL_UPDATE, function (evt, volume) {
                 return media.setVolume(volume);
             });
-            dom.on(this.parentEl, "keydown", this.keyDown.bind(this)).on(this.parentEl, "mousemove", this.show.bind(this));
+            dom.on(this.parentEl, "keydown", this.keyDown.bind(this)).on(this.parentEl, "mousemove", this.show.bind(this)).on(this.playBtn, "click", toggle);
             return this;
         }
     }, {
@@ -1700,31 +1645,30 @@ var Controls = function () {
             var settingsPanel = dom.createElement("div", { "class": "rplayer-settings rplayer-rt" }),
                 playControl = dom.createElement("div", { "class": "rplayer-play-control rplayer-lf" }),
                 el = this.el;
-            this.initEvent();
-            this.fullScreen.init(this.parentEl, settingsPanel);
+            this.fullScreen.init(settingsPanel);
             this.volumeControl.init(settingsPanel);
-            this.playControl.init(playControl);
+            playControl.appendChild(this.playBtn);
             this.timeInfo.init(playControl);
             this.progress.init(el);
             this.volumePopup.init(el);
-            el.appendChild(settingsPanel);
             el.appendChild(playControl);
+            el.appendChild(settingsPanel);
             this.parentEl.appendChild(el);
             this.show();
-            return this;
+            return this.initEvent();
         }
     }]);
 
     return Controls;
 }();
 
-var _createClass$12 = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+var _createClass$11 = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-function _classCallCheck$12(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+function _classCallCheck$11(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-function _possibleConstructorReturn$5(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+function _possibleConstructorReturn$4(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 
-function _inherits$5(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+function _inherits$4(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 var DEFAULT_HEIGHT = 500;
 
@@ -1742,15 +1686,15 @@ function handleConfig(options) {
 }
 
 var RPlayer = function (_Subscriber) {
-    _inherits$5(RPlayer, _Subscriber);
+    _inherits$4(RPlayer, _Subscriber);
 
     function RPlayer(selector, options) {
-        _classCallCheck$12(this, RPlayer);
+        _classCallCheck$11(this, RPlayer);
 
         var target = dom.selectElement(selector),
             config = handleConfig(options);
 
-        var _this = _possibleConstructorReturn$5(this, (RPlayer.__proto__ || Object.getPrototypeOf(RPlayer)).call(this));
+        var _this = _possibleConstructorReturn$4(this, (RPlayer.__proto__ || Object.getPrototypeOf(RPlayer)).call(this));
 
         if (!config.source) {
             throw new Error("没有设置视频链接");
@@ -1772,7 +1716,7 @@ var RPlayer = function (_Subscriber) {
         return _this;
     }
 
-    _createClass$12(RPlayer, [{
+    _createClass$11(RPlayer, [{
         key: "buffer",
         value: function buffer(buffered, readyState) {
             if (readyState < 3) {
