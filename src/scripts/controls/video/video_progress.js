@@ -4,11 +4,11 @@ import Popup from "../../message/popup.js";
 import {convertTime} from "../../global.js";
 import Subscriber from "../../subscriber.js";
 
+//滑动/点击改变进度后设置视频播放时间
 export const VIDEO_PROGRESS_UPDATE = "video.progress.update";
+//视频播放时时间改变
 export const VIDEO_PROGRESS_UPDATED = "video.progress.updated";
-export const VIDEO_PROGRESS_ENABLE = "video.progress.enable";
 export const VIDEO_PROGRESS_BUFFER = "video.progress.buffer";
-export const VIDEO_PROGRESS_DURATION = "video.progress.duration";
 
 export default class VideoProgress extends Subscriber {
     constructor() {
@@ -37,6 +37,11 @@ export default class VideoProgress extends Subscriber {
             this.currentTime = currentTime < 0 ? 0 : currentTime > duration ? duration : currentTime;
             this.trigger(VIDEO_PROGRESS_UPDATE, this.currentTime);
         }
+        return this;
+    }
+
+    enable(enable) {
+        this.slider.enabled = !!enable;
         return this;
     }
 
@@ -74,9 +79,7 @@ export default class VideoProgress extends Subscriber {
         dom.on(this.panel, "mouseover mousemove", this.mouseMove.bind(this))
             .on(this.panel, "mouseout", this.mouseOut.bind(this));
         this.on(VIDEO_PROGRESS_UPDATED, (evt, time) => this.update(time))
-            .on(VIDEO_PROGRESS_ENABLE, (evt, enabled) => this.slider.trigger(SLIDER_STATUS_CHANGE, enabled))
             .on(VIDEO_PROGRESS_BUFFER, (evt, buffer) => this.buffer(buffer))
-            .on(VIDEO_PROGRESS_DURATION, (evt, duration) => this.duration = duration);
         return this;
     }
 

@@ -1,9 +1,7 @@
 import VideoProgress, {
-    VIDEO_PROGRESS_ENABLE,
     VIDEO_PROGRESS_UPDATED,
     VIDEO_PROGRESS_UPDATE,
     VIDEO_PROGRESS_BUFFER,
-    VIDEO_PROGRESS_DURATION
 } from "./video/video_progress.js";
 import VolumeControl, {VOLUME_CONTROL_MUTE, VOLUME_CONTROL_UPDATE} from "./volume_control.js";
 import FullScreen from "./video/fullscreen.js";
@@ -29,6 +27,9 @@ export default class Controls {
         this.parentEl = parent;
         this.media = media;
         this.timer = null;
+        //视频是否允许点击播放/改变进度
+        //第一次开始加载是不允许改变
+        this.enabled = false;
         this.el = dom.createElement("div", {"class": "rplayer-controls"});
         this.playBtn = dom.createElement("button", {"class": "rplayer-play-btn"});
         this.volumeControl = new VolumeControl(volume);
@@ -99,8 +100,8 @@ export default class Controls {
         let duration = meta.duration,
             progress = this.progress;
         this.timeInfo.updateTotalTime(duration);
-        progress.trigger(VIDEO_PROGRESS_ENABLE, true);
-        progress.trigger(VIDEO_PROGRESS_DURATION, duration);
+        progress.enable(this.enabled = true);
+        progress.duration = duration;
     }
 
     updateTime(current) {
@@ -124,8 +125,10 @@ export default class Controls {
     }
 
     togglePlay() {
-        this.media.togglePlay();
-        this.media.paused ? this.pause() : this.play();
+        if (this.enabled) {
+            this.media.togglePlay();
+            this.media.paused ? this.pause() : this.play();
+        }
     }
 
     initEvent() {
@@ -133,7 +136,10 @@ export default class Controls {
             progress = this.progress,
             toggle = this.togglePlay.bind(this);
         media.on(VIDEO_VOLUME_CHANGE, (evt, volume) => this.showVolumePopup(volume))
-            .on(VIDEO_LOAD_START, () => progress.trigger(VIDEO_PROGRESS_ENABLE, false))
+            .on(VIDEO_LOAD_START, () => {
+                this.pause();
+                this.progress.enable(this.enabled = false)
+            })
             .on(VIDEO_LOADED_META, (evt, meta) => this.updateMeta(meta))
             .on(VIDEO_TIME_UPDATE, (evt, current) => this.updateTime(current))
             .on(VIDEO_PROGRESS, (evt, buffered) => progress.trigger(VIDEO_PROGRESS_BUFFER, buffered))

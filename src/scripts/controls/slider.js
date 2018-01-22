@@ -4,8 +4,6 @@ import dom from "../dom/index.js";
 
 export const SLIDER_MOVING = "slider.moving";
 export const SLIDER_MOVE_DONE = "slider.move.done";
-//滑块状态改变(是否可以滑动/点击),视频加载时候为获取到元信息禁止改变进度
-export const SLIDER_STATUS_CHANGE = "slider.status.change";
 
 export default class Slider extends Subscriber {
     constructor(vertical) {
@@ -13,7 +11,9 @@ export default class Slider extends Subscriber {
         this.vertical = isUndefined(vertical) ? false : !!vertical;
         this.moveDis = this.pos = null;
         this.moving = false;
-        this.enabled = true; //初始默认可以滑动/点击
+        //滑块状态改变(是否可以滑动/点击),视频加载时候没有获取到元信息禁止改变进度
+        //初始默认可以滑动/点击
+        this.enabled = true;
         this.track = dom.createElement("div", {"class": "rplayer-progress"});
         this.bar = dom.createElement("div", {"class": "rplayer-bar"});
         this.el = dom.createElement("div", {"class": "rplayer-slider"});
@@ -133,7 +133,6 @@ export default class Slider extends Subscriber {
     initEvent() {
         dom.on(this.el, "mousedown", this.mouseDown.bind(this))
             .on(this.track, "click", this.clickTrack.bind(this));
-        this.on(SLIDER_STATUS_CHANGE, (evt, enable) => this.enabled = !!enable);
         return this;
     }
 
