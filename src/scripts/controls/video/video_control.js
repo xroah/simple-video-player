@@ -71,7 +71,6 @@ export default class VideoControl extends Subscriber {
     }
 
     togglePlay() {
-        //当开始加载视频还不能播放时点击播放会报错
         this.paused ? this.play() : this.pause();
         return this;
     }
@@ -138,7 +137,7 @@ export default class VideoControl extends Subscriber {
     }
 
     changeSource(src) {
-        let paused = this.isPaused();
+        let paused = this.paused;
         if (this.source !== src) {
             this.source = src;
             this.initSource(src);
@@ -209,6 +208,12 @@ export default class VideoControl extends Subscriber {
                 break;
             case VIDEO_CAN_PLAY:
                 !this.paused && this.el.play();
+                break;
+            case VIDEO_PLAYING:
+                this.paused = false;
+                break;
+            case VIDEO_PAUSE:
+                this.paused = true;
                 break;
             case VIDEO_ERROR:
                 this.playedTime = this.getCurrentTime();
