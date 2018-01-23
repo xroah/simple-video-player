@@ -214,4 +214,20 @@ dom.isPositionInEl = function (el, x, y, relative) {
     return x > 0 && x < rect.width && y > 0 && y < rect.height;
 };
 
+
+dom.empty = function (el) {
+    if (el && el.nodeType) {
+        let children = el.children,
+            i = children.length;
+        for (; i--;) {
+            el = children[i];
+            el.parentNode.removeChild(el);
+            if (el.children.length) {
+                this.empty(el);
+            }
+        }
+    }
+    return this;
+};
+
 export default dom;

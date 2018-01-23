@@ -1,6 +1,6 @@
-import dom from "../../dom/index.js";
-import {doc} from "../../global.js";
-import fsApi from "../../dom/fullscreen_api.js";
+import dom from "../dom/index.js";
+import {doc} from "../global.js";
+import fsApi from "../dom/fullscreen_api.js";
 
 export default class FullScreen {
     constructor(el) {

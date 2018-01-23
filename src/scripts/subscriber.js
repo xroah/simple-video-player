@@ -9,7 +9,7 @@ function CEvent(type) {
 
 export default class Subscriber {
     constructor() {
-        Object.defineProperty(this, "handlers", {value: {}});
+        this.handlers = {};
     }
 
     _on(type, fn) {

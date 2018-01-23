@@ -3,8 +3,8 @@ import VideoProgress, {
     VIDEO_PROGRESS_UPDATE,
     VIDEO_PROGRESS_BUFFER,
 } from "./video/video_progress.js";
-import VolumeControl, {VOLUME_CONTROL_MUTE, VOLUME_CONTROL_UPDATE} from "./volume_control.js";
-import FullScreen from "./video/fullscreen.js";
+import VolumeControl, {VOLUME_CONTROL_MUTE, VOLUME_CONTROL_UPDATE} from "./video/volume_control.js";
+import FullScreen from "./fullscreen.js";
 import Popup from "../message/popup.js";
 import TimeInfo from "../message/time_info.js";
 import dom from "../dom/index.js";
@@ -20,7 +20,6 @@ import {
     VIDEO_CLICK,
     VIDEO_DBLCLICK
 } from "./video/video_control.js";
-
 
 export default class Controls {
     constructor(parent, media, volume) {

@@ -1,7 +1,7 @@
-import dom from "../dom/index.js";
-import Slider, {SLIDER_MOVING} from "./slider.js";
-import {doc} from "../global";
-import Subscriber from "../subscriber.js";
+import dom from "../../dom/index.js";
+import Slider, {SLIDER_MOVING} from "../slider.js";
+import {doc} from "../../global";
+import Subscriber from "../../subscriber.js";
 
 export const VOLUME_CONTROL_UPDATE = "volume.control.update";
 export const VOLUME_CONTROL_MUTE = "volume.control.mute";

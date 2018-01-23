@@ -1,5 +1,5 @@
 import dom from "./dom/index.js";
-import {DEFAULT_OPTIONS, isObject, isUndefined, removeProp} from "./global.js";
+import {doc, DEFAULT_OPTIONS, isObject, isUndefined, removeProp} from "./global.js";
 import Subscriber from "./subscriber.js";
 import Loading from "./message/loading.js";
 import VideoError from "./message/error.js";
@@ -110,6 +110,34 @@ export default class RPlayer extends Subscriber {
         }
         return this;
     };
+
+    removeAll(obj) {
+        obj = obj || this;
+        dom.off(doc);
+        for (let key in obj) {
+            let tmp = obj[key];
+            if (tmp) {
+                if (tmp.nodeType) {
+                    dom.off(tmp);
+                }
+                if (tmp.off) {
+                    tmp.off();
+                }
+                if (tmp.timer) {
+                    clearTimeout(tmp.timer);
+                }
+                if (isObject(tmp)) {
+                    this.removeAll(tmp);
+                }
+            }
+        }
+        removeProp(obj);
+    }
+
+    destroy() {
+        dom.empty(this.target);
+        this.removeAll();
+    }
 }
 
 RPlayer.init = function (selector, options) {
