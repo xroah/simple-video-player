@@ -10,10 +10,10 @@ import VideoControl, {
     VIDEO_LOAD_START,
     VIDEO_PROGRESS,
     VIDEO_SEEKING,
+    VIDEO_PLAYING,
+    VIDEO_PAUSE
 } from "./controls/video/video_control.js";
 import Controls from "./controls/index.js";
-
-const DEFAULT_HEIGHT = 500;
 
 function handleConfig(options) {
     return isObject(options) ?
@@ -60,7 +60,7 @@ export default class RPlayer extends Subscriber {
     }
 
     playEnd() {
-        this.trigger("play.end");
+        this.trigger(VIDEO_ENDED);
     }
 
     handleError(error) {
@@ -70,6 +70,7 @@ export default class RPlayer extends Subscriber {
         }
         this.loading.hide();
         this.error.show(error.message);
+        this.trigger(VIDEO_ERROR, error.code);
         return this;
     }
 
@@ -85,7 +86,9 @@ export default class RPlayer extends Subscriber {
             .on(VIDEO_SEEKING, () => this.loading.show())
             .on(VIDEO_CAN_PLAY, () => this.loading.hide())
             .on(VIDEO_ENDED, this.playEnd.bind(this))
-            .on(VIDEO_ERROR, (evt, error) => this.handleError(error));
+            .on(VIDEO_ERROR, (evt, error) => this.handleError(error))
+            .on(VIDEO_PAUSE, () => this.trigger(VIDEO_PAUSE))
+            .on(VIDEO_PLAYING, () => this.trigger(VIDEO_PLAYING));
         return this;
     };
 
