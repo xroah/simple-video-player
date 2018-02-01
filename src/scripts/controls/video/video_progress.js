@@ -1,7 +1,7 @@
 import dom from "../../dom/index.js";
 import Slider, {SLIDER_MOVE_DONE} from "../slider.js";
 import Popup from "../../message/popup.js";
-import {convertTime} from "../../global.js";
+import {convertTime, PREVENT_CONTROLS_HIDE} from "../../global.js";
 import Subscriber from "../../subscriber.js";
 
 //滑动/点击改变进度后设置视频播放时间
@@ -51,6 +51,10 @@ export default class VideoProgress extends Subscriber {
 
     mouseMove(evt) {
         if (this.duration) {
+            //移动时防止多次触发事件
+            if (!this.popup.visible) {
+                this.trigger(PREVENT_CONTROLS_HIDE, true);
+            }
             this.popup.show();
             let rect = this.panel.getBoundingClientRect(),
                 distance = evt.clientX - rect.left,
@@ -67,6 +71,7 @@ export default class VideoProgress extends Subscriber {
 
     mouseOut() {
         this.popup.hide();
+        this.trigger(PREVENT_CONTROLS_HIDE, false);
     }
 
     initEvent() {

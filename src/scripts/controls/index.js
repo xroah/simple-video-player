@@ -8,7 +8,7 @@ import FullScreen from "./fullscreen.js";
 import Popup from "../message/popup.js";
 import TimeInfo from "../message/time_info.js";
 import dom from "../dom/index.js";
-import {KEY_MAP} from "../global.js";
+import {KEY_MAP, PREVENT_CONTROLS_HIDE} from "../global.js";
 import {
     VIDEO_VOLUME_CHANGE,
     VIDEO_LOAD_START,
@@ -28,7 +28,7 @@ export default class Controls {
         this.timer = null;
         //视频是否允许点击播放/改变进度
         //第一次开始加载是不允许改变
-        this.enabled = false;
+        this.hidePrevented = this.enabled = false;
         this.el = dom.createElement("div", {"class": "rplayer-controls"});
         this.playBtn = dom.createElement("button", {"class": "rplayer-play-btn"});
         this.volumeControl = new VolumeControl(volume);
@@ -40,24 +40,30 @@ export default class Controls {
 
     show(evt = {}) {
         let error = this.media.isError();
-        if (this.timer) {
-            clearTimeout(this.timer);
-            this.timer = null;
-        }
+        //出错了则不显示控制条
         if (!error) {
             let mouseX = evt.clientX;
             let mouseY = evt.clientY;
             this.visible = true;
             dom.removeClass(this.el, "rplayer-hide");
-            this.timer = setTimeout(() => {
-                this.hide(mouseX, mouseY);
-            }, 5000);
+            this.timingHide(mouseX, mouseY);
         }
         return this;
     }
 
+    timingHide(mouseX = 0, mouseY = 0) {
+        if (this.timer) {
+            clearTimeout(this.timer);
+            this.timer = null;
+        }
+        this.timer = setTimeout(() => {
+            this.hide(mouseX, mouseY);
+        }, 5000);
+        return this;
+    }
+
     hide(mouseX, mouseY) {
-        if (!dom.isPositionInEl(this.el, mouseX, mouseY, true)) {
+        if (!dom.isPositionInEl(this.el, mouseX, mouseY, true) && !this.hidePrevented) {
             dom.addClass(this.el, "rplayer-hide");
         }
         return this;
@@ -133,7 +139,14 @@ export default class Controls {
     initEvent() {
         let media = this.media,
             progress = this.progress,
-            toggle = this.togglePlay.bind(this);
+            toggle = this.togglePlay.bind(this),
+            preventHide = function(evt, hidePrevented) {
+                //如果接收到prevent hide事件，hidePrevented为false则定时隐藏控制条
+                if (!(this.hidePrevented = hidePrevented)) {
+                    this.timingHide();
+                }
+            };
+        preventHide = preventHide.bind(this);
         media.on(VIDEO_VOLUME_CHANGE, (evt, volume) => this.showVolumePopup(volume))
             .on(VIDEO_LOAD_START, () => {
                 this.pause();
@@ -146,10 +159,13 @@ export default class Controls {
             .on(VIDEO_PAUSE, this.pause.bind(this))
             .on(VIDEO_CLICK, toggle)
             .on(VIDEO_DBLCLICK, () => this.fullScreen.toggle());
-        progress.on(VIDEO_PROGRESS_UPDATE, (evt, time) => this.updateProgress(time));
+        progress
+            .on(VIDEO_PROGRESS_UPDATE, (evt, time) => this.updateProgress(time))
+            .on(PREVENT_CONTROLS_HIDE, preventHide);
         this.volumeControl
             .on(VOLUME_CONTROL_MUTE, (evt, muted) => media.mute(muted))
-            .on(VOLUME_CONTROL_UPDATE, (evt, volume) => media.setVolume(volume));
+            .on(VOLUME_CONTROL_UPDATE, (evt, volume) => media.setVolume(volume))
+            .on(PREVENT_CONTROLS_HIDE, preventHide);
         dom.on(this.parentEl, "keydown", this.keyDown.bind(this))
             .on(this.parentEl, "mousemove", this.show.bind(this))
             .on(this.playBtn, "click", toggle);

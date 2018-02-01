@@ -9,6 +9,7 @@ const DEFAULT_OPTIONS = {
         msg: "",
         useNativeControls: false
     },
+    PREVENT_CONTROLS_HIDE = "prevent.controls.hide",
     ERROR_TYPE = { //视频播放错误类型
         "1": "MEDIA_ERR_ABORTED",
         "2": "MEDIA_ERR_NETWORK",
@@ -108,6 +109,7 @@ export function convertTime(time) {
 export {
     doc,
     DEFAULT_OPTIONS,
+    PREVENT_CONTROLS_HIDE,
     ERROR_TYPE,
     KEY_MAP,
     isFunction,

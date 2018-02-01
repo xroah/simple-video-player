@@ -100,8 +100,9 @@ export default class RPlayer extends Subscriber {
     initialize() {
         let container = this.container,
             height = parseInt(getComputedStyle(this.target).height);
+        //防止多次初始化
         if (!container.parentNode) {
-            dom.css(container, "height", (height || DEFAULT_HEIGHT) + "px");
+            height && dom.css(container, "height", height + "px");
             this.video.init(container);
             this.loading.init(container);
             this.controls && this.controls.init();

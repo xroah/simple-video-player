@@ -1,6 +1,6 @@
 import dom from "../../dom/index.js";
 import Slider, {SLIDER_MOVING} from "../slider.js";
-import {doc} from "../../global";
+import {doc, PREVENT_CONTROLS_HIDE} from "../../global";
 import Subscriber from "../../subscriber.js";
 
 export const VOLUME_CONTROL_UPDATE = "volume.control.update";
@@ -20,11 +20,13 @@ export default class VolumeControl extends Subscriber {
 
     show() {
         dom.removeClass(this.panel, "rplayer-hide");
+        this.trigger(PREVENT_CONTROLS_HIDE, true);
         return this;
     }
 
     hide() {
         dom.addClass(this.panel, "rplayer-hide");
+        this.trigger(PREVENT_CONTROLS_HIDE, false);
         return this;
     }
 
