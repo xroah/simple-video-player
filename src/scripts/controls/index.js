@@ -20,6 +20,7 @@ import {
     VIDEO_CLICK,
     VIDEO_DBLCLICK
 } from "./video/video_control.js";
+import HintBar, {VIDEO_NEED_RESTART} from "../message/hint_bar.js";
 
 export default class Controls {
     constructor(parent, media, volume) {
@@ -36,6 +37,7 @@ export default class Controls {
         this.fullScreen = new FullScreen(parent);
         this.progress = new VideoProgress();
         this.volumePopup = new Popup("rplayer-popup-volume-info", true);
+        this.hintBar = new HintBar();
     }
 
     show(evt = {}) {
@@ -58,7 +60,7 @@ export default class Controls {
         }
         this.timer = setTimeout(() => {
             this.hide(mouseX, mouseY);
-        }, 5000);
+        }, 10000);
         return this;
     }
 
@@ -103,10 +105,16 @@ export default class Controls {
 
     updateMeta(meta) {
         let duration = meta.duration,
-            progress = this.progress;
+            progress = this.progress,
+            playedTime = this.media.getPlayedTime();
         this.timeInfo.updateTotalTime(duration);
         progress.enable(this.enabled = true);
         progress.duration = duration;
+        this.show();
+        if (playedTime > 30) {
+            //当播放时间大于30秒时候提示上次中断处
+            this.hintBar.show(playedTime);
+        }
     }
 
     updateTime(current) {
@@ -169,6 +177,8 @@ export default class Controls {
         dom.on(this.parentEl, "keydown", this.keyDown.bind(this))
             .on(this.parentEl, "mousemove", this.show.bind(this))
             .on(this.playBtn, "click", toggle);
+        this.hintBar
+            .on(VIDEO_NEED_RESTART, () => this.media.reload());
         return this;
     }
 
@@ -182,6 +192,7 @@ export default class Controls {
         this.timeInfo.init(playControl);
         this.progress.init(el);
         this.volumePopup.init(el);
+        this.hintBar.init(el);
         el.appendChild(playControl);
         el.appendChild(settingsPanel);
         this.parentEl.appendChild(el);

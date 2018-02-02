@@ -410,6 +410,27 @@
     cursor: pointer;
 }
 
+.rplayer-hint-bar {
+    position: absolute;
+    left: 0;
+    bottom: 100%;
+    width: 100%;
+    padding: 8px 15px;
+    background-color: rgba(0, 0, 0, .6);
+    color: #fff;
+}
+
+.rplayer-hint-bar a {
+    margin-left: 10px;
+    color: #5185f3;
+    text-decoration: none;
+}
+
+.rplayer-hint-bar .rplayer-close {
+    color: #fff;
+    font-size: 24px;
+}
+
 @keyframes opacity {
     0% {
         opacity: .5;

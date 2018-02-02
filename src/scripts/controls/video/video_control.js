@@ -1,6 +1,7 @@
 import dom from "../../dom/index.js";
 import {doc, isUndefined, ERROR_TYPE} from "../../global.js";
 import Subscriber from "../../subscriber.js";
+import md5 from "blueimp-md5";
 
 export const VIDEO_LOADED_META = "video.loaded.meta";
 export const VIDEO_TIME_UPDATE = "video.time.update";
@@ -20,9 +21,8 @@ export default class VideoControl extends Subscriber {
     constructor(config) {
         super();
         this.config = config;
-        this.playedTime = null;
-        this.el = dom.createElement("video", {"class": "rplayer-video"});
-        this.paused = this.el.paused;
+        this.videoEl = dom.createElement("video", {"class": "rplayer-video"});
+        this.paused = this.videoEl.paused;
     }
 
     setVolume(volume) {
@@ -30,25 +30,25 @@ export default class VideoControl extends Subscriber {
         if (volume > 1) {
             volume = volume / 100;
         }
-        this.el.volume = volume;
+        this.videoEl.volume = volume;
         return this;
     }
     
     getVolume() {
-        return Math.floor(this.el.volume * 100);
+        return Math.floor(this.videoEl.volume * 100);
     }
 
     mute(mute) {
-        this.el.muted = isUndefined(mute) ? true : !!mute;
+        this.videoEl.muted = isUndefined(mute) ? true : !!mute;
         return this;
     }
 
     isMuted() {
-        return this.el.muted;
+        return this.videoEl.muted;
     }
 
     autoPlay(play) {
-        this.el.autoplay = !!play;
+        this.videoEl.autoplay = !!play;
         return this;
     }
 
@@ -58,7 +58,7 @@ export default class VideoControl extends Subscriber {
             //readyState<3（视频正在缓冲不能播放）时候反复点击播放按钮会报DomException错误
             //此时不执行video元素的播放/暂停,只改变paused（video元素paused为只读）状态
             //当触发canplay事件时，如果paused为false则进行播放
-            this.el.play();
+            this.videoEl.play();
         }
         return this;
     }
@@ -66,7 +66,7 @@ export default class VideoControl extends Subscriber {
     pause() {
         this.paused = true;
         if (this.getReadyState() >= 3) {
-            this.el.pause();
+            this.videoEl.pause();
         }
     }
 
@@ -76,22 +76,22 @@ export default class VideoControl extends Subscriber {
     }
 
     isError() {
-        let err = this.el.error;
+        let err = this.videoEl.error;
         return err ? err.code : err;
     }
 
     loop(isLoop) {
-        this.el.loop = !!isLoop;
+        this.videoEl.loop = !!isLoop;
         return this;
     }
 
     setPoster(poster) {
-        this.el.poster = poster;
+        this.videoEl.poster = poster;
         return this;
     }
 
     setPreload(preload) {
-        this.el.preload = preload;
+        this.videoEl.preload = preload;
         return this;
     }
 
@@ -100,20 +100,20 @@ export default class VideoControl extends Subscriber {
         if (scale) {
             time = duration * scale;
         }
-        this.el.currentTime = time;
+        this.videoEl.currentTime = time;
         return this;
     }
 
     getCurrentTime() {
-        return this.el.currentTime;
+        return this.videoEl.currentTime;
     }
 
     getDuration() {
-        return this.el.duration;
+        return this.videoEl.duration;
     }
 
     getBuffered(percent) {
-        let buffered = this.el.buffered,
+        let buffered = this.videoEl.buffered,
             len = buffered.length;
         if (percent) {
             //缓冲的百分比
@@ -123,16 +123,16 @@ export default class VideoControl extends Subscriber {
     }
 
     getReadyState() {
-        return this.el.readyState;
+        return this.videoEl.readyState;
     }
 
     showControls() {
-        this.el.controls = true;
+        this.videoEl.controls = true;
         return this;
     }
 
     reload() {
-        this.el.load();
+        this.videoEl.load();
         return this;
     }
 
@@ -149,20 +149,20 @@ export default class VideoControl extends Subscriber {
     }
 
     getSource() {
-        return this.el.currentSrc;
+        return this.videoEl.currentSrc;
     }
 
     initSource(source) {
         let frag = doc.createDocumentFragment();
         if (typeof source === "string") {
-            this.el.src = source;
+            this.videoEl.src = source;
         } else if (Array.isArray(source)) {
-            this.el.innerHTML = "";
+            this.videoEl.innerHTML = "";
             source.forEach(function (src) {
                 let sourceEl = dom.createElement("source", {src: src});
                 frag.appendChild(sourceEl);
             });
-            this.el.appendChild(frag);
+            this.videoEl.appendChild(frag);
         }
         return this;
     }
@@ -190,24 +190,43 @@ export default class VideoControl extends Subscriber {
         };
     }
 
+    //保存播放时间到sessionStorage,以便下次播放从中断处开始
+    setPlayedTime() {
+        let key = md5(this.getSource());
+        sessionStorage.setItem(key, this.getCurrentTime());
+        return this;
+    }
+
+    getPlayedTime() {
+        let key = md5(this.getSource()),
+            time = sessionStorage.getItem(key);
+        if (time) {
+            time = parseFloat(time);
+        }
+        return time;
+    }
+
+    resume() {
+        let time = this.getPlayedTime();
+        if (time) {
+            this.setCurrentTime(time);
+        }
+        return this;
+    }
+
     notify(type) {
         let args = {
                 [VIDEO_LOADED_META]: [{duration: this.getDuration()}],
-                [VIDEO_TIME_UPDATE]: [this.getCurrentTime()],
-                [VIDEO_PROGRESS]: [this.getBuffered(true), this.getReadyState()],
                 [VIDEO_ERROR]: [this.handleError()],
                 [VIDEO_VOLUME_CHANGE]: [this.isMuted() ? 0 : this.getVolume()]
             },
             a = args[type] || [];
         switch (type) {
             case VIDEO_LOAD_START:
-                if (this.playedTime) {
-                    this.setCurrentTime(this.playedTime);
-                    this.playedTime = 0;
-                }
+                this.resume();
                 break;
             case VIDEO_CAN_PLAY:
-                !this.paused && this.el.play();
+                !this.paused && this.videoEl.play();
                 break;
             case VIDEO_PLAYING:
                 this.paused = false;
@@ -221,26 +240,36 @@ export default class VideoControl extends Subscriber {
         return this.trigger(type, ...a);
     }
 
+    //timeupdate, progress事件触发比较频繁，做单独处理(在notify中每次都要做判断)
+    onTimeUpdate() {
+        this.setPlayedTime();
+        return this.trigger(VIDEO_TIME_UPDATE, this.getCurrentTime());
+    }
+
+    onProgress() {
+        return this.trigger(VIDEO_PROGRESS, this.getBuffered(true), this.getReadyState());
+    }
+
     initEvent() {
-        let el = this.el;
-        dom.on(el, "loadedmetadata", this.notify.bind(this, VIDEO_LOADED_META))
-            .on(el, "timeupdate", this.notify.bind(this, VIDEO_TIME_UPDATE))
-            .on(el, "seeking", this.notify.bind(this, VIDEO_SEEKING))
-            .on(el, "loadstart", this.notify.bind(this, VIDEO_LOAD_START))
-            .on(el, "progress", this.notify.bind(this, VIDEO_PROGRESS))
-            .on(el, "canplay seeked", this.notify.bind(this, VIDEO_CAN_PLAY))
-            .on(el, "ended", this.notify.bind(this, VIDEO_ENDED))
-            .on(el, "error", this.notify.bind(this, VIDEO_ERROR))
-            .on(el, "playing", this.notify.bind(this, VIDEO_PLAYING))
-            .on(el, "pause", this.notify.bind(this, VIDEO_PAUSE))
-            .on(el, "volumechange", this.notify.bind(this, VIDEO_VOLUME_CHANGE))
-            .on(el, "dblclick", this.notify.bind(this, VIDEO_DBLCLICK))
-            .on(el, "click", this.notify.bind(this, VIDEO_CLICK))
-            .on(el, "contextmenu", evt => evt.preventDefault());
+        let videoEl = this.videoEl;
+        dom.on(videoEl, "loadedmetadata", this.notify.bind(this, VIDEO_LOADED_META))
+            .on(videoEl, "timeupdate", this.onTimeUpdate.bind(this))
+            .on(videoEl, "seeking", this.notify.bind(this, VIDEO_SEEKING))
+            .on(videoEl, "loadstart", this.notify.bind(this, VIDEO_LOAD_START))
+            .on(videoEl, "progress", this.onProgress.bind(this))
+            .on(videoEl, "canplay seeked", this.notify.bind(this, VIDEO_CAN_PLAY))
+            .on(videoEl, "ended", this.notify.bind(this, VIDEO_ENDED))
+            .on(videoEl, "error", this.notify.bind(this, VIDEO_ERROR))
+            .on(videoEl, "playing", this.notify.bind(this, VIDEO_PLAYING))
+            .on(videoEl, "pause", this.notify.bind(this, VIDEO_PAUSE))
+            .on(videoEl, "volumechange", this.notify.bind(this, VIDEO_VOLUME_CHANGE))
+            .on(videoEl, "dblclick", this.notify.bind(this, VIDEO_DBLCLICK))
+            .on(videoEl, "click", this.notify.bind(this, VIDEO_CLICK))
+            .on(videoEl, "contextmenu", evt => evt.preventDefault());
     }
 
     init(target) {
-        let video = this.el,
+        let video = this.videoEl,
             text = doc.createTextNode(this.config.msg.toString());
         this.source = this.config.source;
         if (this.config.useNativeControls) {

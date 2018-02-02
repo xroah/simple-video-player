@@ -100,7 +100,11 @@ dom.createElement = function (name, attrs) {
         key;
     if (isObject(attrs)) {
         for (key in attrs) {
-            el.setAttribute(key, attrs[key]);
+            if (key === "html") {
+                el.innerHTML = attrs[key];
+            } else {
+                el.setAttribute(key, attrs[key]);
+            }
         }
     }
     return el;
