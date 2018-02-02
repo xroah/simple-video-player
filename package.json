@@ -25,5 +25,8 @@
     "gulp-uglify": "^3.0.0",
     "rollup": "^0.54.0",
     "rollup-plugin-babel": "^3.0.3"
+  },
+  "dependencies": {
+    "blueimp-md5": "^2.10.0"
   }
 }
