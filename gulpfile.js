@@ -4,6 +4,8 @@ const uglify = require("gulp-uglify");
 const css = require("gulp-clean-css");
 const rollup = require("rollup");
 const babel = require("rollup-plugin-babel");
+const commonjs = require("rollup-plugin-commonjs");
+const nodeResolve = require("rollup-plugin-node-resolve");
 let dir = "";
 
 function setDir() {
@@ -23,9 +25,13 @@ gulp.task("minifyCss", () => {
 gulp.task("bundle", () => {
     return rollup.rollup({
         input: "src/scripts/index.js",
-        plugins: [babel({
-            exclude: "node_modules/**"
-        })]
+        plugins: [
+            babel({
+                exclude: "node_modules/**"
+            }),
+            commonjs(),
+            nodeResolve()
+        ]
     }).then(bundle => {
         return bundle.write({
             file: `${dir}/rplayer.js`,
