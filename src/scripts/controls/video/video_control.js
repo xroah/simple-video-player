@@ -16,6 +16,7 @@ export const VIDEO_PAUSE = "video.pause";
 export const VIDEO_DBLCLICK = "video.dblclick";
 export const VIDEO_CLICK = "video.click";
 export const VIDEO_VOLUME_CHANGE = "video.volume.change";
+export const VIDEO_CONTINUOUS = "video.continuous";
 
 export default class VideoControl extends Subscriber {
     constructor(config) {
@@ -205,10 +206,12 @@ export default class VideoControl extends Subscriber {
         return time;
     }
 
-    resume() {
+    resume(loadedMeta) {
         let time = this.getPlayedTime();
-        if (time) {
-            this.setCurrentTime(time);
+        //当播放时间大于30秒时候从中断处继续播放
+        //当触发loadedmetadata事件后触发VIDEO_CONTINUOUS事件，显示记忆播放提示
+        if (time > 30) {
+            loadedMeta ? this.trigger(VIDEO_CONTINUOUS, time) : this.setCurrentTime(time);
         }
         return this;
     }
@@ -221,9 +224,6 @@ export default class VideoControl extends Subscriber {
             },
             a = args[type] || [];
         switch (type) {
-            case VIDEO_LOAD_START:
-                this.resume();
-                break;
             case VIDEO_CAN_PLAY:
                 !this.paused && this.videoEl.play();
                 break;
@@ -233,8 +233,16 @@ export default class VideoControl extends Subscriber {
             case VIDEO_PAUSE:
                 this.paused = true;
                 break;
-            case VIDEO_ERROR:
-                this.playedTime = this.getCurrentTime();
+            case VIDEO_LOAD_START:
+                this.resume();
+                break;
+            case VIDEO_LOADED_META:
+                this.resume(true);
+                break;
+            case VIDEO_ENDED:
+                args = md5(this.getSource());
+                //播放完成后移除保存的播放时间
+                sessionStorage.removeItem(args);
         }
         return this.trigger(type, ...a);
     }

@@ -18,7 +18,8 @@ import {
     VIDEO_PAUSE,
     VIDEO_PLAYING,
     VIDEO_CLICK,
-    VIDEO_DBLCLICK
+    VIDEO_DBLCLICK,
+    VIDEO_CONTINUOUS
 } from "./video/video_control.js";
 import HintBar, {VIDEO_NEED_RESTART} from "../message/hint_bar.js";
 
@@ -111,10 +112,6 @@ export default class Controls {
         progress.enable(this.enabled = true);
         progress.duration = duration;
         this.show();
-        if (playedTime > 30) {
-            //当播放时间大于30秒时候提示上次中断处
-            this.hintBar.show(playedTime);
-        }
     }
 
     updateTime(current) {
@@ -167,7 +164,8 @@ export default class Controls {
             .on(VIDEO_PLAYING, this.play.bind(this))
             .on(VIDEO_PAUSE, this.pause.bind(this))
             .on(VIDEO_CLICK, toggle)
-            .on(VIDEO_DBLCLICK, () => this.fullScreen.toggle());
+            .on(VIDEO_DBLCLICK, () => this.fullScreen.toggle())
+            .on(VIDEO_CONTINUOUS, (evt, playedTime) => this.hintBar.show(playedTime));
         progress
             .on(VIDEO_PROGRESS_UPDATE, (evt, time) => this.updateProgress(time))
             .on(PREVENT_CONTROLS_HIDE, preventHide);
