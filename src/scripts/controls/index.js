@@ -8,7 +8,7 @@ import FullScreen from "./fullscreen.js";
 import Popup from "../message/popup.js";
 import TimeInfo from "../message/time_info.js";
 import dom from "../dom/index.js";
-import {KEY_MAP, PREVENT_CONTROLS_HIDE} from "../global.js";
+import {throttle, KEY_MAP, PREVENT_CONTROLS_HIDE} from "../global.js";
 import {
     VIDEO_VOLUME_CHANGE,
     VIDEO_LOAD_START,
@@ -153,7 +153,8 @@ export default class Controls {
                 if (!(this.hidePrevented = hidePrevented)) {
                     this.timingHide();
                 }
-            };
+            },
+            mouseMove = throttle(this.show.bind(this), 50);
         preventHide = preventHide.bind(this);
         media.on(VIDEO_VOLUME_CHANGE, (evt, volume) => this.showVolumePopup(volume))
             .on(VIDEO_LOAD_START, () => {
@@ -175,7 +176,7 @@ export default class Controls {
             .on(VOLUME_CONTROL_UPDATE, (evt, volume) => media.setVolume(volume))
             .on(PREVENT_CONTROLS_HIDE, preventHide);
         dom.on(this.parentEl, "keydown", this.keyDown.bind(this))
-            .on(this.parentEl, "mousemove", this.show.bind(this))
+            .on(this.parentEl, "mousemove", mouseMove)
             .on(this.playBtn, "click", toggle);
         this.hintBar
             .on(VIDEO_NEED_RESTART, () => this.media.reload());

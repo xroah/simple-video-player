@@ -1,7 +1,7 @@
 import dom from "../../dom/index.js";
 import Slider, {SLIDER_MOVE_DONE} from "../slider.js";
 import Popup from "../../message/popup.js";
-import {convertTime, PREVENT_CONTROLS_HIDE} from "../../global.js";
+import {convertTime, throttle, PREVENT_CONTROLS_HIDE} from "../../global.js";
 import Subscriber from "../../subscriber.js";
 
 //滑动/点击改变进度后设置视频播放时间
@@ -20,11 +20,14 @@ export default class VideoProgress extends Subscriber {
         this.currentTime = this.duration = 0;
     }
 
-    update(current, sliderMove) {
+    update(current) {
         if (this.currentTime !== current) {
             this.currentTime = current;
             let percent = current / this.duration * 100 || 0;
-            !sliderMove && this.slider.updateHPosition(percent + "%");
+            //如果是移动滑块，则不重复改变其位置
+            if(!this.slider.moving) {
+                this.slider.updateHPosition(percent + "%");
+            }
         }
         return this;
     }
@@ -75,16 +78,17 @@ export default class VideoProgress extends Subscriber {
     }
 
     initEvent() {
+        let mouseMove = throttle(this.mouseMove.bind(this), 24);
         //滑动改变进度/点击进度条改变进度
         this.slider.on(SLIDER_MOVE_DONE, (evt, distance) => {
             let time = distance * this.duration;
             this.update(time);
             this.trigger(VIDEO_PROGRESS_UPDATE, time);
         });
-        dom.on(this.panel, "mouseover mousemove", this.mouseMove.bind(this))
+        dom.on(this.panel, "mouseover mousemove", mouseMove)
             .on(this.panel, "mouseout", this.mouseOut.bind(this));
         this.on(VIDEO_PROGRESS_UPDATED, (evt, time) => this.update(time))
-            .on(VIDEO_PROGRESS_BUFFER, (evt, buffer) => this.buffer(buffer))
+            .on(VIDEO_PROGRESS_BUFFER, (evt, buffer) => this.buffer(buffer));
         return this;
     }
 

@@ -1,5 +1,5 @@
 import Subscriber from "../subscriber.js"
-import {doc, isUndefined} from "../global.js";
+import {doc, isUndefined, throttle} from "../global.js";
 import dom from "../dom/index.js";
 
 export const SLIDER_MOVING = "slider.moving";
@@ -55,6 +55,7 @@ export default class Slider extends Subscriber {
                 y = evt.clientY,
                 pos = this.getPosition(),
                 mouseMove = this.getMoveCallback().bind(this);
+            mouseMove = throttle(mouseMove, 24);
             this.pos = {
                 width: pos.width,
                 height: pos.height,
@@ -96,6 +97,7 @@ export default class Slider extends Subscriber {
     }
 
     getMoveCallback() {
+        //分开处理垂直移动和水平移动,避免移动是频繁做if判断
         return this.vertical ?
             evt => this.mouseMove(evt, this.moveVertical) :
             evt => this.mouseMove(evt, this.moveHorizontal);
@@ -106,7 +108,7 @@ export default class Slider extends Subscriber {
             .removeClass(this.el, "rplayer-moving");
         if (this.moving) {
             this.trigger(SLIDER_MOVE_DONE, this.moveDis);
-            setTimeout(() => this.moving = false);
+            setTimeout(() => this.moving = false, 24);
         }
     }
 

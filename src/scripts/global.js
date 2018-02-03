@@ -106,6 +106,26 @@ export function convertTime(time) {
     return str;
 }
 
+export function throttle(fn, wait) {
+    let previous = 0,
+        timeout = null;
+    return function() {
+        let args = arguments,
+            now = Date.now(),
+            remaining = wait - (now - previous);
+        if (timeout) {
+            clearTimeout(timeout);
+            timeout = null;
+        }
+        if (remaining <= 0) {
+            fn.apply(this, args);
+            previous = now;
+        } else if(!timeout) {
+            timeout = setTimeout(() => fn.apply(this, args), remaining);
+        }
+    }
+}
+
 export {
     doc,
     DEFAULT_OPTIONS,

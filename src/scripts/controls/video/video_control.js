@@ -137,12 +137,11 @@ export default class VideoControl extends Subscriber {
     }
 
     changeSource(src) {
-        let paused = this.paused;
         if (this.source !== src) {
             this.source = src;
             this.initSource(src);
         }
-        if (!paused) {
+        if (!this.paused) {
             this.play(true);
         }
         return this;
