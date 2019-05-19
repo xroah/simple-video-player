@@ -1,4 +1,3 @@
-import Listener from "./listener"
 import {isUndef} from "./utils"
 
 function checkFunction(fn: any) {
@@ -7,7 +6,15 @@ function checkFunction(fn: any) {
     }
 }
 
+class Listener {
+    fn: Function
+    once: boolean
 
+    constructor(fn: Function, once = false) {
+        this.fn = fn
+        this.once = once
+    }
+}
 
 export default class EventEmitter {
     private _listeners: Map<string, Listener[]> = new Map()
