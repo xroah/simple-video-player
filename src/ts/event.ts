@@ -1,7 +1,7 @@
-import {isUndef} from "./utils"
+import {isFunc, isUndef} from "./utils"
 
 function checkFunction(fn: any) {
-    if (typeof fn !== "function") {
+    if (!isFunc(fn)) {
         throw new Error(`The "listener" argument must be of type function.`)
     }
 }
