@@ -7,7 +7,7 @@
     "test": "karma start",
     "start": "parcel serve ./demo/index.html --open --no-cache",
     "rollup": "rollup -c",
-    "scss": "node ./buildSCSS",
+    "scss": "node ./build-scss",
     "es": "tsc --module ESNext -d --outDir ./es",
     "lib": "tsc --module commonjs -d --outDir ./lib",
     "build": "node rmdir && npm run es && npm run lib && npm run rollup && npm run scss",
