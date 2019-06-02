@@ -1,0 +1,26 @@
+@import "./vars";
+
+.rplayer-hidden {
+  display: none !important;
+}
+
+.rplayer-root {
+  position: relative;
+  width: 100%;
+  height: 0;
+  overflow: hidden;
+  padding-bottom: 56.25%;
+  background-color: #000;
+
+  &:focus {
+    outline: none;
+  }
+
+  .rplayer-body {
+    @include fill_parent();
+  }
+}
+
+.rplayer-text-primary {
+  color: $color;
+}
