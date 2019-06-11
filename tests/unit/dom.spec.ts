@@ -3,7 +3,7 @@ import {
     removeListener,
     removeAllListeners,
     LISTENER_KEY
-} from "../src/ts/dom"
+} from "../../src/ts/dom"
 
 function createBtn() {
     const btn = document.createElement("button")
