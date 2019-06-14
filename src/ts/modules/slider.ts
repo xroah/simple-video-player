@@ -1,9 +1,11 @@
 import EventEmitter from "../event";
-import {HIDDEN_CLASS, isPlainObject} from "../utils";
+import {isPlainObject} from "../utils";
 import {
     addListener,
+    createEl,
     removeListener
 } from "../dom"
+import {HIDDEN_CLASS, MOVING_CLASS} from "../constans";
 
 type Tooltip = boolean | ((val: number) => string | false)
 
@@ -13,8 +15,6 @@ interface Options {
     secondary?: boolean
     tooltip?: Tooltip
 }
-
-const MOVING_CLASS = "rplayer-slider-moving"
 
 export default class Slider extends EventEmitter {
     private _vertical: boolean
@@ -42,9 +42,9 @@ export default class Slider extends EventEmitter {
         this._vertical = !!options.vertical
         this._value = Number(options.defaultValue) || 0
         this._secondary = !!options.secondary
-        this._el = document.createElement("div")
-        this._marker = document.createElement("div")
-        this._primaryProgress = document.createElement("div")
+        this._el = createEl("div")
+        this._marker = createEl("div")
+        this._primaryProgress = createEl("div")
 
         if (typeof options.tooltip === "function" || options.tooltip) {
             this._tooltip = options.tooltip
@@ -53,16 +53,16 @@ export default class Slider extends EventEmitter {
         }
 
         if (this._secondary) {
-            this._secondaryProgress = document.createElement("div")
+            this._secondaryProgress = createEl("div")
         }
 
         if (this._tooltip) {
-            this._tooltipEl = document.createElement("div")
+            this._tooltipEl = createEl("div")
         }
     }
 
     mountTo(container: HTMLElement) {
-        const track = document.createElement("div")
+        const track = createEl("div")
 
         if (this._vertical) {
             this._el.classList.add("rplayer-slider-wrapper-vertical")
