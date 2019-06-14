@@ -1,8 +1,6 @@
 import EventEmitter from "../event";
 import {HIDDEN_CLASS, isPlainObject} from "../utils";
 import {
-    preventAndStop,
-    removeAllListeners,
     addListener,
     removeListener
 } from "../dom"
