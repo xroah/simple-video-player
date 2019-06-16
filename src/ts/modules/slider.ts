@@ -3,6 +3,7 @@ import {isPlainObject} from "../utils";
 import {
     addListener,
     createEl,
+    removeAllListeners,
     removeListener
 } from "../dom"
 import {HIDDEN_CLASS, MOVING_CLASS} from "../constans";
@@ -353,5 +354,16 @@ export default class Slider extends EventEmitter {
                 type: "slideend"
             })
         }
+    }
+
+    destroy() {
+        this._el.parentNode?.removeChild(this._el)
+        removeAllListeners(this._marker)
+        removeAllListeners(this._el)
+        removeListener(document, "mousemove", this.handleSliderMove)
+        removeListener(document, "touchmove", this.handleSliderMove)
+        removeListener(document, "mouseup", this.handleMouseUp)
+        removeListener(document, "touchend", this.handleMouseUp)
+        this.off()
     }
 }
