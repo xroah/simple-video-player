@@ -1,6 +1,6 @@
 import EventEmitter from "../event"
 import {HIDDEN_CLASS, SHOW_CLASS} from "../constans"
-import {reflow} from "../dom"
+import {addListener, createEl, reflow} from "../dom"
 
 export default class Transition extends EventEmitter {
     visible = false
@@ -12,7 +12,8 @@ export default class Transition extends EventEmitter {
     constructor() {
         super()
 
-        this.el = document.createElement("div")
+        this.el = createEl("div")
+        addListener(this.el, "transitionend", this.handleTransitionEnd)
     }
 
     needDelay() {
@@ -47,6 +48,15 @@ export default class Transition extends EventEmitter {
         )
     }
 
+    handleTransitionEnd = () => {
+        if (this.visible) {
+            this.emit("shown", {type: "shown"})
+        } else {
+            this.el.classList.add(HIDDEN_CLASS)
+            this.emit("hidden", {type: "hidden"})
+        }
+    }
+
     setVisible(visible: boolean) {
         if (this.visible === visible) {
             if (visible && this.autoHide) {
@@ -60,9 +70,9 @@ export default class Transition extends EventEmitter {
 
         if (visible) {
             this.el.classList.remove(HIDDEN_CLASS)
+            this.emit("show", {type: "show"})
             reflow(this.el)
             this.el.classList.add(SHOW_CLASS)
-            this.emit("show", {type: "show"})
 
             if (this.autoHide) {
                 this.delayHide()
