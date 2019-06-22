@@ -187,3 +187,7 @@ export function createEl(tag: string, classNames?: string[]) {
 
     return el
 }
+
+export function reflow(el: HTMLElement) {
+    el.offsetHeight
+}
