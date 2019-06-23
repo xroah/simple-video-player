@@ -112,6 +112,10 @@ export default class Slider extends EventEmitter {
     }
 
     update(val: number, emit = false) {
+        if (this._value === val) {
+            return
+        }
+
         let percent = `${val}%`
 
         if (this._vertical) {
@@ -122,7 +126,7 @@ export default class Slider extends EventEmitter {
             this._primaryProgress.style.width = percent
         }
 
-        if (emit && this._value !== val) {
+        if (emit) {
             this.emit("valuechange", val)
         }
 
