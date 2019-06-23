@@ -50,10 +50,10 @@ export default class Transition extends EventEmitter {
 
     handleTransitionEnd = () => {
         if (this.visible) {
-            this.emit("shown", {type: "shown"})
+            this.emit("shown")
         } else {
             this.el.classList.add(HIDDEN_CLASS)
-            this.emit("hidden", {type: "hidden"})
+            this.emit("hidden")
         }
     }
 
@@ -70,7 +70,7 @@ export default class Transition extends EventEmitter {
 
         if (visible) {
             this.el.classList.remove(HIDDEN_CLASS)
-            this.emit("show", {type: "show"})
+            this.emit("show")
             reflow(this.el)
             this.el.classList.add(SHOW_CLASS)
 
@@ -79,7 +79,7 @@ export default class Transition extends EventEmitter {
             }
         } else {
             this.el.classList.remove(SHOW_CLASS)
-            this.emit("hide", {type: "hide"})
+            this.emit("hide")
         }
     }
 }

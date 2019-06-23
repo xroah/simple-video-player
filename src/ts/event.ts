@@ -135,7 +135,7 @@ export default class EventEmitter {
         return this
     }
 
-    emit(eventName: string, ...args: any[]) {
+    emit(eventName: string, arg?: any) {
         let listeners = this._listeners.get(eventName)
 
         if (isUndef(eventName) || !listeners) {
@@ -149,7 +149,14 @@ export default class EventEmitter {
                 this.removeListener(eventName, l.fn)
             }
 
-            l.fn.apply(this, args)
+            l.fn.apply(
+                this,
+                {
+                    type: eventName,
+                    details: arg,
+                    timeStamp: Date.now()
+                }
+            )
         }
 
         return true

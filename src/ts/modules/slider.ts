@@ -123,10 +123,7 @@ export default class Slider extends EventEmitter {
         }
 
         if (emit && this._value !== val) {
-            this.emit("valuechange", {
-                type: "valuechange",
-                value: val
-            })
+            this.emit("valuechange", val)
         }
 
         this._value = val
@@ -193,10 +190,7 @@ export default class Slider extends EventEmitter {
             this._tooltipEl.style.left = `${left}px`
         }
 
-        this.emit("tooltipupdate", {
-            type: "tooltipupdate",
-            ...obj
-        })
+        this.emit("tooltipupdate", obj)
     }
 
     private setTooltipVisible(visible: boolean) {
@@ -257,10 +251,7 @@ export default class Slider extends EventEmitter {
                 rect.height - (this._startY - rect.top) :
                 this._startX - rect.left
 
-            this.update(
-                this.getPercent(val),
-                true
-            )
+            this.update(this.getPercent(val), true)
             this.updateTooltip(val)
             addListener(document, "mousemove", this.handleSliderMove)
             addListener(document, "touchmove", this.handleSliderMove)
@@ -331,10 +322,7 @@ export default class Slider extends EventEmitter {
 
         this.update(percentVal, true)
         this.updateTooltip(val)
-        this.emit("slidemove", {
-            type: "slidemove",
-            value: percentVal
-        })
+        this.emit("slidemove", percentVal)
     }
 
     private handleMouseUp = (evt: Event) => {
@@ -349,10 +337,7 @@ export default class Slider extends EventEmitter {
             this._moving = false
             this._el.classList.remove(MOVING_CLASS)
 
-            this.emit("slideend", {
-                value: this._value,
-                type: "slideend"
-            })
+            this.emit("slideend", this._value)
         }
     }
 
