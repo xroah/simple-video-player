@@ -6,7 +6,7 @@ import {
     removeAllListeners,
     removeListener
 } from "../dom"
-import {HIDDEN_CLASS, MOVING_CLASS} from "../constans";
+import {HIDDEN_CLASS, MOVING_CLASS} from "../constants";
 
 type Tooltip = boolean | ((val: number) => string | false)
 
