@@ -16,6 +16,12 @@ class Listener {
     }
 }
 
+export interface EventObject {
+    type: string
+    timeStamp: number
+    details?: any
+}
+
 export default class EventEmitter {
     private _listeners: Map<string, Listener[]> = new Map()
 
@@ -145,18 +151,17 @@ export default class EventEmitter {
         listeners = [...listeners]
 
         for (let l of listeners) {
+            const evt: EventObject = {
+                type: eventName,
+                details: arg,
+                timeStamp: Date.now()
+            }
+
             if (l.once) {
                 this.removeListener(eventName, l.fn)
             }
 
-            l.fn.apply(
-                this,
-                {
-                    type: eventName,
-                    details: arg,
-                    timeStamp: Date.now()
-                }
-            )
+            l.fn.apply(this, evt)
         }
 
         return true
