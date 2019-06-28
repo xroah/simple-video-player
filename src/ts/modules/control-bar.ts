@@ -62,11 +62,9 @@ export default class ControlBar extends Transition {
 
     private initEvents() {
         this._progress
-            .on("valuechange", this.handleProgressChange)
-            .on("slideend", this.handleProgressSlideEnd)
-            .on("tooltipupdate", (evt: EventObject) => {
-                this.emit("tooltipupdate", evt.details)
-            })
+            .on("valuechange", this.handleSliderEvents)
+            .on("slideend", this.handleSliderEvents)
+            .on("tooltipupdate", this.handleSliderEvents)
         addListener(this.el, "mouseenter", this.handleMouseEnterLeave)
         addListener(this.el, "mouseleave", this.handleMouseEnterLeave)
         addListener(this.el, "click", preventAndStop)
@@ -90,15 +88,25 @@ export default class ControlBar extends Transition {
         return formatTime(this._duration * val / 100)
     }
 
-    //slider moving or click the track
-    private handleProgressChange = (evt: EventObject) => {
-        if (!this._progress.isMoving()) {
-            this.handleProgressSlideEnd(evt)
+    private handleSliderEvents = (evt: EventObject) => {
+        switch (evt.type) {
+            case "valuechange":
+                //slider moving or click the track
+                if (!this._progress.isMoving()) {
+                    this.handleProgressSlideEnd(evt)
+                }
+                break
+            case "slideend":
+                this.handleProgressSlideEnd(evt)
+                break
+            case "tooltipupdate":
+                this.emit("tooltipupdate", evt.details)
+                break
         }
     }
 
     //slider move end
-    private handleProgressSlideEnd = (evt: EventObject) => {
+    private handleProgressSlideEnd(evt: EventObject) {
         this.emit("progresschange", evt.details.value)
 
         //click progress bar or slide end, the current time may not buffered
