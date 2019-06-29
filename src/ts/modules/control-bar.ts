@@ -72,20 +72,16 @@ export default class ControlBar extends Transition {
     }
 
     private handleMouseEnterLeave = (evt: MouseEvent) => {
-        this._mouseEntered = evt.type === "mouseenter"
-
-        if (!this._mouseEntered) {
+        if (!(this._mouseEntered = evt.type === "mouseenter")) {
             this.delayHide()
         }
     }
 
     //val: percent(eg. 50(50%))
     private handleTooltip = (val: number) => {
-        if (!this._duration) {
-            return false
-        }
-
-        return formatTime(this._duration * val / 100)
+        return this._duration ?
+            formatTime(this._duration * val / 100) :
+            false
     }
 
     private handleSliderEvents = (evt: EventObject) => {

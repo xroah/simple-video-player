@@ -160,17 +160,15 @@ export function removeListener(
 }
 
 export function getContainer(container: string | HTMLElement | Node) {
-    let ret = null
-
     if (container) {
         if (typeof container === "string") {
-            ret = document.querySelector(container)
+            return document.querySelector(container)
         } else if (container.nodeName) {
-            ret = container
+            return container
         }
     }
 
-    return ret
+    return null
 }
 
 export function preventAndStop(evt: Event) {

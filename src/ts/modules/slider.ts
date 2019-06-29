@@ -112,11 +112,11 @@ export default class Slider extends EventEmitter {
     }
 
     update(val: number, emit = false) {
+        let percent = `${val}%`
+
         if (this._value === val) {
             return
         }
-
-        let percent = `${val}%`
 
         if (this._vertical) {
             this._marker.style.bottom = percent
@@ -134,11 +134,11 @@ export default class Slider extends EventEmitter {
     }
 
     updateSecondary(val: number) {
+        const percent = `${val}%`
+
         if (!this._secondaryProgress) {
             return
         }
-
-        const percent = `${val}%`
 
         if (this._vertical) {
             this._secondaryProgress.style.height = percent
@@ -272,7 +272,6 @@ export default class Slider extends EventEmitter {
         const origHeight = this._primaryProgress.offsetHeight
         const x = evt.type === "mousemove" ? evt.clientX : evt.touches[0].clientX
         const y = evt.type === "mousemove" ? evt.clientY : evt.touches[0].clientY
-        const markerRect = this._marker.getBoundingClientRect()
         //moved distance
         const disX = x - this._startX
         const disY = y - this._startY

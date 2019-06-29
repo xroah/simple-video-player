@@ -120,13 +120,11 @@ export default class EventEmitter {
             return
         }
 
-        const name = eventName!
-
-        if (!this._listeners.get(name)) {
+        if (!this._listeners.get(eventName!)) {
             return
         }
 
-        this._listeners.delete(name)
+        this._listeners.delete(eventName!)
     }
 
     removeListener(eventName?: string, fn?: Function) {
