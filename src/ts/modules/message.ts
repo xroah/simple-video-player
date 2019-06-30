@@ -17,7 +17,7 @@ interface MessageOptions {
 }
 
 export default class Message extends EventEmitter {
-    private _el: HTMLElement | null = null
+    private _el: HTMLElement
     private _timer: any = null
     private _textEl: HTMLElement //element for showing message text
     private _closeEl: HTMLElement | null = null
@@ -31,6 +31,8 @@ export default class Message extends EventEmitter {
         this._options = {
             ...options
         }
+        this._textEl = createEl("div", `${PREFIX}-text`)
+        this._el = createEl("div", `${PREFIX}-item`)
     }
 
     getEl() {
@@ -38,9 +40,6 @@ export default class Message extends EventEmitter {
     }
 
     mountTo(container: HTMLElement) {
-        this._el = createEl("div", `${PREFIX}-item`)
-        this._textEl = createEl("div", `${PREFIX}-text`)
-
         this._el.appendChild(this._textEl)
 
         if (this._options.closable) {
@@ -73,10 +72,6 @@ export default class Message extends EventEmitter {
     }
 
     update(msg: string | HTMLElement) {
-        if (!this._el) {
-            return
-        }
-
         this._textEl.innerHTML = ""
 
         if (typeof msg === "string") {
@@ -96,16 +91,9 @@ export default class Message extends EventEmitter {
     }
 
     destroy() {
-        if (!this._el) {
-            return
-        }
-
         this.clearDelayTimer()
         removeAllListeners(this._el)
-        this.emit("destroy", {
-            type: "destroy",
-            value: this.uid
-        })
+        this.emit("destroy", this.uid)
         this.off()
 
         if (this._closeEl) {
@@ -121,11 +109,9 @@ export default class Message extends EventEmitter {
         }
     }
 
-    delayHide(delay = 2000) {
+    private delayHide(delay = 2000) {
         this.clearDelayTimer()
 
-        this._timer = setTimeout(() => {
-            this.destroy()
-        }, delay)
+        this._timer = setTimeout(this.destroy.bind(this), delay)
     }
 }
