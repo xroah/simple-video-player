@@ -1,0 +1,33 @@
+.rplayer-message {
+    position: absolute;
+    left: 0;
+    bottom: 60px;
+    white-space: nowrap;
+    z-index: 100;
+
+    .rplayer-message-item {
+        display: flex;
+        align-items: center;
+        padding: 5px;
+        margin-top: 10px;
+        margin-left: 10px;
+        background-color: $black_translucent;
+        color: #fff;
+        font-size: 14px;
+    }
+
+    .rplayer-message-text {
+        display: flex;
+        align-items: center;
+    }
+}
+
+.rplayer-close-btn {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    margin-left: 10px;
+    vertical-align: middle;
+    background: url("../../icons/close.svg") no-repeat center center / 100% 100%;
+    cursor: pointer;
+}
