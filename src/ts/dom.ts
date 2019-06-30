@@ -176,10 +176,10 @@ export function preventAndStop(evt: Event) {
     evt.stopPropagation()
 }
 
-export function createEl(tag: string, classNames?: string[]) {
+export function createEl(tag: string, ...classNames: string[]) {
     const el = document.createElement(tag)
 
-    if (classNames && classNames.length) {
+    if (classNames.length) {
         el.classList.add(...classNames)
     }
 

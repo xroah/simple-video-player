@@ -1,5 +1,6 @@
 import {
     addListener,
+    createEl,
     preventAndStop,
     removeAllListeners
 } from "../dom"
@@ -30,7 +31,6 @@ export default class Message extends EventEmitter {
         this._options = {
             ...options
         }
-        this._textEl = document.createElement("div")
     }
 
     getEl() {
@@ -38,16 +38,14 @@ export default class Message extends EventEmitter {
     }
 
     mountTo(container: HTMLElement) {
-        this._el = document.createElement("div")
+        this._el = createEl("div", `${PREFIX}-item`)
+        this._textEl = createEl("div", `${PREFIX}-text`)
 
-        this._el.classList.add(`${PREFIX}-item`)
-        this._textEl.classList.add(`${PREFIX}-text`)
         this._el.appendChild(this._textEl)
 
         if (this._options.closable) {
-            this._closeEl = document.createElement("span")
+            this._closeEl = createEl("span", "rplayer-close-btn")
 
-            this._closeEl.classList.add("rplayer-close-btn")
             addListener(this._closeEl, "click", this.handleClick)
             this._el.appendChild(this._closeEl)
         }
