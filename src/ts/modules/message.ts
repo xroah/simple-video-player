@@ -6,11 +6,11 @@ import {
 } from "../dom"
 import EventEmitter from "../event"
 
-const PREFIX = "rplayer-message"
+export const PREFIX = "rplayer-message"
 
 let uid = 0
 
-interface MessageOptions {
+export interface MessageOptions {
     closable?: boolean
     autoHide?: boolean
     delay?: number
@@ -23,7 +23,7 @@ export default class Message extends EventEmitter {
     private _closeEl: HTMLElement | null = null
     private _options: MessageOptions
 
-    uid = uid++
+    public uid = uid++
 
     constructor(options = {}) {
         super()
@@ -45,7 +45,7 @@ export default class Message extends EventEmitter {
         if (this._options.closable) {
             this._closeEl = createEl("span", "rplayer-close-btn")
 
-            addListener(this._closeEl, "click", this.handleClick)
+            addListener(this._closeEl, "click", this.handleClose)
             this._el.appendChild(this._closeEl)
         }
 
@@ -66,7 +66,7 @@ export default class Message extends EventEmitter {
         }
     }
 
-    private handleClick = (evt: MouseEvent) => {
+    private handleClose = (evt: MouseEvent) => {
         preventAndStop(evt)
         this.destroy()
     }
@@ -91,6 +91,10 @@ export default class Message extends EventEmitter {
     }
 
     destroy() {
+        if (!this._el.parentNode) {
+            return
+        }
+
         this.clearDelayTimer()
         removeAllListeners(this._el)
         this.emit("destroy", this.uid)
