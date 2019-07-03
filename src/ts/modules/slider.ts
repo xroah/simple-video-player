@@ -43,9 +43,9 @@ export default class Slider extends EventEmitter {
         this._vertical = !!options.vertical
         this._value = Number(options.defaultValue) || 0
         this._secondary = !!options.secondary
-        this._el = createEl("div")
-        this._marker = createEl("div")
-        this._primaryProgress = createEl("div")
+        this._el = createEl("div", "rplayer-slider-wrapper")
+        this._marker = createEl("div", "rplayer-slider-marker")
+        this._primaryProgress = createEl("div", "rplayer-slider-primary-progress")
 
         if (typeof options.tooltip === "function" || options.tooltip) {
             this._tooltip = options.tooltip
@@ -54,35 +54,28 @@ export default class Slider extends EventEmitter {
         }
 
         if (this._secondary) {
-            this._secondaryProgress = createEl("div")
+            this._secondaryProgress = createEl("div", "rplayer-slider-secondary-progress")
         }
 
         if (this._tooltip) {
-            this._tooltipEl = createEl("div")
+            this._tooltipEl = createEl("div", "rplayer-slider-tooltip", HIDDEN_CLASS)
         }
     }
 
     mountTo(container: HTMLElement) {
-        const track = createEl("div")
+        const track = createEl("div", "rplayer-slider-track")
 
         if (this._vertical) {
             this._el.classList.add("rplayer-slider-wrapper-vertical")
         }
 
         if (this._secondaryProgress) {
-            this._secondaryProgress.classList.add("rplayer-slider-secondary-progress")
             track.appendChild(this._secondaryProgress)
         }
 
         if (this._tooltipEl) {
-            this._tooltipEl.classList.add("rplayer-slider-tooltip", HIDDEN_CLASS)
             this._el.appendChild(this._tooltipEl)
         }
-
-        this._marker.classList.add("rplayer-slider-marker")
-        this._primaryProgress.classList.add("rplayer-slider-primary-progress")
-        this._el.classList.add("rplayer-slider-wrapper")
-        track.classList.add("rplayer-slider-track")
 
         track.appendChild(this._primaryProgress)
         track.appendChild(this._marker)
@@ -345,7 +338,10 @@ export default class Slider extends EventEmitter {
     }
 
     destroy() {
-        this._el.parentNode?.removeChild(this._el)
+        if (!this._el.parentNode) {
+            return
+        }
+        
         removeAllListeners(this._marker)
         removeAllListeners(this._el)
         removeListener(document, "mousemove", this.handleSliderMove)

@@ -1,4 +1,5 @@
 import {HIDDEN_CLASS} from "../constants"
+import {createEl} from "../dom"
 import settings from "../settings"
 import {isPlainObject} from "../utils"
 
@@ -16,9 +17,9 @@ export default class LoadState {
     private _errorMessage: ErrorMessage = {}
 
     constructor(eMsg: ErrorMessage) {
-        this._el = document.createElement("div")
-        this._spinnerEl = document.createElement("div")
-        this._errEl = document.createElement("div")
+        this._el = createEl("div", "rplayer-state-wrapper", HIDDEN_CLASS)
+        this._spinnerEl = createEl("div", "rplayer-loading-spinner")
+        this._errEl = createEl("div", "rplayer-error-message")
 
         if (isPlainObject(eMsg)) {
             this._errorMessage = {
@@ -28,9 +29,6 @@ export default class LoadState {
     }
 
     mountTo(container: HTMLElement) {
-        this._el.classList.add("rplayer-state-wrapper", "rplayer-hidden")
-        this._spinnerEl.classList.add("rplayer-loading-spinner")
-        this._errEl.classList.add("rplayer-error-message")
         this._el.appendChild(this._spinnerEl)
         this._el.appendChild(this._errEl)
         container.appendChild(this._el)

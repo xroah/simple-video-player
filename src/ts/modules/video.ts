@@ -1,3 +1,4 @@
+import {createEl} from "../dom";
 import EventEmitter from "../event";
 
 interface videoOptions {
@@ -13,10 +14,10 @@ export default class Player extends EventEmitter {
     constructor(options: videoOptions) {
         super()
 
-        this.el = document.createElement("video")
+        this._wrapper = createEl("div", "rplayer-video-wrapper")
+        this.el = createEl("video", "rplayer-video") as HTMLVideoElement
         this.el.controls = false
         this.el.preload = "metadata"
-        this._wrapper = document.createElement("div")
         this.el.src = options.url
         
         if (options.poster) {
@@ -25,8 +26,6 @@ export default class Player extends EventEmitter {
     }
 
     mountTo(container: HTMLElement) {
-        this._wrapper.classList.add("rplayer-player-wrapper")
-        this.el.classList.add("rplayer-player")
         this._wrapper.appendChild(this.el)
         container.appendChild(this._wrapper)
     }
