@@ -2,6 +2,7 @@ import {formatTime} from "../utils";
 import Slider from "./slider";
 import {
     addListener,
+    createEl,
     preventAndStop,
     removeAllListeners
 } from "../dom";
@@ -21,11 +22,11 @@ export default class ControlBar extends Transition {
     constructor(hideTimeout: number) {
         super()
 
-        this.el = document.createElement("div")
-        this._currentTime = document.createElement("div")
-        this._durationEl = document.createElement("div")
-        this._leftAddonContainer = document.createElement("div")
-        this._rightAddonContainer = document.createElement("div")
+        this.el = createEl("div", "rplayer-control", HIDDEN_CLASS)
+        this._currentTime = createEl("div")
+        this._durationEl = createEl("div")
+        this._leftAddonContainer = createEl("div", "left-addon-container")
+        this._rightAddonContainer = createEl("div", "right-addon-container")
         this._progress = new Slider({
             tooltip: this.handleTooltip,
             secondary: true
@@ -35,16 +36,10 @@ export default class ControlBar extends Transition {
     }
 
     mountTo(container: HTMLElement) {
-        const addonContainer = document.createElement("div")
-        const progressWrapper = document.createElement("div")
-        const progressBar = document.createElement("div")
+        const addonContainer = createEl("div", "rplayer-addon-wrapper")
+        const progressWrapper = createEl("div", "rplayer-progress-wrapper")
+        const progressBar = createEl("div", "rplayer-progress-bar")
 
-        this.el.classList.add("rplayer-control", HIDDEN_CLASS)
-        progressWrapper.classList.add("rplayer-progress-wrapper")
-        progressBar.classList.add("rplayer-progress-bar")
-        addonContainer.classList.add("rplayer-addon-wrapper")
-        this._leftAddonContainer.classList.add("left-addon-container")
-        this._rightAddonContainer.classList.add("right-addon-container")
         progressWrapper.appendChild(this._currentTime)
         progressWrapper.appendChild(progressBar)
         progressWrapper.appendChild(this._durationEl)
