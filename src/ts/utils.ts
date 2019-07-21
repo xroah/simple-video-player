@@ -31,3 +31,7 @@ export function formatTime(seconds: number) {
 
     return `${convert(_hour)}:${convert(min)}:${convert(seconds)}`
 }
+
+export function noop() {
+    //do nothing
+}
