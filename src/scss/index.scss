@@ -1,6 +1,8 @@
 @import "./vars";
 @import "./modules/slider";
-@import "./modules/load-state"
+@import "./modules/load-state";
+@import "./modules/contextmenu";
+@import "./modules/control-bar";
 
 .rplayer-hidden {
   display: none !important;
