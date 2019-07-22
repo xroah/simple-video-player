@@ -1,6 +1,7 @@
 import {HIDDEN_CLASS} from "../constants";
 import {
     addListener,
+    createEl,
     preventAndStop,
     removeAllListeners,
     removeListener
@@ -23,14 +24,14 @@ export interface ContextmenuItem {
 export default class Contextmenu extends EventEmitter {
     private _el: HTMLElement
     private _items: ContextmenuItem[]
-    private _rp: any
+    private _player: any
 
-    constructor(rp: any, items: ContextmenuItem[]) {
+    constructor(player: any, items: ContextmenuItem[]) {
         super()
 
-        this._el = document.createElement("ul")
+        this._el = createEl("ul", "rplayer-contextmenu", HIDDEN_CLASS)
         this._items = items
-        this._rp = rp
+        this._player = player
         this._el.tabIndex = -1
     }
 
@@ -38,10 +39,10 @@ export default class Contextmenu extends EventEmitter {
         const frag = document.createDocumentFragment()
 
         this._items.forEach(item => {
-            const li = document.createElement("li")
+            const li = createEl("li", ITEM_CLASS)
             const action = isFunc(item.action) ? item.action : noop
             const text = item.text as any
-            li.innerHTML = isFunc(text) ? text(this._rp) : text
+            li.innerHTML = isFunc(text) ? text(this._player) : text
 
             if (item.id) {
                 li.id = item.id
@@ -57,10 +58,8 @@ export default class Contextmenu extends EventEmitter {
                 })
             }
 
-            li.classList.add(ITEM_CLASS)
             frag.appendChild(li)
         })
-        this._el.classList.add("rplayer-contextmenu", HIDDEN_CLASS)
         this._el.appendChild(frag)
         container.appendChild(this._el)
     }
@@ -193,13 +192,13 @@ export default class Contextmenu extends EventEmitter {
         }
 
         if (el && el.classList.contains(ITEM_CLASS)) {
-            item.__action__(this._rp)
+            item.__action__(this._player)
             el.classList.remove(ACTIVE_CLASS)
         }
 
         this.setVisible(false)
         //focus the player root element
-        this._rp.root.focus()
+        this._player.root.focus()
     }
 
     private handleClick = (evt: MouseEvent) => {
@@ -223,7 +222,7 @@ export default class Contextmenu extends EventEmitter {
 
         for (let item of items) {
             if (item.__text__) {
-                const html = item.__text__(this._rp)
+                const html = item.__text__(this._player)
 
                 if (html !== item.innerHTML) {
                     item.innerHTML = html
