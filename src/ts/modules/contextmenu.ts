@@ -11,22 +11,23 @@ import {
     isFunc,
     noop
 } from "../utils";
+import RPlayer from ".."
 
 const ITEM_CLASS = "rplayer-contextmenu-item"
 const ACTIVE_CLASS = "rplayer-active"
 
 export interface ContextmenuItem {
-    text: string | (() => string)
+    text: string | ((rp?: RPlayer) => string)
     id?: string
-    action?: () => void
+    action?: (rp?: RPlayer) => void
 }
 
 export default class Contextmenu extends EventEmitter {
     private _el: HTMLElement
     private _items: ContextmenuItem[]
-    private _player: any
+    private _player: RPlayer
 
-    constructor(player: any, items: ContextmenuItem[]) {
+    constructor(player: RPlayer, items: ContextmenuItem[]) {
         super()
 
         this._el = createEl("ul", "rplayer-contextmenu", HIDDEN_CLASS)
