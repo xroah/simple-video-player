@@ -35,3 +35,31 @@ export function formatTime(seconds: number) {
 export function noop() {
     //do nothing
 }
+
+export function throttle(fn: Function, delay: number = 100) {
+    let timer: any = null
+    let previous = 0
+    const throttled = function throttled(...args: any[]) {
+        const now = Date.now()
+        const remaining = delay - (now - previous)
+
+        if (remaining <= 0) {
+            if (timer !== null) {
+                clearTimeout(timer)
+
+                timer = null
+            }
+
+            previous = now
+
+            fn.apply(null, args)
+        } else if (!timer) {
+            timer = setTimeout(
+                () => fn.apply(timer = null, args),
+                delay
+            )
+        }
+    }
+
+    return throttled
+}
