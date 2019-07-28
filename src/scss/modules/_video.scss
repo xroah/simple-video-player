@@ -1,0 +1,11 @@
+@import "../vars";
+
+.rplayer-video-wrapper {
+    @include flex_center();
+    @include size_percent100();
+
+    .rplayer-video {
+        @include size_percent100();
+        align-self: center;
+    }
+}
