@@ -158,8 +158,8 @@ export default class EventEmitter {
             if (l.once) {
                 this.removeListener(eventName, l.fn)
             }
-
-            l.fn.apply(this, evt)
+            
+            l.fn.call(this, evt)
         }
 
         return true

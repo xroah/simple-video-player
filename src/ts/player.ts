@@ -116,7 +116,7 @@ export default class RPlayer extends EventEmitter {
         const handleVisible = (evt: any) => {
             const type = `contextmenu${evt.type}`
 
-            this.emit(type, {type})
+            this.emit(type)
         }
 
         addListener(this.root, "contextmenu", this.handleContextMenu)
@@ -167,7 +167,7 @@ export default class RPlayer extends EventEmitter {
         }
 
         preventAndStop(evt)
-        this.emit(evt.type, evt)
+        this.emit(evt.type)
     }
 
     handleClick = () => {
@@ -236,8 +236,8 @@ export default class RPlayer extends EventEmitter {
             case "progress":
                 this.control.handleBuffer(evt)
         }
-
-        this.emit(evt.type, evt)
+        
+        this.emit(type)
     }
 
     destroy() {

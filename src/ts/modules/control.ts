@@ -47,6 +47,7 @@ export default class Control {
             _controlBar: bar,
             _rp: {video}
         } = this
+        
         switch (type) {
             case "loadedmetadata":
                 bar.updateDuration(video.getDuration())
