@@ -11,10 +11,7 @@ import {
     removeAllListeners
 } from "./dom"
 import Control from "./modules/control"
-import {
-    isPlainObject,
-    isUndef,
-} from "./utils";
+import {isPlainObject, isUndef} from "./utils";
 
 const CONTROL_BAR_HIDE_TIMEOUT = 3000
 interface RPlayerOptions {
@@ -29,17 +26,15 @@ interface RPlayerOptions {
     playWhenSeeked?: boolean
 }
 
-export type RPlayerType = typeof RPlayer
-
 export default class RPlayer extends EventEmitter {
     root: HTMLElement
     body: HTMLElement
 
     video: Video
-    message: Message
     control: Control
-    controlBar: ControlBar
-
+    
+    private _message: Message
+    private _controlBar: ControlBar
     private _loadState: LoadState
     private _options: RPlayerOptions
     private _contextmenu: Contextmenu | null = null
@@ -65,10 +60,10 @@ export default class RPlayer extends EventEmitter {
         })
         this.root = el
         this.body = body
-        this.controlBar = new ControlBar(CONTROL_BAR_HIDE_TIMEOUT)
+        this._controlBar = new ControlBar(CONTROL_BAR_HIDE_TIMEOUT)
         this._loadState = new LoadState(options.errorMessage || {})
-        this.message = new Message(this.root)
-        this.control = new Control(this, this.controlBar)
+        this._message = new Message(this.root)
+        this.control = new Control(this, this._controlBar)
         this._options = options
 
         this.init(container as HTMLElement)
@@ -87,7 +82,7 @@ export default class RPlayer extends EventEmitter {
         this._loadState.mountTo(this.body)
         this.root.appendChild(this.body)
         //prevent event bubbling(this.body bind events)
-        this.controlBar.mountTo(this.root)
+        this._controlBar.mountTo(this.root)
         container.appendChild(this.root)
 
         if (isUndef(defaultVolume)) {
@@ -229,16 +224,16 @@ export default class RPlayer extends EventEmitter {
             case "progress":
                 this.control.handleBuffer(evt)
         }
-        
+
         this.emit(type)
     }
 
     destroy() {
         this.emit("destroy")
-        this.controlBar.destroy()
-        this.controlBar.off()
+        this._controlBar.off()
+        this._controlBar.destroy()
         this.root.parentNode?.removeChild(this.root)
-        this.message.destroy()
+        this._message.destroy()
         this._contextmenu?.destroy()
         removeAllListeners(this.video.el)
         removeAllListeners(this.root)
