@@ -143,7 +143,7 @@ export default class RPlayer extends EventEmitter {
         )
 
         if (this._options.playOnClick !== false) {
-            addListener(this.body, "click", this.handleClick)
+            addListener(this.body, "click", this.handleClickBody)
         }
     }
 
@@ -158,7 +158,7 @@ export default class RPlayer extends EventEmitter {
         this.emit(evt.type)
     }
 
-    handleClick = () => {
+    handleClickBody = () => {
         this.togglePlay()
     }
 
