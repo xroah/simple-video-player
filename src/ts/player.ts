@@ -17,16 +17,9 @@ import {
 } from "./utils";
 
 const CONTROL_BAR_HIDE_TIMEOUT = 3000
-
-interface Addon {
-    left?: Function[]
-    right?: Function[]
-}
-
 interface RPlayerOptions {
     container: string | HTMLElement | Node
     // autoPlay?: boolean
-    addons?: Addon
     url: string
     errorMessage?: ErrorMessage
     defaultVolume?: number
