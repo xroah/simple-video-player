@@ -33,7 +33,6 @@ export default class RPlayer extends EventEmitter {
     video: Video
     control: Control
     
-    private _message: Message
     private _controlBar: ControlBar
     private _loadState: LoadState
     private _options: RPlayerOptions
@@ -62,7 +61,6 @@ export default class RPlayer extends EventEmitter {
         this.body = body
         this._controlBar = new ControlBar(CONTROL_BAR_HIDE_TIMEOUT)
         this._loadState = new LoadState(options.errorMessage || {})
-        this._message = new Message(this.root)
         this.control = new Control(this, this._controlBar)
         this._options = options
 
@@ -233,7 +231,6 @@ export default class RPlayer extends EventEmitter {
         this._controlBar.off()
         this._controlBar.destroy()
         this.root.parentNode?.removeChild(this.root)
-        this._message.destroy()
         this._contextmenu?.destroy()
         removeAllListeners(this.video.el)
         removeAllListeners(this.root)
