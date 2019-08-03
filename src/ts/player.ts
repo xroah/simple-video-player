@@ -22,6 +22,7 @@ interface RPlayerOptions {
     poster?: string
     playOnClick?: boolean
     playWhenSeeked?: boolean
+    controlBarTimeout?: number
 }
 
 export default class RPlayer extends EventEmitter {
@@ -30,7 +31,7 @@ export default class RPlayer extends EventEmitter {
 
     video: Video
     control: Control
-    
+
     private _controlBar: ControlBar
     private _loadState: LoadState
     private _options: RPlayerOptions
@@ -57,7 +58,7 @@ export default class RPlayer extends EventEmitter {
         })
         this.root = el
         this.body = body
-        this._controlBar = new ControlBar(CONTROL_BAR_HIDE_TIMEOUT)
+        this._controlBar = new ControlBar(options.controlBarTimeout || CONTROL_BAR_HIDE_TIMEOUT)
         this._loadState = new LoadState(options.errorMessage || {})
         this.control = new Control(this, this._controlBar)
         this._options = options
