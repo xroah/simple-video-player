@@ -48,7 +48,7 @@ export default class Control {
             _controlBar: bar,
             _rp: {video}
         } = this
-        
+
         switch (type) {
             case "loadedmetadata":
                 bar.updateDuration(video.getDuration())
@@ -73,10 +73,10 @@ export default class Control {
     private handleProgressChange = (evt: EventObject) => {
         const {video} = this._rp
         const duration = video.getDuration()
-        
+
         video.setCurrentTime(evt.details / 100 * duration)
     }
-    
+
 
     handleBuffer = () => {
         const buffered = this._rp.video.getBuffered()

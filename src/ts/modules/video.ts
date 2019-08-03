@@ -19,7 +19,7 @@ export default class Player extends EventEmitter {
         this.el.controls = false
         this.el.preload = "metadata"
         this.el.src = options.url
-        
+
         if (options.poster) {
             this.setPoster(options.poster)
         }
@@ -96,7 +96,7 @@ export default class Player extends EventEmitter {
         return this.el.buffered
     }
 
-    isError()  {
+    isError() {
         return !!this.el.error
     }
 

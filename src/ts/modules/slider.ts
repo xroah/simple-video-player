@@ -170,7 +170,7 @@ export default class Slider extends EventEmitter {
         this.setTooltipVisible(!!tooltipText)
 
         const tooltipRect = this._tooltipEl.getBoundingClientRect()
-    
+
         if (this._vertical) {
             const max = elRect.height - tooltipRect.height
             let bottom = pos - tooltipRect.height / 2
@@ -341,7 +341,7 @@ export default class Slider extends EventEmitter {
         if (!this._el.parentNode) {
             return
         }
-        
+
         removeAllListeners(this._marker)
         removeAllListeners(this._el)
         removeListener(document, "mousemove", this.handleSliderMove)
