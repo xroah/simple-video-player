@@ -98,8 +98,7 @@ export default class ControlBar extends Transition {
 
     //slider move end
     private handleProgressSlideEnd(evt: EventObject) {
-        this.emit("progresschange", evt.details.value)
-
+        this.emit("progresschange", evt.details)
         //click progress bar or slide end, the current time may not buffered
         //just set the buffered bar to 0
         this._progress.updateSecondary(0)

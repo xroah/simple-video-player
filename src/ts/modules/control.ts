@@ -1,5 +1,6 @@
 import RPlayer from "..";
 import {addListener} from "../dom";
+import {EventObject} from "../event";
 import {throttle} from "../utils";
 import ControlBar from "./control-bar";
 
@@ -69,15 +70,15 @@ export default class Control {
     }
 
     //user click or move the progress bar manually
-    private handleProgressChange = (data: any) => {
+    private handleProgressChange = (evt: EventObject) => {
         const {video} = this._rp
         const duration = video.getDuration()
-
-        video.setCurrentTime(data.value / 100 * duration)
+        
+        video.setCurrentTime(evt.details / 100 * duration)
     }
     
 
-    handleBuffer = (evt: Event) => {
+    handleBuffer = () => {
         const buffered = this._rp.video.getBuffered()
         const curTime = this._rp.video.getCurrentTime()
         let ret = 0

@@ -220,7 +220,7 @@ export default class RPlayer extends EventEmitter {
                 }
                 break
             case "progress":
-                this.control.handleBuffer(evt)
+                this.control.handleBuffer()
         }
 
         this.emit(type)
