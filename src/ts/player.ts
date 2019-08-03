@@ -2,7 +2,6 @@ import ControlBar from "./modules/control-bar";
 import EventEmitter from "./event";
 import LoadState, {ErrorMessage} from "./modules/load-state";
 import Video from "./modules/video";
-import Message from "./modules/message";
 import Contextmenu, {ContextmenuItem} from "./modules/contextmenu"
 import {
     addListener,
