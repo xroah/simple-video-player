@@ -11,8 +11,7 @@ import {
 } from "./dom"
 import Control from "./modules/control"
 import {isPlainObject, isUndef} from "./utils";
-
-const CONTROL_BAR_HIDE_TIMEOUT = 3000
+import {CONTROL_BAR_HIDE_TIMEOUT} from "./constants";
 interface RPlayerOptions {
     container: string | HTMLElement | Node
     // autoPlay?: boolean
