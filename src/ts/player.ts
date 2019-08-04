@@ -7,7 +7,8 @@ import {
     addListener,
     preventAndStop,
     getContainer,
-    removeAllListeners
+    removeAllListeners,
+    createEl
 } from "./dom"
 import Control from "./modules/control"
 import {isPlainObject, isUndef} from "./utils";
@@ -44,9 +45,9 @@ export default class RPlayer extends EventEmitter {
             throw new Error("Options must be an object")
         }
 
-        const el = document.createElement("div")
+        const el = createEl("div", "rplayer-root")
         const container = getContainer(options.container)
-        const body = document.createElement("div")
+        const body = createEl("div", "rplayer-body")
 
         if (!container) {
             throw new Error("Can not find a container")
@@ -73,8 +74,6 @@ export default class RPlayer extends EventEmitter {
         this.initEvents()
         this.initContextmenu()
 
-        this.root.classList.add("rplayer-root")
-        this.body.classList.add("rplayer-body")
         this.video.mountTo(this.body)
         this._loadState.mountTo(this.body)
         this.root.appendChild(this.body)
