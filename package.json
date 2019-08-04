@@ -10,8 +10,7 @@
     "scss": "node ./build-scss",
     "es": "tsc --module ESNext -d --outDir ./es",
     "lib": "tsc --module commonjs -d --outDir ./lib",
-    "build": "node rmdir && npm run es && npm run lib && npm run rollup && npm run scss",
-    "publish": "npm run build && npm run publish"
+    "build": "node rmdir && npm run es && npm run lib && npm run rollup && npm run scss"
   },
   "repository": {
     "type": "git",
