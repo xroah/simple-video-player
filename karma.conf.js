@@ -1,6 +1,3 @@
-// Karma configuration
-// Generated on Mon Sep 28 2020 12:24:52 GMT+0800 (中国标准时间)
-
 process.env.NODE_ENV = "test"
 
 module.exports = function (config) {
@@ -17,7 +14,7 @@ module.exports = function (config) {
 
         // list of files / patterns to load in the browser
         files: [
-            "src/ts/**/*.ts", //coverage
+            "src/ts/**/*.ts",
             "tests/unit/*.spec.ts"
         ],
 
