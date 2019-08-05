@@ -58,7 +58,6 @@ export default class Control {
                 break
             case "loadstart":
                 bar.updateProgress(0)
-                bar.updateProgress(0)
                 bar.updateBuffer(0)
                 bar.updateDuration(0)
                 bar.updateCurrentTime(0)
