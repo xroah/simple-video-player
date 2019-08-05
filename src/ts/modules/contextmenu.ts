@@ -61,6 +61,7 @@ export default class Contextmenu extends EventEmitter {
 
             frag.appendChild(li)
         })
+        
         this._el.appendChild(frag)
         container.appendChild(this._el)
     }

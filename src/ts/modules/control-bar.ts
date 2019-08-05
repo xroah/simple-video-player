@@ -12,7 +12,7 @@ import {EventObject} from "../event";
 
 export default class ControlBar extends Transition {
     private _progress: Slider
-    private _currentTime: HTMLElement
+    private _currentTimeEl: HTMLElement
     private _durationEl: HTMLElement
     private _leftAddonContainer: HTMLElement
     private _rightAddonContainer: HTMLElement
@@ -23,7 +23,7 @@ export default class ControlBar extends Transition {
         super()
 
         this.el = createEl("div", "rplayer-control", HIDDEN_CLASS)
-        this._currentTime = createEl("div")
+        this._currentTimeEl = createEl("div")
         this._durationEl = createEl("div")
         this._leftAddonContainer = createEl("div", "left-addon-container")
         this._rightAddonContainer = createEl("div", "right-addon-container")
@@ -40,7 +40,7 @@ export default class ControlBar extends Transition {
         const progressWrapper = createEl("div", "rplayer-progress-wrapper")
         const progressBar = createEl("div", "rplayer-progress-bar")
 
-        progressWrapper.appendChild(this._currentTime)
+        progressWrapper.appendChild(this._currentTimeEl)
         progressWrapper.appendChild(progressBar)
         progressWrapper.appendChild(this._durationEl)
         this._progress.mountTo(progressBar)
@@ -119,7 +119,7 @@ export default class ControlBar extends Transition {
     }
 
     updateCurrentTime(val: number) {
-        this._currentTime.innerHTML = formatTime(val)
+        this._currentTimeEl.innerHTML = formatTime(val)
     }
 
     updateDuration(val: number) {
