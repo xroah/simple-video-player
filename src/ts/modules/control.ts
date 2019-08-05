@@ -30,8 +30,11 @@ export default class Control {
         this._rp.on("timeupdate", throttle(this.updateProgress.bind(this)))
     }
 
-    showControlBar = () => {
-        if (this._rp.video.isError() || this.prevented) {
+    showControlBar = (force = false) => {
+        if (
+            (this._rp.video.isError() || this.prevented) &&
+            !force
+        ) {
             return
         }
 
