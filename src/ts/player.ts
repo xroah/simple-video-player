@@ -97,10 +97,9 @@ export default class RPlayer extends EventEmitter {
             return
         }
 
-        this._contextmenu = new Contextmenu(this, ctxMenu)
+        this._contextmenu = new Contextmenu(this, ctxMenu, this.root)
 
         addListener(this.root, "contextmenu", this.handleContextMenu)
-        this._contextmenu.mountTo(this.root)
     }
 
     private initEvents() {

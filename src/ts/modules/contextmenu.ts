@@ -27,13 +27,15 @@ export default class Contextmenu extends EventEmitter {
     private _items: ContextmenuItem[]
     private _player: RPlayer
 
-    constructor(player: RPlayer, items: ContextmenuItem[]) {
+    constructor(player: RPlayer, items: ContextmenuItem[], container: HTMLElement) {
         super()
 
         this._el = createEl("ul", "rplayer-contextmenu", HIDDEN_CLASS)
         this._items = items
         this._player = player
         this._el.tabIndex = -1
+
+        this.mountTo(container)
     }
 
     mountTo(container: HTMLElement) {
@@ -61,7 +63,7 @@ export default class Contextmenu extends EventEmitter {
 
             frag.appendChild(li)
         })
-        
+
         this._el.appendChild(frag)
         container.appendChild(this._el)
     }
