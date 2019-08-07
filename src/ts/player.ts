@@ -53,16 +53,17 @@ export default class RPlayer extends EventEmitter {
             throw new Error("Can not find a container")
         }
 
+        this._controlBar = new ControlBar(options.controlBarTimeout || CONTROL_BAR_HIDE_TIMEOUT)
+        this._loadState = new LoadState(options.errorMessage || {})
+        this._options = options
+
         this.video = new Video({
             url: options.url,
             poster: options.poster
         })
         this.root = el
         this.body = body
-        this._controlBar = new ControlBar(options.controlBarTimeout || CONTROL_BAR_HIDE_TIMEOUT)
-        this._loadState = new LoadState(options.errorMessage || {})
         this.control = new Control(this, this._controlBar)
-        this._options = options
 
         this.init(container as HTMLElement)
     }
@@ -96,18 +97,10 @@ export default class RPlayer extends EventEmitter {
             return
         }
 
-        const menu = this._contextmenu = new Contextmenu(this, ctxMenu)
-        const handleVisible = (evt: any) => {
-            const type = `contextmenu${evt.type}`
-
-            this.emit(type)
-        }
+        this._contextmenu = new Contextmenu(this, ctxMenu)
 
         addListener(this.root, "contextmenu", this.handleContextMenu)
-        menu.mountTo(this.root)
-        menu
-            .on("shown", handleVisible)
-            .on("hidden", handleVisible)
+        this._contextmenu.mountTo(this.root)
     }
 
     private initEvents() {
