@@ -45,14 +45,15 @@ export default class RPlayer extends EventEmitter {
             throw new Error("Options must be an object")
         }
 
-        const el = createEl("div", "rplayer-root")
         const container = getContainer(options.container)
-        const body = createEl("div", "rplayer-body")
-        const controlBarTimeout = options.controlBarTimeout || CONTROL_BAR_HIDE_TIMEOUT
 
         if (!container) {
             throw new Error("Can not find a container")
         }
+
+        const el = createEl("div", "rplayer-root")
+        const body = createEl("div", "rplayer-body")
+        const controlBarTimeout = options.controlBarTimeout || CONTROL_BAR_HIDE_TIMEOUT
 
         //control bar mount to root element
         //prevent event bubbling(this.body bind events)
@@ -103,6 +104,17 @@ export default class RPlayer extends EventEmitter {
         addListener(this.root, "contextmenu", this.handleContextMenu)
     }
 
+    private handleContextMenu = (evt: MouseEvent) => {
+        const {_contextmenu: ctxMenu} = this
+
+        if (ctxMenu) {
+            ctxMenu.setVisible(!ctxMenu.isVisible(), evt.clientX, evt.clientY)
+        }
+
+        preventAndStop(evt)
+        this.emit(evt.type)
+    }
+
     private initEvents() {
         const videoEl = this.video.el
         const videoEvents = [
@@ -134,17 +146,6 @@ export default class RPlayer extends EventEmitter {
         if (this._options.playOnClick !== false) {
             addListener(this.body, "click", this.handleClickBody)
         }
-    }
-
-    private handleContextMenu = (evt: MouseEvent) => {
-        const {_contextmenu: ctxMenu} = this
-
-        if (ctxMenu) {
-            ctxMenu.setVisible(!ctxMenu.isVisible(), evt.clientX, evt.clientY)
-        }
-
-        preventAndStop(evt)
-        this.emit(evt.type)
     }
 
     handleClickBody = () => {
