@@ -48,12 +48,15 @@ export default class RPlayer extends EventEmitter {
         const el = createEl("div", "rplayer-root")
         const container = getContainer(options.container)
         const body = createEl("div", "rplayer-body")
+        const controlBarTimeout = options.controlBarTimeout || CONTROL_BAR_HIDE_TIMEOUT
 
         if (!container) {
             throw new Error("Can not find a container")
         }
 
-        this._controlBar = new ControlBar(options.controlBarTimeout || CONTROL_BAR_HIDE_TIMEOUT)
+        //control bar mount to root element
+        //prevent event bubbling(this.body bind events)
+        this._controlBar = new ControlBar(controlBarTimeout, el)
         this._loadState = new LoadState(options.errorMessage || {})
         this._options = options
 
@@ -78,8 +81,6 @@ export default class RPlayer extends EventEmitter {
         this.video.mountTo(this.body)
         this._loadState.mountTo(this.body)
         this.root.appendChild(this.body)
-        //prevent event bubbling(this.body bind events)
-        this._controlBar.mountTo(this.root)
         container.appendChild(this.root)
 
         if (isUndef(defaultVolume)) {

@@ -19,7 +19,7 @@ export default class ControlBar extends Transition {
     private _duration = 0
     private _mouseEntered = false
 
-    constructor(hideTimeout: number) {
+    constructor(hideTimeout: number, container: HTMLElement) {
         super()
 
         this.el = createEl("div", "rplayer-control", HIDDEN_CLASS)
@@ -33,6 +33,8 @@ export default class ControlBar extends Transition {
         })
         this.hideTimeout = hideTimeout
         this.autoHide = true
+
+        this.mountTo(container)
     }
 
     mountTo(container: HTMLElement) {
