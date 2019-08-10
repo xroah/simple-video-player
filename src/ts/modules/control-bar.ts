@@ -37,7 +37,7 @@ export default class ControlBar extends Transition {
         this.mountTo(container)
     }
 
-    mountTo(container: HTMLElement) {
+    private mountTo(container: HTMLElement) {
         const addonContainer = createEl("div", "rplayer-addon-wrapper")
         const progressWrapper = createEl("div", "rplayer-progress-wrapper")
         const progressBar = createEl("div", "rplayer-progress-bar")

@@ -38,7 +38,7 @@ export default class Contextmenu extends EventEmitter {
         this.mountTo(container)
     }
 
-    mountTo(container: HTMLElement) {
+    private mountTo(container: HTMLElement) {
         const frag = document.createDocumentFragment()
 
         this._items.forEach(item => {
