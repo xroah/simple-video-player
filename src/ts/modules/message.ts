@@ -25,7 +25,7 @@ export default class Message extends EventEmitter {
 
     public uid = uid++
 
-    constructor(options = {}) {
+    constructor(options = {}, container: HTMLElement) {
         super()
 
         this._options = {
@@ -33,13 +33,15 @@ export default class Message extends EventEmitter {
         }
         this._textEl = createEl("div", `${PREFIX}-text`)
         this._el = createEl("div", `${PREFIX}-item`)
+
+        this.mountTo(container)
     }
 
     getEl() {
         return this._el
     }
 
-    mountTo(container: HTMLElement) {
+    private mountTo(container: HTMLElement) {
         this._el.appendChild(this._textEl)
 
         if (this._options.closable) {

@@ -14,14 +14,13 @@ export default class MessageManager {
     }
 
     show(msg: HTMLElement | string, options?: MessagePort) {
-        const message = new Message(options)
+        const message = new Message(options, this._wrapper)
 
         if (!this._messages) {
             this._messages = new Map()
         }
 
         this._messages.set(message.uid, message)
-        message.mountTo(this._wrapper)
         message.update(msg)
         message.once("destroy", (evt: EventObject) => {
             if (this._messages) {
