@@ -16,7 +16,7 @@ export default class LoadState {
     private _errEl: HTMLElement
     private _errorMessage: ErrorMessage = {}
 
-    constructor(eMsg: ErrorMessage) {
+    constructor(eMsg: ErrorMessage, container: HTMLElement) {
         this._el = createEl("div", "rplayer-state-wrapper", HIDDEN_CLASS)
         this._spinnerEl = createEl("div", "rplayer-loading-spinner")
         this._errEl = createEl("div", "rplayer-error-message")
@@ -26,9 +26,11 @@ export default class LoadState {
                 ...eMsg
             }
         }
+
+        this.mountTo(container)
     }
 
-    mountTo(container: HTMLElement) {
+    private mountTo(container: HTMLElement) {
         this._el.appendChild(this._spinnerEl)
         this._el.appendChild(this._errEl)
         container.appendChild(this._el)

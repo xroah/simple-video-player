@@ -58,7 +58,7 @@ export default class RPlayer extends EventEmitter {
         //control bar mount to root element
         //prevent event bubbling(this.body bind events)
         this._controlBar = new ControlBar(controlBarTimeout, el)
-        this._loadState = new LoadState(options.errorMessage || {})
+        this._loadState = new LoadState(options.errorMessage || {}, body)
         this._options = options
 
         this.video = new Video({
@@ -80,7 +80,6 @@ export default class RPlayer extends EventEmitter {
         this.initContextmenu()
 
         this.video.mountTo(this.body)
-        this._loadState.mountTo(this.body)
         this.root.appendChild(this.body)
         container.appendChild(this.root)
 
