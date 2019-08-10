@@ -20,11 +20,8 @@ export default class LoadState {
         this._el = createEl("div", "rplayer-state-wrapper", HIDDEN_CLASS)
         this._spinnerEl = createEl("div", "rplayer-loading-spinner")
         this._errEl = createEl("div", "rplayer-error-message")
-
-        if (isPlainObject(eMsg)) {
-            this._errorMessage = {
-                ...eMsg
-            }
+        this._errorMessage = {
+            ...eMsg
         }
 
         this.mountTo(container)
