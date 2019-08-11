@@ -47,7 +47,12 @@ export default class Message extends EventEmitter {
         if (this._options.closable) {
             this._closeEl = createEl("span", "rplayer-close-btn")
 
-            addListener(this._closeEl, "click", this.handleClose)
+            addListener(
+                this._closeEl,
+                "click",
+                this.handleClose,
+                {once: true}
+            )
             this._el.appendChild(this._closeEl)
         }
 
@@ -55,8 +60,8 @@ export default class Message extends EventEmitter {
         addListener(this._el, "mouseleave", this.handleMouseEnterLeave)
         container.appendChild(this._el)
 
-        this.emit("mount", {
-            type: "mount"
+        this.emit("mounted", {
+            type: "mounted"
         })
     }
 
@@ -101,10 +106,6 @@ export default class Message extends EventEmitter {
         removeAllListeners(this._el)
         this.emit("destroy", this.uid)
         this.off()
-
-        if (this._closeEl) {
-            removeAllListeners(this._closeEl)
-        }
     }
 
     private clearDelayTimer() {
