@@ -1,7 +1,6 @@
 import {HIDDEN_CLASS} from "../constants"
 import {createEl} from "../dom"
 import settings from "../settings"
-import {isPlainObject} from "../utils"
 
 export interface ErrorMessage {
     abort?: string
