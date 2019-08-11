@@ -24,7 +24,7 @@ export default class MessageManager {
         message.update(msg)
         message.once("destroy", (evt: EventObject) => {
             if (this._messages) {
-                this._messages.delete(evt.details.value)
+                this._messages.delete(evt.details)
                 this._wrapper.removeChild(message.getEl()!)
             }
         })
