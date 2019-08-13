@@ -33,7 +33,7 @@ export default class Slider extends EventEmitter {
     private _moving = false
     private _mouseEntered = false
 
-    constructor(options?: Options) {
+    constructor(container: HTMLElement, options?: Options) {
         super()
 
         if (!options || !isPlainObject(options)) {
@@ -60,9 +60,11 @@ export default class Slider extends EventEmitter {
         if (this._tooltip) {
             this._tooltipEl = createEl("div", "rplayer-slider-tooltip", HIDDEN_CLASS)
         }
+
+        this.mountTo(container)
     }
 
-    mountTo(container: HTMLElement) {
+    private mountTo(container: HTMLElement) {
         const track = createEl("div", "rplayer-slider-track")
 
         if (this._vertical) {

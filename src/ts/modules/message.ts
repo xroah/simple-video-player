@@ -25,7 +25,7 @@ export default class Message extends EventEmitter {
 
     public uid = uid++
 
-    constructor(options = {}, container: HTMLElement) {
+    constructor(container: HTMLElement, options = {}) {
         super()
 
         this._options = {

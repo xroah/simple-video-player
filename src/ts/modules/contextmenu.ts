@@ -27,7 +27,7 @@ export default class Contextmenu extends EventEmitter {
     private _items: ContextmenuItem[]
     private _player: RPlayer
 
-    constructor(player: RPlayer, items: ContextmenuItem[], container: HTMLElement) {
+    constructor(container: HTMLElement, player: RPlayer, items: ContextmenuItem[]) {
         super()
 
         this._el = createEl("ul", "rplayer-contextmenu", HIDDEN_CLASS)

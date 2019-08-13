@@ -15,7 +15,7 @@ export default class LoadState {
     private _errEl: HTMLElement
     private _errorMessage: ErrorMessage = {}
 
-    constructor(eMsg: ErrorMessage, container: HTMLElement) {
+    constructor(container: HTMLElement, eMsg: ErrorMessage) {
         this._el = createEl("div", "rplayer-state-wrapper", HIDDEN_CLASS)
         this._spinnerEl = createEl("div", "rplayer-loading-spinner")
         this._errEl = createEl("div", "rplayer-error-message")

@@ -11,6 +11,7 @@ import {HIDDEN_CLASS} from "../constants"
 import {EventObject} from "../event";
 
 export default class ControlBar extends Transition {
+    private _progressBar: HTMLElement
     private _progress: Slider
     private _currentTimeEl: HTMLElement
     private _durationEl: HTMLElement
@@ -19,7 +20,7 @@ export default class ControlBar extends Transition {
     private _duration = 0
     private _mouseEntered = false
 
-    constructor(hideTimeout: number, container: HTMLElement) {
+    constructor(container: HTMLElement, hideTimeout: number) {
         super()
 
         this.el = createEl("div", "rplayer-control", HIDDEN_CLASS)
@@ -27,10 +28,14 @@ export default class ControlBar extends Transition {
         this._durationEl = createEl("div")
         this._leftAddonContainer = createEl("div", "left-addon-container")
         this._rightAddonContainer = createEl("div", "right-addon-container")
-        this._progress = new Slider({
-            tooltip: this.handleTooltip,
-            secondary: true
-        })
+        this._progressBar = createEl("div", "rplayer-progress-bar")
+        this._progress = new Slider(
+            this._progressBar,
+            {
+                tooltip: this.handleTooltip,
+                secondary: true
+            }
+        )
         this.hideTimeout = hideTimeout
         this.autoHide = true
 
@@ -40,12 +45,10 @@ export default class ControlBar extends Transition {
     private mountTo(container: HTMLElement) {
         const addonContainer = createEl("div", "rplayer-addon-wrapper")
         const progressWrapper = createEl("div", "rplayer-progress-wrapper")
-        const progressBar = createEl("div", "rplayer-progress-bar")
 
         progressWrapper.appendChild(this._currentTimeEl)
-        progressWrapper.appendChild(progressBar)
+        progressWrapper.appendChild(this._progressBar)
         progressWrapper.appendChild(this._durationEl)
-        this._progress.mountTo(progressBar)
         this.el.appendChild(progressWrapper)
         addonContainer.appendChild(this._leftAddonContainer)
         addonContainer.appendChild(this._rightAddonContainer)

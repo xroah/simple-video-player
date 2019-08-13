@@ -14,7 +14,7 @@ export default class MessageManager {
     }
 
     show(msg: HTMLElement | string, options?: MessagePort) {
-        const message = new Message(options, this._wrapper)
+        const message = new Message(this._wrapper, options)
 
         if (!this._messages) {
             this._messages = new Map()
