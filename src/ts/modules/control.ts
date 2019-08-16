@@ -75,8 +75,10 @@ export default class Control {
     private handleProgressChange = (evt: EventObject) => {
         const {video} = this._rp
         const duration = video.getDuration()
+        const time = evt.details / 100 * duration
 
-        video.setCurrentTime(evt.details / 100 * duration)
+        video.setCurrentTime(time)
+        this._controlBar.updateCurrentTime(time)
     }
 
 
