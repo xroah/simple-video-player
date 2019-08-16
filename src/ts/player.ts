@@ -82,7 +82,6 @@ export default class RPlayer extends EventEmitter {
         this.initEvents()
         this.initContextmenu()
 
-        this.video.mountTo(this.body)
         this.root.appendChild(this.body)
         container.appendChild(this.root)
 
