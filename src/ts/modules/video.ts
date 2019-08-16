@@ -11,7 +11,7 @@ export default class Player extends EventEmitter {
 
     private _wrapper: HTMLElement
 
-    constructor(options: videoOptions) {
+    constructor(container: HTMLElement, options: videoOptions) {
         super()
 
         this._wrapper = createEl("div", "rplayer-video-wrapper")
@@ -23,9 +23,7 @@ export default class Player extends EventEmitter {
         if (options.poster) {
             this.setPoster(options.poster)
         }
-    }
 
-    mountTo(container: HTMLElement) {
         this._wrapper.appendChild(this.el)
         container.appendChild(this._wrapper)
     }

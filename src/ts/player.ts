@@ -61,10 +61,13 @@ export default class RPlayer extends EventEmitter {
         this._loadState = new LoadState(body, options.errorMessage || {})
         this._options = options
 
-        this.video = new Video({
-            url: options.url,
-            poster: options.poster
-        })
+        this.video = new Video(
+            body,
+            {
+                url: options.url,
+                poster: options.poster
+            }
+        )
         this.root = el
         this.body = body
         this.control = new Control(this, this._controlBar)
