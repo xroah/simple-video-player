@@ -22,7 +22,6 @@ interface RPlayerOptions {
     contextmenu?: ContextmenuItem[],
     poster?: string
     playOnClick?: boolean
-    playWhenSeeked?: boolean
     controlBarTimeout?: number
 }
 
@@ -202,15 +201,6 @@ export default class RPlayer extends EventEmitter {
                 break
             case "error":
                 _loadState.setVisible(true, "error", video.el.error)
-                break
-            case "seeked":
-                if (this._options.playWhenSeeked !== false) {
-                    this.video.play()
-                        .catch(() => {
-                            //May cause promise error: 
-                            //the play() request was interrupted by a call to pause()
-                        })
-                }
                 break
             case "progress":
                 this.control.handleBuffer()
