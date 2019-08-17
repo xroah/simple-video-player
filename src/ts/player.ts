@@ -176,10 +176,6 @@ export default class RPlayer extends EventEmitter {
         } = this
 
         switch (type) {
-            case "loadedmetadata":
-                //safari will not fire canplay if the video was paused
-                _loadState.setVisible(false)
-                break
             case "loadstart":
                 _loadState.setVisible(true)
                 break

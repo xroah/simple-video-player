@@ -17,7 +17,7 @@ export default class Player extends EventEmitter {
         this._wrapper = createEl("div", "rplayer-video-wrapper")
         this.el = createEl("video", "rplayer-video") as HTMLVideoElement
         this.el.controls = false
-        this.el.preload = "metadata"
+        this.el.preload = "auto"
         this.el.src = options.url
 
         if (options.poster) {
