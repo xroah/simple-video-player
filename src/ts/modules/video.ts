@@ -19,6 +19,7 @@ export default class Player extends EventEmitter {
         this.el.controls = false
         this.el.preload = "auto"
         this.el.src = options.url
+        this.el.crossOrigin = ""
 
         if (options.poster) {
             this.setPoster(options.poster)
