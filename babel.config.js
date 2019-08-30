@@ -1,5 +1,5 @@
-{
-  "presets": [
+module.exports = {
+  presets: [
     [
       "@babel/preset-env",
       {
@@ -8,13 +8,13 @@
     ],
     "@babel/preset-typescript"
   ],
-  "plugins": [
+  plugins: [
     "@babel/plugin-proposal-class-properties",
     "@babel/plugin-transform-runtime"
   ],
-  "env": {
-    "test": {
-      "plugins": [ "istanbul" ]
+  env: {
+    test: {
+      plugins: ["istanbul"]
     }
   }
 }
