@@ -23,10 +23,6 @@ export default class LoadState {
             ...eMsg
         }
 
-        this.mountTo(container)
-    }
-
-    private mountTo(container: HTMLElement) {
         this._el.appendChild(this._spinnerEl)
         this._el.appendChild(this._errEl)
         container.appendChild(this._el)
