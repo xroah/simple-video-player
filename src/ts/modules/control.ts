@@ -27,7 +27,7 @@ export default class Control {
         addListener(this._rp.body, "mousemove", this.showControlBar)
         this._controlBar.on("progresschange", this.handleProgressChange)
         evtNames.forEach(name => this._rp.on(name, this.handleVideoEvents))
-        this._rp.on("timeupdate", throttle(this.updateProgress.bind(this)))
+        this._rp.on("timeupdate", throttle(this.handleTimeupdate.bind(this)))
     }
 
     showControlBar = (force = false) => {
@@ -101,7 +101,7 @@ export default class Control {
         this._controlBar.updateBuffer(ret)
     }
 
-    updateProgress() {
+    handleTimeupdate() {
         const curTime = this._rp.video.getCurrentTime()
         const duration = this._rp.video.getDuration()
         const val = curTime / duration * 100
