@@ -1,9 +1,8 @@
 import {isUndef} from "./utils"
+import {EVENT_LISTENER_KEY} from "./constants"
 
 type El = HTMLElement | Document | Window
 type Options = boolean | AddEventListenerOptions | undefined
-
-export const LISTENER_KEY = "R_PLAYER_LISTENERS_KEY"
 
 function handleOptions(options: Options) {
     let ret: AddEventListenerOptions
@@ -49,15 +48,15 @@ export function addListener(
     const el = element as any
     const _options = handleOptions(options)
 
-    if (!el[LISTENER_KEY]) {
+    if (!el[EVENT_LISTENER_KEY]) {
         //for saving the element listeners
-        Object.defineProperty(el, LISTENER_KEY, {
+        Object.defineProperty(el, EVENT_LISTENER_KEY, {
             value: new Map(),
             configurable: true
         })
     }
 
-    const listenersMap = el[LISTENER_KEY]
+    const listenersMap = el[EVENT_LISTENER_KEY]
     let listeners = listenersMap.get(eventName)
     let _listener = listener
     let exists = false
@@ -92,9 +91,9 @@ export function addListener(
 }
 
 export function removeAllListeners(element: El) {
-    if (LISTENER_KEY in element) {
+    if (EVENT_LISTENER_KEY in element) {
         const el = element as any
-        const listenersMap = el[LISTENER_KEY]
+        const listenersMap = el[EVENT_LISTENER_KEY]
 
         listenersMap.forEach((v: Listener[], k: string) => {
             for (let l of v) {
@@ -102,7 +101,7 @@ export function removeAllListeners(element: El) {
             }
         })
 
-        delete el[LISTENER_KEY]
+        delete el[EVENT_LISTENER_KEY]
     }
 }
 
@@ -114,7 +113,7 @@ export function removeListener(
 ) {
     const el = element as any
     const _options = handleOptions(options)
-    const listenersMap = el[LISTENER_KEY] || new Map()
+    const listenersMap = el[EVENT_LISTENER_KEY] || new Map()
 
     if (isUndef(eventName)) {
         //remove all events of the element
@@ -155,7 +154,7 @@ export function removeListener(
 
     //no listeners
     if (!listenersMap.size) {
-        delete el[LISTENER_KEY]
+        delete el[EVENT_LISTENER_KEY]
     }
 }
 
