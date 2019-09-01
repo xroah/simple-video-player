@@ -19,7 +19,6 @@ interface Options {
 
 export default class Slider extends EventEmitter {
     private _vertical: boolean
-    private _secondary: boolean
     private _el: HTMLElement
     private _marker: HTMLElement
     private _secondaryProgress: HTMLElement | null = null
@@ -42,7 +41,6 @@ export default class Slider extends EventEmitter {
 
         this._vertical = !!options.vertical
         this._value = Number(options.defaultValue) || 0
-        this._secondary = !!options.secondary
         this._el = createEl("div", "rplayer-slider-wrapper")
         this._marker = createEl("div", "rplayer-slider-marker")
         this._primaryProgress = createEl("div", "rplayer-slider-primary-progress")
@@ -53,7 +51,7 @@ export default class Slider extends EventEmitter {
             this._tooltip = false
         }
 
-        if (this._secondary) {
+        if (!!options.secondary) {
             this._secondaryProgress = createEl("div", "rplayer-slider-secondary-progress")
         }
 
