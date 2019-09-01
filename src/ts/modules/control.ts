@@ -24,13 +24,17 @@ export default class Control {
             "durationchange"
         ]
 
-        addListener(this._rp.body, "mousemove", this.showControlBar)
+        addListener(this._rp.body, "mousemove", this.handleMouseMove)
         this._controlBar.on("progresschange", this.handleProgressChange)
         evtNames.forEach(name => this._rp.on(name, this.handleVideoEvents))
         this._rp.on("timeupdate", throttle(this.handleTimeupdate.bind(this)))
     }
 
-    showControlBar = (force = false) => {
+    private handleMouseMove = () => {
+        this.showControlBar()
+    }
+
+    showControlBar(force = false) {
         if (
             (this._rp.video.isError() || this.prevented) &&
             !force
