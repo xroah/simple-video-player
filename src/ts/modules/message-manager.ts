@@ -15,6 +15,12 @@ export default class MessageManager {
 
     show(msg: HTMLElement | string, options?: MessagePort) {
         const message = new Message(this._wrapper, options)
+        const handleDestroy = (evt: EventObject) => {
+            if (this._messages) {
+                this._messages.delete(evt.details)
+                this._wrapper.removeChild(message.getEl()!)
+            }
+        }
 
         if (!this._messages) {
             this._messages = new Map()
@@ -22,12 +28,7 @@ export default class MessageManager {
 
         this._messages.set(message.uid, message)
         message.update(msg)
-        message.once("destroy", (evt: EventObject) => {
-            if (this._messages) {
-                this._messages.delete(evt.details)
-                this._wrapper.removeChild(message.getEl()!)
-            }
-        })
+        message.once("destroy", handleDestroy)
 
         return message
     }
