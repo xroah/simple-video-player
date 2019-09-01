@@ -106,11 +106,11 @@ export default class Slider extends EventEmitter {
         return this._moving
     }
 
-    update(val: number, emit = false) {
+    update(val: number) {
         let percent = `${val}%`
 
         if (this._value === val) {
-            return
+            return false
         }
 
         if (this._vertical) {
@@ -121,11 +121,14 @@ export default class Slider extends EventEmitter {
             this._primaryProgress.style.width = percent
         }
 
-        if (emit) {
-            this.emit("valuechange", val)
-        }
-
         this._value = val
+
+        return true
+    }
+
+    private updateAndEmit(val: number) {
+        this.update(val)
+        this.emit("valuechange", val)
     }
 
     updateSecondary(val: number) {
@@ -250,7 +253,7 @@ export default class Slider extends EventEmitter {
                 rect.height - (this._startY - rect.top) :
                 this._startX - rect.left
 
-            this.update(this.getPercent(val), true)
+            this.updateAndEmit(this.getPercent(val))
             this.updateTooltip(val)
             addListener(document, "mousemove", this.handleSliderMove)
             addListener(document, "touchmove", this.handleSliderMove)
@@ -318,7 +321,7 @@ export default class Slider extends EventEmitter {
 
         percentVal = this.getPercent(val)
 
-        this.update(percentVal, true)
+        this.updateAndEmit(percentVal)
         this.updateTooltip(val)
         this.emit("slidemove", percentVal)
     }
