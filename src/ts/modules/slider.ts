@@ -41,11 +41,14 @@ export default class Slider extends EventEmitter {
 
         this._vertical = !!options.vertical
         this._value = Number(options.defaultValue) || 0
-        this._el = createEl("div", "rplayer-slider-wrapper")
+        this._el = createEl(
+            "div",
+            "rplayer-slider-wrapper", this._vertical ? "rplayer-slider-wrapper-vertical" : ""
+        )
         this._marker = createEl("div", "rplayer-slider-marker")
         this._primaryProgress = createEl("div", "rplayer-slider-primary-progress")
 
-        if (typeof options.tooltip === "function" || options.tooltip) {
+        if (options.tooltip) {
             this._tooltip = options.tooltip
         } else {
             this._tooltip = false
@@ -64,10 +67,6 @@ export default class Slider extends EventEmitter {
 
     private mountTo(container: HTMLElement) {
         const track = createEl("div", "rplayer-slider-track")
-
-        if (this._vertical) {
-            this._el.classList.add("rplayer-slider-wrapper-vertical")
-        }
 
         if (this._secondaryProgress) {
             track.appendChild(this._secondaryProgress)

@@ -179,7 +179,9 @@ export function createEl(tag: string, ...classNames: string[]) {
     const el = document.createElement(tag)
 
     if (classNames.length) {
-        el.classList.add(...classNames)
+        el.classList.add(
+            ...(classNames.filter(c => c))
+        )
     }
 
     return el
