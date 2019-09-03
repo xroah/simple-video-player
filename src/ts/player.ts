@@ -182,16 +182,6 @@ export default class RPlayer extends EventEmitter {
             case "waiting":
                 _loadState.setVisible(true)
                 break
-            /* case "loadeddata":
-                if (this._options.autoPlay !== false) {
-                    //Uncaught (in promise) DOMException:
-                    // play() failed because the user didn't interact with the document first
-                    this.player.play()
-                        .catch(() => {
-                            this.message.update("自动播放被浏览器阻止")
-                        })
-                }
-                break */
             case "canplay":
                 _loadState.setVisible(false)
                 break
