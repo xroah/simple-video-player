@@ -5,13 +5,16 @@ import Video from "./modules/video";
 import Contextmenu, {ContextmenuItem} from "./modules/contextmenu"
 import {
     addListener,
-    preventAndStop,
-    getContainer,
-    removeAllListeners,
-    createEl
-} from "./dom"
+    removeAllListeners
+} from "./dom-event"
 import Control from "./modules/control"
-import {isPlainObject, isUndef} from "./utils";
+import {
+    isPlainObject,
+    isUndef,
+    preventAndStop,
+    createEl,
+    getContainer
+} from "./utils";
 import {CONTROL_BAR_HIDE_TIMEOUT} from "./constants";
 interface RPlayerOptions {
     container: string | HTMLElement | Node

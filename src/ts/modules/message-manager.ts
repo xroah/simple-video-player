@@ -1,6 +1,5 @@
-import {createEl} from "../dom"
 import {EventObject} from "../event"
-import {isUndef} from "../utils"
+import {isUndef, createEl} from "../utils"
 import Message, {PREFIX} from "./message"
 
 export default class MessageManager {

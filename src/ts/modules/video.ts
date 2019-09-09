@@ -1,4 +1,4 @@
-import {createEl} from "../dom";
+import {createEl} from "../utils";
 import EventEmitter from "../event";
 
 interface videoOptions {

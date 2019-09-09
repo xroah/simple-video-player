@@ -1,11 +1,13 @@
-import {formatTime} from "../utils";
+import {
+    formatTime,
+    createEl,
+    preventAndStop
+} from "../utils";
 import Slider from "./slider";
 import {
     addListener,
-    createEl,
-    preventAndStop,
     removeAllListeners
-} from "../dom";
+} from "../dom-event";
 import Transition from "./transition";
 import {HIDDEN_CLASS} from "../constants"
 import {EventObject} from "../event";

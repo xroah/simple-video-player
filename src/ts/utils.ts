@@ -63,3 +63,36 @@ export function throttle(fn: Function, delay: number = 100) {
 
     return throttled
 }
+
+export function getContainer(container: string | HTMLElement | Node) {
+    if (container) {
+        if (typeof container === "string") {
+            return document.querySelector(container)
+        } else if (container.nodeName) {
+            return container
+        }
+    }
+
+    return null
+}
+
+export function preventAndStop(evt: Event) {
+    evt.preventDefault()
+    evt.stopPropagation()
+}
+
+export function createEl(tag: string, ...classNames: string[]) {
+    const el = document.createElement(tag)
+
+    if (classNames.length) {
+        el.classList.add(
+            ...(classNames.filter(c => c))
+        )
+    }
+
+    return el
+}
+
+export function reflow(el: HTMLElement) {
+    el.offsetHeight
+}

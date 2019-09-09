@@ -1,15 +1,15 @@
 import {HIDDEN_CLASS} from "../constants";
 import {
     addListener,
-    createEl,
-    preventAndStop,
     removeAllListeners,
     removeListener
-} from "../dom";
+} from "../dom-event";
 import EventEmitter from "../event";
 import {
     isFunc,
-    noop
+    noop,
+    createEl,
+    preventAndStop
 } from "../utils";
 import RPlayer from ".."
 
