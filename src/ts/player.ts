@@ -3,10 +3,7 @@ import EventEmitter from "./event";
 import LoadState, {ErrorMessage} from "./modules/load-state";
 import Video from "./modules/video";
 import Contextmenu, {ContextmenuItem} from "./modules/contextmenu"
-import {
-    addListener,
-    removeAllListeners
-} from "./dom-event"
+import {addListener, removeAllListeners} from "./dom-event"
 import Control from "./modules/control"
 import {
     isPlainObject,

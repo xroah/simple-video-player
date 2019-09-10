@@ -4,10 +4,7 @@ import {
     preventAndStop
 } from "../utils";
 import Slider from "./slider";
-import {
-    addListener,
-    removeAllListeners
-} from "../dom-event";
+import {addListener, removeAllListeners} from "../dom-event";
 import Transition from "./transition";
 import {HIDDEN_CLASS} from "../constants"
 import {EventObject} from "../event";

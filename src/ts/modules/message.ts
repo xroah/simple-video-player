@@ -1,12 +1,6 @@
-import {
-    addListener,
-    removeAllListeners
-} from "../dom-event"
+import {addListener, removeAllListeners} from "../dom-event"
 import EventEmitter from "../event"
-import {
-    createEl,
-    preventAndStop
-} from "../utils"
+import {createEl, preventAndStop} from "../utils"
 
 export const PREFIX = "rplayer-message"
 
