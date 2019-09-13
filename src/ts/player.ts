@@ -11,15 +11,16 @@ import {
     preventAndStop,
     createEl,
     getContainer
-} from "./utils";
-import {CONTROL_BAR_HIDE_TIMEOUT} from "./constants";
+} from "./utils"
+import {CONTROL_BAR_HIDE_TIMEOUT} from "./constants"
+
 interface RPlayerOptions {
     container: string | HTMLElement | Node
     // autoPlay?: boolean
     url: string
     errorMessage?: ErrorMessage
     defaultVolume?: number
-    contextmenu?: ContextmenuItem[],
+    contextmenu?: ContextmenuItem[]
     poster?: string
     playOnClick?: boolean
     controlBarTimeout?: number
