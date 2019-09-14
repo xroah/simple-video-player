@@ -120,11 +120,11 @@ export default class RPlayer extends EventEmitter {
         const videoEl = this.video.el
         const _addListener = (n: string) => addListener(videoEl, n, this.handleVideoEvents)
         
-        videoEvents.forEach(_addListener)
-
         if (this._options.playOnClick !== false) {
             addListener(this.body, "click", this.handleClickBody)
         }
+
+        videoEvents.forEach(_addListener)
     }
 
     handleClickBody = () => {
@@ -132,9 +132,7 @@ export default class RPlayer extends EventEmitter {
     }
 
     togglePlay() {
-        const {
-            video
-        } = this
+        const {video} = this
 
         if (video.isError()) {
             return
@@ -149,10 +147,7 @@ export default class RPlayer extends EventEmitter {
 
     private handleVideoEvents = (evt: Event) => {
         const type = evt.type
-        const {
-            video,
-            _loadState
-        } = this
+        const {video, _loadState} = this
 
         switch (type) {
             case "loadstart":

@@ -17,16 +17,14 @@ export default class Control {
     }
 
     private initEvents() {
-        const evtNames = [
+        [
             "loadedmetadata",
             "loadstart",
             "error",
             "durationchange"
-        ]
-
+        ].forEach(name => this._rp.on(name, this.handleVideoEvents))
         addListener(this._rp.body, "mousemove", this.handleMouseMove)
         this._controlBar.on("progresschange", this.handleProgressChange)
-        evtNames.forEach(name => this._rp.on(name, this.handleVideoEvents))
         this._rp.on("timeupdate", throttle(this.handleTimeupdate.bind(this)))
     }
 
