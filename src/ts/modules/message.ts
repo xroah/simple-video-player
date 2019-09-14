@@ -19,7 +19,7 @@ export default class Message extends EventEmitter {
     private _closeEl: HTMLElement | null = null
     private _options: MessageOptions
 
-    public uid = uid++
+    public uid = 0
 
     constructor(container: HTMLElement, options = {}) {
         super()
@@ -31,6 +31,8 @@ export default class Message extends EventEmitter {
         this._el = createEl("div", `${PREFIX}-item`)
 
         this.mountTo(container)
+
+        Object.defineProperty(this, "uid", {value: uid++})
     }
 
     getEl() {
