@@ -12,7 +12,7 @@ import {
     createEl,
     getContainer
 } from "./utils"
-import {CONTROL_BAR_HIDE_TIMEOUT} from "./constants"
+import {CONTROL_BAR_HIDE_TIMEOUT, videoEvents} from "./constants"
 
 interface RPlayerOptions {
     container: string | HTMLElement | Node
@@ -118,31 +118,9 @@ export default class RPlayer extends EventEmitter {
 
     private initEvents() {
         const videoEl = this.video.el
-        const videoEvents = [
-            "abort",
-            "loadedmetadata",
-            "loadstart",
-            "waiting",
-            "canplay",
-            "error",
-            "loadeddata",
-            "play",
-            "playing",
-            "pause",
-            "volumechange",
-            "ratechange",
-            "ended",
-            "seeking",
-            "seeked",
-            "emptied",
-            "durationchange",
-            "canplaythrough",
-            "timeupdate",
-            "progress"
-        ]
-        videoEvents.forEach(
-            eventName => addListener(videoEl, eventName, this.handleVideoEvents)
-        )
+        const _addListener = (n: string) => addListener(videoEl, n, this.handleVideoEvents)
+        
+        videoEvents.forEach(_addListener)
 
         if (this._options.playOnClick !== false) {
             addListener(this.body, "click", this.handleClickBody)
