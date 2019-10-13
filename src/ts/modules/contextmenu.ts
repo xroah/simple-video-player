@@ -250,10 +250,10 @@ export default class Contextmenu extends EventEmitter {
             this.updatePosition(left, top)
             this.addEvents()
             this._el.focus()
-            this.emit("shown", {type: "shown"})
+            this.emit("shown")
         } else {
             this._el.classList.add(HIDDEN_CLASS)
-            this.emit("hidden", {type: "hidden"})
+            this.emit("hidden")
         }
     }
 
