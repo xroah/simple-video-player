@@ -1,8 +1,10 @@
 import RPlayer from "../src/ts"
+import switchState from "../src/ts/addons/switch-state"
 
 let rp = new RPlayer({
     container: "#player",
     url: "http://localhost:8000/videos/test.mp4",
+    addons: [switchState],
     
     contextmenu: [
         {

@@ -24,6 +24,7 @@ interface RPlayerOptions {
     poster?: string
     playOnClick?: boolean
     controlBarTimeout?: number
+    addons?: Function[]
 }
 
 export default class RPlayer extends EventEmitter {
@@ -79,9 +80,10 @@ export default class RPlayer extends EventEmitter {
         let defaultVolume = this._options.defaultVolume
         this.root.tabIndex = -1
 
-        this.initEvents()
         this.initContextmenu()
-
+        this.initAddons()
+        this.initEvents()
+        
         this.root.appendChild(this.body)
         container.appendChild(this.root)
 
@@ -91,6 +93,14 @@ export default class RPlayer extends EventEmitter {
 
         this.video.setVolume(defaultVolume! / 100)
         this.control.showControlBar()
+    }
+
+    private initAddons() {
+        const {addons} = this._options
+
+        if (addons && addons.length) {
+            addons.forEach(a => a(this))
+        }
     }
 
     private initContextmenu() {
