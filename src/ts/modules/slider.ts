@@ -42,18 +42,14 @@ export default class Slider extends EventEmitter {
         this._value = Number(options.defaultValue) || 0
         this._el = createEl(
             "div",
-            "rplayer-slider-wrapper", this._vertical ? "rplayer-slider-wrapper-vertical" : ""
+            "rplayer-slider-wrapper",
+            this._vertical ? "rplayer-slider-wrapper-vertical" : ""
         )
         this._marker = createEl("div", "rplayer-slider-marker")
         this._primaryProgress = createEl("div", "rplayer-slider-primary-progress")
+        this._tooltip = options.tooltip || false
 
-        if (options.tooltip) {
-            this._tooltip = options.tooltip
-        } else {
-            this._tooltip = false
-        }
-
-        if (!!options.secondary) {
+        if (options.secondary) {
             this._secondaryProgress = createEl("div", "rplayer-slider-secondary-progress")
         }
 
@@ -123,32 +119,25 @@ export default class Slider extends EventEmitter {
     }
 
     private updateAndEmit(val: number) {
-        this.update(val)
-        this.emit("valuechange", val)
+        if (this.update(val)) {
+            this.emit("valuechange", val)
+        }
     }
 
     updateSecondary(val: number) {
         const percent = `${val}%`
 
-        if (!this._secondaryProgress) {
-            return
-        }
-
-        if (this._vertical) {
-            this._secondaryProgress.style.height = percent
-        } else {
-            this._secondaryProgress.style.width = percent
+        if (this._secondaryProgress) {
+            const prop = this._vertical ? "height" : "width"
+            this._secondaryProgress.style[prop] = percent
         }
     }
 
     getPercent(val: number) {
         const elRect = this._el.getBoundingClientRect()
+        const v = this._vertical ? val / elRect.height : val / elRect.width
 
-        return (
-            this._vertical ?
-                val / elRect.height :
-                val / elRect.width
-        ) * 100
+        return v * 100
     }
 
     private updateTooltip(pos = 0) {
