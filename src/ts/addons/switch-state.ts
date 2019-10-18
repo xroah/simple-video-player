@@ -5,7 +5,7 @@ import {HIDDEN_CLASS} from "../constants"
 
 const TRANSITION_CLASS = "rplayer-switch-state-transition"
 
-class PlayState {
+class SwitchState {
     private _el: HTMLElement
     private _rp: RPlayer
 
@@ -74,13 +74,13 @@ class PlayState {
 }
 
 export default (rp: RPlayer) => {
-    let ps: PlayState | null = new PlayState(rp)
+    let instance: SwitchState | null = new SwitchState(rp)
 
     rp.once("destroy", () => {
-        if (ps) {
-            ps.destroy()
+        if (instance) {
+            instance.destroy()
 
-            ps = null
+            instance = null
         }
     })
 }
