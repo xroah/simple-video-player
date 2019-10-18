@@ -238,7 +238,10 @@ export default class Slider extends EventEmitter {
                 rect.height - (this._startY - rect.top) :
                 this._startX - rect.left
 
-            this.updateAndEmit(this.getPercent(val))
+            if (evt.target !== this._marker) {
+                this.updateAndEmit(this.getPercent(val))
+            }
+
             this.updateTooltip(val)
             addListener(document, "mousemove", this.handleSliderMove)
             addListener(document, "touchmove", this.handleSliderMove)
