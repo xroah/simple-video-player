@@ -10,12 +10,13 @@ import {HIDDEN_CLASS} from "../constants"
 import {EventObject} from "../event";
 
 export default class ControlBar extends Transition {
+    leftAddonContainer: HTMLElement
+    rightAddonContainer: HTMLElement
+
     private _progressBar: HTMLElement
     private _progress: Slider
     private _currentTimeEl: HTMLElement
     private _durationEl: HTMLElement
-    private _leftAddonContainer: HTMLElement
-    private _rightAddonContainer: HTMLElement
     private _duration = 0
     private _mouseEntered = false
 
@@ -25,8 +26,8 @@ export default class ControlBar extends Transition {
         this.el = createEl("div", "rplayer-control", HIDDEN_CLASS)
         this._currentTimeEl = createEl("div")
         this._durationEl = createEl("div")
-        this._leftAddonContainer = createEl("div", "left-addon-container")
-        this._rightAddonContainer = createEl("div", "right-addon-container")
+        this.leftAddonContainer = createEl("div", "left-addon-container")
+        this.rightAddonContainer = createEl("div", "right-addon-container")
         this._progressBar = createEl("div", "rplayer-progress-bar")
         this._progress = new Slider(
             this._progressBar,
@@ -49,8 +50,8 @@ export default class ControlBar extends Transition {
         progressWrapper.appendChild(this._progressBar)
         progressWrapper.appendChild(this._durationEl)
         this.el.appendChild(progressWrapper)
-        addonContainer.appendChild(this._leftAddonContainer)
-        addonContainer.appendChild(this._rightAddonContainer)
+        addonContainer.appendChild(this.leftAddonContainer)
+        addonContainer.appendChild(this.rightAddonContainer)
         this.el.appendChild(addonContainer)
         container.appendChild(this.el)
 
