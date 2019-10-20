@@ -83,7 +83,9 @@ export default class RPlayer extends EventEmitter {
         this.initContextmenu()
         this.initAddons()
         this.initEvents()
-        
+
+        this.emit("beforemount")
+
         this.root.appendChild(this.body)
         container.appendChild(this.root)
 
@@ -93,6 +95,8 @@ export default class RPlayer extends EventEmitter {
 
         this.video.setVolume(defaultVolume! / 100)
         this.control.showControlBar()
+
+        this.emit("mounted")
     }
 
     private initAddons() {
@@ -100,6 +104,13 @@ export default class RPlayer extends EventEmitter {
 
         if (addons && addons.length) {
             addons.forEach(a => a(this))
+        }
+    }
+
+    getAddonContainers() {
+        return {
+            left: this._controlBar.leftAddonContainer,
+            right: this._controlBar.rightAddonContainer
         }
     }
 
@@ -129,7 +140,7 @@ export default class RPlayer extends EventEmitter {
     private initEvents() {
         const videoEl = this.video.el
         const _addListener = (n: string) => addListener(videoEl, n, this.handleVideoEvents)
-        
+
         if (this._options.playOnClick !== false) {
             addListener(this.body, "click", this.handleClickBody)
         }
