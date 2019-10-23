@@ -38,6 +38,7 @@ export default class RPlayer extends EventEmitter {
     private _loadState: LoadState
     private _options: RPlayerOptions
     private _contextmenu: Contextmenu | null = null
+    private _container: HTMLElement
 
     constructor(options: RPlayerOptions) {
         super()
@@ -72,11 +73,12 @@ export default class RPlayer extends EventEmitter {
         this.root = el
         this.body = body
         this.control = new Control(this, this._controlBar)
+        this._container = container as HTMLElement
 
-        this.init(container as HTMLElement)
+        this.init()
     }
 
-    private init(container: HTMLElement) {
+    private init() {
         let defaultVolume = this._options.defaultVolume
         this.root.tabIndex = -1
 
@@ -85,9 +87,9 @@ export default class RPlayer extends EventEmitter {
         this.initContextmenu()
         this.initAddons()
         this.initEvents()
-        
+
         this.root.appendChild(this.body)
-        container.appendChild(this.root)
+        this._container.appendChild(this.root)
 
         if (isUndef(defaultVolume)) {
             defaultVolume = 50
