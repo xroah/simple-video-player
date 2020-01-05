@@ -24,24 +24,26 @@ export interface ContextmenuItem {
 
 export default class Contextmenu extends EventEmitter {
     private _el: HTMLElement
-    private _items: ContextmenuItem[]
     private _player: RPlayer
 
-    constructor(container: HTMLElement, player: RPlayer, items: ContextmenuItem[]) {
+    constructor(
+        container: HTMLElement,
+        player: RPlayer,
+        items: ContextmenuItem[]
+    ) {
         super()
 
         this._el = createEl("ul", "rplayer-contextmenu", HIDDEN_CLASS)
-        this._items = items
         this._player = player
         this._el.tabIndex = -1
 
-        this.mountTo(container)
+        this.mountTo(container, items)
     }
 
-    private mountTo(container: HTMLElement) {
+    private mountTo(container: HTMLElement, items: ContextmenuItem[]) {
         const frag = document.createDocumentFragment()
 
-        this._items.forEach(item => {
+        items.forEach(item => {
             const li = createEl("li", ITEM_CLASS)
             const action = isFunc(item.action) ? item.action : noop
             const text = item.text as any

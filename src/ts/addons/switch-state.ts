@@ -76,11 +76,14 @@ class SwitchState {
 export default (rp: RPlayer) => {
     let instance: SwitchState | null = new SwitchState(rp)
 
-    rp.once("destroy", () => {
-        if (instance) {
-            instance.destroy()
+    rp.once(
+        "destroy",
+        () => {
+            if (instance) {
+                instance.destroy()
 
-            instance = null
+                instance = null
+            }
         }
-    })
+    )
 }
