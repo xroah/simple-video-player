@@ -36,12 +36,24 @@ export function noop() {
     //do nothing
 }
 
-export function throttle(fn: Function, delay: number = 100) {
+interface ThrottleOptions {
+    trailing?: boolean
+}
+
+export function throttle(
+    fn: Function,
+    delay: number = 100,
+    options?: ThrottleOptions
+) {
     let timer: any = null
     let previous = 0
     const throttled = function throttled(...args: any[]) {
         const now = Date.now()
         const remaining = delay - (now - previous)
+
+        if (!options) {
+            options = {}
+        }
 
         if (remaining <= 0) {
             if (timer !== null) {
@@ -53,7 +65,7 @@ export function throttle(fn: Function, delay: number = 100) {
             previous = now
 
             fn.apply(null, args)
-        } else if (!timer) {
+        } else if (options.trailing !== false && !timer) {
             timer = setTimeout(
                 () => fn.apply(timer = null, args),
                 delay
