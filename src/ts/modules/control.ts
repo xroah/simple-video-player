@@ -29,7 +29,6 @@ export default class Control {
             "timeupdate",
             throttle(
                 this.handleTimeupdate,
-                100,
                 {trailing: false}
             )
         )
