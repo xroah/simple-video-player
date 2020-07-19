@@ -1,0 +1,31 @@
+@import "./switch-state";
+
+.rplayer-addon-btn {
+    display: inline-block;
+    width: 24px;
+    height: 20px;
+    line-height: 20px;
+    border: none;
+    outline: none;
+    background-repeat: no-repeat;
+    background-color: transparent;
+    background-position: center;
+    background-size: 96% 96%;
+    color: #fff;
+    transition: opacity .3s;
+    opacity: .9;
+    cursor: pointer;
+
+    &:hover {
+        opacity: 1;
+        transform: scale(1.1);
+    }
+}
+
+.rplayer-play-btn {
+    background-image: url("../../icons/play.svg");
+
+    &.rplayer-paused {
+        background-image: url("../../icons/pause.svg");
+    }
+}

@@ -82,12 +82,12 @@ export default class RPlayer extends EventEmitter {
         let defaultVolume = this._options.defaultVolume
         this.root.tabIndex = -1
 
-        this.emit("beforemount")
-
         this.initContextmenu()
         this.initAddons()
         this.initEvents()
 
+        this.emit("beforemount")
+        
         this.root.appendChild(this.body)
         this._container.appendChild(this.root)
 
