@@ -47,7 +47,15 @@ export default class Contextmenu extends EventEmitter {
             const li = createEl("li", ITEM_CLASS)
             const action = isFunc(item.action) ? item.action : noop
             const text = item.text as any
-            li.innerHTML = isFunc(text) ? text(this._player) : () => text
+            let textFn: Function
+
+            if (isFunc(text)) {
+                textFn = text
+                li.innerHTML = text(this._player)
+            } else {
+                textFn = () => text
+                li.innerHTML = text
+            }
 
             if (item.id) {
                 li.id = item.id
@@ -57,7 +65,7 @@ export default class Contextmenu extends EventEmitter {
                 value: action
             })
             Object.defineProperty(li, "__text__", {
-                value: text
+                value: textFn
             })
 
             frag.appendChild(li)
