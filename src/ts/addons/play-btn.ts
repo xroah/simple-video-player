@@ -19,9 +19,10 @@ export default (rp: RPlayer) => {
         .once("destroy", () => removeAllListeners(btn))
         .on("beforemount", () => {
             const {left} = rp.getAddonContainers()
-            
+
             left.appendChild(btn)
         })
+
     addListener(btn, "click", rp.togglePlay.bind(rp))
 
     return btn

@@ -1,9 +1,7 @@
 import RPlayer from ".."
 import {addListener, removeListener} from "../dom-event"
 import {createEl, reflow} from "../utils"
-import {HIDDEN_CLASS} from "../constants"
-
-const TRANSITION_CLASS = "rplayer-switch-state-transition"
+import {HIDDEN_CLASS, TRANSITION_CLASS} from "../constants"
 
 class SwitchState {
     private _el: HTMLElement
