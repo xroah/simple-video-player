@@ -6,12 +6,12 @@ import ControlBar from "./control-bar";
 
 export default class Control {
     _rp: RPlayer
-    _controlBar: ControlBar
+    _bar: ControlBar
     prevented = false
 
     constructor(rp: RPlayer, controlBar: ControlBar) {
         this._rp = rp
-        this._controlBar = controlBar
+        this._bar = controlBar
 
         this.initEvents()
     }
@@ -24,7 +24,7 @@ export default class Control {
             "durationchange"
         ].forEach(name => this._rp.on(name, this.handleVideoEvents))
         addListener(this._rp.body, "mousemove", this.handleMouseMove)
-        this._controlBar.on("progresschange", this.handleProgressChange)
+        this._bar.on("progresschange", this.handleProgressChange)
         this._rp.on(
             "timeupdate",
             throttle(
@@ -46,17 +46,17 @@ export default class Control {
             return
         }
 
-        this._controlBar.setVisible(true)
+        this._bar.setVisible(true)
     }
 
     hideControlBar = () => {
-        this._controlBar.setVisible(false)
+        this._bar.setVisible(false)
     }
 
     private handleVideoEvents = (evt: any) => {
         const type = evt.type
         const {
-            _controlBar: bar,
+            _bar: bar,
             _rp: {video}
         } = this
 
@@ -86,7 +86,7 @@ export default class Control {
         const time = evt.details / 100 * duration
 
         video.setCurrentTime(time)
-        this._controlBar.updateCurrentTime(time)
+        this._bar.updateCurrentTime(time)
     }
 
 
@@ -106,7 +106,7 @@ export default class Control {
             }
         }
 
-        this._controlBar.updateBuffer(ret)
+        this._bar.updateBuffer(ret)
     }
 
     handleTimeupdate = () => {
@@ -114,7 +114,7 @@ export default class Control {
         const duration = this._rp.video.getDuration()
         const val = curTime / duration * 100
 
-        this._controlBar.updateProgress(val)
-        this._controlBar.updateCurrentTime(curTime)
+        this._bar.updateProgress(val)
+        this._bar.updateCurrentTime(curTime)
     }
 }
