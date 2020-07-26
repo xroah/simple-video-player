@@ -21,9 +21,8 @@ export default class ControlBar extends Transition {
     private _mouseEntered = false
 
     constructor(container: HTMLElement, hideTimeout: number) {
-        super()
-
-        this.el = createEl("div", "rplayer-control", HIDDEN_CLASS)
+        super("rplayer-control", HIDDEN_CLASS)
+        
         this._currentTimeEl = createEl("div")
         this._durationEl = createEl("div")
         this.leftAddonContainer = createEl("div", "left-addon-container")

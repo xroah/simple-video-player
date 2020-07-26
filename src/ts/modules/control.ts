@@ -5,13 +5,14 @@ import {throttle} from "../utils";
 import ControlBar from "./control-bar";
 
 export default class Control {
-    _rp: RPlayer
-    _bar: ControlBar
+    private _rp: RPlayer
+
+    bar: ControlBar
     prevented = false
 
     constructor(rp: RPlayer, controlBar: ControlBar) {
         this._rp = rp
-        this._bar = controlBar
+        this.bar = controlBar
 
         this.initEvents()
     }
@@ -24,7 +25,7 @@ export default class Control {
             "durationchange"
         ].forEach(name => this._rp.on(name, this.handleVideoEvents))
         addListener(this._rp.body, "mousemove", this.handleMouseMove)
-        this._bar.on("progresschange", this.handleProgressChange)
+        this.bar.on("progresschange", this.handleProgressChange)
         this._rp.on(
             "timeupdate",
             throttle(
@@ -46,17 +47,17 @@ export default class Control {
             return
         }
 
-        this._bar.setVisible(true)
+        this.bar.setVisible(true)
     }
 
     hideControlBar = () => {
-        this._bar.setVisible(false)
+        this.bar.setVisible(false)
     }
 
     private handleVideoEvents = (evt: any) => {
         const type = evt.type
         const {
-            _bar: bar,
+            bar,
             _rp: {video}
         } = this
 
@@ -86,7 +87,7 @@ export default class Control {
         const time = evt.details / 100 * duration
 
         video.setCurrentTime(time)
-        this._bar.updateCurrentTime(time)
+        this.bar.updateCurrentTime(time)
     }
 
 
@@ -106,7 +107,7 @@ export default class Control {
             }
         }
 
-        this._bar.updateBuffer(ret)
+        this.bar.updateBuffer(ret)
     }
 
     handleTimeupdate = () => {
@@ -114,7 +115,7 @@ export default class Control {
         const duration = this._rp.video.getDuration()
         const val = curTime / duration * 100
 
-        this._bar.updateProgress(val)
-        this._bar.updateCurrentTime(curTime)
+        this.bar.updateProgress(val)
+        this.bar.updateCurrentTime(curTime)
     }
 }

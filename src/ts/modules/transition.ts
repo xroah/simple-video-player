@@ -10,10 +10,10 @@ export default class Transition extends EventEmitter {
     timer: any = null
     autoHide = false
 
-    constructor() {
+    constructor(...classes: string[]) {
         super()
 
-        this.el = createEl("div")
+        this.el = createEl("div", ...classes)
         addListener(this.el, "transitionend", this.handleTransitionEnd)
     }
 
