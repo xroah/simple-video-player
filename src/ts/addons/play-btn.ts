@@ -17,7 +17,7 @@ export default (rp: RPlayer) => {
         .on("pause", handlePlay)
         .on("loadstart", handlePlay)
         .once("destroy", () => removeAllListeners(btn))
-        .on("beforemount", () => {
+        .once("beforemount", () => {
             const {left} = rp.getAddonContainers()
 
             left.appendChild(btn)

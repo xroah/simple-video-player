@@ -98,10 +98,10 @@ export default (rp: RPlayer) => {
     volume.mountTo(el)
 
     rp
-        .on("beforemount", () => {
+        .once("beforemount", () => {
             const {right} = rp.getAddonContainers()
 
             right.appendChild(el)
         })
-        .on("destroy", () => volume.destroy())
+        .once("destroy", () => volume.destroy())
 }
