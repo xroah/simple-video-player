@@ -2,11 +2,12 @@ import RPlayer from "../src/ts"
 import switchState from "../src/ts/addons/switch-state"
 import playBtn from "../src/ts/addons/play-btn"
 import miniProgress from "../src/ts/addons/mini-progress"
+import volume from "../src/ts/addons/volume"
 
 let rp = new RPlayer({
     container: "#player",
     url: "http://localhost:8000/videos/test.mp4",
-    addons: [switchState, playBtn, miniProgress],
+    addons: [switchState, playBtn, miniProgress, volume],
     
     contextmenu: [
         {
