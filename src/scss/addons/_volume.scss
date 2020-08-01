@@ -1,0 +1,29 @@
+@import "../vars";
+
+.rplayer-volume-wrapper {
+    position: relative;
+
+    .rplayer-volume-btn {
+        display: inline-block;
+        width: 20px;
+        background-image: url("../../icons/volume.svg");
+        z-index: 10;
+
+        &.rplayer-muted {
+            background-image: url("../../icons/volume_mute.svg");
+        }
+    }
+
+    .rplayer-volume-popup {
+        @include popup();
+        align-items: center;
+        width: 20px;
+        padding: 10px;
+
+        .rplayer-volume-slider {
+            margin-top: 8px;
+            flex: 1;
+            height: 100px;
+        }
+    }
+}
