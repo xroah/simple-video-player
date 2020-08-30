@@ -4,6 +4,7 @@ import Slider from "../modules/slider";
 import {HIDDEN_CLASS} from "../constants";
 import Popup from "./popup";
 import {createEl} from "../utils";
+import {EventObject} from "../event";
 
 class Volume extends Popup {
     private _slider: Slider
@@ -51,8 +52,8 @@ class Volume extends Popup {
         this.updateVolume()
     }
 
-    handleSliderValueChange = (evt: any) => {
-        const val = evt.value / 100
+    handleSliderValueChange = (evt: EventObject) => {
+        const val = evt.details / 100
 
         this.rp.video.setVolume(val)
     }
