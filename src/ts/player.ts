@@ -34,7 +34,6 @@ export default class RPlayer extends EventEmitter {
     video: Video
     control: Control
 
-    private _controlBar: ControlBar
     private _loadState: LoadState
     private _options: RPlayerOptions
     private _contextmenu: Contextmenu | null = null
@@ -57,9 +56,7 @@ export default class RPlayer extends EventEmitter {
         const body = createEl("div", "rplayer-body")
         const controlBarTimeout = options.controlBarTimeout || CONTROL_BAR_HIDE_TIMEOUT
 
-        //control bar mount to root element
-        //prevent event bubbling(this.body bind events)
-        this._controlBar = new ControlBar(el, controlBarTimeout)
+
         this._loadState = new LoadState(body, options.errorMessage || {})
         this._options = options
 
@@ -72,7 +69,7 @@ export default class RPlayer extends EventEmitter {
         )
         this.root = el
         this.body = body
-        this.control = new Control(this, this._controlBar)
+        this.control = new Control(this, controlBarTimeout)
         this._container = container as HTMLElement
 
         this.init()
@@ -87,7 +84,7 @@ export default class RPlayer extends EventEmitter {
         this.initEvents()
 
         this.emit("beforemount")
-        
+
         this.root.appendChild(this.body)
         this._container.appendChild(this.root)
 
@@ -110,10 +107,12 @@ export default class RPlayer extends EventEmitter {
     }
 
     getAddonContainers() {
-        return {
-            left: this._controlBar.leftAddonContainer,
-            right: this._controlBar.rightAddonContainer
-        }
+        const {
+            leftAddonContainer: left,
+            rightAddonContainer: right
+        } = this.control.bar
+
+        return {left, right}
     }
 
     private initContextmenu() {
@@ -194,8 +193,7 @@ export default class RPlayer extends EventEmitter {
 
     destroy() {
         this.emit("destroy")
-        this._controlBar.off()
-        this._controlBar.destroy()
+        this.control.destroy()
         this.root.parentNode?.removeChild(this.root)
         this._contextmenu?.destroy()
         removeAllListeners(this.video.el)

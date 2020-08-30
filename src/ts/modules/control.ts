@@ -10,9 +10,11 @@ export default class Control {
     bar: ControlBar
     prevented = false
 
-    constructor(rp: RPlayer, controlBar: ControlBar) {
+    constructor(rp: RPlayer, timeout: number) {
         this._rp = rp
-        this.bar = controlBar
+        //control bar mount to root element
+        //prevent event bubbling(this.body bind events)
+        this.bar = new ControlBar(rp.root, timeout)
 
         this.initEvents()
     }
@@ -117,5 +119,10 @@ export default class Control {
 
         this.bar.updateProgress(val)
         this.bar.updateCurrentTime(curTime)
+    }
+
+    destroy() {
+        this.bar.off()
+        this.bar.destroy()
     }
 }
