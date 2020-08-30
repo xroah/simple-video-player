@@ -1,4 +1,3 @@
-import ControlBar from "./modules/control-bar";
 import EventEmitter from "./event";
 import LoadState, {ErrorMessage} from "./modules/load-state";
 import Video from "./modules/video";
