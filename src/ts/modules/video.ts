@@ -30,13 +30,11 @@ export default class Player extends EventEmitter {
     }
 
     updateUrl(url: string) {
-        if (!url) {
-            return
+        if (url) {
+            this.el.src = url
+
+            this.el.load()
         }
-
-        this.el.src = url
-
-        this.el.load()
     }
 
     play() {
