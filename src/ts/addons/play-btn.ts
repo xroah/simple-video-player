@@ -5,11 +5,9 @@ import {createEl} from "../utils";
 export default (rp: RPlayer) => {
     const btn = createEl("span", "rplayer-addon-btn", "rplayer-play-btn")
     const handlePlay = () => {
-        if (rp.video.isPaused()) {
-            btn.classList.remove("rplayer-paused")
-        } else {
-            btn.classList.add("rplayer-paused")
-        }
+        const fn: "remove" | "add" = rp.video.isPaused() ? "remove" : "add"
+
+        btn.classList[fn]("rplayer-paused")
     }
 
     rp

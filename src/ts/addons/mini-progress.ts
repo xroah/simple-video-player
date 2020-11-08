@@ -19,13 +19,7 @@ class MiniProgress {
     }
 
     setVisible(visible: boolean) {
-        const {classList} = this._bar
-
-        if (visible) {
-            classList.remove(HIDDEN_CLASS)
-        } else {
-            classList.add(HIDDEN_CLASS)
-        }
+        this._bar.classList[visible ? "remove" : "add"](HIDDEN_CLASS)
     }
 }
 

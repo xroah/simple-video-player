@@ -22,33 +22,28 @@ class SwitchState {
     }
 
     setVisible(visible: boolean) {
-        if (visible) {
-            this._el.classList.remove(HIDDEN_CLASS)
-        } else {
-            this._el.classList.add(HIDDEN_CLASS)
-        }
+        this._el.classList[visible ? "remove" : "add"](HIDDEN_CLASS)
     }
 
     private removeTransition() {
-        if (this._el.classList.contains(TRANSITION_CLASS)) {
-            removeListener(this._el, "transitionend", this.hide)
-            this._el.classList.remove(TRANSITION_CLASS)
+        const {_el} = this
+
+        if (_el.classList.contains(TRANSITION_CLASS)) {
+            removeListener(_el, "transitionend", this.hide)
+            _el.classList.remove(TRANSITION_CLASS)
         }
     }
 
     private handleState(add = false) {
         const PAUSED_CLASS = "rplayer-paused"
-        const classList = this._el.classList
+        const {_el} = this
+        const fn: "remove" | "add" = this._rp.video.isPaused() ? "add" : "remove"
 
-        if (this._rp.video.isPaused()) {
-            classList.add(PAUSED_CLASS)
-        } else {
-            classList.remove(PAUSED_CLASS)
-        }
+        _el.classList[fn](PAUSED_CLASS)
 
         if (add) {
-            classList.add(TRANSITION_CLASS)
-            addListener(this._el, "transitionend", this.hide)
+            _el.classList.add(TRANSITION_CLASS)
+            addListener(_el, "transitionend", this.hide)
         }
     }
 
