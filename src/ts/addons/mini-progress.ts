@@ -6,14 +6,12 @@ class MiniProgress {
     private _bar: HTMLElement
     private _progress: HTMLElement
 
-    constructor(container: HTMLElement, val: number) {
+    constructor(container: HTMLElement) {
         this._bar = createEl("div", "rplayer-mini-progress-bar")
         this._progress = createEl("div", "rplayer-mini-progress")
         
         this._bar.appendChild(this._progress)
         container.appendChild(this._bar)
-
-        this.updateProgress(val)
     }
 
     updateProgress(val: number) {
@@ -32,7 +30,7 @@ class MiniProgress {
 }
 
 export default (rp: RPlayer) => {
-    const mp = new MiniProgress(rp.root, 0)
+    const mp = new MiniProgress(rp.root)
 
     rp
         .on("timeupdate", () => {
