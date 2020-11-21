@@ -9,6 +9,7 @@
     transform: translate(-50%, -50%) scale(1);
     /*parcel relative to index.scss*/
     background: url("../../icons/play.svg") no-repeat center center/24px 24px #000;
+    box-shadow: 0 0 5px 0 rgba(255, 255, 255, .8);
     opacity: .8;
     z-index: 1;
 
