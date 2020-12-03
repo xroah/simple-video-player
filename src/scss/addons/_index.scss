@@ -7,15 +7,16 @@
     width: 24px;
     height: 20px;
     line-height: 20px;
+    margin: 0 5px;
     border: none;
     outline: none;
     background-repeat: no-repeat;
     background-color: transparent;
-    background-position: center;
+    background-position: center center;
     background-size: 96% 96%;
     color: #fff;
-    transition: opacity .3s;
-    opacity: .9;
+    transition: opacity 0.3s;
+    opacity: 0.9;
     cursor: pointer;
 
     &:hover {
@@ -30,4 +31,12 @@
     &.rplayer-paused {
         background-image: url("../../icons/pause.svg");
     }
+}
+
+.rplayer-fullscreen-btn {
+    background-image: url("../../icons/fullscreen.svg");
+}
+
+.rplayer-fullscreen .rplayer-fullscreen-btn {
+    background-image: url("../../icons/fullscreen_exit.svg");
 }
