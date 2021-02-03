@@ -6,7 +6,6 @@ import {addListener, removeAllListeners} from "./dom-event"
 import Control from "./modules/control"
 import {
     isPlainObject,
-    isUndef,
     preventAndStop,
     createEl,
     getContainer
@@ -55,7 +54,6 @@ export default class RPlayer extends EventEmitter {
         const body = createEl("div", "rplayer-body")
         const controlBarTimeout = options.controlBarTimeout || CONTROL_BAR_HIDE_TIMEOUT
 
-
         this._loadState = new LoadState(body, options.errorMessage || {})
         this._options = options
 
@@ -63,7 +61,8 @@ export default class RPlayer extends EventEmitter {
             body,
             {
                 url: options.url,
-                poster: options.poster
+                poster: options.poster,
+                defaultVolume: options.defaultVolume
             }
         )
         this.root = el
@@ -75,7 +74,6 @@ export default class RPlayer extends EventEmitter {
     }
 
     private init() {
-        let defaultVolume = this._options.defaultVolume
         this.root.tabIndex = -1
 
         this.initContextmenu()
@@ -86,12 +84,6 @@ export default class RPlayer extends EventEmitter {
 
         this.root.appendChild(this.body)
         this._container.appendChild(this.root)
-
-        if (isUndef(defaultVolume)) {
-            defaultVolume = 50
-        }
-
-        this.video.setVolume(defaultVolume! / 100)
         this.control.showControlBar()
 
         this.emit("mounted")

@@ -1,9 +1,10 @@
-import {createEl} from "../utils";
+import {createEl, isUndef} from "../utils";
 import EventEmitter from "../event";
 
 interface videoOptions {
     url: string
     poster?: string
+    defaultVolume?: number
 }
 
 export default class Player extends EventEmitter {
@@ -20,10 +21,18 @@ export default class Player extends EventEmitter {
         this.el.preload = "auto"
         this.el.src = options.url
         this.el.crossOrigin = ""
+        const {poster, defaultVolume = 0} = options
+        let volume = 50
 
-        if (options.poster) {
-            this.setPoster(options.poster)
+        if (poster) {
+            this.setPoster(poster)
         }
+
+        if (!isUndef(defaultVolume)) {
+            volume = +defaultVolume || volume
+        }
+
+        this.setVolume(volume / 100)
 
         this._wrapper.appendChild(this.el)
         container.appendChild(this._wrapper)
