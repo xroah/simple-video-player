@@ -4,7 +4,7 @@
   "description": "A HTML5 video player",
   "main": "lib/index.js",
   "scripts": {
-    "test": "karma start",
+    "test": "ts-node tests/index",
     "start": "parcel serve ./demo/index.html --open --no-cache",
     "rollup": "rollup -c",
     "scss": "node ./build-scss",
@@ -28,6 +28,11 @@
     "player"
   ],
   "devDependencies": {
+    "@types/karma": "^5.0.1",
+    "parcel": "^2.0.0-nightly.562",
+    "ts-node": "^9.1.1"
+  },
+  "dependencies": {
     "@babel/core": "^7.12.10",
     "@babel/plugin-proposal-class-properties": "^7.12.1",
     "@babel/plugin-transform-runtime": "^7.12.10",
@@ -38,7 +43,6 @@
     "@rollup/plugin-node-resolve": "^11.1.1",
     "@rollup/plugin-typescript": "^8.1.1",
     "@types/jasmine": "^3.6.3",
-    "@types/karma": "^5.0.1",
     "babel-plugin-istanbul": "^6.0.0",
     "jasmine": "^3.6.4",
     "karma": "^6.0.4",
@@ -46,15 +50,12 @@
     "karma-coverage": "^2.0.3",
     "karma-jasmine": "^4.0.1",
     "karma-typescript": "^5.2.0",
-    "parcel": "^2.0.0-nightly.562",
     "rollup": "^2.38.4",
     "rollup-plugin-terser": "^7.0.2",
     "sass": "^1.32.6",
-    "ts-node": "^9.1.1",
     "tslib": "^2.1.0",
     "typescript": "^4.1.3"
   },
-  "dependencies": {},
   "files": [
     "dist",
     "lib",

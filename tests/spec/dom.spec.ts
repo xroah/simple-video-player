@@ -1,9 +1,9 @@
 import {
     addListener,
     removeListener,
-    removeAllListeners,
-    LISTENER_KEY
-} from "../../src/ts/dom"
+    removeAllListeners
+} from "../../src/ts/dom-event"
+import {EVENT_LISTENER_KEY} from "../../src/ts/constants"
 
 function createBtn() {
     const btn = document.createElement("button")
@@ -14,7 +14,7 @@ function createBtn() {
 }
 
 function getListeners(el: HTMLElement, eventName = "click") {
-    const map = (el as any)[LISTENER_KEY]
+    const map = (el as any)[EVENT_LISTENER_KEY]
 
     return map ? map.get(eventName) : undefined
 }

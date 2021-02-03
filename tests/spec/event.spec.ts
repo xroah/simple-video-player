@@ -1,4 +1,4 @@
-import EventEmitter from "../../src/ts/event"
+import EventEmitter, {EventObject} from "../../src/ts/event"
 
 const noop1 = () => {}
 const noop2 = () => {}
@@ -88,18 +88,24 @@ describe("Emit listener", () => {
     })
 
     it("Should all listener should be called", () => {
+        let calledArg: any
         const spy1 = jasmine.createSpy()
         const spy2 = jasmine.createSpy()
+        const fn = (evt: EventObject) => calledArg = evt
         const e = new EventEmitter()
 
         e.on("test", spy1)
         e.on("test", spy2)
-        e.emit("test", 1, 2, 3, 4)
+        e.on("test-arg", fn)
+        e.emit("test")
+        e.emit("test-arg", [1, 2, 3, 4])
 
         expect(spy1).toHaveBeenCalled()
         expect(spy2).toHaveBeenCalled()
         expect(spy1).toHaveBeenCalledBefore(spy2)
-        expect(spy1).toHaveBeenCalledWith(1, 2, 3, 4)
+        expect(calledArg.type).toBe("test-arg")
+        expect(calledArg.details).toEqual([1, 2, 3, 4])
+        expect(calledArg.timeStamp).not.toBeUndefined()
     })
 
     it("Should be called once", () => {
