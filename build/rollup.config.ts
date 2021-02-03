@@ -10,25 +10,28 @@ const commonCfg = {
 }
 const FILE_PREFIX = "./dist/js/rplayer"
 
-export default {
+export const inputOptions = {
     input: "src/ts/index.ts",
-    output: [{
-        ...commonCfg,
-        file: `${FILE_PREFIX}.js`
-    }, {
-        ...commonCfg,
-        file: `${FILE_PREFIX}.min.js`,
-        sourcemap: true,
-        plugins: [terser()]
-    }],
     plugins: [
         resolve(),
         cjs(),
         tsPlugin(),
         babel({
             exclude: /node_modules/,
-            extensions: [".ts", ".js"],
-            babelHelpers: "runtime"
+            extensions: [".ts"],
+            babelHelpers: "inline"
         })
     ]
+}
+
+export const outputOptions = {
+    ...commonCfg,
+    file: `${FILE_PREFIX}.js`
+}
+
+export const outputProdOptions = {
+    ...commonCfg,
+    file: `${FILE_PREFIX}.min.js`,
+    sourcemap: true,
+    plugins: [terser()]
 }

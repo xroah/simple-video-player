@@ -5,12 +5,7 @@
   "main": "lib/index.js",
   "scripts": {
     "test": "ts-node tests/index",
-    "start": "parcel serve ./demo/index.html --open --no-cache",
-    "rollup": "rollup -c",
-    "scss": "node ./build-scss",
-    "es": "tsc --module esnext -d --outDir ./es",
-    "lib": "tsc --module commonjs -d --outDir ./lib",
-    "build": "node rmdir && npm run es && npm run lib && npm run rollup && npm run scss"
+    "build": "ts-node build/index"
   },
   "repository": {
     "type": "git",
@@ -29,7 +24,9 @@
   ],
   "devDependencies": {
     "@types/karma": "^5.0.1",
-    "parcel": "^2.0.0-nightly.562",
+    "@types/sass": "^1.16.0",
+    "chalk": "^4.1.0",
+    "ora": "^5.3.0",
     "ts-node": "^9.1.1"
   },
   "dependencies": {
