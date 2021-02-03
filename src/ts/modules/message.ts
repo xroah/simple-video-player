@@ -1,3 +1,4 @@
+import {HIDDEN_CLASS} from "../constants"
 import {addListener, removeAllListeners} from "../dom-event"
 import EventEmitter from "../event"
 import {createEl, preventAndStop} from "../utils"
@@ -10,6 +11,9 @@ export interface MessageOptions {
     closable?: boolean
     autoHide?: boolean
     delay?: number
+    destroyAfterHide?: boolean
+    message?: string | HTMLElement
+    classNames?: string[]
 }
 
 export default class Message extends EventEmitter {
@@ -21,14 +25,15 @@ export default class Message extends EventEmitter {
 
     public uid = 0
 
-    constructor(container: HTMLElement, options = {}) {
+    constructor(container: HTMLElement, options: MessageOptions = {}) {
         super()
 
         this._options = {
             ...options
         }
+        const classNames = this._options.classNames || []
         this._textEl = createEl("div", `${PREFIX}-text`)
-        this._el = createEl("div", `${PREFIX}-item`)
+        this._el = createEl("div", ...([`${PREFIX}-item`, ...classNames]))
 
         this.mountTo(container)
 
@@ -56,6 +61,7 @@ export default class Message extends EventEmitter {
 
         addListener(this._el, "mouseenter", this.handleMouseEnterLeave)
         addListener(this._el, "mouseleave", this.handleMouseEnterLeave)
+        this.update(this._options.message)
         container.appendChild(this._el)
 
         this.emit("mounted", {
@@ -76,7 +82,7 @@ export default class Message extends EventEmitter {
         this.destroy()
     }
 
-    update(msg: string | HTMLElement) {
+    update(msg: string | HTMLElement = "") {
         this._textEl.innerHTML = ""
 
         if (typeof msg === "string") {
@@ -85,6 +91,32 @@ export default class Message extends EventEmitter {
             this._textEl.appendChild(msg)
         }
 
+        this.autoHide()
+    }
+
+    show(msg?: string | HTMLElement) {
+        if (!this.isVisible()) {
+            this._el.classList.remove(HIDDEN_CLASS)
+        }
+
+        this.update(msg)
+    }
+
+    hide() {
+        if (this.isVisible()) {
+            if (this._options.destroyAfterHide) {
+                this.destroy()
+            } else {
+                this._el.classList.add(HIDDEN_CLASS)
+            }
+        }
+    }
+
+    isVisible() {
+        return this._el.parentNode && !this._el.classList.contains(HIDDEN_CLASS)
+    }
+
+    autoHide() {
         const {
             delay,
             autoHide
@@ -103,6 +135,7 @@ export default class Message extends EventEmitter {
         this.clearDelayTimer()
         removeAllListeners(this._el)
         this.emit("destroy", this.uid)
+        this._el.parentNode.removeChild(this._el)
         this.off()
     }
 
@@ -117,6 +150,6 @@ export default class Message extends EventEmitter {
     private delayHide(delay = 2000) {
         this.clearDelayTimer()
 
-        this._timer = setTimeout(this.destroy.bind(this), delay)
+        this._timer = setTimeout(this.hide.bind(this), delay)
     }
 }
