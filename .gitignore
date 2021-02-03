@@ -7,3 +7,4 @@ tmp/**
 .parcel-cache
 lib
 es
+coverage
