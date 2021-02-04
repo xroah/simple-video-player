@@ -12,6 +12,7 @@ import {EventObject} from "../event";
 export default class ControlBar extends Transition {
     leftAddonContainer: HTMLElement
     rightAddonContainer: HTMLElement
+    prevented = false
 
     private _progressBar: HTMLElement
     private _progress: Slider
@@ -136,7 +137,7 @@ export default class ControlBar extends Transition {
     //if the progress slider still moving or mouse has entered
     //the control bar should not hide
     needDelay() {
-        return this._progress.isMoving() || this._mouseEntered
+        return this.prevented || this._progress.isMoving() || this._mouseEntered
     }
 
     destroy() {

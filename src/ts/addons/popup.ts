@@ -59,7 +59,7 @@ export default class Popup extends Transition {
         if (isEnter) {
             this.clearTimeout()
         } else {
-            if (evt.target === this.el) {
+            if (evt.target === this.el && !this.needDelay()) {
                 this.setVisible(false)
             } else {
                 //prevent from hiding immediately once mouse leave relatedTarget

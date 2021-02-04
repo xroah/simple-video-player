@@ -90,6 +90,13 @@ class Volume extends Popup {
 
         this._text.innerHTML = Math.round(val).toString()
     }
+
+    needDelay() {
+        const moving = this._slider.isMoving()
+        this.rp.control.bar.prevented = moving
+
+        return moving
+    }
 }
 
 export default (rp: RPlayer) => {

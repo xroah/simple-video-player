@@ -8,7 +8,6 @@ export default class Control {
     private _rp: RPlayer
 
     bar: ControlBar
-    prevented = false
 
     constructor(rp: RPlayer, timeout: number) {
         this._rp = rp
@@ -43,7 +42,7 @@ export default class Control {
 
     showControlBar(force = false) {
         if (
-            (this._rp.video.isError() || this.prevented) &&
+            (this._rp.video.isError() || this.bar.prevented) &&
             !force
         ) {
             return
@@ -52,8 +51,10 @@ export default class Control {
         this.bar.setVisible(true)
     }
 
-    hideControlBar = () => {
-        this.bar.setVisible(false)
+    hideControlBar = (force = false) => {
+        if (!this.bar.prevented || force) {
+            this.bar.setVisible(false)
+        }
     }
 
     private handleVideoEvents = (evt: any) => {
@@ -74,7 +75,7 @@ export default class Control {
                 bar.updateCurrentTime(0)
                 break
             case "error":
-                this.hideControlBar()
+                this.hideControlBar(true)
                 break
             case "durationchange":
                 bar.updateDuration(video.getDuration())
