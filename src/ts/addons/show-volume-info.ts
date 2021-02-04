@@ -3,15 +3,9 @@ import {HIDDEN_CLASS} from "../constants"
 import {addListener} from "../dom-event"
 import Message from "../modules/message"
 
+let message: Message | null = null
+
 export default (rp: RPlayer) => {
-    const message = new Message(
-        rp.root,
-        {
-            autoHide: true,
-            delay: 3000,
-            classNames: ["rplayer-message-volume-info", HIDDEN_CLASS]
-        }
-    )
     let justMounted = true
 
     addListener(rp.video.el, "volumechange", () => {
@@ -21,7 +15,21 @@ export default (rp: RPlayer) => {
 
             return
         }
-        
+
+        if (!message) {
+            message = new Message(
+                rp.root,
+                {
+                    autoHide: true,
+                    delay: 3000,
+                    classNames: ["rplayer-message-volume-info", HIDDEN_CLASS],
+                    destroyAfterHide: true
+                }
+            )
+
+            message.once("destroy", () => message = null)
+        }
+
         message.show(Math.round(rp.video.getVolume() * 100).toString())
     })
 }

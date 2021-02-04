@@ -1,7 +1,6 @@
-import {HIDDEN_CLASS} from "../constants"
 import {addListener, removeAllListeners} from "../dom-event"
-import EventEmitter from "../event"
 import {createEl, preventAndStop} from "../utils"
+import Transition from "./transition"
 
 export const PREFIX = "rplayer-message"
 
@@ -16,9 +15,7 @@ export interface MessageOptions {
     classNames?: string[]
 }
 
-export default class Message extends EventEmitter {
-    private _el: HTMLElement
-    private _timer: any = null
+export default class Message extends Transition {
     private _textEl: HTMLElement //element for showing message text
     private _closeEl: HTMLElement | null = null
     private _options: MessageOptions
@@ -26,26 +23,22 @@ export default class Message extends EventEmitter {
     public uid = 0
 
     constructor(container: HTMLElement, options: MessageOptions = {}) {
-        super()
+        super(`${PREFIX}-item`, ...(options.classNames || []))
 
         this._options = {
             ...options
         }
-        const classNames = this._options.classNames || []
         this._textEl = createEl("div", `${PREFIX}-text`)
-        this._el = createEl("div", ...([`${PREFIX}-item`, ...classNames]))
+        this.hideTimeout = this._options.delay || 2000
+        this.autoHide = this._options.autoHide !== false
 
         this.mountTo(container)
 
         Object.defineProperty(this, "uid", {value: uid++})
     }
 
-    getEl() {
-        return this._el
-    }
-
     private mountTo(container: HTMLElement) {
-        this._el.appendChild(this._textEl)
+        this.el.appendChild(this._textEl)
 
         if (this._options.closable) {
             this._closeEl = createEl("span", "rplayer-close-btn")
@@ -56,13 +49,17 @@ export default class Message extends EventEmitter {
                 this.handleClose,
                 {once: true}
             )
-            this._el.appendChild(this._closeEl)
+            this.el.appendChild(this._closeEl)
         }
 
-        addListener(this._el, "mouseenter", this.handleMouseEnterLeave)
-        addListener(this._el, "mouseleave", this.handleMouseEnterLeave)
+        addListener(this.el, "mouseenter", this.handleMouseEnterLeave)
+        addListener(this.el, "mouseleave", this.handleMouseEnterLeave)
         this.update(this._options.message)
-        container.appendChild(this._el)
+        container.appendChild(this.el)
+
+        if (this._options.destroyAfterHide) {
+            this.once("hidden", () => this.destroy())
+        }
 
         this.emit("mounted", {
             type: "mounted"
@@ -71,7 +68,7 @@ export default class Message extends EventEmitter {
 
     private handleMouseEnterLeave = (evt: MouseEvent) => {
         if (evt.type === "mouseenter") {
-            this.clearDelayTimer()
+            this.clearTimeout()
         } else {
             this.delayHide()
         }
@@ -90,66 +87,27 @@ export default class Message extends EventEmitter {
         } else {
             this._textEl.appendChild(msg)
         }
-
-        this.autoHide()
     }
 
     show(msg?: string | HTMLElement) {
-        if (!this.isVisible()) {
-            this._el.classList.remove(HIDDEN_CLASS)
-        }
+        super.setVisible(true)
 
         this.update(msg)
     }
 
     hide() {
-        if (this.isVisible()) {
-            if (this._options.destroyAfterHide) {
-                this.destroy()
-            } else {
-                this._el.classList.add(HIDDEN_CLASS)
-            }
-        }
-    }
-
-    isVisible() {
-        return this._el.parentNode && !this._el.classList.contains(HIDDEN_CLASS)
-    }
-
-    autoHide() {
-        const {
-            delay,
-            autoHide
-        } = this._options
-
-        if (autoHide !== false) {
-            this.delayHide(delay)
-        }
+        super.delayHide()
     }
 
     destroy() {
-        if (!this._el.parentNode) {
+        if (!this.el.parentNode) {
             return
         }
-
-        this.clearDelayTimer()
-        removeAllListeners(this._el)
+        
+        this.clearTimeout()
+        removeAllListeners(this.el)
         this.emit("destroy", this.uid)
-        this._el.parentNode.removeChild(this._el)
+        this.el.parentNode.removeChild(this.el)
         this.off()
-    }
-
-    private clearDelayTimer() {
-        if (this._timer !== null) {
-            clearTimeout(this._timer)
-
-            this._timer = null
-        }
-    }
-
-    private delayHide(delay = 2000) {
-        this.clearDelayTimer()
-
-        this._timer = setTimeout(this.hide.bind(this), delay)
     }
 }
