@@ -11,9 +11,7 @@ export default (rp: RPlayer) => {
     addListener(rp.video.el, "volumechange", () => {
         //the volume will be changed when just mounted
         if (justMounted) {
-            requestAnimationFrame(() => justMounted = false)
-
-            return
+            return requestAnimationFrame(() => justMounted = false)
         }
 
         if (!message) {

@@ -77,9 +77,7 @@ export default class Popup extends Transition {
         this.removeListeners()
 
         if (visible) {
-            this.addListeners()
-
-            return
+            return this.addListeners()
         }
 
         if (force) {

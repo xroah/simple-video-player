@@ -20,7 +20,6 @@ export default (rp: RPlayer) => {
 
             left.appendChild(btn)
         })
-
     addListener(btn, "click", rp.togglePlay.bind(rp))
 
     return btn
