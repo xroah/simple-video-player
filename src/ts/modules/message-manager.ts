@@ -1,6 +1,5 @@
-import {EventObject} from "../event"
 import {isUndef, createEl} from "../utils"
-import Message, {PREFIX} from "./message"
+import Message, {MessageOptions, PREFIX} from "./message"
 
 export default class MessageManager {
     private _messages: Map<number, Message> | null = null
@@ -12,22 +11,23 @@ export default class MessageManager {
         container.appendChild(this._wrapper)
     }
 
-    show(msg: HTMLElement | string, options?: MessagePort) {
-        const message = new Message(this._wrapper, options)
-        const handleDestroy = (evt: EventObject) => {
-            if (this._messages) {
-                this._messages.delete(evt.details)
-                this._wrapper.removeChild(message.getEl()!)
-            }
-        }
+    removeMessage(message: Message) {
+        const {uid} = message
 
+        if (this._messages && this._messages.has(uid)) {
+            this._messages.delete(uid)
+        }
+    }
+
+    show(msg: HTMLElement | string, options?: MessageOptions) {
+        const message = new Message(this._wrapper, options)
         if (!this._messages) {
             this._messages = new Map()
         }
 
         this._messages.set(message.uid, message)
-        message.update(msg)
-        message.once("destroy", handleDestroy)
+        message.show(msg)
+        message.once("destroy", () => this.removeMessage(message))
 
         return message
     }
@@ -42,6 +42,7 @@ export default class MessageManager {
 
             if (message) {
                 message.destroy()
+                this.removeMessage(message)
             }
         } else {
             this._messages.forEach(msg => msg.destroy())
