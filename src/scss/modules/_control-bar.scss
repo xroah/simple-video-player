@@ -1,65 +1,66 @@
 .rplayer-control {
-    display: flex;
-    flex-direction: column;
-    position: absolute;
-    left: 0;
-    bottom: 0;
-    width: 100%;
-    height: 60px;
-    padding: 5px 10px;
-    box-sizing: border-box;
-    transform: translateY(100%);
-    transition: transform .3s;
-    user-select: none;
-    font-size: 14px;
-    z-index: 100;
+  display: flex;
+  flex-direction: column;
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 60px;
+  padding: 5px 10px;
+  box-sizing: border-box;
+  transform: translateY(100%);
+  transition: transform 0.3s;
+  background-image: linear-gradient(0deg, rgba(0, 0, 0, 0.6), transparent);
+  user-select: none;
+  font-size: 14px;
+  z-index: 100;
 
-    &.rplayer-show {
-        transform: translateY(0);
+  &.rplayer-show {
+    transform: translateY(0);
+  }
+
+  .rplayer-progress-wrapper {
+    @include flex-v-center();
+    color: #fff;
+
+    .rplayer-progress-bar {
+      flex: 1;
+      margin: 0 12px;
     }
 
-    .rplayer-progress-wrapper {
-        @include flex-v-center();
-        color: #fff;
-
-        .rplayer-progress-bar {
-            flex: 1;
-            margin: 0 12px;
-        }
-
-        .rplayer-slider-marker {
-            opacity: 0;
-        }
-
-        .rplayer-slider-wrapper:hover,
-        .rplayer-slider-moving {
-            .rplayer-slider-marker {
-                opacity: 1;
-            }
-        }
+    .rplayer-slider-marker {
+      opacity: 0;
     }
 
-    .rplayer-addon-wrapper {
-        @include flex-v-center();
-        flex: 1;
+    .rplayer-slider-wrapper:hover,
+    .rplayer-slider-moving {
+      .rplayer-slider-marker {
+        opacity: 1;
+      }
+    }
+  }
 
-        .left-addon-container,
-        .right-addon-container {
-            @include flex-v-center();
-        }
+  .rplayer-addon-wrapper {
+    @include flex-v-center();
+    flex: 1;
 
-        .left-addon-container {
-            margin-right: auto;
-        }
+    .left-addon-container,
+    .right-addon-container {
+      @include flex-v-center();
     }
 
-    .rplayer-addon {
-        min-width: 20px;
-        height: 20px;
-        cursor: pointer;
-
-        +.rplayer-addon {
-            margin-left: 15px;
-        }
+    .left-addon-container {
+      margin-right: auto;
     }
+  }
+
+  .rplayer-addon {
+    min-width: 20px;
+    height: 20px;
+    cursor: pointer;
+
+    + .rplayer-addon {
+      margin-left: 15px;
+    }
+  }
 }
