@@ -4,7 +4,6 @@ import {
     removeAllListeners,
     removeListener
 } from "../dom-event";
-import EventEmitter from "../event";
 import {
     isFunc,
     noop,
@@ -12,6 +11,7 @@ import {
     preventAndStop
 } from "../utils";
 import RPlayer from ".."
+import Transition from "./transition";
 
 const ITEM_CLASS = "rplayer-contextmenu-item"
 const ACTIVE_CLASS = "rplayer-active"
@@ -22,7 +22,7 @@ export interface ContextmenuItem {
     action?: (rp?: RPlayer) => void
 }
 
-export default class Contextmenu extends EventEmitter {
+export default class Contextmenu extends Transition {
     private _el: HTMLElement
     private _player: RPlayer
 
@@ -120,7 +120,7 @@ export default class Contextmenu extends EventEmitter {
             el = el.parentNode as HTMLElement
         }
 
-        return this._el
+        return null
     }
 
     private handleKeydown = (evt: KeyboardEvent) => {
@@ -139,7 +139,6 @@ export default class Contextmenu extends EventEmitter {
         let index = 0
 
         if (active) {
-
             for (let i = 0; i < len; i++) {
                 if (active === items[i]) {
                     index = i
@@ -181,14 +180,14 @@ export default class Contextmenu extends EventEmitter {
 
     private handleMouseOver = (evt: MouseEvent) => {
         let target = evt.target as HTMLElement
-        let parent = this.getItemParent(target)
+        let parent = this.getItemParent(target) as HTMLElement
 
         this.handleMouseOut()
 
         //target may be an child element
         if (
             target.classList.contains(ITEM_CLASS) ||
-            ((target = parent) && parent.classList.contains(ITEM_CLASS))
+            ((target = parent) && target.classList.contains(ITEM_CLASS))
         ) {
             target.classList.add(ACTIVE_CLASS)
         }
