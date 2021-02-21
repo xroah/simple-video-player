@@ -22,7 +22,12 @@ interface RPlayerOptions {
     poster?: string
     playOnClick?: boolean
     controlBarTimeout?: number
-    addons?: Function[]
+    addons?: Array<Function | Addon>
+}
+
+interface Addon {
+    options?: any
+    install: Function
 }
 
 export default class RPlayer extends EventEmitter {
@@ -36,6 +41,7 @@ export default class RPlayer extends EventEmitter {
     private _options: RPlayerOptions
     private _contextmenu: Contextmenu | null = null
     private _container: HTMLElement
+    private _addons:Function[] = []
 
     constructor(options: RPlayerOptions) {
         super()
@@ -93,7 +99,17 @@ export default class RPlayer extends EventEmitter {
         const {addons} = this._options
 
         if (addons && addons.length) {
-            addons.forEach(a => a(this))
+            addons.forEach(a => {
+                if (!a) {
+                    return
+                }
+
+                if (typeof a === "function") {
+                    a(this)
+                } else if (a.install) {
+                    a.install(this,a.options || {})
+                }
+            })
         }
     }
 
