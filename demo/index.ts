@@ -7,7 +7,7 @@ import fullscreenBtn from "../src/ts/addons/fullscreen-btn"
 
 let rp = new RPlayer({
     container: "#player",
-    url: "http://localhost:8000/videos/test.mp4",
+    url: "http://192.168.1.222:8000/videos/test.mp4",
     addons: [switchState, playBtn, miniProgress, volume, fullscreenBtn],
     
     contextmenu: [

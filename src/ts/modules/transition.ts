@@ -1,4 +1,4 @@
-import EventEmitter from "../event"
+import EventEmitter from "../event-emitter"
 import {HIDDEN_CLASS, SHOW_CLASS} from "../constants"
 import {addListener} from "../dom-event"
 import {createEl, reflow} from "../utils"

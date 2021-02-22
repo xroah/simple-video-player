@@ -1,4 +1,4 @@
-import EventEmitter from "./event";
+import EventEmitter from "./event-emitter";
 import LoadState, {ErrorMessage} from "./modules/load-state";
 import Video from "./modules/video";
 import Contextmenu, {ContextmenuItem} from "./modules/contextmenu"

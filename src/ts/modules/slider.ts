@@ -1,4 +1,4 @@
-import EventEmitter from "../event";
+import EventEmitter from "../event-emitter";
 import {isPlainObject, createEl} from "../utils";
 import {
     addListener,

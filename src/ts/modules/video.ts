@@ -1,5 +1,5 @@
 import {createEl, isUndef} from "../utils";
-import EventEmitter from "../event";
+import EventEmitter from "../event-emitter";
 
 interface videoOptions {
     url: string

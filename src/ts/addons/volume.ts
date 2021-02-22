@@ -4,7 +4,7 @@ import Slider from "../modules/slider";
 import {HIDDEN_CLASS} from "../constants";
 import Popup from "./popup";
 import {createEl} from "../utils";
-import {EventObject} from "../event";
+import {EventObject} from "../event-emitter";
 
 class Volume extends Popup {
     private _slider: Slider
