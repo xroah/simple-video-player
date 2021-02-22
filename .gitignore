@@ -1,8 +1,8 @@
-node_modules/**
-.idea/
+node_modules
+.idea
 *.mp4
-tmp/**
-/dist
+tmp
+dist
 .DS_Store
 .parcel-cache
 lib
