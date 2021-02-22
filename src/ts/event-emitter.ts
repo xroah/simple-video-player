@@ -1,4 +1,4 @@
-import {isFunc, isUndef} from "./utils"
+import { isFunc, isUndef } from "./utils"
 
 function checkFunction(fn: any) {
     if (!isFunc(fn)) {
@@ -6,20 +6,22 @@ function checkFunction(fn: any) {
     }
 }
 
-class Listener {
-    fn: Function
-    once: boolean
-
-    constructor(fn: Function, once = false) {
-        this.fn = fn
-        this.once = once
-    }
-}
-
 export interface EventObject {
     type: string
     timeStamp: number
     details?: any
+}
+
+interface Listener {
+    fn: Function
+    once: boolean
+}
+
+function createListener(fn: Function, once: boolean): Listener {
+    return {
+        fn,
+        once
+    }
 }
 
 export default class EventEmitter {
@@ -42,17 +44,19 @@ export default class EventEmitter {
         for (let l of listeners) {
             //the listener already exists
             if (l.fn === listener) {
-                return
+                return this
             }
         }
 
-        const _listener = new Listener(listener, once)
+        const _listener = createListener(listener, once)
 
         if (prepend) {
             listeners.unshift(_listener)
         } else {
             listeners.push(_listener)
         }
+
+        return this
     }
 
     on(eventName: string, listener: Function) {
@@ -62,7 +66,7 @@ export default class EventEmitter {
     }
 
     addListener(eventName: string, listener: Function) {
-        this._addListener(eventName, listener)
+        return this._addListener(eventName, listener)
     }
 
     once(eventName: string, listener: Function) {
@@ -95,7 +99,7 @@ export default class EventEmitter {
         checkFunction(fn)
 
         if (!listeners) {
-            return
+            return this
         }
 
         for (let i = 0, len = listeners.length; i < len; i++) {
@@ -111,6 +115,8 @@ export default class EventEmitter {
                 break
             }
         }
+
+        return this
     }
 
     private _removeAllListeners(eventName?: string) {
@@ -125,6 +131,8 @@ export default class EventEmitter {
         }
 
         this._listeners.delete(eventName!)
+
+        return this
     }
 
     removeListener(eventName?: string, fn?: Function) {
