@@ -21,21 +21,19 @@ function handleOptions(options: Options) {
     return ret
 }
 
-class Listener {
+interface Listener{
     fn: any
-    //orig: prevent adding repeatedly
+    //orig: the original function, prevent adding repeatedly
     //if once, the original listener will be wrapped
     orig: any
     capture: boolean
+}
 
-    constructor(
-        fn: Function,
-        orig: Function,
-        capture: boolean
-    ) {
-        this.fn = fn
-        this.orig = orig
-        this.capture = capture
+function createListener(fn: any, orig: any, capture: boolean): Listener {
+    return {
+        fn,
+        orig,
+        capture
     }
 }
 
@@ -86,18 +84,19 @@ export function addListener(
         }
     }
 
-    listeners.push(new Listener(_listener, listener, !!_options.capture))
+    listeners.push(createListener(_listener, listener, !!_options.capture))
     element.addEventListener(eventName, _listener as EventListener, _options)
 }
 
 export function removeAllListeners(element: El) {
+    const el = element as any
+
     if (EVENT_LISTENER_KEY in element) {
-        const el = element as any
         const listenersMap = el[EVENT_LISTENER_KEY]
 
         listenersMap.forEach((v: Listener[], k: string) => {
             for (let l of v) {
-                element.removeEventListener(k, l.fn, l.capture)
+                el.removeEventListener(k, l.fn, l.capture)
             }
         })
 
