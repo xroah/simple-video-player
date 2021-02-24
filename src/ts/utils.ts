@@ -16,12 +16,12 @@ export function formatTime(seconds: number) {
     seconds = Math.round(seconds)
 
     if (seconds < 60) {
-        return `00:00:${convert(seconds)}`
+        return `00:${convert(seconds)}`
     } else if (seconds < hour) {
         const min = convert(Math.floor(seconds / 60))
         const sec = convert(seconds % 60)
 
-        return `00:${min}:${sec}`
+        return `${min}:${sec}`
     }
 
     const _hour = Math.floor(seconds / hour)
