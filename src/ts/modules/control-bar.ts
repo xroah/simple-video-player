@@ -45,13 +45,17 @@ export default class ControlBar extends Transition {
     private mountTo(container: HTMLElement) {
         const addonContainer = createEl("div", "rplayer-addon-wrapper")
         const progressWrapper = createEl("div", "rplayer-progress-wrapper")
+        const timeFrag = document.createDocumentFragment()
+        const textNode = document.createTextNode("/")
 
-        progressWrapper.appendChild(this._currentTimeEl)
+        timeFrag.appendChild(this._currentTimeEl)
+        timeFrag.appendChild(textNode)
+        timeFrag.appendChild(this._durationEl)
         progressWrapper.appendChild(this._progressBar)
-        progressWrapper.appendChild(this._durationEl)
-        this.el.appendChild(progressWrapper)
+        this.leftAddonContainer.appendChild(timeFrag)
         addonContainer.appendChild(this.leftAddonContainer)
         addonContainer.appendChild(this.rightAddonContainer)
+        this.el.appendChild(progressWrapper)
         this.el.appendChild(addonContainer)
         container.appendChild(this.el)
 
