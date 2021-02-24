@@ -24,6 +24,7 @@ export default class Slider extends EventEmitter {
     private _primaryProgress: HTMLElement
     private _tooltip: Tooltip = true
     private _tooltipEl: HTMLElement | null = null
+    private _container: HTMLElement
     private _value = 0
 
     private _startX = 0
@@ -48,6 +49,7 @@ export default class Slider extends EventEmitter {
         this._marker = createEl("div", "rplayer-slider-marker")
         this._primaryProgress = createEl("div", "rplayer-slider-primary-progress")
         this._tooltip = options.tooltip || false
+        this._container = container
 
         if (options.secondary) {
             this._secondaryProgress = createEl("div", "rplayer-slider-secondary-progress")
@@ -181,14 +183,16 @@ export default class Slider extends EventEmitter {
     }
 
     private setTooltipVisible(visible: boolean) {
-        if (!this._tooltipEl) {
+        const tooltip = this._tooltipEl
+
+        if (!tooltip) {
             return
         }
 
         if (visible) {
-            this._tooltipEl.classList.remove(HIDDEN_CLASS)
+            tooltip.classList.remove(HIDDEN_CLASS)
         } else {
-            this._tooltipEl.classList.add(HIDDEN_CLASS)
+            tooltip.classList.add(HIDDEN_CLASS)
         }
     }
 
@@ -270,7 +274,7 @@ export default class Slider extends EventEmitter {
 
         if (this._vertical) {
             //update previous start position
-            //mouse move out of slider
+            //if mouse move out of slider
             let startY = 0
 
             if (height < 0) {
@@ -314,7 +318,7 @@ export default class Slider extends EventEmitter {
         this.emit("slidemove", percentVal)
     }
 
-    private handleMouseUp = (evt: Event) => {
+    private handleMouseUp = () => {
         removeListener(document, "mousemove", this.handleSliderMove)
         removeListener(document, "touchmove", this.handleSliderMove)
 
