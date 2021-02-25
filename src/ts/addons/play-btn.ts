@@ -1,5 +1,5 @@
 import RPlayer from "..";
-import {addListener, removeAllListeners} from "../dom-event";
+import {addListener, removeAllListeners} from "../commons/dom-event";
 import {createEl} from "../utils";
 
 export default (rp: RPlayer) => {

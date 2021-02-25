@@ -1,6 +1,6 @@
-import EventEmitter from "../event-emitter"
+import EventEmitter from "../commons/event-emitter"
 import {HIDDEN_CLASS, SHOW_CLASS} from "../constants"
-import {addListener} from "../dom-event"
+import {addListener} from "../commons/dom-event"
 import {createEl, reflow} from "../utils"
 
 export default class Transition extends EventEmitter {

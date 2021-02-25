@@ -1,4 +1,4 @@
-import { isFunc, isUndef } from "./utils"
+import { isFunc, isUndef } from "../utils"
 
 function checkFunction(fn: any) {
     if (!isFunc(fn)) {

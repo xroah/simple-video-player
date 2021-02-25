@@ -3,7 +3,7 @@ import {
     addListener,
     removeAllListeners,
     removeListener
-} from "../dom-event";
+} from "../commons/dom-event";
 import {
     isFunc,
     noop,

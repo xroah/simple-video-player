@@ -1,4 +1,4 @@
-import {addListener, removeAllListeners} from "../dom-event"
+import {addListener, removeAllListeners} from "../commons/dom-event"
 import {createEl, preventAndStop} from "../utils"
 import Transition from "./transition"
 

@@ -1,10 +1,10 @@
 import RPlayer from "..";
-import {addListener} from "../dom-event";
+import {addListener} from "../commons/dom-event";
 import Slider from "../modules/slider";
 import {HIDDEN_CLASS} from "../constants";
 import Popup from "./popup";
 import {createEl} from "../utils";
-import {EventObject} from "../event-emitter";
+import {EventObject} from "../commons/event-emitter";
 
 class Volume extends Popup {
     private _slider: Slider

@@ -1,6 +1,6 @@
 import RPlayer from "..";
-import {addListener} from "../dom-event";
-import {EventObject} from "../event-emitter";
+import {addListener} from "../commons/dom-event";
+import {EventObject} from "../commons/event-emitter";
 import {throttle} from "../utils";
 import ControlBar from "./control-bar";
 

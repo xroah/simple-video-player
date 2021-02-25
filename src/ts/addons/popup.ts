@@ -2,7 +2,7 @@ import {
     addListener,
     removeAllListeners,
     removeListener
-} from "../dom-event";
+} from "../commons/dom-event";
 import RPlayer from "../player";
 import Transition from "../modules/transition";
 import {HIDDEN_CLASS} from "../constants";

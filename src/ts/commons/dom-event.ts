@@ -1,5 +1,5 @@
-import {isUndef} from "./utils"
-import {EVENT_LISTENER_KEY} from "./constants"
+import {isUndef} from "../utils"
+import {EVENT_LISTENER_KEY} from "../constants"
 
 type El = HTMLElement | Document | Window
 type Options = boolean | AddEventListenerOptions | undefined

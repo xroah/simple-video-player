@@ -1,6 +1,6 @@
 import RPlayer from ".."
 import {HIDDEN_CLASS} from "../constants"
-import {addListener} from "../dom-event"
+import {addListener} from "../commons/dom-event"
 import Message from "../modules/message"
 
 let message: Message | null = null

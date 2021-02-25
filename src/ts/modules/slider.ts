@@ -1,10 +1,10 @@
-import EventEmitter from "../event-emitter";
+import EventEmitter from "../commons/event-emitter";
 import {isPlainObject, createEl} from "../utils";
 import {
     addListener,
     removeAllListeners,
     removeListener
-} from "../dom-event"
+} from "../commons/dom-event"
 import {HIDDEN_CLASS, MOVING_CLASS} from "../constants";
 
 type Tooltip = boolean | ((val: number) => string | false)
