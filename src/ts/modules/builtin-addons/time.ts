@@ -2,12 +2,10 @@ import { createEl, formatTime } from "../../commons/utils"
 import Video from "../video"
 
 export default class PlayerTime {
-    private _video: Video
     private _currentTimeEl: HTMLElement
     private _durationEl: HTMLElement
 
-    constructor(container: HTMLElement, video: Video) {
-        this._video = video
+    constructor(container: HTMLElement) {
         this._currentTimeEl = createEl("span")
         this._durationEl = createEl("span")
 

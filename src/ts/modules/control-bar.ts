@@ -35,7 +35,7 @@ export default class ControlBar extends Transition {
                 secondary: true
             }
         )
-        this._time = new PlayerTime(this.leftAddonContainer, video)
+        this._time = new PlayerTime(this.leftAddonContainer)
         this.hideTimeout = hideTimeout
         this.autoHide = true
 
