@@ -66,19 +66,19 @@ export default class Control {
 
         switch (type) {
             case "loadedmetadata":
-                bar.updateDuration(video.getDuration())
+                bar.updateTime(video.getDuration(), "duration")
                 break
             case "loadstart":
                 bar.updateProgress(0)
                 bar.updateBuffer(0)
-                bar.updateDuration(0)
-                bar.updateCurrentTime(0)
+                bar.updateTime(0)
+                bar.updateTime(0, "duration")
                 break
             case "error":
                 this.hideControlBar(true)
                 break
             case "durationchange":
-                bar.updateDuration(video.getDuration())
+                bar.updateTime(video.getDuration(), "duration")
                 break
         }
     }
@@ -90,7 +90,7 @@ export default class Control {
         const time = evt.details / 100 * duration
 
         video.setCurrentTime(time)
-        this.bar.updateCurrentTime(time)
+        this.bar.updateTime(time)
     }
 
 
@@ -119,7 +119,7 @@ export default class Control {
         const val = curTime / duration * 100
 
         this.bar.updateProgress(val)
-        this.bar.updateCurrentTime(curTime)
+        this.bar.updateTime(curTime)
     }
 
     destroy() {

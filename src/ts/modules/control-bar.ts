@@ -35,7 +35,7 @@ export default class ControlBar extends Transition {
                 secondary: true
             }
         )
-        this._time = new PlayerTime(video)
+        this._time = new PlayerTime(this.leftAddonContainer, video)
         this.hideTimeout = hideTimeout
         this.autoHide = true
 
@@ -45,22 +45,16 @@ export default class ControlBar extends Transition {
     private mountTo(container: HTMLElement) {
         const addonContainer = createEl("div", "rplayer-addon-wrapper")
         const progressWrapper = createEl("div", "rplayer-progress-wrapper")
-        const timeFrag = document.createDocumentFragment()
-        const textNode = document.createTextNode("/")
-
-        timeFrag.appendChild(this._currentTimeEl)
-        timeFrag.appendChild(textNode)
-        timeFrag.appendChild(this._durationEl)
+        
         progressWrapper.appendChild(this._progressBar)
-        this.leftAddonContainer.appendChild(timeFrag)
         addonContainer.appendChild(this.leftAddonContainer)
         addonContainer.appendChild(this.rightAddonContainer)
         this.el.appendChild(progressWrapper)
         this.el.appendChild(addonContainer)
         container.appendChild(this.el)
 
-        this.updateCurrentTime(0)
-        this.updateDuration(0)
+        this.updateTime(0)
+        this.updateTime(0, "duration")
         this.initEvents()
     }
 
@@ -119,7 +113,7 @@ export default class ControlBar extends Transition {
         //prevent racing(slider moving and video time update)
         if (!this._progress.isMoving()) {
             this._progress.update(val)
-            this.updateCurrentTime(val)
+            this.updateTime(val)
         }
     }
 
@@ -129,13 +123,20 @@ export default class ControlBar extends Transition {
         }
     }
 
-    updateCurrentTime(val: number) {
-        this._currentTimeEl.innerHTML = formatTime(val)
-    }
+    updateTime(val: number = 0, type: "duration" | "currentTime" = "currentTime") {
+        if (val === undefined) {
+            return
+        }
 
-    updateDuration(val: number) {
-        this._duration = val || 0
-        this._durationEl.innerHTML = formatTime(this._duration)
+        if (type === "currentTime") {
+            this._time.updateCurrentTime(val)
+
+            return
+        }
+
+        this._duration = val
+
+        this._time.updateDuration(val)
     }
 
     //if the progress slider still moving or mouse has entered
