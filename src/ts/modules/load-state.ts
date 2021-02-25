@@ -1,5 +1,5 @@
 import {HIDDEN_CLASS} from "../constants"
-import {createEl} from "../utils"
+import {createEl} from "../commons/utils"
 import settings from "../settings"
 
 export interface ErrorMessage {

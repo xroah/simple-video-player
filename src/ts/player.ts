@@ -9,7 +9,7 @@ import {
     preventAndStop,
     createEl,
     getContainer
-} from "./utils"
+} from "./commons/utils"
 import {CONTROL_BAR_HIDE_TIMEOUT, videoEvents} from "./constants"
 
 interface RPlayerOptions {
@@ -41,7 +41,6 @@ export default class RPlayer extends EventEmitter {
     private _options: RPlayerOptions
     private _contextmenu: Contextmenu | null = null
     private _container: HTMLElement
-    private _addons:Function[] = []
 
     constructor(options: RPlayerOptions) {
         super()

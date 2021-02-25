@@ -1,7 +1,7 @@
 import RPlayer from "..";
 import {addListener} from "../commons/dom-event";
 import {EventObject} from "../commons/event-emitter";
-import {throttle} from "../utils";
+import {throttle} from "../commons/utils";
 import ControlBar from "./control-bar";
 
 export default class Control {
@@ -13,7 +13,7 @@ export default class Control {
         this._rp = rp
         //control bar mount to root element
         //prevent event bubbling(this.body bind events)
-        this.bar = new ControlBar(rp.root, timeout)
+        this.bar = new ControlBar(rp.root, rp.video, timeout)
 
         this.initEvents()
     }

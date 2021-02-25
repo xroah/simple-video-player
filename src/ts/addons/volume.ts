@@ -3,7 +3,7 @@ import {addListener} from "../commons/dom-event";
 import Slider from "../modules/slider";
 import {HIDDEN_CLASS} from "../constants";
 import Popup from "./popup";
-import {createEl} from "../utils";
+import {createEl} from "../commons/utils";
 import {EventObject} from "../commons/event-emitter";
 
 class Volume extends Popup {

@@ -1,4 +1,4 @@
-import {createEl, isUndef} from "../utils";
+import {createEl, isUndef} from "../commons/utils";
 import EventEmitter from "../commons/event-emitter";
 
 interface videoOptions {

@@ -1,4 +1,4 @@
-import {isUndef, createEl} from "../utils"
+import {isUndef, createEl} from "../commons/utils"
 import Message, {MessageOptions, PREFIX} from "./message"
 
 export default class MessageManager {

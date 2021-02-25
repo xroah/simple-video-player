@@ -1,7 +1,7 @@
 import EventEmitter from "../commons/event-emitter"
 import {HIDDEN_CLASS, SHOW_CLASS} from "../constants"
 import {addListener} from "../commons/dom-event"
-import {createEl, reflow} from "../utils"
+import {createEl, reflow} from "../commons/utils"
 
 export default class Transition extends EventEmitter {
     visible = false

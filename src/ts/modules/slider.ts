@@ -1,5 +1,5 @@
 import EventEmitter from "../commons/event-emitter";
-import {isPlainObject, createEl} from "../utils";
+import {isPlainObject, createEl} from "../commons/utils";
 import {
     addListener,
     removeAllListeners,

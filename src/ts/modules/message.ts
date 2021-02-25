@@ -1,5 +1,5 @@
 import {addListener, removeAllListeners} from "../commons/dom-event"
-import {createEl, preventAndStop} from "../utils"
+import {createEl, preventAndStop} from "../commons/utils"
 import Transition from "./transition"
 
 export const PREFIX = "rplayer-message"

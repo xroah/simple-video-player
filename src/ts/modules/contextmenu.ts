@@ -9,7 +9,7 @@ import {
     noop,
     createEl,
     preventAndStop
-} from "../utils";
+} from "../commons/utils";
 import RPlayer from ".."
 import Transition from "./transition";
 

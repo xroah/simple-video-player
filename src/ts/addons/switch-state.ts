@@ -1,6 +1,6 @@
 import RPlayer from ".."
 import {addListener, removeListener} from "../commons/dom-event"
-import {createEl, reflow} from "../utils"
+import {createEl, reflow} from "../commons/utils"
 import {HIDDEN_CLASS, TRANSITION_CLASS} from "../constants"
 
 class SwitchState {

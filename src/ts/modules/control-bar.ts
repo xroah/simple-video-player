@@ -2,12 +2,14 @@ import {
     formatTime,
     createEl,
     preventAndStop
-} from "../utils";
+} from "../commons/utils";
 import Slider from "./slider";
 import {addListener, removeAllListeners} from "../commons/dom-event";
 import Transition from "./transition";
 import {HIDDEN_CLASS} from "../constants"
 import {EventObject} from "../commons/event-emitter";
+import Video from "./video"
+import PlayerTime from "./builtin-addons/time";
 
 export default class ControlBar extends Transition {
     leftAddonContainer: HTMLElement
@@ -16,16 +18,13 @@ export default class ControlBar extends Transition {
 
     private _progressBar: HTMLElement
     private _progress: Slider
-    private _currentTimeEl: HTMLElement
-    private _durationEl: HTMLElement
     private _duration = 0
     private _mouseEntered = false
+    private _time: PlayerTime
 
-    constructor(container: HTMLElement, hideTimeout: number) {
+    constructor(container: HTMLElement, video: Video, hideTimeout: number) {
         super("rplayer-control", HIDDEN_CLASS)
         
-        this._currentTimeEl = createEl("div")
-        this._durationEl = createEl("div")
         this.leftAddonContainer = createEl("div", "left-addon-container")
         this.rightAddonContainer = createEl("div", "right-addon-container")
         this._progressBar = createEl("div", "rplayer-progress-bar")
@@ -36,6 +35,7 @@ export default class ControlBar extends Transition {
                 secondary: true
             }
         )
+        this._time = new PlayerTime(video)
         this.hideTimeout = hideTimeout
         this.autoHide = true
 

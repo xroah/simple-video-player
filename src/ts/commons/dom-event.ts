@@ -1,4 +1,4 @@
-import {isUndef} from "../utils"
+import {isUndef} from "./utils"
 import {EVENT_LISTENER_KEY} from "../constants"
 
 type El = HTMLElement | Document | Window

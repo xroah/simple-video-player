@@ -1,6 +1,6 @@
 import RPlayer from ".."
 import {HIDDEN_CLASS} from "../constants"
-import {createEl} from "../utils"
+import {createEl} from "../commons/utils"
 
 class MiniProgress {
     private _bar: HTMLElement

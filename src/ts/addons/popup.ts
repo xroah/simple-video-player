@@ -6,7 +6,7 @@ import {
 import RPlayer from "../player";
 import Transition from "../modules/transition";
 import {HIDDEN_CLASS} from "../constants";
-import {createEl} from "../utils";
+import {createEl} from "../commons/utils";
 
 export default class Popup extends Transition {
     el: HTMLElement

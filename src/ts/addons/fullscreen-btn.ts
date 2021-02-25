@@ -5,7 +5,7 @@ import {
     removeAllListeners,
     removeListener
 } from "../commons/dom-event";
-import {createEl} from "../utils";
+import {createEl} from "../commons/utils";
 
 interface API {
     request: string
