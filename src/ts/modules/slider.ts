@@ -24,7 +24,6 @@ export default class Slider extends EventEmitter {
     private _primaryProgress: HTMLElement
     private _tooltip: Tooltip = true
     private _tooltipEl: HTMLElement | null = null
-    private _container: HTMLElement
     private _value = 0
 
     private _startX = 0
@@ -49,7 +48,6 @@ export default class Slider extends EventEmitter {
         this._marker = createEl("div", "rplayer-slider-marker")
         this._primaryProgress = createEl("div", "rplayer-slider-primary-progress")
         this._tooltip = options.tooltip || false
-        this._container = container
 
         if (options.secondary) {
             this._secondaryProgress = createEl("div", "rplayer-slider-secondary-progress")
