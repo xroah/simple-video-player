@@ -4,12 +4,19 @@ import {
     preventAndStop
 } from "../commons/utils";
 import Slider from "./slider";
-import {addListener, removeAllListeners} from "../commons/dom-event";
+import { addListener, removeAllListeners } from "../commons/dom-event";
 import Transition from "./transition";
-import {HIDDEN_CLASS} from "../constants"
-import {EventObject} from "../commons/event-emitter";
-import Video from "./video"
+import { HIDDEN_CLASS } from "../constants"
+import { EventObject } from "../commons/event-emitter";
 import PlayerTime from "./builtin-addons/time";
+import RPlayer from "../player";
+import playBtn from "./builtin-addons/play-btn";
+
+interface AddonOptions {
+    classNames?: string[]
+    init?: (rp: RPlayer) => void
+    action?: (rp: RPlayer) => void
+}
 
 export default class ControlBar extends Transition {
     leftAddonContainer: HTMLElement
@@ -21,10 +28,12 @@ export default class ControlBar extends Transition {
     private _duration = 0
     private _mouseEntered = false
     private _time: PlayerTime
+    private _rp: RPlayer
 
-    constructor(container: HTMLElement, video: Video, hideTimeout: number) {
+    constructor(rp: RPlayer, hideTimeout: number) {
         super("rplayer-control", HIDDEN_CLASS)
-        
+
+
         this.leftAddonContainer = createEl("div", "left-addon-container")
         this.rightAddonContainer = createEl("div", "right-addon-container")
         this._progressBar = createEl("div", "rplayer-progress-bar")
@@ -35,17 +44,22 @@ export default class ControlBar extends Transition {
                 secondary: true
             }
         )
-        this._time = new PlayerTime(this.leftAddonContainer)
         this.hideTimeout = hideTimeout
         this.autoHide = true
+        this._rp = rp
 
-        this.mountTo(container)
+        //init before time addon
+        this.initAddon(playBtn)
+
+        this._time = new PlayerTime(this.leftAddonContainer)
+
+        this.mountTo(rp.root)
     }
 
     private mountTo(container: HTMLElement) {
         const addonContainer = createEl("div", "rplayer-addon-wrapper")
         const progressWrapper = createEl("div", "rplayer-progress-wrapper")
-        
+
         progressWrapper.appendChild(this._progressBar)
         addonContainer.appendChild(this.leftAddonContainer)
         addonContainer.appendChild(this.rightAddonContainer)
@@ -56,6 +70,28 @@ export default class ControlBar extends Transition {
         this.updateTime(0)
         this.updateTime(0, "duration")
         this.initEvents()
+    }
+
+    initAddon(addon: AddonOptions) {
+        const {
+            classNames = [],
+            init,
+            action
+        } = addon
+        const el = createEl("button", ...classNames)
+        const onDestroy = () => removeAllListeners(el)
+
+        this.on("destroy", onDestroy)
+
+        if (typeof init === "function") {
+            init.call(el, this._rp)
+        }
+
+        if (typeof action === "function") {
+            addListener(el, "click", () => action.call(el, this._rp))
+        }
+
+        this.leftAddonContainer.appendChild(el)
     }
 
     private initEvents() {
@@ -147,6 +183,7 @@ export default class ControlBar extends Transition {
 
     destroy() {
         this.off()
+        this.emit("destroy")
         this._progress.off()
         this._progress.destroy()
         removeAllListeners(this.el)

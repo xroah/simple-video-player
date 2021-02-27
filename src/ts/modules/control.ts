@@ -13,7 +13,7 @@ export default class Control {
         this._rp = rp
         //control bar mount to root element
         //prevent event bubbling(this.body bind events)
-        this.bar = new ControlBar(rp.root, rp.video, timeout)
+        this.bar = new ControlBar(rp, timeout)
 
         this.initEvents()
     }
