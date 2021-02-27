@@ -1,26 +1,22 @@
 import RPlayer from "../..";
-import {addListener, removeAllListeners} from "../../commons/dom-event";
-import {createEl} from "../../commons/utils";
 
-export default (rp: RPlayer) => {
-    const btn = createEl("span", "rplayer-addon-btn", "rplayer-play-btn")
+function init(this: HTMLElement, rp: RPlayer) {
     const handlePlay = () => {
         const fn: "remove" | "add" = rp.video.isPaused() ? "remove" : "add"
 
-        btn.classList[fn]("rplayer-paused")
+        this.classList[fn]("rplayer-paused")
     }
 
     rp
         .on("play", handlePlay)
         .on("pause", handlePlay)
         .on("loadstart", handlePlay)
-        .once("destroy", () => removeAllListeners(btn))
-        .once("beforemount", () => {
-            const {left} = rp.getAddonContainers()
+}
 
-            left.appendChild(btn)
-        })
-    addListener(btn, "click", rp.togglePlay.bind(rp))
-
-    return btn
+export default {
+    classNames: ["rplayer-addon-btn", "rplayer-play-btn"],
+    init,
+    action(rp: RPlayer) {
+        rp.togglePlay()
+    }
 }

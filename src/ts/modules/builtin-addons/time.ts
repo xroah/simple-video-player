@@ -1,5 +1,4 @@
 import { createEl, formatTime } from "../../commons/utils"
-import Video from "../video"
 
 export default class PlayerTime {
     private _currentTimeEl: HTMLElement
