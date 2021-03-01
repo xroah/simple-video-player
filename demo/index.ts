@@ -8,7 +8,7 @@ let rp = new RPlayer({
     container: "#player",
     url: "http://192.168.1.222:8000/videos/test.mp4",
     addons: [switchState, miniProgress, volume, fullscreenBtn],
-    
+
     contextmenu: [
         {
             text(rp: RPlayer) {
@@ -21,10 +21,21 @@ let rp = new RPlayer({
         {
             text: "copy video url",
             action(rp: RPlayer) {
-                navigator.clipboard
-                    .writeText(rp.video.getCurrentSrc())
-                    .then(() => alert("success"))
-                    .catch(() => alert("error"))
+                if (navigator.clipboard) {
+                    navigator.clipboard
+                        .writeText(rp.video.getCurrentSrc())
+                        .then(() => alert("success"))
+                        .catch(() => alert("error"))
+                } else {
+                    const input = document.createElement("input")
+
+                    input.value = rp.video.getCurrentSrc()
+
+                    document.body.appendChild(input)
+                    input.select()
+                    document.execCommand("copy")
+                    document.body.removeChild(input)
+                }
             }
         },
         {
