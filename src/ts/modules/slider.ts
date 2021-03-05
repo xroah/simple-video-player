@@ -5,15 +5,16 @@ import {
     removeAllListeners,
     removeListener
 } from "../commons/dom-event"
-import {HIDDEN_CLASS, MOVING_CLASS} from "../constants";
-
-type Tooltip = boolean | ((val: number) => string | false)
+import {MOVING_CLASS} from "../constants";
+import Tooltip from "./tooltip"
 
 interface Options {
     vertical?: boolean
     defaultValue?: number | string
     secondary?: boolean
-    tooltip?: Tooltip
+    tooltip?: {
+        formatter: (v: number) => string
+    }
 }
 
 export default class Slider extends EventEmitter {
@@ -22,8 +23,8 @@ export default class Slider extends EventEmitter {
     private _marker: HTMLElement
     private _secondaryProgress: HTMLElement | null = null
     private _primaryProgress: HTMLElement
-    private _tooltip: Tooltip = true
-    private _tooltipEl: HTMLElement | null = null
+    private _tooltip: Tooltip | undefined
+    private _tooltipFormatter: ((v: number) => string) | undefined
     private _value = 0
 
     private _startX = 0
@@ -47,14 +48,14 @@ export default class Slider extends EventEmitter {
         )
         this._marker = createEl("div", "rplayer-slider-marker")
         this._primaryProgress = createEl("div", "rplayer-slider-primary-progress")
-        this._tooltip = options.tooltip || false
 
         if (options.secondary) {
             this._secondaryProgress = createEl("div", "rplayer-slider-secondary-progress")
         }
 
-        if (this._tooltip) {
-            this._tooltipEl = createEl("div", "rplayer-slider-tooltip", HIDDEN_CLASS)
+        if (options.tooltip) {
+            this._tooltip = new Tooltip(this._el)
+            this._tooltipFormatter = options.tooltip.formatter
         }
 
         this.mountTo(container)
@@ -65,10 +66,6 @@ export default class Slider extends EventEmitter {
 
         if (this._secondaryProgress) {
             track.appendChild(this._secondaryProgress)
-        }
-
-        if (this._tooltipEl) {
-            this._el.appendChild(this._tooltipEl)
         }
 
         track.appendChild(this._primaryProgress)
@@ -83,7 +80,7 @@ export default class Slider extends EventEmitter {
         addListener(this._el, "mousedown", this.handleMouseDown)
         addListener(this._el, "touchstart", this.handleMouseDown)
 
-        if (this._tooltipEl) {
+        if (this._tooltip) {
             addListener(this._el, "mouseenter", this.handleMouseEnter)
             addListener(this._el, "mousemove", this.handleMouseMove)
             addListener(this._el, "mouseleave", this.handleMouseLeave)
@@ -141,57 +138,15 @@ export default class Slider extends EventEmitter {
     }
 
     private updateTooltip(pos = 0) {
-        if (!this._tooltipEl) {
+        const tp = this._tooltip
+
+        if (!tp) {
             return
         }
 
-        const elRect = this._el.getBoundingClientRect()
-        const tooltipFn = (
-            typeof this._tooltip === "function" ? this._tooltip :
-                (val: number) => Math.round(val).toString()
-        )
-        const tooltipText = tooltipFn(this.getPercent(pos))
-        const obj: any = {}
-
-        if (tooltipText !== false) {
-            this._tooltipEl.innerHTML = tooltipText
-        }
-
-        this.setTooltipVisible(!!tooltipText)
-
-        const tooltipRect = this._tooltipEl.getBoundingClientRect()
-
-        if (this._vertical) {
-            const max = elRect.height - tooltipRect.height
-            let bottom = pos - tooltipRect.height / 2
-            bottom = bottom < 0 ? 0 : bottom > max ? max : bottom
-            obj.bottom = bottom
-
-            this._tooltipEl.style.bottom = `${bottom}px`
-        } else {
-            const max = elRect.width - tooltipRect.width
-            let left = pos - tooltipRect.width / 2
-            left = left < 0 ? 0 : left > max ? max : left
-            obj.left = left
-
-            this._tooltipEl.style.left = `${left}px`
-        }
-
-        this.emit("tooltipupdate", obj)
-    }
-
-    private setTooltipVisible(visible: boolean) {
-        const tooltip = this._tooltipEl
-
-        if (!tooltip) {
-            return
-        }
-
-        if (visible) {
-            tooltip.classList.remove(HIDDEN_CLASS)
-        } else {
-            tooltip.classList.add(HIDDEN_CLASS)
-        }
+        tp.setVisible(true)
+        tp.updateText(this._tooltipFormatter!(pos))
+        tp.updatePosition(pos)
     }
 
     private handleMouseMove = (evt: MouseEvent) => {
@@ -219,8 +174,8 @@ export default class Slider extends EventEmitter {
     }
 
     private handleMouseLeave = (evt: MouseEvent) => {
-        if (!this._moving) {
-            this.setTooltipVisible(false)
+        if (!this._moving && this._tooltip) {
+            this._tooltip.setVisible(false)
         }
 
         this._mouseEntered = false
@@ -240,6 +195,7 @@ export default class Slider extends EventEmitter {
                 rect.height - (this._startY - rect.top) :
                 this._startX - rect.left
 
+            //only update when press out of the marker
             if (evt.target !== this._marker) {
                 this.updateAndEmit(this.getPercent(val))
             }
@@ -320,8 +276,8 @@ export default class Slider extends EventEmitter {
         removeListener(document, "mousemove", this.handleSliderMove)
         removeListener(document, "touchmove", this.handleSliderMove)
 
-        if (!this._mouseEntered) {
-            this.setTooltipVisible(false)
+        if (!this._mouseEntered && this._tooltip) {
+            this._tooltip.setVisible(false)
         }
 
         if (this._moving) {

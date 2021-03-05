@@ -40,7 +40,9 @@ export default class ControlBar extends Transition {
         this._progress = new Slider(
             this._progressBar,
             {
-                tooltip: this.handleTooltip,
+                tooltip: {
+                    formatter: this.tooltipFormatter
+                },
                 secondary: true
             }
         )
@@ -114,10 +116,10 @@ export default class ControlBar extends Transition {
     }
 
     //val: percent(eg. 50(50%))
-    private handleTooltip = (val: number) => {
+    private tooltipFormatter = (val: number) => {
         return this._duration ?
             formatTime(this._duration * val / 100) :
-            false
+            ""
     }
 
     private handleSliderEvents = (evt: EventObject) => {
