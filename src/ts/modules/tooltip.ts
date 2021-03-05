@@ -26,13 +26,13 @@ export default class Tooltip extends EventEmitter {
             let bottom = val - elRect.height / 2
             bottom = bottom < 0 ? 0 : bottom > max ? max : bottom
 
-            this._el.style.bottom = `${bottom}px`
+            this._el.style.transform = `translateY(${bottom}px)`
         } else {
             const max = containerRect.width - elRect.width
             let left = val - elRect.width / 2
             left = left < 0 ? 0 : left > max ? max : left
 
-            this._el.style.left = `${left}px`
+            this._el.style.transform = `translateX(${left}px)`
         }
     }
 
