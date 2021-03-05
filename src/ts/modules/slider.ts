@@ -144,7 +144,6 @@ export default class Slider extends EventEmitter {
             return
         }
 
-        tp.setVisible(true)
         tp.updateText(this._tooltipFormatter!(pos))
         tp.updatePosition(pos)
     }
@@ -168,6 +167,10 @@ export default class Slider extends EventEmitter {
             pos = elRect.bottom - y
         } else {
             pos = x - elRect.left
+        }
+
+        if (this._tooltip) {
+            this._tooltip.setVisible(true)
         }
 
         this.updateTooltip(pos)
