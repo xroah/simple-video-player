@@ -34,14 +34,14 @@ class SwitchState {
         }
     }
 
-    private handleState(add = false) {
+    private handleState(visible = false) {
         const PAUSED_CLASS = "rplayer-paused"
         const {_el} = this
         const fn: "remove" | "add" = this._rp.video.isPaused() ? "add" : "remove"
 
         _el.classList[fn](PAUSED_CLASS)
 
-        if (add) {
+        if (visible) {
             _el.classList.add(TRANSITION_CLASS)
             addListener(_el, "transitionend", this.hide)
         }
