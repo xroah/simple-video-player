@@ -51,20 +51,6 @@ $track_size: 5px;
         background-color: rgba(255, 255, 255, .5);
         z-index: 1;
     }
-
-    .rplayer-slider-tooltip {
-        position: absolute;
-        bottom: 12px;
-        left: 0;
-        padding: 5px;
-        font-size: 12px;
-        background-color: rgba(0, 0, 0, .5);
-        color: #fff;
-
-        &.show {
-            display: block;
-        }
-    }
 }
 
 .rplayer-slider-wrapper-vertical {
@@ -94,11 +80,5 @@ $track_size: 5px;
     .rplayer-slider-secondary-progress {
         height: 0;
         width: 100%;
-    }
-
-    .rplayer-slider-tooltip {
-        bottom: 0;
-        left: 12px;
-        transition: transform .3s, opacity .3s;
     }
 }

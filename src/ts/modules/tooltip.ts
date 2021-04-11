@@ -12,8 +12,13 @@ export default class Tooltip extends EventEmitter {
 
     constructor(private _container: HTMLElement, private _options: Options = {}) {
         super()
-        
-        this._el = createEl("div", "rplayer-slider-tooltip", HIDDEN_CLASS)
+
+        this._el = createEl(
+            "div",
+            "rplayer-tooltip",
+            _options.vertical ? "rplayer-tooltip-vertical" : "",
+            HIDDEN_CLASS
+        )
         _container.appendChild(this._el)
     }
 
@@ -41,13 +46,13 @@ export default class Tooltip extends EventEmitter {
     }
 
     setVisible(visible: boolean) {
-        if(this._visible === visible) {
+        if (this._visible === visible) {
             return
         }
 
         this._visible = visible
 
-        if(visible) {
+        if (visible) {
             this._el.classList.remove(HIDDEN_CLASS)
         } else {
             this._el.classList.add(HIDDEN_CLASS)
