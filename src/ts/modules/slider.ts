@@ -1,11 +1,11 @@
 import EventEmitter from "../commons/event-emitter";
-import {isPlainObject, createEl} from "../commons/utils";
+import { isPlainObject, createEl } from "../commons/utils";
 import {
     addListener,
     removeAllListeners,
     removeListener
 } from "../commons/dom-event"
-import {MOVING_CLASS} from "../constants";
+import { MOVING_CLASS } from "../constants";
 import Tooltip from "./tooltip"
 
 interface Options {
@@ -58,6 +58,8 @@ export default class Slider extends EventEmitter {
             this._tooltipFormatter = options.tooltip.formatter
         }
 
+        this.update(this._value)
+        this.initEvents()
         this.mountTo(container)
     }
 
@@ -72,8 +74,6 @@ export default class Slider extends EventEmitter {
         track.appendChild(this._marker)
         this._el.appendChild(track)
         container.appendChild(this._el)
-        this.update(this._value)
-        this.initEvents()
     }
 
     private initEvents() {
@@ -137,14 +137,26 @@ export default class Slider extends EventEmitter {
         return v * 100
     }
 
-    private updateTooltip(pos = 0) {
+    private updateTooltip(pos = 0, isPercent = false) {
         const tp = this._tooltip
 
         if (!tp) {
             return
         }
 
-        tp.updateText(this._tooltipFormatter!(pos))
+        let percent = 0
+
+        if (isPercent) {
+            percent = pos
+        } else {
+            if (this._vertical) {
+                percent = pos / this._el.offsetHeight * 100
+            } else {
+                percent = pos / this._el.offsetWidth * 100
+            }
+        }
+
+        tp.updateText(this._tooltipFormatter!(percent))
         tp.updatePosition(pos)
     }
 
@@ -206,8 +218,8 @@ export default class Slider extends EventEmitter {
             this.updateTooltip(val)
             addListener(document, "mousemove", this.handleSliderMove)
             addListener(document, "touchmove", this.handleSliderMove)
-            addListener(document, "mouseup", this.handleMouseUp, {once: true})
-            addListener(document, "touchend", this.handleMouseUp, {once: true})
+            addListener(document, "mouseup", this.handleMouseUp, { once: true })
+            addListener(document, "touchend", this.handleMouseUp, { once: true })
         }
 
         evt.stopPropagation()
@@ -271,7 +283,7 @@ export default class Slider extends EventEmitter {
         percentVal = this.getPercent(val)
 
         this.updateAndEmit(percentVal)
-        this.updateTooltip(val)
+        this.updateTooltip(percentVal, true)
         this.emit("slidemove", percentVal)
     }
 
