@@ -115,6 +115,7 @@ export default class Slider extends EventEmitter {
         return true
     }
 
+    //val is percent
     private updateAndEmit(val: number) {
         if (this.update(val)) {
             this.emit("valuechange", val)
@@ -209,12 +210,14 @@ export default class Slider extends EventEmitter {
             const val = this._vertical ?
                 rect.height - (this._startY - rect.top) :
                 this._startX - rect.left
+            const percentVal = this.getPercent(val)
 
             //only update when press out of the marker
             if (evt.target !== this._marker) {
-                this.updateAndEmit(this.getPercent(val))
+                this.updateAndEmit(percentVal)
             }
 
+            this.emit("slidestart", percentVal)
             this.updateTooltip(val)
             addListener(document, "mousemove", this.handleSliderMove)
             addListener(document, "touchmove", this.handleSliderMove)
@@ -238,8 +241,6 @@ export default class Slider extends EventEmitter {
         let height = origHeight - disY
         let val: number
         let percentVal: number
-
-        this._moving = true
 
         if (this._vertical) {
             //update previous start position
@@ -282,9 +283,15 @@ export default class Slider extends EventEmitter {
 
         percentVal = this.getPercent(val)
 
+        if (!this._moving) {
+            this._moving = true
+
+            this.emit("slidemovestart", percentVal)
+        }
+        
+        this.emit("slidemove", percentVal)
         this.updateAndEmit(percentVal)
         this.updateTooltip(percentVal, true)
-        this.emit("slidemove", percentVal)
     }
 
     private handleMouseUp = () => {
