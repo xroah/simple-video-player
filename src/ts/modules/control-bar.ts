@@ -28,7 +28,6 @@ export default class ControlBar extends Transition {
     private _duration = 0
     private _mouseEntered = false
     private _time: PlayerTime
-    private _rp: RPlayer
 
     constructor(rp: RPlayer, hideTimeout: number) {
         super("rplayer-control", HIDDEN_CLASS)
@@ -48,13 +47,15 @@ export default class ControlBar extends Transition {
         )
         this.hideTimeout = hideTimeout
         this.autoHide = true
-        this._rp = rp
 
         //init before time addon
-        this.initAddon(playBtn)
+        this.initAddon(playBtn, rp)
 
         this._time = new PlayerTime(this.leftAddonContainer)
 
+        this.updateTime(0)
+        this.updateTime(0, "duration")
+        this.initEvents()
         this.mountTo(rp.root)
     }
 
@@ -68,13 +69,9 @@ export default class ControlBar extends Transition {
         this.el.appendChild(progressWrapper)
         this.el.appendChild(addonContainer)
         container.appendChild(this.el)
-
-        this.updateTime(0)
-        this.updateTime(0, "duration")
-        this.initEvents()
     }
 
-    initAddon(addon: AddonOptions) {
+    initAddon(addon: AddonOptions, rp: RPlayer) {
         const {
             classNames = [],
             init,
@@ -86,11 +83,11 @@ export default class ControlBar extends Transition {
         this.on("destroy", onDestroy)
 
         if (typeof init === "function") {
-            init.call(el, this._rp)
+            init.call(el, rp)
         }
 
         if (typeof action === "function") {
-            addListener(el, "click", () => action.call(el, this._rp))
+            addListener(el, "click", () => action.call(el, rp))
         }
 
         this.leftAddonContainer.appendChild(el)
