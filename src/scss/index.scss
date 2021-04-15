@@ -78,4 +78,5 @@
 
 .rplayer-operation-plugin {
     @include fill_parent();
+    z-index: 999;
 }
