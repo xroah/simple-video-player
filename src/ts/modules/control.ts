@@ -23,7 +23,7 @@ export default class Control {
             "error",
             "durationchange"
         ].forEach(name => this._rp.on(name, this.handleVideoEvents))
-        addListener(this._rp.body, "mousemove", this.handleMouseMove)
+        addListener(this._rp.root, "mousemove", this.handleMouseMove)
         this.bar.on("progresschange", this.handleProgressChange)
         this._rp.on(
             "timeupdate",
