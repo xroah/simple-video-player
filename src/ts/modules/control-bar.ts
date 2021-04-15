@@ -8,9 +8,9 @@ import { addListener, removeAllListeners } from "../commons/dom-event";
 import Transition from "./transition";
 import { HIDDEN_CLASS } from "../constants"
 import { EventObject } from "../commons/event-emitter";
-import PlayerTime from "./builtin-addons/time";
+import PlayerTime from "../builtin/addons/time";
 import RPlayer from "../player";
-import playBtn from "./builtin-addons/play-btn";
+import playBtn from "../builtin/addons/play-btn";
 
 interface AddonOptions {
     classNames?: string[]
