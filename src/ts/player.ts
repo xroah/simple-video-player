@@ -1,8 +1,7 @@
 import EventEmitter from "./commons/event-emitter";
-import LoadState, {ErrorMessage} from "./modules/load-state";
 import Video from "./modules/video";
-import Contextmenu, {ContextmenuItem} from "./modules/contextmenu"
-import {addListener, removeAllListeners} from "./commons/dom-event"
+import Contextmenu, { ContextmenuItem } from "./modules/contextmenu"
+import { addListener, removeAllListeners } from "./commons/dom-event"
 import Control from "./modules/control"
 import {
     isPlainObject,
@@ -10,26 +9,30 @@ import {
     createEl,
     getContainer
 } from "./commons/utils"
-import {CONTROL_BAR_HIDE_TIMEOUT, videoEvents} from "./constants"
-
+import { CONTROL_BAR_HIDE_TIMEOUT, videoEvents } from "./constants"
+import operation from "./builtin/plugins/operation";
 interface RPlayerOptions {
     container: string | HTMLElement | Node
     // autoPlay?: boolean
     url: string
-    errorMessage?: ErrorMessage
     defaultVolume?: number
     contextmenu?: ContextmenuItem[]
     poster?: string
     playOnClick?: boolean
     controlBarTimeout?: number
-    addons?: Array<Function | Addon>
+    plugins?: Plugins
 }
 
-interface Addon {
-    options?: any
-    install: Function
+interface PluginFunction {
+    (rp: RPlayer): void
 }
 
+interface Plugin {
+    install: (rp: RPlayer, options?: object) => void
+    options?: object
+}
+
+type Plugins = Array<PluginFunction | Plugin>
 export default class RPlayer extends EventEmitter {
     root: HTMLElement
     body: HTMLElement
@@ -37,7 +40,6 @@ export default class RPlayer extends EventEmitter {
     video: Video
     control: Control
 
-    private _loadState: LoadState
     private _options: RPlayerOptions
     private _contextmenu: Contextmenu | null = null
     private _container: HTMLElement
@@ -58,10 +60,9 @@ export default class RPlayer extends EventEmitter {
         const el = createEl("div", "rplayer-root")
         const body = createEl("div", "rplayer-body")
         const controlBarTimeout = options.controlBarTimeout || CONTROL_BAR_HIDE_TIMEOUT
+        const builtinPlugins: Plugins = [operation]
 
-        this._loadState = new LoadState(body, options.errorMessage || {})
         this._options = options
-
         this.video = new Video(
             body,
             {
@@ -75,6 +76,7 @@ export default class RPlayer extends EventEmitter {
         this.control = new Control(this, controlBarTimeout)
         this._container = container as HTMLElement
 
+        this.installPlugins(builtinPlugins.concat(options.plugins || []))
         this.init()
     }
 
@@ -82,43 +84,11 @@ export default class RPlayer extends EventEmitter {
         this.root.tabIndex = -1
 
         this.initContextmenu()
-        this.initAddons()
         this.initEvents()
-
-        this.emit("beforemount")
 
         this.root.appendChild(this.body)
         this._container.appendChild(this.root)
         this.control.showControlBar()
-
-        this.emit("mounted")
-    }
-
-    private initAddons() {
-        const {addons} = this._options
-
-        if (addons && addons.length) {
-            addons.forEach(a => {
-                if (!a) {
-                    return
-                }
-
-                if (typeof a === "function") {
-                    a(this)
-                } else if (a.install) {
-                    a.install(this,a.options || {})
-                }
-            })
-        }
-    }
-
-    getAddonContainers() {
-        const {
-            leftAddonContainer: left,
-            rightAddonContainer: right
-        } = this.control.bar
-
-        return {left, right}
     }
 
     private initContextmenu() {
@@ -134,7 +104,7 @@ export default class RPlayer extends EventEmitter {
     }
 
     private handleContextMenu = (evt: MouseEvent) => {
-        const {_contextmenu: ctxMenu} = this
+        const { _contextmenu: ctxMenu } = this
 
         if (ctxMenu) {
             ctxMenu.setVisible(!ctxMenu.isVisible(), evt.clientX, evt.clientY)
@@ -145,22 +115,27 @@ export default class RPlayer extends EventEmitter {
     }
 
     private initEvents() {
-        const videoEl = this.video.el
-        const _addListener = (n: string) => addListener(videoEl, n, this.handleVideoEvents)
-
-        if (this._options.playOnClick !== false) {
-            addListener(this.body, "click", this.handleClickBody)
-        }
-
-        videoEvents.forEach(_addListener)
+        videoEvents.forEach(
+            (n: string) => addListener(
+                this.video.el,
+                n,
+                this.handleVideoEvents
+            )
+        )
     }
 
-    handleClickBody = () => {
-        this.togglePlay()
+    installPlugins(plugins: Plugins) {
+        plugins.forEach(plugin => {
+            if (typeof plugin === "function") {
+                plugin(this)
+            } else {
+                plugin.install(this, plugin.options)
+            }
+        })
     }
 
     togglePlay() {
-        const {video} = this
+        const { video } = this
 
         if (video.isError()) {
             return
@@ -175,7 +150,7 @@ export default class RPlayer extends EventEmitter {
 
     private handleVideoEvents = (evt: Event) => {
         const type = evt.type
-        const {video, _loadState} = this
+        /* const { video } = this
 
         switch (type) {
             case "loadstart":
@@ -192,7 +167,7 @@ export default class RPlayer extends EventEmitter {
                 break
             case "progress":
                 this.control.handleBuffer()
-        }
+        } */
 
         this.emit(type)
     }

@@ -75,3 +75,7 @@
 .rplayer-time-info {
     color: #fff;
 }
+
+.rplayer-operation-plugin {
+    @include fill_parent();
+}
