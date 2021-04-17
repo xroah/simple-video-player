@@ -11,6 +11,8 @@ import {
 } from "./commons/utils"
 import { CONTROL_BAR_HIDE_TIMEOUT, videoEvents } from "./constants"
 import operation from "./builtin/plugins/operation";
+import loadState from "./builtin/plugins/load-state"
+
 interface RPlayerOptions {
     container: string | HTMLElement | Node
     // autoPlay?: boolean
@@ -62,7 +64,7 @@ export default class RPlayer extends EventEmitter {
         const el = createEl("div", "rplayer-root")
         const body = createEl("div", "rplayer-body")
         const controlBarTimeout = options.controlBarTimeout || CONTROL_BAR_HIDE_TIMEOUT
-        const builtinPlugins: Plugins = [operation]
+        const builtinPlugins: Plugins = [operation, loadState]
 
         this._options = options
         this.video = new Video(
@@ -158,24 +160,10 @@ export default class RPlayer extends EventEmitter {
 
     private handleVideoEvents = (evt: Event) => {
         const type = evt.type
-        /* const { video } = this
 
-        switch (type) {
-            case "loadstart":
-                _loadState.setVisible(true)
-                break
-            case "waiting":
-                _loadState.setVisible(true)
-                break
-            case "canplay":
-                _loadState.setVisible(false)
-                break
-            case "error":
-                _loadState.setVisible(true, "error", video.el.error)
-                break
-            case "progress":
-                this.control.handleBuffer()
-        } */
+        if (type === "progress") {
+            this.control.handleBuffer()
+        }
 
         this.emit(type)
     }

@@ -106,6 +106,10 @@ export default class Player extends EventEmitter {
         return !!this.el.error
     }
 
+    getError() {
+        return this.el.error
+    }
+
     getPlaybackRate() {
         return this.el.playbackRate
     }

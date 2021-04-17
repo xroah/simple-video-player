@@ -1,6 +1,7 @@
-import {HIDDEN_CLASS} from "../constants"
-import {createEl} from "../commons/utils"
-import settings from "../settings"
+import {HIDDEN_CLASS} from "../../constants"
+import {createEl} from "../../commons/utils"
+import settings from "../../settings"
+import RPlayer from "../.."
 
 export interface ErrorMessage {
     abort?: string
@@ -9,13 +10,13 @@ export interface ErrorMessage {
     notSupport?: string
 }
 
-export default class LoadState {
+class LoadState {
     private _el: HTMLElement
     private _spinnerEl: HTMLElement
     private _errEl: HTMLElement
     private _errorMessage: ErrorMessage = {}
 
-    constructor(container: HTMLElement, eMsg: ErrorMessage) {
+    constructor(container: HTMLElement, eMsg?: ErrorMessage) {
         this._el = createEl("div", "rplayer-state-wrapper", HIDDEN_CLASS)
         this._spinnerEl = createEl("div", "rplayer-loading-spinner")
         this._errEl = createEl("div", "rplayer-error-message")
@@ -64,5 +65,19 @@ export default class LoadState {
         } else {
             this._el.classList.add(HIDDEN_CLASS)
         }
+    }
+}
+
+export default {
+    install(rp: RPlayer) {
+        const state = new LoadState(rp.body)
+        const show = () => state.setVisible(true)
+        const hide = () => state.setVisible(false)
+        const handleError = () => state.setVisible(true, "error", rp.video.getError())
+
+        rp.on("loadstart", show)
+        rp.on("waiting", show)
+        rp.on("canplay", hide)
+        rp.on("error", handleError)
     }
 }

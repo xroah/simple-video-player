@@ -1,6 +1,5 @@
 @import "./vars";
 @import "./modules/slider";
-@import "./modules/load-state";
 @import "./modules/contextmenu";
 @import "./modules/control-bar";
 @import "./modules/video";
@@ -79,4 +78,46 @@
 .rplayer-operation-plugin {
     @include fill_parent();
     z-index: 999;
+}
+
+.rplayer-state-wrapper {
+    $size: 50px;
+    @include flex_center();
+    @include fill_parent();
+    background-color: $black_translucent;
+
+    .rplayer-loading-spinner {
+        display: block;
+        width: $size;
+        height: $size;
+        border: 5px solid rgba(255, 255, 255, .8);
+        border-bottom-color: transparent;
+        border-left-color: transparent;
+        border-radius: 50%;
+
+        animation: rplayer-loading linear .8s infinite;
+    }
+
+    .rplayer-error-message {
+        display: block;
+        max-width: 80%;
+        line-height: 1.5;
+        font-size: 20px;
+        color: #fff;
+        text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.5),
+            2px 2px 2px rgba(0, 0, 0, 0.4),
+            3px 3px 3px rgba(0, 0, 0, 0.3),
+            4px 4px 4px rgba(0, 0, 0, 0.2),
+            5px 5px 5px rgba(0, 0, 0, 0.1);
+    }
+}
+
+@keyframes rplayer-loading {
+    0% {
+        transform: rotate(0);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
 }
