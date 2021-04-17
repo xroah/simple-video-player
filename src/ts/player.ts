@@ -44,6 +44,8 @@ export default class RPlayer extends EventEmitter {
     private _contextmenu: Contextmenu | null = null
     private _container: HTMLElement
 
+    private _installedPlugins: Plugins = []
+
     constructor(options: RPlayerOptions) {
         super()
 
@@ -126,11 +128,17 @@ export default class RPlayer extends EventEmitter {
 
     installPlugins(plugins: Plugins) {
         plugins.forEach(plugin => {
+            if (this._installedPlugins.indexOf(plugin) >= 0) {
+                return
+            }
+
             if (typeof plugin === "function") {
                 plugin(this)
             } else {
                 plugin.install(this, plugin.options)
             }
+
+            this._installedPlugins.push(plugin)
         })
     }
 
