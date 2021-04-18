@@ -1,13 +1,13 @@
 import RPlayer from "../src/ts"
 import switchState from "../src/ts/plugins/switch-state"
-import miniProgress from "../src/ts/addons/mini-progress"
+import miniProgress from "../src/ts/plugins/mini-progress"
 import volume from "../src/ts/addons/volume"
 import fullscreenBtn from "../src/ts/addons/fullscreen-btn"
 
 let rp = new RPlayer({
     container: "#player",
     url: "http://192.168.1.222:8000/videos/test.mp4",
-    plugins: [switchState],
+    plugins: [switchState, miniProgress],
     contextmenu: [
         {
             text(rp: RPlayer) {
