@@ -11,7 +11,7 @@ class SwitchState {
         this._el = createEl("span", "rplayer-switch-state-icon", HIDDEN_CLASS)
         this._rp = rp
 
-        rp.root.appendChild(this._el)
+        rp.body.appendChild(this._el)
         this.initEvents()
     }
 
