@@ -159,13 +159,7 @@ export default class RPlayer extends EventEmitter {
     }
 
     private handleVideoEvents = (evt: Event) => {
-        const type = evt.type
-
-        if (type === "progress") {
-            this.control.handleBuffer()
-        }
-
-        this.emit(type)
+        this.emit(evt.type)
     }
 
     destroy() {

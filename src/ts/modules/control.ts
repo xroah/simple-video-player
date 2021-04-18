@@ -31,7 +31,7 @@ export default class Control {
                 this.handleTimeupdate,
                 {trailing: false}
             )
-        )
+        ).on("progress", this.handleBuffer)
     }
 
     private handleMouseMove = () => {
