@@ -145,9 +145,9 @@ export default class ControlBar extends Transition {
 
     updateProgress(val: number) {
         //prevent racing(slider moving and video time update)
-        if (!this._progress.isMoving()) {
+        // and visible
+        if (!this._progress.isMoving() && this.visible) {
             this._progress.update(val)
-            this.updateTime(val)
         }
     }
 
@@ -163,7 +163,10 @@ export default class ControlBar extends Transition {
         }
 
         if (type === "currentTime") {
-            this._time.updateCurrentTime(val)
+            if (this.visible) {
+                // only update current time when visible
+                this._time.updateCurrentTime(val)
+            }
 
             return
         }

@@ -47,6 +47,8 @@ export default class Control {
         }
 
         this.bar.setVisible(true)
+        // sync progress and current time
+        this.handleTimeupdate()
     }
 
     hideControlBar = (force = false) => {
