@@ -1,6 +1,6 @@
 import RPlayer from ".."
 import { HIDDEN_CLASS } from "../constants"
-import { createEl } from "../commons/utils"
+import { createEl, throttle } from "../commons/utils"
 
 class MiniProgress {
     private _bar: HTMLElement
@@ -45,7 +45,7 @@ export default (rp: RPlayer) => {
     }
 
     rp
-        .on("timeupdate", updateProgress)
+        .on("timeupdate", throttle(updateProgress))
         .on("loadstart", () => mp.updateProgress(0))
         .control.bar
         .on("show", show)

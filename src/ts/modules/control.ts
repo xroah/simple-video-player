@@ -27,10 +27,7 @@ export default class Control {
         this.bar.on("progresschange", this.handleProgressChange)
         this._rp.on(
             "timeupdate",
-            throttle(
-                this.handleTimeupdate,
-                {trailing: false}
-            )
+            throttle(this.handleTimeupdate)
         ).on("progress", this.handleBuffer)
     }
 
