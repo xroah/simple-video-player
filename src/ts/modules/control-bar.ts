@@ -97,7 +97,6 @@ export default class ControlBar extends Transition {
         this._progress
             .on("valuechange", this.handleSliderEvents)
             .on("slideend", this.handleSliderEvents)
-            .on("tooltipupdate", this.handleSliderEvents)
         addListener(this.el, "mouseenter", this.handleMouseEnterLeave)
         addListener(this.el, "mouseleave", this.handleMouseEnterLeave)
         //prevent from selecting(for safari)
@@ -128,9 +127,6 @@ export default class ControlBar extends Transition {
                 break
             case "slideend":
                 this.handleProgressSlideEnd(evt)
-                break
-            case "tooltipupdate":
-                this.emit("tooltipupdate", evt.details)
                 break
         }
     }
