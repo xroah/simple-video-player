@@ -23,7 +23,7 @@ class MiniProgress {
     }
 
     isVisible() {
-        return this._bar.classList.contains(HIDDEN_CLASS)
+        return !this._bar.classList.contains(HIDDEN_CLASS)
     }
 }
 
