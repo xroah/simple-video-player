@@ -100,7 +100,6 @@ export default class ControlBar extends Transition {
             .on("tooltipupdate", this.handleSliderEvents)
         addListener(this.el, "mouseenter", this.handleMouseEnterLeave)
         addListener(this.el, "mouseleave", this.handleMouseEnterLeave)
-        addListener(this.el, "click", preventAndStop)
         //prevent from selecting(for safari)
         addListener(this.el, "selectstart", preventAndStop)
         addListener(this.el, "transitionend", this.handleTransitionEnd)
