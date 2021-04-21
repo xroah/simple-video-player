@@ -29,11 +29,13 @@ interface Listener {
     capture: boolean
 }
 
-interface ListenerObject {
-    [name: string]: {
-        listener: Function
-        capture?: boolean
-    }
+interface ListenerObj {
+    listener: Function
+    capture?: boolean
+}
+
+interface Listeners {
+    [name: string]: ListenerObj | Function
 }
 
 function createListener(fn: any, orig: any, capture: boolean): Listener {
@@ -95,17 +97,25 @@ export function addListener(
     element.addEventListener(eventName, _listener as EventListener, _options)
 }
 
-export function addListeners(element: El, obj: ListenerObject) {
-    const keys: Array<keyof ListenerObject> = Object.keys(obj)
+export function addListeners(element: El, obj: Listeners) {
+    const keys: Array<keyof Listeners> = Object.keys(obj)
 
     for (let key of keys) {
-        const listenerObj = obj[key]
+        let fn = obj[key]
+        let tmp: ListenerObj = {
+            listener: () => {}
+        }
 
+        if (typeof fn === "function") {
+            tmp.listener = fn
+        } else {
+            tmp = fn
+        }
         addListener(
             element,
             key as string,
-            listenerObj.listener,
-            listenerObj.capture
+            tmp.listener,
+            !!tmp.capture
         )
     }
 }
