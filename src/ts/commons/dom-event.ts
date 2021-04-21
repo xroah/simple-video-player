@@ -1,5 +1,5 @@
-import {isUndef} from "./utils"
-import {EVENT_LISTENER_KEY} from "../constants"
+import { isUndef } from "./utils"
+import { EVENT_LISTENER_KEY } from "../constants"
 
 type El = HTMLElement | Document | Window
 type Options = boolean | AddEventListenerOptions | undefined
@@ -21,12 +21,19 @@ function handleOptions(options: Options) {
     return ret
 }
 
-interface Listener{
+interface Listener {
     fn: any
     //orig: the original function, prevent adding repeatedly
     //if once, the original listener will be wrapped
     orig: any
     capture: boolean
+}
+
+interface ListenerObject {
+    [name: string]: {
+        listener: Function
+        capture?: boolean
+    }
 }
 
 function createListener(fn: any, orig: any, capture: boolean): Listener {
@@ -86,6 +93,21 @@ export function addListener(
 
     listeners.push(createListener(_listener, listener, !!_options.capture))
     element.addEventListener(eventName, _listener as EventListener, _options)
+}
+
+export function addListeners(element: El, obj: ListenerObject) {
+    const keys: Array<keyof ListenerObject> = Object.keys(obj)
+
+    for (let key of keys) {
+        const listenerObj = obj[key]
+
+        addListener(
+            element,
+            key as string,
+            listenerObj.listener,
+            listenerObj.capture
+        )
+    }
 }
 
 export function removeAllListeners(element: El) {
