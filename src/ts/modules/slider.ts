@@ -2,6 +2,7 @@ import EventEmitter from "../commons/event-emitter";
 import { isPlainObject, createEl } from "../commons/utils";
 import {
     addListener,
+    addListeners,
     removeAllListeners,
     removeListener
 } from "../commons/dom-event"
@@ -78,12 +79,17 @@ export default class Slider extends EventEmitter {
 
     private initEvents() {
         addListener(this._el, "mousedown", this.handleMouseDown)
-        addListener(this._el, "touchstart", this.handleMouseDown)
+        // addListener(this._el, "touchstart", this.handleMouseDown)
 
         if (this._tooltip) {
-            addListener(this._el, "mouseenter", this.handleMouseEnter)
-            addListener(this._el, "mousemove", this.handleMouseMove)
-            addListener(this._el, "mouseleave", this.handleMouseLeave)
+            addListeners(
+                this._el,
+                {
+                    mouseenter: this.handleMouseEnter,
+                    mousemove: this.handleMouseMove,
+                    mouseleave: this.handleMouseLeave
+                }
+            )
         }
     }
 
@@ -220,9 +226,9 @@ export default class Slider extends EventEmitter {
             this.emit("slidestart", percentVal)
             this.updateTooltip(val)
             addListener(document, "mousemove", this.handleSliderMove)
-            addListener(document, "touchmove", this.handleSliderMove)
+            // addListener(document, "touchmove", this.handleSliderMove)
             addListener(document, "mouseup", this.handleMouseUp, { once: true })
-            addListener(document, "touchend", this.handleMouseUp, { once: true })
+            // addListener(document, "touchend", this.handleMouseUp, { once: true })
         }
 
         evt.stopPropagation()
@@ -296,7 +302,7 @@ export default class Slider extends EventEmitter {
 
     private handleMouseUp = () => {
         removeListener(document, "mousemove", this.handleSliderMove)
-        removeListener(document, "touchmove", this.handleSliderMove)
+        // removeListener(document, "touchmove", this.handleSliderMove)
 
         if (!this._mouseEntered && this._tooltip) {
             this._tooltip.setVisible(false)
@@ -318,9 +324,9 @@ export default class Slider extends EventEmitter {
         removeAllListeners(this._marker)
         removeAllListeners(this._el)
         removeListener(document, "mousemove", this.handleSliderMove)
-        removeListener(document, "touchmove", this.handleSliderMove)
+        // removeListener(document, "touchmove", this.handleSliderMove)
         removeListener(document, "mouseup", this.handleMouseUp)
-        removeListener(document, "touchend", this.handleMouseUp)
+        // removeListener(document, "touchend", this.handleMouseUp)
         this.off()
     }
 }

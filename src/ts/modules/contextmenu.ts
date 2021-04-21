@@ -1,6 +1,7 @@
-import {HIDDEN_CLASS} from "../constants";
+import { HIDDEN_CLASS } from "../constants";
 import {
     addListener,
+    addListeners,
     removeAllListeners,
     removeListener
 } from "../commons/dom-event";
@@ -97,11 +98,16 @@ export default class Contextmenu extends Transition {
 
     private addEvents() {
         addListener(document, "click", this.handleClickOutside)
-        addListener(this._el, "click", this.handleClick)
-        addListener(this._el, "contextmenu", preventAndStop)
-        addListener(this._el, "mouseover", this.handleMouseOver)
-        addListener(this._el, "mouseout", this.handleMouseOut)
-        addListener(this._el, "keydown", this.handleKeydown)
+        addListeners(
+            this._el,
+            {
+                click: this.handleClick,
+                contextmenu: preventAndStop,
+                mouseover: this.handleMouseOver,
+                mouseout: this.handleMouseOut,
+                keydown: this.handleKeydown
+            }
+        )
     }
 
     private removeEvents() {

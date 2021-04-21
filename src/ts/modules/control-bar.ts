@@ -4,7 +4,7 @@ import {
     preventAndStop
 } from "../commons/utils";
 import Slider from "./slider";
-import { addListener, removeAllListeners } from "../commons/dom-event";
+import { addListener, addListeners, removeAllListeners } from "../commons/dom-event";
 import Transition from "./transition";
 import { HIDDEN_CLASS } from "../constants"
 import { EventObject } from "../commons/event-emitter";
@@ -97,11 +97,17 @@ export default class ControlBar extends Transition {
         this._progress
             .on("valuechange", this.handleSliderEvents)
             .on("slideend", this.handleSliderEvents)
-        addListener(this.el, "mouseenter", this.handleMouseEnterLeave)
-        addListener(this.el, "mouseleave", this.handleMouseEnterLeave)
-        //prevent from selecting(for safari)
-        addListener(this.el, "selectstart", preventAndStop)
-        addListener(this.el, "transitionend", this.handleTransitionEnd)
+        addListeners(
+            this.el,
+            {
+                mouseenter: this.handleMouseEnterLeave,
+                mouseleave: this.handleMouseEnterLeave,
+                //prevent from selecting(for safari)
+                selectstart: preventAndStop,
+                transitionend: this.handleTransitionEnd
+            }
+        )
+
     }
 
     private handleMouseEnterLeave = (evt: MouseEvent) => {
