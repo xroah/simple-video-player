@@ -9,7 +9,7 @@ import {
     createEl,
     getContainer
 } from "./commons/utils"
-import { CONTROL_BAR_HIDE_TIMEOUT, videoEvents } from "./constants"
+import { CONTROL_BAR_HIDE_TIMEOUT, videoEvents } from "./commons/constants"
 import operation from "./builtin/plugins/operation";
 import loadState from "./builtin/plugins/load-state"
 

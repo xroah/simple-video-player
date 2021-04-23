@@ -1,5 +1,5 @@
 import RPlayer from ".."
-import { HIDDEN_CLASS } from "../constants"
+import { HIDDEN_CLASS } from "../commons/constants"
 import { createEl, throttle } from "../commons/utils"
 
 class MiniProgress {

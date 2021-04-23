@@ -1,4 +1,4 @@
-import { HIDDEN_CLASS } from "../constants";
+import { HIDDEN_CLASS } from "../commons/constants";
 import {
     addListener,
     addListeners,

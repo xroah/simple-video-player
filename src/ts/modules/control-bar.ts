@@ -6,7 +6,7 @@ import {
 import Slider from "./slider";
 import { addListener, addListeners, removeAllListeners } from "../commons/dom-event";
 import Transition from "./transition";
-import { HIDDEN_CLASS } from "../constants"
+import { HIDDEN_CLASS } from "../commons/constants"
 import { EventObject } from "../commons/event-emitter";
 import PlayerTime from "../builtin/addons/time";
 import RPlayer from "../player";

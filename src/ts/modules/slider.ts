@@ -6,7 +6,7 @@ import {
     removeAllListeners,
     removeListener
 } from "../commons/dom-event"
-import { MOVING_CLASS } from "../constants";
+import { MOVING_CLASS } from "../commons/constants";
 import Tooltip from "./tooltip"
 
 interface Options {

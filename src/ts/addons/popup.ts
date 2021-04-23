@@ -5,7 +5,7 @@ import {
 } from "../commons/dom-event";
 import RPlayer from "../player";
 import Transition from "../modules/transition";
-import {HIDDEN_CLASS} from "../constants";
+import {HIDDEN_CLASS} from "../commons/constants";
 import {createEl} from "../commons/utils";
 
 export default class Popup extends Transition {

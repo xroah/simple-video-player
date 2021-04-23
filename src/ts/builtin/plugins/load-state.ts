@@ -1,4 +1,4 @@
-import {HIDDEN_CLASS} from "../../constants"
+import {HIDDEN_CLASS} from "../../commons/constants"
 import {createEl} from "../../commons/utils"
 import settings from "../../settings"
 import RPlayer from "../.."

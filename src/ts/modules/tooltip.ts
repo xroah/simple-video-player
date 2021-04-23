@@ -1,6 +1,6 @@
 import EventEmitter from "../commons/event-emitter"
 import { createEl } from "../commons/utils"
-import { HIDDEN_CLASS } from "../constants"
+import { HIDDEN_CLASS } from "../commons/constants"
 
 interface Options {
     vertical?: boolean
