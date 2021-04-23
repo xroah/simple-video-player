@@ -10,8 +10,9 @@ import {
     getContainer
 } from "./commons/utils"
 import { CONTROL_BAR_HIDE_TIMEOUT, videoEvents } from "./commons/constants"
-import operation from "./builtin/plugins/operation";
+import operation from "./builtin/plugins/operation"
 import loadState from "./builtin/plugins/load-state"
+import switchState from "./builtin/plugins/switch-state"
 
 interface RPlayerOptions {
     container: string | HTMLElement | Node
@@ -64,7 +65,11 @@ export default class RPlayer extends EventEmitter {
         const el = createEl("div", "rplayer-root")
         const body = createEl("div", "rplayer-body")
         const controlBarTimeout = options.controlBarTimeout || CONTROL_BAR_HIDE_TIMEOUT
-        const builtinPlugins: Plugins = [operation, loadState]
+        const builtinPlugins: Plugins = [
+            operation,
+            loadState,
+            switchState
+        ]
 
         this._options = options
         this.video = new Video(
