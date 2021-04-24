@@ -55,28 +55,23 @@ export default function requestFullscreen(rp: RPlayer) {
     const toggleFS = () => {
         const root = rp.root as any
 
-        if (!getFSEl()) {
+        if (!getEl()) {
             root[fullscreenApi.request]()
         } else {
             doc[fullscreenApi.exit]()
         }
     }
-    const getFSEl = () => {
-        return doc[fullscreenApi.element]
-    }
+    const getEl = () => doc[fullscreenApi.element]
     const handleKeydown = (evt: EventObject) => {
         if (evt.details === "enter") {
             toggleFS()
         }
     }
     const handleFSChange = () => {
-        const root = rp.root
+        const {classList} = rp.root
+        const fn: "add" | "remove" = getEl() ? "add" : "remove"
 
-        if (getFSEl()) {
-            root.classList.add("rplayer-fullscreen")
-        } else {
-            root.classList.remove("rplayer-fullscreen")
-        }
+        classList[fn]("rplayer-fullscreen")
     }
 
     addListener(document, fullscreenApi.change, handleFSChange)
