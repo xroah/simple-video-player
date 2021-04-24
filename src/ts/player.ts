@@ -14,6 +14,7 @@ import operation from "./builtin/plugins/operation"
 import loadState from "./builtin/plugins/load-state"
 import switchState from "./builtin/plugins/switch-state"
 import hotkey from "./builtin/plugins/hotkey";
+import requestFullscreen from "./builtin/plugins/fullscreen";
 
 interface RPlayerOptions {
     container: string | HTMLElement | Node
@@ -70,7 +71,8 @@ export default class RPlayer extends EventEmitter {
             operation,
             loadState,
             switchState,
-            hotkey
+            hotkey,
+            requestFullscreen
         ]
 
         this._options = options
