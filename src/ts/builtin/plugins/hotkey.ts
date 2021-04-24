@@ -103,13 +103,7 @@ class Hotkey {
 }
 
 export default function hotkey(rp: RPlayer) {
-    let hk: Hotkey | null = new Hotkey(rp)
+    let hk: Hotkey = new Hotkey(rp)
 
-    rp.once("destroy", () => {
-        if (hk) {
-            hk.destroy()
-
-            hk = null
-        }
-    })
+    rp.once("destroy", hk.destroy.bind(hk))
 }
