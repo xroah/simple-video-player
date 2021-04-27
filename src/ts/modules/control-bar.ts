@@ -12,7 +12,7 @@ import PlayerTime from "../builtin/addons/time";
 import RPlayer from "../player";
 import playBtn from "../builtin/addons/play-btn";
 
-interface AddonOptions {
+export interface AddonOptions {
     classNames?: string[]
     init?: (rp: RPlayer) => void
     action?: (rp: RPlayer) => void
@@ -71,7 +71,7 @@ export default class ControlBar extends Transition {
         container.appendChild(this.el)
     }
 
-    initAddon(addon: AddonOptions, rp: RPlayer) {
+    initAddon(addon: AddonOptions, rp: RPlayer, right = false) {
         const {
             classNames = [],
             init,
@@ -79,6 +79,7 @@ export default class ControlBar extends Transition {
         } = addon
         const el = createEl("button", ...classNames)
         const onDestroy = () => removeAllListeners(el)
+        const contaienr = right ? this.rightAddonContainer : this.leftAddonContainer
 
         this.on("destroy", onDestroy)
 
@@ -90,7 +91,7 @@ export default class ControlBar extends Transition {
             addListener(el, "click", () => action.call(el, rp))
         }
 
-        this.leftAddonContainer.appendChild(el)
+        contaienr.appendChild(el)
     }
 
     private initEvents() {

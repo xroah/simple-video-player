@@ -9,12 +9,13 @@ import {
     createEl,
     getContainer
 } from "./commons/utils"
+import { AddonOptions } from "./modules/control-bar"
 import { CONTROL_BAR_HIDE_TIMEOUT, videoEvents } from "./commons/constants"
 import operation from "./builtin/plugins/operation"
 import loadState from "./builtin/plugins/load-state"
 import switchState from "./builtin/plugins/switch-state"
 import hotkey from "./builtin/plugins/hotkey";
-import requestFullscreen from "./builtin/plugins/fullscreen";
+import requestFullscreen from "./builtin/plugins/fullscreen"
 
 interface RPlayerOptions {
     container: string | HTMLElement | Node
@@ -26,6 +27,7 @@ interface RPlayerOptions {
     playOnClick?: boolean
     controlBarTimeout?: number
     plugins?: Plugins
+    addons?: AddonOptions[]
 }
 
 interface PluginFunction {
@@ -88,7 +90,8 @@ export default class RPlayer extends EventEmitter {
         this.body = body
         this.control = new Control(this, controlBarTimeout)
         this._container = container as HTMLElement
-
+        
+        this.initAddons()
         this.installPlugins(builtinPlugins.concat(options.plugins || []))
         this.init()
     }
@@ -102,6 +105,12 @@ export default class RPlayer extends EventEmitter {
         this.root.appendChild(this.body)
         this._container.appendChild(this.root)
         this.control.showControlBar()
+    }
+
+    private initAddons() {
+        const {addons = []} = this._options
+
+        addons.forEach(addon => this.control.bar.initAddon(addon, this, true))
     }
 
     private initContextmenu() {
