@@ -151,7 +151,7 @@ export default class RPlayer extends EventEmitter {
         )
     }
 
-    installPlugins(plugins: Plugins) {
+    private installPlugins(plugins: Plugins) {
         plugins.forEach(plugin => {
             if (this._installedPlugins.indexOf(plugin) >= 0) {
                 return
