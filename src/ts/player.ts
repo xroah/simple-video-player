@@ -39,6 +39,10 @@ interface Plugin {
     options?: object
 }
 
+interface AdditionData {
+    [name: string]: any
+}
+
 type Plugins = Array<PluginFunction | Plugin>
 export default class RPlayer extends EventEmitter {
     root: HTMLElement
@@ -52,6 +56,7 @@ export default class RPlayer extends EventEmitter {
     private _container: HTMLElement
 
     private _installedPlugins: Plugins = []
+    private _additionData: AdditionData = {}
 
     constructor(options: RPlayerOptions) {
         super()
@@ -160,6 +165,14 @@ export default class RPlayer extends EventEmitter {
 
             this._installedPlugins.push(plugin)
         })
+    }
+
+    setAdditionData(name: string,val: any) {
+        this._additionData[name] = val
+    }
+
+    getAdditionData(name: string) {
+        return this._additionData[name]
     }
 
     togglePlay() {
