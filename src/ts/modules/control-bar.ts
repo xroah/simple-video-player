@@ -47,12 +47,15 @@ export default class ControlBar extends Transition {
         )
         this.hideTimeout = hideTimeout
         this.autoHide = true
+        this._time = new PlayerTime()
 
+        this.init(rp)
+    }
+
+    private init(rp: RPlayer) {
         //init before time addon
         this.initAddon(playBtn, rp)
-
-        this._time = new PlayerTime(this.leftAddonContainer)
-
+        this._time.mountTo(rp.root)
         this.updateTime(0)
         this.updateTime(0, "duration")
         this.initEvents()
