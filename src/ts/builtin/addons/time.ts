@@ -4,11 +4,9 @@ export default class PlayerTime {
     private _currentTimeEl: HTMLElement
     private _durationEl: HTMLElement
 
-    constructor(container: HTMLElement) {
+    constructor() {
         this._currentTimeEl = createEl("span")
         this._durationEl = createEl("span")
-
-        this.mountTo(container)
     }
 
     mountTo(container: HTMLElement) {

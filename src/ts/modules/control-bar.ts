@@ -55,7 +55,7 @@ export default class ControlBar extends Transition {
     private init(rp: RPlayer) {
         //init before time addon
         this.initAddon(playBtn, rp)
-        this._time.mountTo(rp.root)
+        this._time.mountTo(this.leftAddonContainer)
         this.updateTime(0)
         this.updateTime(0, "duration")
         this.initEvents()
