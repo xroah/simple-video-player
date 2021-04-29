@@ -74,13 +74,6 @@ export default class RPlayer extends EventEmitter {
         const el = createEl("div", "rplayer-root")
         const body = createEl("div", "rplayer-body")
         const controlBarTimeout = options.controlBarTimeout || CONTROL_BAR_HIDE_TIMEOUT
-        const builtinPlugins: Plugins = [
-            operation,
-            loadState,
-            switchState,
-            hotkey,
-            requestFullscreen
-        ]
 
         this._options = options
         this.video = new Video(
@@ -95,17 +88,25 @@ export default class RPlayer extends EventEmitter {
         this.body = body
         this.control = new Control(this, controlBarTimeout)
         this._container = container as HTMLElement
-        
-        this.initAddons()
-        this.installPlugins(builtinPlugins.concat(options.plugins || []))
+
         this.init()
     }
 
     private init() {
+        const builtinPlugins: Plugins = [
+            operation,
+            loadState,
+            switchState,
+            hotkey,
+            requestFullscreen
+        ]
+        const plugins = builtinPlugins.concat(this._options.plugins || [])
         this.root.tabIndex = -1
 
         this.initContextmenu()
         this.initEvents()
+        this.initAddons()
+        this.installPlugins(plugins)
 
         this.root.appendChild(this.body)
         this._container.appendChild(this.root)
@@ -113,7 +114,7 @@ export default class RPlayer extends EventEmitter {
     }
 
     private initAddons() {
-        const {addons = []} = this._options
+        const { addons = [] } = this._options
 
         addons.forEach(addon => this.control.bar.initAddon(addon, this, true))
     }
@@ -167,7 +168,7 @@ export default class RPlayer extends EventEmitter {
         })
     }
 
-    setAdditionData(name: string,val: any) {
+    setAdditionData(name: string, val: any) {
         this._additionData[name] = val
     }
 
