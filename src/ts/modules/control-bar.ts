@@ -84,7 +84,7 @@ export default class ControlBar extends Transition {
         const onDestroy = () => removeAllListeners(el)
         const contaienr = right ? this.rightAddonContainer : this.leftAddonContainer
 
-        this.on("destroy", onDestroy)
+        this.once("destroy", onDestroy)
 
         if (typeof init === "function") {
             init.call(el, rp)
