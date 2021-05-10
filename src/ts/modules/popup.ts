@@ -78,6 +78,20 @@ export default class Popup extends Transition {
         }
     }
 
+    updatePositionByRelativeEl(el: HTMLElement) {
+        const OFFSET_X = 10
+        const OFFSET_Y = 50
+        const rect = this.rp.root.getBoundingClientRect()
+        const elRect = el.getBoundingClientRect()
+        let left = elRect.left - rect.left
+        let bottom = rect.bottom - elRect.bottom+ OFFSET_Y
+        //make pop center relative to the el
+        left -= (this.el.offsetWidth - elRect.width) / 2
+
+        this.el.style.left = `${left}px`
+        this.el.style.bottom = `${bottom}px`
+    }
+
     destroy() {
         this.off()
         removeAllListeners(this.el)

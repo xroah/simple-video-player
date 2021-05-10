@@ -1,10 +1,11 @@
-import RPlayer from "..";
-import {addListener} from "../commons/dom-event";
-import Slider from "../modules/slider";
-import {HIDDEN_CLASS} from "../commons/constants";
-import Popup from "./popup";
-import {createEl} from "../commons/utils";
-import {EventObject} from "../commons/event-emitter";
+import RPlayer from ".."
+import Slider from "../modules/slider"
+import { HIDDEN_CLASS } from "../commons/constants"
+import Popup from "../modules/popup"
+import { createEl } from "../commons/utils"
+import { EventObject } from "../commons/event-emitter"
+import { addListener } from "../commons/dom-event"
+import Video from "../modules/video"
 
 class Volume extends Popup {
     private _slider: Slider
@@ -20,36 +21,19 @@ class Volume extends Popup {
         })
         this._text = document.createElement("span")
         //the icon btn, for showing the volume popup
-        this.relatedTarget = createEl("span", "rplayer-volume-btn", "rplayer-addon-btn")
         this.rp = rp
+
+        this.initEvents()
+        this.mountTo(rp.root)
     }
 
-    updateVolume = () => {
+    handleVolumeChange = () => {
         const {
-            rp: {video},
-            relatedTarget: btn
+            rp: { video }
         } = this
         const val = video.isMuted() ? 0 : video.getVolume()
 
-        if (val === 0) {
-            btn!.classList.add("rplayer-muted")
-        } else {
-            btn!.classList.remove("rplayer-muted")
-        }
-
-        this.update(val * 100)
-    }
-
-    handleIconClick = () => {
-        const {video} = this.rp
-
-        if (this.visible) {
-            video.setMuted(!video.isMuted())
-        } else {
-            this.setVisible(!this.visible)
-        }
-
-        this.updateVolume()
+        this.updateText(val * 100)
     }
 
     handleSliderValueChange = (evt: EventObject) => {
@@ -59,30 +43,21 @@ class Volume extends Popup {
     }
 
     initEvents() {
-        const {
-            rp,
-            relatedTarget: btn
-        } = this
+        const { rp } = this
 
-        addListener(btn!, "click", this.handleIconClick)
         rp.control.bar.on("hidden", this.handleControlBarHidden)
-        rp.on("volumechange", this.updateVolume)
+        rp.on("volumechange", this.handleVolumeChange)
         this._slider.on("valuechange", this.handleSliderValueChange)
     }
 
     mountTo(container: HTMLElement) {
-        const btn = this.relatedTarget!
-
         this.el.appendChild(this._text)
         this.el.appendChild(this._wrapper)
-        container.appendChild(btn)
         container.appendChild(this.el)
-
-        this.initEvents()
     }
 
     //update slider and text, when volumechange or mute
-    update(val: number) {
+    updateText(val: number) {
         //prevent racing(volume change and slider value change(moving) simultaneously)
         if (!this._slider.isMoving()) {
             this._slider.update(val)
@@ -99,17 +74,37 @@ class Volume extends Popup {
     }
 }
 
-export default (rp: RPlayer) => {
-    const el = createEl("div", "rplayer-volume-wrapper")
-    const volume = new Volume(rp)
+const KEY = "volumeAddon"
 
-    volume.mountTo(el)
+function handleMuted(el: HTMLElement, video: Video) {
+    const muted = video.getVolume() === 0 || video.isMuted()
+    const MUTED_CLS = "rplayer-muted"
+    const fn: "add" | "remove" = muted ? "add" : "remove"
 
-    rp
-        .once("beforemount", () => {
-            const {right} = rp.getAddonContainers()
+    el.classList[fn](MUTED_CLS)
+}
 
-            right.appendChild(el)
-        })
-        .once("destroy", () => volume.destroy())
+export default {
+    classNames: ["rplayer-addon-btn", "rplayer-volume-btn"],
+    init(this: HTMLElement, rp: RPlayer) {
+        const addon = new Volume(rp)
+        const handleVolumeChange = () => handleMuted(this, rp.video)
+
+        handleVolumeChange()
+        rp.setAdditionData(KEY, addon)
+        addListener(this, "mouseout", () => addon.delayHide())
+        rp.on("volumechange", handleVolumeChange)
+    },
+    action(this: HTMLElement, rp: RPlayer) {
+        const addon = rp.getAdditionData(KEY)
+        const video = rp.video
+
+        if (addon.visible) {
+            video.setMuted(!video.isMuted())
+            handleMuted(this, video)
+        } else {
+            addon.setVisible(true)
+            addon.updatePositionByRelativeEl(this)
+        }
+    }
 }
