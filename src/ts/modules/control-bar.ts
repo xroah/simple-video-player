@@ -14,6 +14,7 @@ import playBtn from "../builtin/addons/play-btn";
 
 export interface AddonOptions {
     classNames?: string[]
+    text?: string
     init?: (rp: RPlayer) => void
     action?: (rp: RPlayer) => void
 }
@@ -93,6 +94,8 @@ export default class ControlBar extends Transition {
         if (typeof action === "function") {
             addListener(el, "click", () => action.call(el, rp))
         }
+
+        el.innerHTML = addon.text || ""
 
         container.appendChild(el)
     }
