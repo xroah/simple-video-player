@@ -82,7 +82,7 @@ export default class ControlBar extends Transition {
         } = addon
         const el = createEl("button", ...classNames)
         const onDestroy = () => removeAllListeners(el)
-        const contaienr = right ? this.rightAddonContainer : this.leftAddonContainer
+        const container = right ? this.rightAddonContainer : this.leftAddonContainer
 
         this.once("destroy", onDestroy)
 
@@ -94,7 +94,7 @@ export default class ControlBar extends Transition {
             addListener(el, "click", () => action.call(el, rp))
         }
 
-        contaienr.appendChild(el)
+        container.appendChild(el)
     }
 
     private initEvents() {
