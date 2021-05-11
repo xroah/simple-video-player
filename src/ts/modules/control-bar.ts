@@ -95,7 +95,7 @@ export default class ControlBar extends Transition {
             addListener(el, "click", () => action.call(el, rp))
         }
 
-        el.innerHTML = addon.text || ""
+        el.innerText = addon.text || ""
 
         container.appendChild(el)
     }
