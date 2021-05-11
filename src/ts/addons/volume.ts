@@ -43,10 +43,7 @@ class Volume extends Popup {
     }
 
     initEvents() {
-        const { rp } = this
-
-        rp.control.bar.on("hidden", this.handleControlBarHidden)
-        rp.on("volumechange", this.handleVolumeChange)
+        this.rp.on("volumechange", this.handleVolumeChange)
         this._slider.on("valuechange", this.handleSliderValueChange)
     }
 
