@@ -2,12 +2,13 @@ import RPlayer from "../src/ts"
 import miniProgress from "../src/ts/plugins/mini-progress"
 import fullscreenBtn from "../src/ts/addons/fullscreen-btn"
 import volume from "../src/ts/addons/volume"
+import playbackRate from "../src/ts/addons/playback-rate"
 
 let rp = new RPlayer({
     container: "#player",
     url: "http://192.168.1.222:8000/videos/test.mp4",
     plugins: [miniProgress],
-    addons: [volume, fullscreenBtn],
+    addons: [playbackRate, volume, fullscreenBtn],
 
     contextmenu: [
         {
