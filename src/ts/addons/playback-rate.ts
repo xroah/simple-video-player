@@ -14,7 +14,7 @@ class PlaybackRate extends Popup {
     }
 
     mountTo(container: HTMLElement) {
-        const rates = ["2.0", "1.75", "1.5", "1.25", "1.0", "0.75", "0.5"]
+        const rates = ["2.0", "1.75", "1.50", "1.25", "1.0", "0.75", "0.50"]
 
         rates.forEach(rate => {
             const item = document.createElement("span")
