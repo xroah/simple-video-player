@@ -1,5 +1,6 @@
 @import "./vars";
 
+// addon btns
 .rplayer-addon-btn {
     display: inline-block;
     width: 24px;
@@ -23,6 +24,7 @@
     }
 }
 
+// play button addon
 .rplayer-play-btn {
     background-image: url("../../icons/play.svg");
 
@@ -31,15 +33,18 @@
     }
 }
 
+// time addon
 .rplayer-time-info {
     color: #fff;
 }
 
+// operation plugin
 .rplayer-operation-plugin {
     @include fill_parent();
     z-index: 99;
 }
 
+// load state plugin
 .rplayer-state-wrapper {
     $size: 50px;
     @include flex_center();
@@ -82,6 +87,7 @@
     }
 }
 
+// switch state plugin
 .rplayer-switch-state-icon {
     display: inline-block;
     position: absolute;
@@ -108,6 +114,7 @@
     }
 }
 
+// fullscreen button addon
 .rplayer-fullscreen-btn {
     background-image: url("../../icons/fullscreen.svg");
 }
