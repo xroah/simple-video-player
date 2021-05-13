@@ -6,17 +6,14 @@ import {
 import RPlayer from "../player"
 import Transition from "../modules/transition"
 import { HIDDEN_CLASS } from "../commons/constants"
-import { createEl } from "../commons/utils"
 
 export default class Popup extends Transition {
-    el: HTMLElement
     rp: RPlayer
 
     constructor(rp: RPlayer, ...classes: string[]) {
-        super()
+        super(...classes)
 
         this.rp = rp
-        this.el = createEl("div", ...classes)
         this.hideTimeout = 300
     }
 
