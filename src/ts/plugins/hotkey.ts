@@ -1,5 +1,5 @@
-import RPlayer from "../..";
-import { addListener, removeListener } from "../../commons/dom-event";
+import RPlayer from "..";
+import { addListener, removeListener } from "../commons/dom-event";
 
 class Hotkey {
     private _rp: RPlayer
