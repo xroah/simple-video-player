@@ -27,7 +27,7 @@ class MiniProgress {
     }
 }
 
-export default (rp: RPlayer) => {
+export default function miniProgress(rp: RPlayer) {
     const mp = new MiniProgress(rp.root)
     const updateProgress = () => {
         const { video } = rp
