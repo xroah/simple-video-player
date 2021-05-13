@@ -45,6 +45,7 @@ class Hotkey {
 
     setVolume(add = true) {
         const {
+            _rp: rp,
             _rp: { video }
         } = this
         const STEP = .05
@@ -64,6 +65,7 @@ class Hotkey {
 
         video.setMuted(false)
         video.setVolume(volume)
+        rp.emit("volumechangebykeydown", Math.round(volume) * 100)
     }
 
     fastSeek(forward = true) {
@@ -91,6 +93,7 @@ class Hotkey {
         //update the progress, if the keys were press for long time
         //the timeupdate may not fire (waiting)
         rp.control.handleTimeupdate()
+        rp.emit("seekbykeydown", curTime)
     }
 
     destroy() {
