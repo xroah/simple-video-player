@@ -97,13 +97,17 @@ export function addListener(
     element.addEventListener(eventName, _listener as EventListener, _options)
 }
 
-export function addListeners(element: El, obj: Listeners) {
+function _addOrRemoveListeners(
+    element: El,
+    obj: Listeners,
+    callback: typeof addListener | typeof removeListener
+) {
     const keys: Array<keyof Listeners> = Object.keys(obj)
 
     for (let key of keys) {
         let fn = obj[key]
         let tmp: ListenerObj = {
-            listener: () => {}
+            listener: () => { }
         }
 
         if (typeof fn === "function") {
@@ -111,13 +115,18 @@ export function addListeners(element: El, obj: Listeners) {
         } else {
             tmp = fn
         }
-        addListener(
+
+        callback(
             element,
             key as string,
             tmp.listener,
             !!tmp.capture
         )
     }
+}
+
+export function addListeners(element: El, obj: Listeners) {
+    _addOrRemoveListeners(element, obj, addListener)
 }
 
 export function removeAllListeners(element: El) {
@@ -190,25 +199,5 @@ export function removeListener(
 }
 
 export function removeListeners(element: El, obj: Listeners) {
-    const keys: Array<keyof Listeners> = Object.keys(obj)
-
-    for (let key of keys) {
-        const fn = obj[key]
-        let tmp: ListenerObj = {
-            listener: () => {}
-        }
-
-        if (typeof fn === "function") {
-            tmp.listener = fn
-        } else {
-            tmp = fn
-        }
-
-        removeListener(
-            element,
-            key as string,
-            tmp.listener,
-            !!tmp.capture
-        )
-    }
+    _addOrRemoveListeners(element, obj, removeListener)
 }
