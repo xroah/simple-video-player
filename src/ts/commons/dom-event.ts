@@ -188,3 +188,27 @@ export function removeListener(
         delete el[EVENT_LISTENER_KEY]
     }
 }
+
+export function removeListeners(element: El, obj: Listeners) {
+    const keys: Array<keyof Listeners> = Object.keys(obj)
+
+    for (let key of keys) {
+        const fn = obj[key]
+        let tmp: ListenerObj = {
+            listener: () => {}
+        }
+
+        if (typeof fn === "function") {
+            tmp.listener = fn
+        } else {
+            tmp = fn
+        }
+
+        removeListener(
+            element,
+            key as string,
+            tmp.listener,
+            !!tmp.capture
+        )
+    }
+}
