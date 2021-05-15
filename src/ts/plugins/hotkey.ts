@@ -65,7 +65,7 @@ class Hotkey {
 
         video.setMuted(false)
         video.setVolume(volume)
-        rp.emit("volumechangebykeydown", Math.round(volume) * 100)
+        rp.emit("volumechangebykeydown", Math.round(volume * 100))
     }
 
     fastSeek(forward = true) {
