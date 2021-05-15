@@ -1,21 +1,27 @@
 import RPlayer from ".."
 import {HIDDEN_CLASS} from "../commons/constants"
 import { EventObject } from "../commons/event-emitter"
+import { createEl } from "../commons/utils"
 import Transition from "../modules/transition"
 
 class VolumeInfo extends Transition {
-    constructor(container: HTMLElement) {
-        super("rplayer-volume-info", HIDDEN_CLASS)
+    private _text: HTMLElement
 
-        
+    constructor(container: HTMLElement) {
+        super("rplayer-volume-info-wrapper", HIDDEN_CLASS)
+
+        const icon = createEl("span", "rplayer-volume-info-icon")
+        this._text = createEl("span")
         this.autoHide = true
         this.hideTimeout = 1000
 
+        this.el.appendChild(icon)
+        this.el.appendChild(this._text)
         container.appendChild(this.el)
     }
 
     updateText(val: number | string) {
-        this.el.innerText = String(val)
+        this._text.innerText = String(val)
     }
 }
 
