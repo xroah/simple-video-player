@@ -44,14 +44,9 @@ class PlaybackRate extends Popup {
 
     handleItemClick = (evt: MouseEvent) => {
         const target = evt.target as HTMLElement
+        const rate = Number(target.dataset.rate) || 1
 
         evt.stopPropagation()
-
-        if (!target.classList.contains("rplayer-rate-item")) {
-            return
-        }
-
-        const rate = Number(target.dataset.rate) || 1
 
         this.setVisible(false)
         this.rp.video.setPlaybackRate(rate)
