@@ -1,8 +1,8 @@
-import RPlayer from "..";
-import {addListener} from "../commons/dom-event";
-import {EventObject} from "../commons/event-emitter";
-import {throttle} from "../commons/utils";
-import ControlBar from "./control-bar";
+import RPlayer from ".."
+import {addListener} from "../commons/dom-event"
+import {EventObject} from "../commons/event-emitter"
+import {throttle} from "../commons/utils"
+import ControlBar from "./control-bar"
 
 export default class Control {
     private _rp: RPlayer

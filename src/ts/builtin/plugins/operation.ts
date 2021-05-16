@@ -1,6 +1,6 @@
-import RPlayer from "../..";
-import { addListener, removeAllListeners } from "../../commons/dom-event";
-import { createEl } from "../../commons/utils";
+import RPlayer from "../.."
+import { addListener, removeAllListeners } from "../../commons/dom-event"
+import { createEl } from "../../commons/utils"
 
 export default {
     install(rp: RPlayer) {

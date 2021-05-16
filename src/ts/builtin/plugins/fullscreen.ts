@@ -1,6 +1,6 @@
-import RPlayer from "../..";
-import { addListener, removeListener } from "../../commons/dom-event";
-import { EventObject } from "../../commons/event-emitter";
+import RPlayer from "../.."
+import { addListener, removeListener } from "../../commons/dom-event"
+import { EventObject } from "../../commons/event-emitter"
 
 const fullscreenApi = (() => {
     const el = document.createElement("el")

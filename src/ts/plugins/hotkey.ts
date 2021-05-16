@@ -1,5 +1,5 @@
-import RPlayer from "..";
-import { addListener, removeListener } from "../commons/dom-event";
+import RPlayer from ".."
+import { addListener, removeListener } from "../commons/dom-event"
 
 class Hotkey {
     private _rp: RPlayer
@@ -21,7 +21,7 @@ class Hotkey {
         switch (key) {
             case "arrowdown":
                 this.setVolume(false)
-                break;
+                break
             case "arrowup":
                 this.setVolume()
                 break

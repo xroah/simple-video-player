@@ -1,18 +1,18 @@
-import { HIDDEN_CLASS } from "../commons/constants";
+import { HIDDEN_CLASS } from "../commons/constants"
 import {
     addListener,
     addListeners,
     removeAllListeners,
     removeListener
-} from "../commons/dom-event";
+} from "../commons/dom-event"
 import {
     isFunc,
     noop,
     createEl,
     preventAndStop
-} from "../commons/utils";
+} from "../commons/utils"
 import RPlayer from ".."
-import Transition from "./transition";
+import Transition from "./transition"
 
 const ITEM_CLASS = "rplayer-contextmenu-item"
 const ACTIVE_CLASS = "rplayer-active"

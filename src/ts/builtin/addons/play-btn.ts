@@ -1,4 +1,4 @@
-import RPlayer from "../..";
+import RPlayer from "../.."
 
 function init(this: HTMLElement, rp: RPlayer) {
     const handlePlay = () => {

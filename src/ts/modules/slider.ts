@@ -1,12 +1,12 @@
-import EventEmitter from "../commons/event-emitter";
-import { isPlainObject, createEl } from "../commons/utils";
+import EventEmitter from "../commons/event-emitter"
+import { isPlainObject, createEl } from "../commons/utils"
 import {
     addListener,
     addListeners,
     removeAllListeners,
     removeListener
 } from "../commons/dom-event"
-import { MOVING_CLASS } from "../commons/constants";
+import { MOVING_CLASS } from "../commons/constants"
 import Tooltip from "./tooltip"
 
 interface Options {

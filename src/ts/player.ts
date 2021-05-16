@@ -1,5 +1,5 @@
-import EventEmitter from "./commons/event-emitter";
-import Video from "./modules/video";
+import EventEmitter from "./commons/event-emitter"
+import Video from "./modules/video"
 import Contextmenu, { ContextmenuItem } from "./modules/contextmenu"
 import { addListener, removeAllListeners } from "./commons/dom-event"
 import Control from "./modules/control"

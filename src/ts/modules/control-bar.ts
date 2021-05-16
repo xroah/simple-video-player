@@ -2,15 +2,15 @@ import {
     formatTime,
     createEl,
     preventAndStop
-} from "../commons/utils";
-import Slider from "./slider";
-import { addListener, addListeners, removeAllListeners } from "../commons/dom-event";
-import Transition from "./transition";
+} from "../commons/utils"
+import Slider from "./slider"
+import { addListener, addListeners, removeAllListeners } from "../commons/dom-event"
+import Transition from "./transition"
 import { HIDDEN_CLASS } from "../commons/constants"
-import { EventObject } from "../commons/event-emitter";
-import PlayerTime from "../builtin/addons/time";
-import RPlayer from "../player";
-import playBtn from "../builtin/addons/play-btn";
+import { EventObject } from "../commons/event-emitter"
+import PlayerTime from "../builtin/addons/time"
+import RPlayer from "../player"
+import playBtn from "../builtin/addons/play-btn"
 
 export interface AddonOptions {
     classNames?: string[]
