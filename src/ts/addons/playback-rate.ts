@@ -22,7 +22,7 @@ class PlaybackRate extends Popup {
             const item = document.createElement("span")
             item.innerHTML = rate
 
-            Object.defineProperty(item, VALUE_KEY, +rate)
+            Object.defineProperty(item, VALUE_KEY, {value: +rate})
 
             item.classList.add("rplayer-rate-item")
             this.el.appendChild(item)
