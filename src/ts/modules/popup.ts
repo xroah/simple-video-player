@@ -17,6 +17,10 @@ export default class Popup extends Transition {
         this.hideTimeout = 300
     }
 
+    mountTo() {
+        this.rp.root.appendChild(this.el)
+    }
+
     handleTransitionEnd = () => {
         this.el.classList.add(HIDDEN_CLASS)
         this.removeListeners()

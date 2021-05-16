@@ -12,10 +12,10 @@ class PlaybackRate extends Popup {
         this.rp = rp
 
         this.initEvents()
-        this.mountTo(rp.root)
+        this.mountTo()
     }
 
-    mountTo(container: HTMLElement) {
+    mountTo() {
         const rates = ["2.0", "1.75", "1.50", "1.25", "1.0", "0.75", "0.50", "0.25"]
 
         rates.forEach(rate => {
@@ -27,7 +27,8 @@ class PlaybackRate extends Popup {
             item.classList.add("rplayer-rate-item")
             this.el.appendChild(item)
         })
-        container.appendChild(this.el)
+        
+        super.mountTo()
     }
 
     getPrecision() {

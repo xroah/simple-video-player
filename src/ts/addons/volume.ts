@@ -24,7 +24,7 @@ class Volume extends Popup {
         this.rp = rp
 
         this.initEvents()
-        this.mountTo(rp.root)
+        this.mountTo()
     }
 
     handleVolumeChange = () => {
@@ -47,10 +47,11 @@ class Volume extends Popup {
         this._slider.on("valuechange", this.handleSliderValueChange)
     }
 
-    mountTo(container: HTMLElement) {
+    mountTo() {
         this.el.appendChild(this._text)
         this.el.appendChild(this._wrapper)
-        container.appendChild(this.el)
+        
+        super.mountTo()
     }
 
     //update slider and text, when volumechange or mute
