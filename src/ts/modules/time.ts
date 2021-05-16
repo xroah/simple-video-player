@@ -1,4 +1,4 @@
-import { createEl, formatTime } from "../../commons/utils"
+import { createEl, formatTime } from "../commons/utils"
 
 export default class PlayerTime {
     private _currentTimeEl: HTMLElement

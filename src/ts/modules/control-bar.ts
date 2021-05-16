@@ -8,7 +8,7 @@ import { addListener, addListeners, removeAllListeners } from "../commons/dom-ev
 import Transition from "./transition"
 import { HIDDEN_CLASS } from "../commons/constants"
 import { EventObject } from "../commons/event-emitter"
-import PlayerTime from "../builtin/addons/time"
+import PlayerTime from "./time"
 import RPlayer from "../player"
 import playBtn from "../builtin/addons/play-btn"
 
