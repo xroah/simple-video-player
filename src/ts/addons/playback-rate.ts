@@ -3,6 +3,8 @@ import {addListener} from "../commons/dom-event"
 import {HIDDEN_CLASS} from "../commons/constants"
 import Popup from "../modules/popup"
 
+const VALUE_KEY = "__RATE__"
+
 class PlaybackRate extends Popup {
     constructor(rp: RPlayer) {
         super(rp, "rplayer-rate-popup", HIDDEN_CLASS)
@@ -14,12 +16,13 @@ class PlaybackRate extends Popup {
     }
 
     mountTo(container: HTMLElement) {
-        const rates = ["2.0", "1.75", "1.50", "1.25", "1.0", "0.75", "0.50"]
+        const rates = ["2.0", "1.75", "1.50", "1.25", "1.0", "0.75", "0.50", "0.25"]
 
         rates.forEach(rate => {
             const item = document.createElement("span")
-            item.dataset.rate = rate
             item.innerHTML = rate
+
+            Object.defineProperty(item, VALUE_KEY, +rate)
 
             item.classList.add("rplayer-rate-item")
             this.el.appendChild(item)
@@ -43,8 +46,7 @@ class PlaybackRate extends Popup {
     }
 
     handleItemClick = (evt: MouseEvent) => {
-        const target = evt.target as HTMLElement
-        const rate = Number(target.dataset.rate) || 1
+        const rate = (evt.target as any)[VALUE_KEY] || 1
 
         evt.stopPropagation()
 
