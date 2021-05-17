@@ -17,7 +17,7 @@ export default class Popup extends Transition {
         this.hideTimeout = 300
     }
 
-    mountTo() {
+    mount() {
         this.rp.root.appendChild(this.el)
     }
 
