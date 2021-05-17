@@ -65,6 +65,9 @@ export default class Popup extends Transition {
             return
         }
 
+        // if visible the control bar should not hide
+        this.rp.control.bar.prevented = visible
+
         super.setVisible(visible)
         this.removeListeners()
 

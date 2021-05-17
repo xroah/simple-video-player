@@ -66,7 +66,6 @@ class Volume extends Popup {
 
     needDelay() {
         const moving = this._slider.isMoving()
-        this.rp.control.bar.prevented = moving
 
         return moving
     }
