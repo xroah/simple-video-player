@@ -4,8 +4,9 @@ import { HIDDEN_CLASS } from "../commons/constants"
 import Popup from "../modules/popup"
 import { createEl } from "../commons/utils"
 import { EventObject } from "../commons/event-emitter"
-import { addListener } from "../commons/dom-event"
+import { addListener, addListeners } from "../commons/dom-event"
 import Video from "../modules/video"
+import { handleMouseEnter, handleMouseLeave } from "./commons"
 
 class Volume extends Popup {
     private _slider: Slider
@@ -89,7 +90,10 @@ export default {
 
         handleVolumeChange()
         rp.setAdditionData(KEY, addon)
-        addListener(this, "mouseout", () => addon.delayHide())
+        addListeners(this, {
+            mouseleave: handleMouseLeave.bind(addon),
+            mouseenter: handleMouseEnter.bind(addon)
+        })
         rp.on("volumechange", handleVolumeChange)
     },
     action(this: HTMLElement, rp: RPlayer) {
@@ -99,9 +103,6 @@ export default {
         if (addon.visible) {
             video.setMuted(!video.isMuted())
             handleMuted(this, video)
-        } else {
-            addon.setVisible(true)
-            addon.updatePositionByRelativeEl(this)
-        }
+        } 
     }
 }

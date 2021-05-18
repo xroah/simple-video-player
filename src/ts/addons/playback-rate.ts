@@ -1,7 +1,8 @@
 import RPlayer from ".."
-import {addListener} from "../commons/dom-event"
-import {HIDDEN_CLASS} from "../commons/constants"
+import { addListener, addListeners } from "../commons/dom-event"
+import { HIDDEN_CLASS } from "../commons/constants"
 import Popup from "../modules/popup"
+import { handleMouseEnter, handleMouseLeave } from "./commons"
 
 const VALUE_KEY = "__RATE__"
 
@@ -22,12 +23,12 @@ class PlaybackRate extends Popup {
             const item = document.createElement("span")
             item.innerHTML = rate
 
-            Object.defineProperty(item, VALUE_KEY, {value: +rate})
+            Object.defineProperty(item, VALUE_KEY, { value: +rate })
 
             item.classList.add("rplayer-rate-item")
             this.el.appendChild(item)
         })
-        
+
         super.mount()
     }
 
@@ -56,8 +57,6 @@ class PlaybackRate extends Popup {
     }
 }
 
-const KEY = "playbackRate"
-
 export default {
     classNames: ["rplayer-addon-btn", "rplayer-rate-btn"],
     text: "1.0",
@@ -71,16 +70,9 @@ export default {
 
         handleRateChange()
         rp.on("ratechange", handleRateChange)
-        addListener(this, "mouseout", () => addon.delayHide())
-        rp.setAdditionData(KEY, addon)
-    },
-    action(this: HTMLElement, rp: RPlayer) {
-        const addon = rp.getAdditionData(KEY)
-
-        addon.setVisible(!addon.visible)
-
-        if (addon.visible) {
-            addon.updatePositionByRelativeEl(this)
-        }
+        addListeners(this, {
+            mouseleave: handleMouseLeave.bind(addon),
+            mouseenter: handleMouseEnter.bind(addon)
+        })
     }
 }
