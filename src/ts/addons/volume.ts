@@ -4,7 +4,7 @@ import { HIDDEN_CLASS } from "../commons/constants"
 import Popup from "../modules/popup"
 import { createEl } from "../commons/utils"
 import { EventObject } from "../commons/event-emitter"
-import { addListener, addListeners } from "../commons/dom-event"
+import { addListeners } from "../commons/dom-event"
 import Video from "../modules/video"
 import { handleMouseEnter, handleMouseLeave } from "./commons"
 
