@@ -1,4 +1,5 @@
 import RPlayer from ".."
+import { FEEDBACK_INFO_KEY } from "../commons/constants"
 import { addListener, removeListener } from "../commons/dom-event"
 import FeedbackInfo from "../modules/feedback-info"
 
@@ -22,11 +23,18 @@ class Hotkey {
     init() {
         const {
             _options,
-            _rp: { root }
+            _rp: { root },
+            _rp: rp
         } = this
 
         if (_options.showSeekFeedback || _options.showSeekFeedback) {
-            this.feedback = new FeedbackInfo(root)
+            this.feedback = rp.getAdditionData(FEEDBACK_INFO_KEY)
+            
+            if (!this.feedback) {
+                this.feedback = new FeedbackInfo(root)
+
+                rp.setAdditionData(FEEDBACK_INFO_KEY, this.feedback)
+            }
         }
 
         addListener(root, "keydown", this.handleKeydown)
