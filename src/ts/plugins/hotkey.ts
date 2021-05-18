@@ -1,17 +1,35 @@
 import RPlayer from ".."
 import { addListener, removeListener } from "../commons/dom-event"
+import FeedbackInfo from "../modules/feedback-info"
+
+export interface HotkeyOptions {
+    showVolumeFeedback?: boolean
+    showSeekFeedback?: boolean
+}
 
 class Hotkey {
     private _rp: RPlayer
+    private _options: HotkeyOptions
+    private feedback: FeedbackInfo | null = null
 
-    constructor(rp: RPlayer) {
+    constructor(rp: RPlayer, options?: HotkeyOptions) {
         this._rp = rp
+        this._options = options || {}
 
-        this.initEvents()
+        this.init()
     }
 
-    initEvents() {
-        addListener(this._rp.root, "keydown", this.handleKeydown)
+    init() {
+        const {
+            _options,
+            _rp: { root }
+        } = this
+
+        if (_options.showSeekFeedback || _options.showSeekFeedback) {
+            this.feedback = new FeedbackInfo(root)
+        }
+
+        addListener(root, "keydown", this.handleKeydown)
     }
 
     handleKeydown = (evt: KeyboardEvent) => {
@@ -45,8 +63,9 @@ class Hotkey {
 
     setVolume(add = true) {
         const {
-            _rp: rp,
-            _rp: { video }
+            _rp: { video },
+            feedback,
+            _options
         } = this
         const STEP = .05
         let volume = video.getVolume() //the volume of video is 0-1
@@ -65,13 +84,20 @@ class Hotkey {
 
         video.setMuted(false)
         video.setVolume(volume)
-        rp.emit("volumechangebykeydown", Math.round(volume * 100))
+
+        if (feedback && _options.showVolumeFeedback) {
+            feedback.setVisible(true)
+            feedback.showInfo("volume")
+            feedback.updateVolumeFeedback(Math.round(volume * 100))
+        }
     }
 
     fastSeek(forward = true) {
         const {
             _rp: rp,
-            _rp: { video }
+            _rp: { video },
+            feedback,
+            _options
         } = this
         const STEP = 5
         const duration = video.getDuration()
@@ -93,7 +119,13 @@ class Hotkey {
         //update the progress, if the keys were press for long time
         //the timeupdate may not fire (waiting)
         rp.control.handleTimeupdate()
-        rp.emit("seekbykeydown", curTime)
+
+
+        if (feedback && _options.showSeekFeedback) {
+            feedback.setVisible(true)
+            feedback.showInfo("seek")
+            feedback.updateSeekFeedback(curTime, duration)
+        }
     }
 
     destroy() {
@@ -101,8 +133,8 @@ class Hotkey {
     }
 }
 
-export default function hotkey(rp: RPlayer) {
-    let hk: Hotkey = new Hotkey(rp)
+export default function hotkey(rp: RPlayer, options: HotkeyOptions) {
+    let hk: Hotkey = new Hotkey(rp, options)
 
     rp.once("destroy", hk.destroy.bind(hk))
 }
