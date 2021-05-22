@@ -4,6 +4,7 @@ import fullscreenBtn from "../src/ts/addons/fullscreen-btn"
 import volume from "../src/ts/addons/volume"
 import playbackRate from "../src/ts/addons/playback-rate"
 import hotkey, { HotkeyOptions } from "../src/ts/plugins/hotkey"
+import pip from "../src/ts/addons/picture-in-picture"
 
 const hotkeyOptions: HotkeyOptions = {
     showSeekFeedback: true,
@@ -20,7 +21,7 @@ let rp = new RPlayer({
             options: hotkeyOptions
         }
     ],
-    addons: [playbackRate, volume, fullscreenBtn],
+    addons: [playbackRate, volume, pip, fullscreenBtn],
 
     contextmenu: [
         {
