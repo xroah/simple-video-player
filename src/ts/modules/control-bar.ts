@@ -17,6 +17,7 @@ export interface AddonOptions {
     text?: string
     init?: (rp: RPlayer) => void
     action?: (rp: RPlayer) => void
+    title?: string
 }
 
 export default class ControlBar extends Transition {
@@ -96,6 +97,7 @@ export default class ControlBar extends Transition {
         }
 
         el.innerText = addon.text || ""
+        el.title = addon.title || ""
 
         container.appendChild(el)
     }
