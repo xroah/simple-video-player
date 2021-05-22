@@ -15,7 +15,7 @@ import playBtn from "../builtin/addons/play-btn"
 export interface AddonOptions {
     classNames?: string[]
     text?: string
-    init?: (rp: RPlayer) => void
+    init?: (rp: RPlayer) => void | false //return false will not add the btn to control bar
     action?: (rp: RPlayer) => void
     title?: string
 }
@@ -89,7 +89,11 @@ export default class ControlBar extends Transition {
         this.once("destroy", onDestroy)
 
         if (typeof init === "function") {
-            init.call(el, rp)
+            const ret = init.call(el, rp)
+
+            if (ret === false) {
+                return
+            }
         }
 
         if (typeof action === "function") {
