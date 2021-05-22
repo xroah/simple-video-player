@@ -30,7 +30,7 @@ export default class FeedbackInfo extends Transition {
     }
 
     updateVolumeFeedback(val: number | string) {
-        this._text.innerText = String(val)
+        this._text.innerText = String(val) + "%"
     }
 
     updateSeekFeedback(curTime: number, duration: number) {
