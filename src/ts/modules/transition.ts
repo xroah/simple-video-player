@@ -1,6 +1,7 @@
 import EventEmitter from "../commons/event-emitter"
-import {HIDDEN_CLASS, SHOW_CLASS} from "../commons/constants"
-import {createEl, reflow} from "../commons/utils"
+import { HIDDEN_CLASS, SHOW_CLASS } from "../commons/constants"
+import { createEl, noop, reflow } from "../commons/utils"
+import { addListener, removeListener } from "../commons/dom-event"
 
 export default class Transition extends EventEmitter {
     visible = false
@@ -27,7 +28,7 @@ export default class Transition extends EventEmitter {
         }
     }
 
-    delayHide() {
+    delayHide(noTransition = false) {
         if (!this.visible) {
             return
         }
@@ -38,9 +39,9 @@ export default class Transition extends EventEmitter {
             () => {
                 this.timer = null
                 if (this.needDelay()) {
-                    this.delayHide()
+                    this.delayHide(noTransition)
                 } else {
-                    this.setVisible(false)
+                    this.setVisible(false, noTransition)
                 }
             },
             this.hideTimeout
@@ -56,7 +57,15 @@ export default class Transition extends EventEmitter {
         }
     }
 
-    setVisible(visible: boolean) {
+    addTransitionEndListener = () => {
+        addListener(this.el, "transitionend", this.handleTransitionEnd)
+    }
+
+    removeTransitionendListener = () => {
+        removeListener(this.el, "transitionend", this.handleTransitionEnd)
+    }
+
+    setVisible(visible: boolean, noTransition = false) {
         if (this.visible === visible) {
             if (visible && this.autoHide) {
                 this.delayHide()
@@ -65,20 +74,40 @@ export default class Transition extends EventEmitter {
             return
         }
 
-        this.visible = visible
-
-        if (visible) {
+        const show = (reflow: (el: HTMLElement) => void = noop) => {
             this.el.classList.remove(HIDDEN_CLASS)
             this.emit("show")
             reflow(this.el)
             this.el.classList.add(SHOW_CLASS)
+        }
+
+        this.visible = visible
+
+        this.removeTransitionendListener()
+
+        if (visible) {
+            if (noTransition) {
+                show()
+                this.handleTransitionEnd()
+            } else {
+                this.addTransitionEndListener()
+                show(reflow)
+            }
 
             if (this.autoHide) {
                 this.delayHide()
             }
+
+            return
+        }
+
+        this.emit("hide")
+        this.el.classList.remove(SHOW_CLASS)
+
+        if(noTransition) {
+            this.handleTransitionEnd()
         } else {
-            this.el.classList.remove(SHOW_CLASS)
-            this.emit("hide")
+            this.addTransitionEndListener()
         }
     }
 }

@@ -31,8 +31,7 @@ export default class Popup extends Transition {
             this.el,
             {
                 mouseenter: this.handleMouseEnterLeave,
-                mouseleave: this.handleMouseEnterLeave,
-                transitionend: this.handleMouseEnterLeave
+                mouseleave: this.handleMouseEnterLeave
             }
         )
     }
@@ -42,8 +41,7 @@ export default class Popup extends Transition {
             this.el,
             {
                 mouseenter: this.handleMouseEnterLeave,
-                mouseleave: this.handleMouseEnterLeave,
-                transitionend: this.handleTransitionEnd
+                mouseleave: this.handleMouseEnterLeave
             }
         )
 
@@ -72,7 +70,7 @@ export default class Popup extends Transition {
         }
     }
 
-    setVisible(visible: boolean, force = false) {
+    setVisible(visible: boolean, noTransition = false) {
         if (this.visible === visible) {
             return
         }
@@ -80,17 +78,11 @@ export default class Popup extends Transition {
         // if visible the control bar should not hide
         this.rp.control.bar.prevented = visible
 
-        super.setVisible(visible)
+        super.setVisible(visible, noTransition)
         this.removeListeners()
 
         if (visible) {
             return this.addListeners()
-        }
-
-        if (force) {
-            this.handleTransitionEnd()
-        } else {
-            addListener(this.el, "transitionend", this.handleTransitionEnd)
         }
     }
 
