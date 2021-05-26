@@ -1,6 +1,5 @@
 import EventEmitter from "../commons/event-emitter"
 import {HIDDEN_CLASS, SHOW_CLASS} from "../commons/constants"
-import {addListener} from "../commons/dom-event"
 import {createEl, reflow} from "../commons/utils"
 
 export default class Transition extends EventEmitter {
@@ -14,7 +13,6 @@ export default class Transition extends EventEmitter {
         super()
 
         this.el = createEl("div", ...classes)
-        addListener(this.el, "transitionend", this.handleTransitionEnd)
     }
 
     needDelay() {

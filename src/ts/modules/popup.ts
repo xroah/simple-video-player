@@ -1,11 +1,11 @@
 import {
     addListener,
+    addListeners,
     removeAllListeners,
-    removeListener
+    removeListeners
 } from "../commons/dom-event"
 import RPlayer from "../player"
 import Transition from "../modules/transition"
-import { HIDDEN_CLASS } from "../commons/constants"
 
 export default class Popup extends Transition {
     rp: RPlayer
@@ -22,19 +22,31 @@ export default class Popup extends Transition {
     }
 
     handleTransitionEnd = () => {
-        this.el.classList.add(HIDDEN_CLASS)
+        super.handleTransitionEnd()
         this.removeListeners()
     }
 
     addListeners() {
-        addListener(this.el, "mouseenter", this.handleMouseEnterLeave)
-        addListener(this.el, "mouseleave", this.handleMouseEnterLeave)
+        addListeners(
+            this.el,
+            {
+                mouseenter: this.handleMouseEnterLeave,
+                mouseleave: this.handleMouseEnterLeave,
+                transitionend: this.handleMouseEnterLeave
+            }
+        )
     }
 
     removeListeners() {
-        removeListener(this.el, "mouseenter", this.handleMouseEnterLeave)
-        removeListener(this.el, "mouseleave", this.handleMouseEnterLeave)
-        removeListener(this.el, "transitionend", this.handleTransitionEnd)
+        removeListeners(
+            this.el,
+            {
+                mouseenter: this.handleMouseEnterLeave,
+                mouseleave: this.handleMouseEnterLeave,
+                transitionend: this.handleTransitionEnd
+            }
+        )
+
     }
 
     handleIconClick = () => {
@@ -88,7 +100,7 @@ export default class Popup extends Transition {
         const rect = this.rp.root.getBoundingClientRect()
         const elRect = el.getBoundingClientRect()
         let right = rect.right - elRect.right
-        let bottom = rect.bottom - elRect.bottom+ OFFSET_Y
+        let bottom = rect.bottom - elRect.bottom + OFFSET_Y
         //make pop center relative to the el
         right -= (this.el.offsetWidth - elRect.width) / 2
 
