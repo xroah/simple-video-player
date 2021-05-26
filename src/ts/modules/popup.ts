@@ -1,5 +1,4 @@
 import {
-    addListener,
     addListeners,
     removeAllListeners,
     removeListeners
