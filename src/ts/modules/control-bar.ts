@@ -116,8 +116,7 @@ export default class ControlBar extends Transition {
                 mouseenter: this.handleMouseEnterLeave,
                 mouseleave: this.handleMouseEnterLeave,
                 //prevent from selecting(for safari)
-                selectstart: preventAndStop,
-                transitionend: this.handleTransitionEnd
+                selectstart: preventAndStop
             }
         )
 
