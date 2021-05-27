@@ -6,7 +6,7 @@ export default class MessageManager {
     private _wrapper: HTMLElement
 
     constructor(container: HTMLElement) {
-        this._wrapper = createEl("div", PREFIX)
+        this._wrapper = createEl("div", `${PREFIX}-wrapper`)
 
         container.appendChild(this._wrapper)
     }
@@ -21,6 +21,7 @@ export default class MessageManager {
 
     show(msg: HTMLElement | string, options?: MessageOptions) {
         const message = new Message(this._wrapper, options)
+        
         if (!this._messages) {
             this._messages = new Map()
         }

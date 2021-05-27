@@ -1,5 +1,6 @@
-import {addListener, removeAllListeners} from "../commons/dom-event"
-import {createEl, preventAndStop} from "../commons/utils"
+import { HIDDEN_CLASS } from "../commons/constants"
+import { addListener, removeAllListeners } from "../commons/dom-event"
+import { createEl, preventAndStop } from "../commons/utils"
 import Transition from "./transition"
 
 export const PREFIX = "rplayer-message"
@@ -10,9 +11,8 @@ export interface MessageOptions {
     closable?: boolean
     autoHide?: boolean
     delay?: number
-    destroyAfterHide?: boolean
     message?: string | HTMLElement
-    classNames?: string[]
+    prepend?: boolean
 }
 
 export default class Message extends Transition {
@@ -23,21 +23,31 @@ export default class Message extends Transition {
     public uid = 0
 
     constructor(container: HTMLElement, options: MessageOptions = {}) {
-        super(`${PREFIX}-item`, ...(options.classNames || []))
+        super(`${PREFIX}-item`, HIDDEN_CLASS)
 
         this._options = {
             ...options
         }
         this._textEl = createEl("div", `${PREFIX}-text`)
-        this.hideTimeout = this._options.delay || 2000
+        this.hideTimeout = this._options.delay || 3000
         this.autoHide = this._options.autoHide !== false
 
-        this.mountTo(container)
+        this.init()
+        this.mountTo(container, options.prepend)
 
-        Object.defineProperty(this, "uid", {value: uid++})
+        Object.defineProperty(this, "uid", { value: uid++ })
+        console.log(this.el)
     }
 
-    private mountTo(container: HTMLElement) {
+    private init() {
+        addListener(this.el, "mouseenter", this.handleMouseEnterLeave)
+        addListener(this.el, "mouseleave", this.handleMouseEnterLeave)
+        this.once("hidden", () => this.destroy())
+
+        this.update(this._options.message)
+    }
+
+    private mountTo(container: HTMLElement, prepend = false) {
         this.el.appendChild(this._textEl)
 
         if (this._options.closable) {
@@ -47,23 +57,22 @@ export default class Message extends Transition {
                 this._closeEl,
                 "click",
                 this.handleClose,
-                {once: true}
+                { once: true }
             )
             this.el.appendChild(this._closeEl)
         }
 
-        addListener(this.el, "mouseenter", this.handleMouseEnterLeave)
-        addListener(this.el, "mouseleave", this.handleMouseEnterLeave)
-        this.update(this._options.message)
-        container.appendChild(this.el)
+        if (prepend) {
+            const first = container.firstElementChild
 
-        if (this._options.destroyAfterHide) {
-            this.once("hidden", () => this.destroy())
+            if (first) {
+                container.insertBefore(this.el, first)
+
+                return
+            }
         }
 
-        this.emit("mounted", {
-            type: "mounted"
-        })
+        container.appendChild(this.el)
     }
 
     private handleMouseEnterLeave = (evt: MouseEvent) => {
@@ -76,7 +85,6 @@ export default class Message extends Transition {
 
     private handleClose = (evt: MouseEvent) => {
         preventAndStop(evt)
-        this.destroy()
     }
 
     update(msg: string | HTMLElement = "") {
@@ -87,6 +95,10 @@ export default class Message extends Transition {
         } else {
             this._textEl.appendChild(msg)
         }
+
+        if (this.visible && this._options.autoHide) {
+            this.delayHide()
+        } 
     }
 
     show(msg?: string | HTMLElement) {
@@ -103,11 +115,11 @@ export default class Message extends Transition {
         if (!this.el.parentNode) {
             return
         }
-        
+
         this.clearTimeout()
         removeAllListeners(this.el)
         this.emit("destroy", this.uid)
-        this.el.parentNode.removeChild(this.el)
         this.off()
+        this.el.parentNode.removeChild(this.el)
     }
 }

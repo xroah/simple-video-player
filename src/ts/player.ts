@@ -15,6 +15,7 @@ import operation from "./builtin/plugins/operation"
 import loadState from "./builtin/plugins/load-state"
 import switchState from "./builtin/plugins/switch-state"
 import requestFullscreen from "./builtin/plugins/fullscreen"
+import MessageManager from "./modules/message-manager"
 
 interface RPlayerOptions {
     container: string | HTMLElement | Node
@@ -49,6 +50,7 @@ export default class RPlayer extends EventEmitter {
 
     video: Video
     control: Control
+    message: MessageManager
 
     private _options: RPlayerOptions
     private _contextmenu: Contextmenu | null = null
@@ -74,7 +76,9 @@ export default class RPlayer extends EventEmitter {
         const body = createEl("div", "rplayer-body")
         const controlBarTimeout = options.controlBarTimeout || CONTROL_BAR_HIDE_TIMEOUT
 
+        this._container = container as HTMLElement
         this._options = options
+
         this.video = new Video(
             body,
             {
@@ -86,7 +90,7 @@ export default class RPlayer extends EventEmitter {
         this.root = el
         this.body = body
         this.control = new Control(this, controlBarTimeout)
-        this._container = container as HTMLElement
+        this.message = new MessageManager(el)
 
         this.init()
     }
