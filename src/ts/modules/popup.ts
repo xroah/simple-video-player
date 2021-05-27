@@ -21,7 +21,7 @@ export default class Popup extends Transition {
     }
 
     handleTransitionEnd = () => {
-        super.handleTransitionEnd()
+        super._handleTransitionEnd()
         this.removeListeners()
     }
 

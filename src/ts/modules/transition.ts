@@ -48,13 +48,17 @@ export default class Transition extends EventEmitter {
         )
     }
 
-    handleTransitionEnd = () => {
+    protected _handleTransitionEnd() {
         if (this.visible) {
             this.emit("shown")
         } else {
             this.el.classList.add(HIDDEN_CLASS)
             this.emit("hidden")
         }
+    }
+
+    handleTransitionEnd = () => {
+        this._handleTransitionEnd()
     }
 
     addTransitionEndListener = () => {
