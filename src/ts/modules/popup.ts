@@ -14,15 +14,12 @@ export default class Popup extends Transition {
 
         this.rp = rp
         this.hideTimeout = 300
+
+        this.addListeners()
     }
 
     mount() {
         this.rp.root.appendChild(this.el)
-    }
-
-    handleTransitionEnd = () => {
-        super._handleTransitionEnd()
-        this.removeListeners()
     }
 
     addListeners() {
@@ -78,11 +75,6 @@ export default class Popup extends Transition {
         this.rp.control.bar.prevented = visible
 
         super.setVisible(visible, noTransition)
-        this.removeListeners()
-
-        if (visible) {
-            return this.addListeners()
-        }
     }
 
     updatePositionByRelativeEl(el: HTMLElement) {
