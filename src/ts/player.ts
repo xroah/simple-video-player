@@ -167,7 +167,7 @@ export default class RPlayer extends EventEmitter {
     togglePlay() {
         const { video } = this
 
-        if (video.isError()) {
+        if (video.getError()) {
             return
         }
 

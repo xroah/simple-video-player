@@ -37,7 +37,7 @@ export default class Control {
 
     showControlBar(force = false) {
         if (
-            (this._player.video.isError() || this.bar.prevented) &&
+            (this._player.video.getError() || this.bar.prevented) &&
             !force
         ) {
             return

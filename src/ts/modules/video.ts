@@ -102,10 +102,6 @@ export default class Player extends EventEmitter {
         return this.el.buffered
     }
 
-    isError() {
-        return !!this.el.error
-    }
-
     getError() {
         return this.el.error
     }
