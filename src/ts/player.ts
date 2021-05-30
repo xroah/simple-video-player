@@ -5,7 +5,6 @@ import { addListener, removeAllListeners } from "./commons/dom-event"
 import Control from "./modules/control"
 import {
     isPlainObject,
-    preventAndStop,
     createEl,
     getContainer
 } from "./commons/utils"
@@ -128,20 +127,7 @@ export default class RPlayer extends EventEmitter {
             return
         }
 
-        this._contextmenu = new Contextmenu(this.root, this, ctxMenu)
-
-        addListener(this.root, "contextmenu", this.handleContextMenu)
-    }
-
-    private handleContextMenu = (evt: MouseEvent) => {
-        const { _contextmenu: ctxMenu } = this
-
-        if (ctxMenu) {
-            ctxMenu.setVisible(!ctxMenu.isVisible(), evt.clientX, evt.clientY)
-        }
-
-        preventAndStop(evt)
-        this.emit(evt.type)
+        this._contextmenu = new Contextmenu(this, ctxMenu)
     }
 
     private initEvents() {

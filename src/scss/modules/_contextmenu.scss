@@ -12,6 +12,13 @@
     background-color: $black_translucent;
     color: #fff;
     z-index: 999;
+    transform: scale(0, 0);
+    transform-origin: left top;
+    transition: transform .3s;
+
+    &.rplayer-show {
+        transform: scale(1);
+    }
 
     .rplayer-contextmenu-item {
         padding: 10px;

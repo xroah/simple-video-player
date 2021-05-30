@@ -24,24 +24,26 @@ export interface ContextmenuItem {
 }
 
 export default class Contextmenu extends Transition {
-    private _el: HTMLElement
     private _player: RPlayer
 
     constructor(
-        container: HTMLElement,
         player: RPlayer,
         items: ContextmenuItem[]
     ) {
-        super()
+        super("rplayer-contextmenu", HIDDEN_CLASS)
 
-        this._el = createEl("ul", "rplayer-contextmenu", HIDDEN_CLASS)
         this._player = player
-        this._el.tabIndex = -1
+        this.el.tabIndex = -1
 
-        this.mountTo(container, items)
+        this.init(items)
     }
 
-    private mountTo(container: HTMLElement, items: ContextmenuItem[]) {
+    private init(items: ContextmenuItem[]) {
+        this.mount(items)
+        addListener(this._player.root, "contextmenu", this.handleContextMenu)
+    }
+
+    private mount(items: ContextmenuItem[]) {
         const frag = document.createDocumentFragment()
 
         items.forEach(item => {
@@ -72,15 +74,24 @@ export default class Contextmenu extends Transition {
             frag.appendChild(li)
         })
 
-        this._el.appendChild(frag)
-        container.appendChild(this._el)
+        this.el.appendChild(frag)
+        this._player.root.appendChild(this.el)
+    }
+
+    private handleContextMenu = (evt: MouseEvent) => {
+        this.setVisible(true)
+        this.updatePosition(evt.clientX, evt.clientY)
+
+        this._player.emit(evt.type, evt)
+
+        preventAndStop(evt)
     }
 
     private updatePosition(left: number, top: number) {
         const winW = window.innerWidth
         const winH = window.innerHeight
-        const elW = this._el.offsetWidth
-        const elH = this._el.offsetHeight
+        const elW = this.el.offsetWidth
+        const elH = this.el.offsetHeight
         const maxLeft = winW - elW
         const maxTop = winH - elH
 
@@ -92,14 +103,14 @@ export default class Contextmenu extends Transition {
             top = maxTop
         }
 
-        this._el.style.left = `${left}px`
-        this._el.style.top = `${top}px`
+        this.el.style.left = `${left}px`
+        this.el.style.top = `${top}px`
     }
 
     private addEvents() {
         addListener(document, "click", this.handleClickOutside)
         addListeners(
-            this._el,
+            this.el,
             {
                 click: this.handleClick,
                 contextmenu: preventAndStop,
@@ -112,13 +123,13 @@ export default class Contextmenu extends Transition {
 
     private removeEvents() {
         removeListener(document, "click", this.handleClickOutside)
-        removeAllListeners(this._el)
+        removeAllListeners(this.el)
     }
 
     private getItemParent(target: HTMLElement) {
         let el: HTMLElement | null = target.parentNode as HTMLElement
 
-        while (el && el !== this._el && this._el.contains(el)) {
+        while (el && el !== this.el && this.el.contains(el)) {
             if (el.classList.contains(ITEM_CLASS)) {
                 return el
             }
@@ -139,7 +150,7 @@ export default class Contextmenu extends Transition {
             return
         }
 
-        const items = this._el.children
+        const items = this.el.children
         const len = items.length
         let active = this.handleMouseOut()
         let index = 0
@@ -175,7 +186,7 @@ export default class Contextmenu extends Transition {
     }
 
     private handleMouseOut = () => {
-        const active = this._el.querySelector(`.${ACTIVE_CLASS}`)
+        const active = this.el.querySelector(`.${ACTIVE_CLASS}`)
 
         if (active) {
             active.classList.remove(ACTIVE_CLASS)
@@ -212,7 +223,7 @@ export default class Contextmenu extends Transition {
             el.classList.remove(ACTIVE_CLASS)
         }
 
-        this.setVisible(false)
+        this.setVisible(false, true)
         //focus the player root element
         this._player.root.focus()
     }
@@ -226,15 +237,15 @@ export default class Contextmenu extends Transition {
         const target = evt.target as HTMLElement
 
         if (
-            target !== this._el &&
-            !this._el.contains(target)
+            target !== this.el &&
+            !this.el.contains(target)
         ) {
-            this.setVisible(false)
+            this.setVisible(false, true)
         }
     }
 
     updateText() {
-        const items: any = this._el.children
+        const items: any = this.el.children
 
         for (let item of items) {
             const html = item.__text__(this._player)
@@ -245,8 +256,8 @@ export default class Contextmenu extends Transition {
         }
     }
 
-    setVisible(visible: boolean, left = 0, top = 0) {
-        if (this.isVisible() === visible) {
+    setVisible(visible: boolean, noTransition = false) {
+        if (this.visible === visible) {
             return
         }
 
@@ -254,21 +265,13 @@ export default class Contextmenu extends Transition {
         //or the element is hidden
         this.removeEvents()
 
-        if (visible) {
-            this._el.classList.remove(HIDDEN_CLASS)
-            this.updateText()
-            this.updatePosition(left, top)
-            this.addEvents()
-            this._el.focus()
-            this.emit("shown")
-        } else {
-            this._el.classList.add(HIDDEN_CLASS)
-            this.emit("hidden")
-        }
-    }
+        super.setVisible(visible, noTransition)
 
-    isVisible() {
-        return !this._el.classList.contains(HIDDEN_CLASS)
+        if (visible) {
+            this.updateText()
+            this.addEvents()
+            this.el.focus()
+        }
     }
 
     destroy() {
