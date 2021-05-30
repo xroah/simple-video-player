@@ -7,19 +7,19 @@ import RPlayer from "../player"
 import Transition from "../modules/transition"
 
 export default class Popup extends Transition {
-    rp: RPlayer
+    player: RPlayer
 
     constructor(rp: RPlayer, ...classes: string[]) {
         super(...classes)
 
-        this.rp = rp
+        this.player = rp
         this.hideTimeout = 300
 
         this.addListeners()
     }
 
     mount() {
-        this.rp.root.appendChild(this.el)
+        this.player.root.appendChild(this.el)
     }
 
     addListeners() {
@@ -72,7 +72,7 @@ export default class Popup extends Transition {
         }
 
         // if visible the control bar should not hide
-        this.rp.control.bar.prevented = visible
+        this.player.control.bar.prevented = visible
 
         super.setVisible(visible, noTransition)
     }
@@ -80,7 +80,7 @@ export default class Popup extends Transition {
     updatePositionByRelativeEl(el: HTMLElement) {
         const OFFSET_X = 10
         const OFFSET_Y = 50
-        const rect = this.rp.root.getBoundingClientRect()
+        const rect = this.player.root.getBoundingClientRect()
         const elRect = el.getBoundingClientRect()
         let right = rect.right - elRect.right
         let bottom = rect.bottom - elRect.bottom + OFFSET_Y

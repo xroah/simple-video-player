@@ -9,12 +9,12 @@ export interface HotkeyOptions {
 }
 
 class Hotkey {
-    private _rp: RPlayer
+    private _player: RPlayer
     private _options: HotkeyOptions
     private feedback: FeedbackInfo | null = null
 
     constructor(rp: RPlayer, options?: HotkeyOptions) {
-        this._rp = rp
+        this._player = rp
         this._options = options || {}
 
         this.init()
@@ -23,8 +23,8 @@ class Hotkey {
     init() {
         const {
             _options,
-            _rp: { root },
-            _rp: rp
+            _player: { root },
+            _player: rp
         } = this
 
         if (_options.showSeekFeedback || _options.showSeekFeedback) {
@@ -42,7 +42,7 @@ class Hotkey {
 
     handleKeydown = (evt: KeyboardEvent) => {
         const key = evt.key.toLowerCase()
-        const { _rp: rp } = this
+        const { _player: rp } = this
 
         switch (key) {
             case "arrowdown":
@@ -71,7 +71,7 @@ class Hotkey {
 
     setVolume(add = true) {
         const {
-            _rp: { video },
+            _player: { video },
             feedback,
             _options
         } = this
@@ -102,8 +102,8 @@ class Hotkey {
 
     fastSeek(forward = true) {
         const {
-            _rp: rp,
-            _rp: { video },
+            _player: rp,
+            _player: { video },
             feedback,
             _options
         } = this
@@ -137,7 +137,7 @@ class Hotkey {
     }
 
     destroy() {
-        removeListener(this._rp.root, "keydown", this.handleKeydown)
+        removeListener(this._player.root, "keydown", this.handleKeydown)
     }
 }
 

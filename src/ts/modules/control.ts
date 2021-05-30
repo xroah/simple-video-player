@@ -5,12 +5,12 @@ import {throttle} from "../commons/utils"
 import ControlBar from "./control-bar"
 
 export default class Control {
-    private _rp: RPlayer
+    private _player: RPlayer
 
     bar: ControlBar
 
     constructor(rp: RPlayer, timeout: number) {
-        this._rp = rp
+        this._player = rp
         this.bar = new ControlBar(rp, timeout)
 
         this.initEvents()
@@ -22,10 +22,10 @@ export default class Control {
             "loadstart",
             "error",
             "durationchange"
-        ].forEach(name => this._rp.on(name, this.handleVideoEvents))
-        addListener(this._rp.root, "mousemove", this.handleMouseMove)
+        ].forEach(name => this._player.on(name, this.handleVideoEvents))
+        addListener(this._player.root, "mousemove", this.handleMouseMove)
         this.bar.on("progresschange", this.handleProgressChange)
-        this._rp.on(
+        this._player.on(
             "timeupdate",
             throttle(this.handleTimeupdate)
         ).on("progress", this.handleBuffer)
@@ -37,7 +37,7 @@ export default class Control {
 
     showControlBar(force = false) {
         if (
-            (this._rp.video.isError() || this.bar.prevented) &&
+            (this._player.video.isError() || this.bar.prevented) &&
             !force
         ) {
             return
@@ -58,7 +58,7 @@ export default class Control {
         const type = evt.type
         const {
             bar,
-            _rp: {video}
+            _player: {video}
         } = this
 
         switch (type) {
@@ -82,7 +82,7 @@ export default class Control {
 
     //user click or move the progress bar manually
     private handleProgressChange = (evt: EventObject) => {
-        const {video} = this._rp
+        const {video} = this._player
         const duration = video.getDuration()
         const time = evt.details / 100 * duration
 
@@ -92,8 +92,8 @@ export default class Control {
 
 
     handleBuffer = () => {
-        const buffered = this._rp.video.getBuffered()
-        const curTime = this._rp.video.getCurrentTime()
+        const buffered = this._player.video.getBuffered()
+        const curTime = this._player.video.getCurrentTime()
         let ret = 0
 
         for (let i = 0, l = buffered.length; i < l; i++) {
@@ -111,8 +111,8 @@ export default class Control {
     }
 
     handleTimeupdate = () => {
-        const curTime = this._rp.video.getCurrentTime()
-        const duration = this._rp.video.getDuration()
+        const curTime = this._player.video.getCurrentTime()
+        const duration = this._player.video.getDuration()
         const val = curTime / duration * 100
 
         this.bar.updateProgress(val)

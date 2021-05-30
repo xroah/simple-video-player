@@ -10,7 +10,7 @@ class PlaybackRate extends Popup {
     constructor(rp: RPlayer) {
         super(rp, "rplayer-rate-popup", HIDDEN_CLASS)
 
-        this.rp = rp
+        this.player = rp
 
         this.initEvents()
         this.mount()
@@ -33,7 +33,7 @@ class PlaybackRate extends Popup {
     }
 
     getPrecision() {
-        const rate = this.rp.video.getPlaybackRate()
+        const rate = this.player.video.getPlaybackRate()
         let precise = 1
 
         if (/^\d+\.\d+$/.test(rate.toString())) { //float(eg: 1.25)
@@ -53,7 +53,7 @@ class PlaybackRate extends Popup {
         evt.stopPropagation()
 
         this.setVisible(false)
-        this.rp.video.setPlaybackRate(rate)
+        this.player.video.setPlaybackRate(rate)
     }
 }
 

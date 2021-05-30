@@ -5,18 +5,18 @@ import {HIDDEN_CLASS, TRANSITION_CLASS} from "../../commons/constants"
 
 class SwitchState {
     private _el: HTMLElement
-    private _rp: RPlayer
+    private _player: RPlayer
 
     constructor(rp: RPlayer) {
         this._el = createEl("span", "rplayer-switch-state-icon", HIDDEN_CLASS)
-        this._rp = rp
+        this._player = rp
 
         rp.body.appendChild(this._el)
         this.initEvents()
     }
 
     private initEvents() {
-        this._rp
+        this._player
             .on("play", this.switchState)
             .on("pause", this.switchState)
     }
@@ -37,7 +37,7 @@ class SwitchState {
     private handleState(visible = false) {
         const PAUSED_CLASS = "rplayer-paused"
         const {_el} = this
-        const fn: "remove" | "add" = this._rp.video.isPaused() ? "add" : "remove"
+        const fn: "remove" | "add" = this._player.video.isPaused() ? "add" : "remove"
 
         _el.classList[fn](PAUSED_CLASS)
 

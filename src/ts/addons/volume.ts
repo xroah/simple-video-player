@@ -22,7 +22,7 @@ class Volume extends Popup {
         })
         this._text = document.createElement("span")
         //the icon btn, for showing the volume popup
-        this.rp = rp
+        this.player = rp
 
         this.initEvents()
         this.mount()
@@ -30,7 +30,7 @@ class Volume extends Popup {
 
     handleVolumeChange = () => {
         const {
-            rp: { video }
+            player: { video }
         } = this
         const val = video.isMuted() ? 0 : video.getVolume()
 
@@ -40,11 +40,11 @@ class Volume extends Popup {
     handleSliderValueChange = (evt: EventObject) => {
         const val = evt.details / 100
 
-        this.rp.video.setVolume(val)
+        this.player.video.setVolume(val)
     }
 
     initEvents() {
-        this.rp.on("volumechange", this.handleVolumeChange)
+        this.player.on("volumechange", this.handleVolumeChange)
         this._slider.on("valuechange", this.handleSliderValueChange)
     }
 
