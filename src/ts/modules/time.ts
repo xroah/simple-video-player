@@ -10,12 +10,10 @@ export default class PlayerTime {
     }
 
     mountTo(container: HTMLElement) {
-        const textNode = document.createTextNode(" / ")
         const timeFrag = document.createDocumentFragment()
         const el = createEl("div", "rplayer-time-info")
 
         timeFrag.appendChild(this._currentTimeEl)
-        timeFrag.appendChild(textNode)
         timeFrag.appendChild(this._durationEl)
         el.appendChild(timeFrag)
         container.appendChild(el)
@@ -26,6 +24,6 @@ export default class PlayerTime {
     }
 
     updateDuration(val: number) {
-        this._durationEl.innerHTML = formatTime(val)
+        this._durationEl.innerHTML = " / " + formatTime(val)
     }
 }
