@@ -111,7 +111,6 @@ export default class RPlayer extends EventEmitter {
 
         this.root.appendChild(this.body)
         this._container.appendChild(this.root)
-        this.control.showControlBar()
     }
 
     private initAddons() {
@@ -131,12 +130,10 @@ export default class RPlayer extends EventEmitter {
     }
 
     private initEvents() {
+        const handler = (evt: Event) => this.emit(evt.type, evt)
+
         videoEvents.forEach(
-            (n: string) => addListener(
-                this.video.el,
-                n,
-                this.handleVideoEvents
-            )
+            (n: string) => addListener(this.video.el, n, handler)
         )
     }
 
@@ -176,10 +173,6 @@ export default class RPlayer extends EventEmitter {
         } else {
             video.pause()
         }
-    }
-
-    private handleVideoEvents = (evt: Event) => {
-        this.emit(evt.type)
     }
 
     destroy() {
