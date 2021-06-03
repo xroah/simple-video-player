@@ -10,7 +10,7 @@ export default class Popup extends Transition {
     player: RPlayer
 
     constructor(rp: RPlayer, ...classes: string[]) {
-        super(...classes)
+        super("rplayer-popup", ...classes)
 
         this.player = rp
         this.hideTimeout = 300
