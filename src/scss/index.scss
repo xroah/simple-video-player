@@ -1,14 +1,8 @@
 @import "./vars";
-@import "./modules/slider";
-@import "./modules/contextmenu";
-@import "./modules/control-bar";
-@import "./modules/video";
-@import "./modules/tooltip";
 @import "./addons/index";
 @import "./plugins/index";
 @import "./builtin";
-@import "./modules/message";
-@import "./modules/popup";
+@import "./modules/index";
 
 .rplayer-hidden {
     display: none !important;
