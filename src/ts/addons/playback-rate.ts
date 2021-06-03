@@ -6,24 +6,41 @@ import { handleMouseEnter, handleMouseLeave } from "./commons"
 
 const VALUE_KEY = "__RATE__"
 
+export interface PlayRateOptions {
+    rates?: Array<string | number>
+    defaultRate?: number
+}
+
 class PlaybackRate extends Popup {
-    constructor(rp: RPlayer) {
+    private _rates: Array<string | number> = [2, 1.75, 1.5, 1.25, 1, 0.75, 0.5, 0.25]
+
+    constructor(rp: RPlayer, options: PlayRateOptions = {}) {
         super(rp, "rplayer-rate-popup", HIDDEN_CLASS)
 
+        const {
+            rates,
+            defaultRate = 1
+        } = options
         this.player = rp
+
+        if (rates && rates.length) {
+            this._rates = rates
+        }
+        
+        rp.video.setPlaybackRate(defaultRate)
 
         this.initEvents()
         this.mount()
     }
 
     mount() {
-        const rates = ["2.0", "1.75", "1.50", "1.25", "1.0", "0.75", "0.50", "0.25"]
-
-        rates.forEach(rate => {
+        this._rates.forEach(rate => {
             const item = document.createElement("span")
-            item.innerHTML = rate
+            const rateNumber = +rate
 
-            Object.defineProperty(item, VALUE_KEY, { value: +rate })
+            item.innerHTML = this.getRateString(rateNumber)
+
+            Object.defineProperty(item, VALUE_KEY, { value: rateNumber })
 
             item.classList.add("rplayer-rate-item")
             this.el.appendChild(item)
@@ -32,15 +49,23 @@ class PlaybackRate extends Popup {
         super.mount()
     }
 
-    getPrecision() {
-        const rate = this.player.video.getPlaybackRate()
-        let precise = 1
+    getRateString(rate = this.player.video.getPlaybackRate()) {
+        let rateString = String(rate)
 
-        if (/^\d+\.\d+$/.test(rate.toString())) { //float(eg: 1.25)
-            precise = 2
+        switch(rateString.length) {
+            case 1: //maybe 1
+                rateString += ".0"
+                break
+
+            case 3: //maybe 0.5
+                rateString += "0"
+                break
+
+            default:
+                //do nothing
         }
 
-        return precise
+        return rateString
     }
 
     initEvents() {
@@ -60,16 +85,12 @@ class PlaybackRate extends Popup {
 export default {
     classNames: ["rplayer-addon-btn", "rplayer-rate-btn"],
     text: "1.0",
-    init(this: HTMLElement, rp: RPlayer) {
-        const addon = new PlaybackRate(rp)
-        const handleRateChange = () => {
-            const rate = rp.video.getPlaybackRate()
+    init(this: HTMLElement, rp: RPlayer, options?: PlayRateOptions) {
+        const addon = new PlaybackRate(rp, options)
+        const handleChange = () =>  this.innerText = addon.getRateString()
 
-            this.innerText = rate.toFixed(addon.getPrecision())
-        }
-
-        handleRateChange()
-        rp.on("ratechange", handleRateChange)
+        handleChange()
+        rp.on("ratechange", handleChange)
         addListeners(this, {
             mouseleave: handleMouseLeave.bind(addon),
             mouseenter: handleMouseEnter.bind(addon)
