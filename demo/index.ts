@@ -21,7 +21,13 @@ let rp = new RPlayer({
             options: hotkeyOptions
         }
     ],
-    addons: [playbackRate, volume, pip, fullscreenBtn],
+    addons: [{
+        ...playbackRate,
+        options: {
+            rates: [2.0, 1.5, 1.0, 0.5],
+            defaultRate: 1.0
+        }
+    }, volume, pip, fullscreenBtn],
 
     contextmenu: [
         {
