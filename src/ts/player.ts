@@ -88,7 +88,7 @@ export default class RPlayer extends EventEmitter {
         )
         this.root = el
         this.body = body
-        this.control = new Control(this, controlBarTimeout)
+        this.control = new Control(this, controlBarTimeout, options.addons)
         this.message = new MessageManager(el)
 
         this.init()
@@ -106,17 +106,10 @@ export default class RPlayer extends EventEmitter {
 
         this.initContextmenu()
         this.initEvents()
-        this.initAddons()
         this.installPlugins(plugins)
 
         this.root.appendChild(this.body)
         this._container.appendChild(this.root)
-    }
-
-    private initAddons() {
-        const { addons = [] } = this._options
-
-        addons.forEach(addon => this.control.bar.initAddon(addon, this, true))
     }
 
     private initContextmenu() {

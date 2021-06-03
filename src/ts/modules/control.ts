@@ -1,17 +1,23 @@
 import RPlayer from ".."
-import {addListener} from "../commons/dom-event"
-import {EventObject} from "../commons/event-emitter"
-import {throttle} from "../commons/utils"
-import ControlBar from "./control-bar"
+import { addListener } from "../commons/dom-event"
+import { EventObject } from "../commons/event-emitter"
+import { throttle } from "../commons/utils"
+import ControlBar, { AddonOptions } from "./control-bar"
 
 export default class Control {
     private _player: RPlayer
 
     bar: ControlBar
 
-    constructor(rp: RPlayer, timeout: number) {
+    constructor(rp: RPlayer, timeout: number, addons?: AddonOptions[]) {
         this._player = rp
         this.bar = new ControlBar(rp, timeout)
+
+        this.init(addons)
+    }
+    
+    private init(addons: AddonOptions[] = []) {
+        addons.forEach(addon => this.bar.initAddon(addon, this._player, true))
 
         this.initEvents()
     }
@@ -58,7 +64,7 @@ export default class Control {
         const type = evt.type
         const {
             bar,
-            _player: {video}
+            _player: { video }
         } = this
 
         switch (type) {
@@ -82,7 +88,7 @@ export default class Control {
 
     //user click or move the progress bar manually
     private handleProgressChange = (evt: EventObject) => {
-        const {video} = this._player
+        const { video } = this._player
         const duration = video.getDuration()
         const time = evt.details / 100 * duration
 
