@@ -1,6 +1,5 @@
 import {HIDDEN_CLASS} from "../../commons/constants"
 import {createEl} from "../../commons/utils"
-import settings from "../../settings"
 import RPlayer from "../.."
 
 export interface ErrorMessage {
@@ -43,7 +42,7 @@ class LoadState {
         ])
         let msg = eMsg[map.get(error.code) as any]
 
-        this._errEl.innerHTML = msg || error.message || settings.defaultMessage.unknownError
+        this._errEl.innerHTML = msg || error.message || "未知错误"
     }
 
     setVisible(
