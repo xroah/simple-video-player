@@ -5,6 +5,7 @@ import volume from "../src/ts/addons/volume"
 import playbackRate from "../src/ts/addons/playback-rate"
 import hotkey, { HotkeyOptions } from "../src/ts/plugins/hotkey"
 import pip from "../src/ts/addons/picture-in-picture"
+import settings from "../src/ts/addons/player-settings"
 
 const hotkeyOptions: HotkeyOptions = {
     showSeekFeedback: true,
@@ -21,13 +22,19 @@ let rp = new RPlayer({
             options: hotkeyOptions
         }
     ],
-    addons: [{
-        ...playbackRate,
-        options: {
-            rates: [2.0, 1.5, 1.0, 0.5],
-            defaultRate: 1.0
-        }
-    }, volume, pip, fullscreenBtn],
+    addons: [
+        {
+            ...playbackRate,
+            options: {
+                rates: [2.0, 1.5, 1.0, 0.5],
+                defaultRate: 1.0
+            }
+        },
+        volume,
+        pip,
+        settings,
+        fullscreenBtn
+    ],
 
     contextmenu: [
         {
