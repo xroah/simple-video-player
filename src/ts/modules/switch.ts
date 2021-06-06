@@ -7,15 +7,17 @@ let uid = 0
 export class Switch extends EventEmitter {
     private _input: HTMLInputElement
     private _wrapper: HTMLElement
-    
-    constructor(id: string) {
+    private _id: string
+
+    constructor(id: string = `rplayer-switch-${uid++}`) {
         super()
 
         const input = createEl("input") as HTMLInputElement
-        input.id = id || `rplayer-switch-${uid++}`
+        input.id = id
         input.type = "checkbox"
 
         this._input = input
+        this._id = id
         this._wrapper = createEl("span", "rplayer-switch")
 
         this.init()
@@ -44,7 +46,14 @@ export class Switch extends EventEmitter {
     }
 
     private handleChange = () => {
-        this.emit("change", this._input.checked)
+        this.emit(
+            "change",
+            {
+                target: this._input,
+                checked: this.isChecked(),
+                id: this._id
+            }
+        )
     }
 
     destroy() {

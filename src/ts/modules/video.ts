@@ -113,4 +113,12 @@ export default class Player extends EventEmitter {
     setPlaybackRate(rate: number) {
         this.el.playbackRate = rate
     }
+
+    setAutoPlay(autoPlay: boolean) {
+        this.el.autoplay = autoPlay
+    }
+
+    getAutoPlay() {
+        return this.el.autoplay
+    }
 }
