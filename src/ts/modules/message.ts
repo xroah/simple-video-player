@@ -36,7 +36,6 @@ export default class Message extends Transition {
         this.mountTo(container, options.prepend)
 
         Object.defineProperty(this, "uid", { value: uid++ })
-        console.log(this.el)
     }
 
     private init() {
