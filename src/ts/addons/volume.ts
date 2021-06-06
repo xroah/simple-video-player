@@ -70,6 +70,12 @@ class Volume extends Popup {
 
         return moving
     }
+
+    destroy() {
+        super.destroy()
+
+        this._slider.destroy()
+    }
 }
 
 const KEY = "volumeAddon"

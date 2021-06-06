@@ -16,6 +16,7 @@ export default class Popup extends Transition {
         this.hideTimeout = 300
 
         this.addListeners()
+        rp.once("destroy", () => this.destroy())
     }
 
     mount() {

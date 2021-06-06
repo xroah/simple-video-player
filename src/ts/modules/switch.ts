@@ -46,4 +46,8 @@ export class Switch extends EventEmitter {
     private handleChange = () => {
         this.emit("change", this._input.checked)
     }
+
+    destroy() {
+        this.off()
+    }
 }
