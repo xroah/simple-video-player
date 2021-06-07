@@ -74,8 +74,3 @@ let rp = new RPlayer({
         }
     ]
 })
-
-rp.on("loadedmetadata", () => {
-    // rp.video.play()
-    rp.control.showControlBar()
-})

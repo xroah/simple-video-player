@@ -70,6 +70,7 @@ export default class Control {
         switch (type) {
             case "loadedmetadata":
                 bar.updateTime(video.getDuration(), "duration")
+                this.showControlBar()
                 break
             case "loadstart":
                 bar.updateProgress(0)
