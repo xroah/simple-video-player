@@ -74,9 +74,10 @@ export default {
         const hide = () => state.setVisible(false)
         const handleError = () => state.setVisible(true, "error", p.video.getError())
 
-        p.on("loadstart", show)
-        p.on("waiting", show)
-        p.on("canplay", hide)
-        p.on("error", handleError)
+        p
+            .on("loadstart", show)
+            .on("waiting", show)
+            .on("canplay", hide)
+            .on("error", handleError)
     }
 }
