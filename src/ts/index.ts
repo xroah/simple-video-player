@@ -1,4 +1,4 @@
-import Player from "./player"
+import VideoPlayer from "./player"
 import fullscreenBtn from "./addons/fullscreen-btn"
 import pictureInPicture from "./addons/picture-in-picture"
 import playbackRate from "./addons/playback-rate"
@@ -25,9 +25,9 @@ interface Props {
     plugins: Plugins
 }
 
-type PlayerType = typeof Player & Props
+type PlayerType = typeof VideoPlayer & Props
 
-const RPlayer = Player as PlayerType
+const RPlayer = VideoPlayer as PlayerType
 
 RPlayer.addons = {
     fullscreenBtn,
@@ -42,6 +42,14 @@ RPlayer.plugins = {
     hotkey
 }
 
-export {Player}
+/**
+ * if export {VideoPlayer}, the rollup would warn:
+ * Consumers of your bundle will have to use `RPlayer["default"]` 
+ * to access the default export, which may not be what you want
+ * 
+ * export an alias to avoid
+ */
+
+export type Player = VideoPlayer
 
 export default RPlayer
