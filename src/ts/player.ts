@@ -15,6 +15,7 @@ import loadState from "./builtin/plugins/load-state"
 import switchState from "./builtin/plugins/switch-state"
 import requestFullscreen from "./builtin/plugins/fullscreen"
 import MessageManager from "./modules/message-manager"
+import FeedbackInfo from "./modules/feedback-info"
 
 interface RPlayerOptions {
     container: string | HTMLElement | Node
@@ -50,6 +51,7 @@ export default class Player extends EventEmitter {
     video: Video
     control: Control
     message: MessageManager
+    feedback: FeedbackInfo
 
     private _options: RPlayerOptions
     private _contextmenu: Contextmenu | null = null
@@ -90,6 +92,7 @@ export default class Player extends EventEmitter {
         this.body = body
         this.control = new Control(this, controlBarTimeout, options.addons)
         this.message = new MessageManager(el)
+        this.feedback = new FeedbackInfo(el)
 
         this.init()
     }
@@ -107,6 +110,8 @@ export default class Player extends EventEmitter {
         this.initContextmenu()
         this.initEvents()
         this.installPlugins(plugins)
+        //show pause feedback
+        this.feedback.showInfo("pause")
 
         this.root.appendChild(this.body)
         this._container.appendChild(this.root)
@@ -123,11 +128,31 @@ export default class Player extends EventEmitter {
     }
 
     private initEvents() {
-        const handler = (evt: Event) => this.emit(evt.type, evt)
+        const {
+            video: { el },
+            handleVideoEvents
+        } = this
 
         videoEvents.forEach(
-            (n: string) => addListener(this.video.el, n, handler)
+            (n: string) => addListener(el, n, handleVideoEvents)
         )
+    }
+
+    private handleVideoEvents = (evt: Event) => {
+        const type = evt.type
+
+        switch(type) {
+            case "play":
+                if (this.feedback.currentInfo === "pause") {
+                    this.feedback.setVisible(false)
+                }
+                break
+            case "pause":
+                this.feedback.showInfo("pause")
+                break
+        }
+        
+        this.emit(type, evt)
     }
 
     private installPlugins(plugins: Plugins) {

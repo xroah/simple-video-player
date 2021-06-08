@@ -1,4 +1,4 @@
-.rplayer-volume-info-wrapper {
+.rplayer-feedback-wrapper {
     display: block;
     position: absolute;
     left: 50%;
@@ -34,5 +34,14 @@
 
     .rplayer-volume-text {
         margin-top: 60px;
+    }
+
+    .feedback-pause-icon {
+        $size: 60px;
+        $bg_size: 100%;
+        display: inline-block;
+        width: $size;
+        height: $size;
+        background: url(../../icons/play_feedback.svg) no-repeat center center/#{$bg_size} #{$bg_size};
     }
 }

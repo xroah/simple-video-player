@@ -1,7 +1,5 @@
 import { Player } from ".."
-import { FEEDBACK_INFO_KEY } from "../commons/constants"
 import { addListener, removeListener } from "../commons/dom-event"
-import FeedbackInfo from "../modules/feedback-info"
 
 export interface HotkeyOptions {
     showVolumeFeedback?: boolean
@@ -11,34 +9,14 @@ export interface HotkeyOptions {
 class Hotkey {
     private _player: Player
     private _options: HotkeyOptions
-    private feedback: FeedbackInfo | null = null
 
     constructor(p: Player, options?: HotkeyOptions) {
         this._player = p
         this._options = options || {}
 
-        this.init()
+        addListener(p.root, "keydown", this.handleKeydown)
     }
 
-    init() {
-        const {
-            _options,
-            _player: { root },
-            _player: rp
-        } = this
-
-        if (_options.showSeekFeedback || _options.showSeekFeedback) {
-            this.feedback = rp.getAdditionData(FEEDBACK_INFO_KEY)
-
-            if (!this.feedback) {
-                this.feedback = new FeedbackInfo(root)
-
-                rp.setAdditionData(FEEDBACK_INFO_KEY, this.feedback)
-            }
-        }
-
-        addListener(root, "keydown", this.handleKeydown)
-    }
 
     handleKeydown = (evt: KeyboardEvent) => {
         const key = evt.key.toLowerCase()
@@ -71,8 +49,10 @@ class Hotkey {
 
     setVolume(add = true) {
         const {
-            _player: { video },
-            feedback,
+            _player: {
+                video,
+                feedback
+            },
             _options
         } = this
         const STEP = .05
@@ -94,7 +74,6 @@ class Hotkey {
         video.setVolume(volume)
 
         if (feedback && _options.showVolumeFeedback) {
-            feedback.setVisible(true)
             feedback.showInfo("volume")
             feedback.updateVolumeFeedback(Math.round(volume * 100))
         }
@@ -103,8 +82,10 @@ class Hotkey {
     fastSeek(forward = true) {
         const {
             _player: rp,
-            _player: { video },
-            feedback,
+            _player: {
+                video,
+                feedback
+            },
             _options
         } = this
         const STEP = 5
@@ -130,7 +111,6 @@ class Hotkey {
 
 
         if (feedback && _options.showSeekFeedback) {
-            feedback.setVisible(true)
             feedback.showInfo("seek")
             feedback.updateSeekFeedback(curTime, duration)
         }
