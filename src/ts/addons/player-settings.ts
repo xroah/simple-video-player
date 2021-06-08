@@ -1,4 +1,4 @@
-import RPlayer from ".."
+import { Player } from ".."
 import { addListeners } from "../commons/dom-event"
 import { EventObject } from "../commons/event-emitter"
 import { createEl, formatTime, throttle } from "../commons/utils"
@@ -17,8 +17,8 @@ class PlayerSettings extends Popup {
     private _uid = uid++
     private _switches: Map<string, Switch> = new Map()
 
-    constructor(rp: RPlayer, ...classes: string[]) {
-        super(rp, "rplayer-settings-popup", ...classes)
+    constructor(p: Player, ...classes: string[]) {
+        super(p, "rplayer-settings-popup", ...classes)
 
         this.init()
     }
@@ -76,14 +76,14 @@ class PlayerSettings extends Popup {
     }
 
     private handleLoad = () => {
-        const { 
+        const {
             autoplay,
             rememberPosition
-         } = <any>this.getLocalSettings()
-        const { 
+        } = <any>this.getLocalSettings()
+        const {
             player,
-            player: {video}
-         } = this
+            player: { video }
+        } = this
 
         if (autoplay) {
             video
@@ -262,8 +262,8 @@ class PlayerSettings extends Popup {
 
 export default {
     classNames: ["rplayer-addon-btn", "rplayer-settings-btn"],
-    init(this: HTMLElement, rp: RPlayer) {
-        const addon = new PlayerSettings(rp)
+    init(this: HTMLElement, p: Player) {
+        const addon = new PlayerSettings(p)
 
         addListeners(this, {
             mouseleave: handleMouseLeave.bind(addon),

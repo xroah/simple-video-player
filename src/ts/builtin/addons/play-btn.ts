@@ -1,13 +1,13 @@
-import RPlayer from "../.."
+import { Player } from "../.."
 
-function init(this: HTMLElement, rp: RPlayer) {
+function init(this: HTMLElement, p: Player) {
     const handlePlay = () => {
-        const fn: "remove" | "add" = rp.video.isPaused() ? "remove" : "add"
+        const fn: "remove" | "add" = p.video.isPaused() ? "remove" : "add"
 
         this.classList[fn]("rplayer-paused")
     }
 
-    rp
+    p
         .on("play", handlePlay)
         .on("pause", handlePlay)
         .on("loadstart", handlePlay)
@@ -16,7 +16,7 @@ function init(this: HTMLElement, rp: RPlayer) {
 export default {
     classNames: ["rplayer-addon-btn", "rplayer-play-btn"],
     init,
-    action(rp: RPlayer) {
-        rp.togglePlay()
+    action(p: Player) {
+        p.togglePlay()
     }
 }

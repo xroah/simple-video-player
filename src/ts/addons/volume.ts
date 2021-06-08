@@ -1,4 +1,4 @@
-import RPlayer from ".."
+import { Player } from ".."
 import Slider from "../modules/slider"
 import { HIDDEN_CLASS } from "../commons/constants"
 import Popup from "../modules/popup"
@@ -13,8 +13,8 @@ class Volume extends Popup {
     private _text: HTMLElement
     private _wrapper: HTMLElement
 
-    constructor(rp: RPlayer) {
-        super(rp, "rplayer-volume-popup", HIDDEN_CLASS)
+    constructor(p: Player) {
+        super(p, "rplayer-volume-popup", HIDDEN_CLASS)
 
         this._wrapper = createEl("div", "rplayer-volume-slider")
         this._slider = new Slider(this._wrapper, {
@@ -22,7 +22,7 @@ class Volume extends Popup {
         })
         this._text = document.createElement("span")
         //the icon btn, for showing the volume popup
-        this.player = rp
+        this.player = p
 
         this.initEvents()
         this.mount()
@@ -51,7 +51,7 @@ class Volume extends Popup {
     mount() {
         this.el.appendChild(this._text)
         this.el.appendChild(this._wrapper)
-        
+
         super.mount()
     }
 
@@ -90,25 +90,25 @@ function handleMuted(el: HTMLElement, video: Video) {
 
 export default {
     classNames: ["rplayer-addon-btn", "rplayer-volume-btn"],
-    init(this: HTMLElement, rp: RPlayer) {
-        const addon = new Volume(rp)
-        const handleVolumeChange = () => handleMuted(this, rp.video)
+    init(this: HTMLElement, p: Player) {
+        const addon = new Volume(p)
+        const handleVolumeChange = () => handleMuted(this, p.video)
 
         handleVolumeChange()
-        rp.setAdditionData(KEY, addon)
+        p.setAdditionData(KEY, addon)
         addListeners(this, {
             mouseleave: handleMouseLeave.bind(addon),
             mouseenter: handleMouseEnter.bind(addon)
         })
-        rp.on("volumechange", handleVolumeChange)
+        p.on("volumechange", handleVolumeChange)
     },
-    action(this: HTMLElement, rp: RPlayer) {
-        const addon = rp.getAdditionData(KEY)
-        const video = rp.video
+    action(this: HTMLElement, p: Player) {
+        const addon = p.getAdditionData(KEY)
+        const video = p.video
 
         if (addon.visible) {
             video.setMuted(!video.isMuted())
             handleMuted(this, video)
-        } 
+        }
     }
 }

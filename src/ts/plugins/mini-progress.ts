@@ -1,4 +1,4 @@
-import RPlayer from ".."
+import { Player } from ".."
 import { HIDDEN_CLASS } from "../commons/constants"
 import { createEl, throttle } from "../commons/utils"
 
@@ -27,10 +27,10 @@ class MiniProgress {
     }
 }
 
-export default function miniProgress(rp: RPlayer) {
-    const mp = new MiniProgress(rp.root)
+export default function miniProgress(p: Player) {
+    const mp = new MiniProgress(p.root)
     const updateProgress = () => {
-        const { video } = rp
+        const { video } = p
         const duration = video.getDuration()
 
         if (duration && mp.isVisible()) {
@@ -44,7 +44,7 @@ export default function miniProgress(rp: RPlayer) {
         updateProgress()
     }
 
-    rp
+    p
         .on("timeupdate", throttle(updateProgress))
         .on("loadstart", () => mp.updateProgress(0))
         .control.bar

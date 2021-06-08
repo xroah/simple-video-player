@@ -1,6 +1,6 @@
-import {HIDDEN_CLASS} from "../../commons/constants"
-import {createEl} from "../../commons/utils"
-import RPlayer from "../.."
+import { HIDDEN_CLASS } from "../../commons/constants"
+import { createEl } from "../../commons/utils"
+import { Player } from "../.."
 
 export interface ErrorMessage {
     abort?: string
@@ -68,15 +68,15 @@ class LoadState {
 }
 
 export default {
-    install(rp: RPlayer) {
-        const state = new LoadState(rp.body)
+    install(p: Player) {
+        const state = new LoadState(p.body)
         const show = () => state.setVisible(true)
         const hide = () => state.setVisible(false)
-        const handleError = () => state.setVisible(true, "error", rp.video.getError())
+        const handleError = () => state.setVisible(true, "error", p.video.getError())
 
-        rp.on("loadstart", show)
-        rp.on("waiting", show)
-        rp.on("canplay", hide)
-        rp.on("error", handleError)
+        p.on("loadstart", show)
+        p.on("waiting", show)
+        p.on("canplay", hide)
+        p.on("error", handleError)
     }
 }

@@ -1,4 +1,4 @@
-import RPlayer from ".."
+import { Player } from ".."
 import { FEEDBACK_INFO_KEY } from "../commons/constants"
 import { addListener, removeListener } from "../commons/dom-event"
 import FeedbackInfo from "../modules/feedback-info"
@@ -9,12 +9,12 @@ export interface HotkeyOptions {
 }
 
 class Hotkey {
-    private _player: RPlayer
+    private _player: Player
     private _options: HotkeyOptions
     private feedback: FeedbackInfo | null = null
 
-    constructor(rp: RPlayer, options?: HotkeyOptions) {
-        this._player = rp
+    constructor(p: Player, options?: HotkeyOptions) {
+        this._player = p
         this._options = options || {}
 
         this.init()
@@ -29,7 +29,7 @@ class Hotkey {
 
         if (_options.showSeekFeedback || _options.showSeekFeedback) {
             this.feedback = rp.getAdditionData(FEEDBACK_INFO_KEY)
-            
+
             if (!this.feedback) {
                 this.feedback = new FeedbackInfo(root)
 
@@ -141,8 +141,8 @@ class Hotkey {
     }
 }
 
-export default function hotkey(rp: RPlayer, options: HotkeyOptions) {
-    let hk: Hotkey = new Hotkey(rp, options)
+export default function hotkey(p: Player, options: HotkeyOptions) {
+    let hk: Hotkey = new Hotkey(p, options)
 
-    rp.once("destroy", hk.destroy.bind(hk))
+    p.once("destroy", hk.destroy.bind(hk))
 }

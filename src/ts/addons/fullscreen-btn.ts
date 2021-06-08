@@ -1,9 +1,9 @@
 
-import RPlayer from ".."
+import { Player } from ".."
 
 export default {
     classNames: ["rplayer-addon-btn", "rplayer-fullscreen-btn"],
-    action(rp: RPlayer) {
-        rp.emit("fullscreen")
+    action(p: Player) {
+        p.emit("fullscreen")
     }
 }

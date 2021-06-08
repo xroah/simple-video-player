@@ -3,20 +3,20 @@ import {
     removeAllListeners,
     removeListeners
 } from "../commons/dom-event"
-import RPlayer from "../player"
+import { Player } from ".."
 import Transition from "../modules/transition"
 
 export default class Popup extends Transition {
-    player: RPlayer
+    player: Player
 
-    constructor(rp: RPlayer, ...classes: string[]) {
+    constructor(p: Player, ...classes: string[]) {
         super("rplayer-popup", ...classes)
 
-        this.player = rp
+        this.player = p
         this.hideTimeout = 300
 
         this.addListeners()
-        rp.once("destroy", () => this.destroy())
+        p.once("destroy", () => this.destroy())
     }
 
     mount() {

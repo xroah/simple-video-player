@@ -1,17 +1,17 @@
-import RPlayer from "../.."
-import {addListener, removeListener} from "../../commons/dom-event"
-import {createEl, reflow} from "../../commons/utils"
-import {HIDDEN_CLASS, TRANSITION_CLASS} from "../../commons/constants"
+import { Player } from "../.."
+import { addListener, removeListener } from "../../commons/dom-event"
+import { createEl, reflow } from "../../commons/utils"
+import { HIDDEN_CLASS, TRANSITION_CLASS } from "../../commons/constants"
 
 class SwitchState {
     private _el: HTMLElement
-    private _player: RPlayer
+    private _player: Player
 
-    constructor(rp: RPlayer) {
+    constructor(p: Player) {
         this._el = createEl("span", "rplayer-switch-state-icon", HIDDEN_CLASS)
-        this._player = rp
+        this._player = p
 
-        rp.body.appendChild(this._el)
+        p.body.appendChild(this._el)
         this.initEvents()
     }
 
@@ -26,7 +26,7 @@ class SwitchState {
     }
 
     private removeTransition() {
-        const {_el} = this
+        const { _el } = this
 
         if (_el.classList.contains(TRANSITION_CLASS)) {
             removeListener(_el, "transitionend", this.hide)
@@ -36,7 +36,7 @@ class SwitchState {
 
     private handleState(visible = false) {
         const PAUSED_CLASS = "rplayer-paused"
-        const {_el} = this
+        const { _el } = this
         const fn: "remove" | "add" = this._player.video.isPaused() ? "add" : "remove"
 
         _el.classList[fn](PAUSED_CLASS)
@@ -66,10 +66,10 @@ class SwitchState {
     }
 }
 
-export default (rp: RPlayer) => {
-    let instance: SwitchState | null = new SwitchState(rp)
+export default (p: Player) => {
+    let instance: SwitchState | null = new SwitchState(p)
 
-    rp.once(
+    p.once(
         "destroy",
         () => {
             if (instance) {

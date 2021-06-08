@@ -1,21 +1,21 @@
-import RPlayer from ".."
+import { Player } from ".."
 import { addListener } from "../commons/dom-event"
 import { EventObject } from "../commons/event-emitter"
 import { throttle } from "../commons/utils"
 import ControlBar, { AddonOptions } from "./control-bar"
 
 export default class Control {
-    private _player: RPlayer
+    private _player: Player
 
     bar: ControlBar
 
-    constructor(rp: RPlayer, timeout: number, addons?: AddonOptions[]) {
-        this._player = rp
-        this.bar = new ControlBar(rp, timeout)
+    constructor(p: Player, timeout: number, addons?: AddonOptions[]) {
+        this._player = p
+        this.bar = new ControlBar(p, timeout)
 
         this.init(addons)
     }
-    
+
     private init(addons: AddonOptions[] = []) {
         addons.forEach(addon => this.bar.initAddon(addon, this._player, true))
 

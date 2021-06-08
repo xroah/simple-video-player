@@ -1,4 +1,4 @@
-import RPlayer from "..";
+import { Player } from "..";
 
 export default {
     classNames: ["rplayer-pip-btn", "rplayer-addon-btn"],
@@ -9,15 +9,15 @@ export default {
             return false
         }
     },
-    action(rp: RPlayer) {
-        const { video: { el } } = rp
+    action(p: Player) {
+        const { video: { el } } = p
         const pipEl = document.pictureInPictureElement
 
         if (pipEl) {
             document.exitPictureInPicture()
         }
 
-        if(pipEl !== el) {
+        if (pipEl !== el) {
             el.requestPictureInPicture()
         }
     }

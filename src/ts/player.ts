@@ -30,11 +30,11 @@ interface RPlayerOptions {
 }
 
 interface PluginFunction {
-    (rp: RPlayer): void
+    (p: Player): void
 }
 
 interface Plugin {
-    install: (rp: RPlayer, options?: object) => void
+    install: (p: Player, options?: object) => void
     options?: object
 }
 
@@ -43,7 +43,7 @@ interface AdditionData {
 }
 
 type Plugins = Array<PluginFunction | Plugin>
-export default class RPlayer extends EventEmitter {
+export default class Player extends EventEmitter {
     root: HTMLElement
     body: HTMLElement
 

@@ -11,23 +11,23 @@ import {
     createEl,
     preventAndStop
 } from "../commons/utils"
-import RPlayer from ".."
+import {Player} from ".."
 import Transition from "./transition"
 
 const ITEM_CLASS = "rplayer-contextmenu-item"
 const ACTIVE_CLASS = "rplayer-active"
 
 export interface ContextmenuItem {
-    text: string | ((rp?: RPlayer) => string)
+    text: string | ((p?: Player) => string)
     id?: string
-    action?: (rp?: RPlayer) => void
+    action?: (p?: Player) => void
 }
 
 export default class Contextmenu extends Transition {
-    private _player: RPlayer
+    private _player: Player
 
     constructor(
-        player: RPlayer,
+        player: Player,
         items: ContextmenuItem[]
     ) {
         super("rplayer-contextmenu", HIDDEN_CLASS)

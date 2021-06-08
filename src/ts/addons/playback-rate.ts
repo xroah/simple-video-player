@@ -1,4 +1,4 @@
-import RPlayer from ".."
+import { Player } from ".."
 import { addListener, addListeners } from "../commons/dom-event"
 import { HIDDEN_CLASS } from "../commons/constants"
 import Popup from "../modules/popup"
@@ -14,20 +14,20 @@ export interface PlayRateOptions {
 class PlaybackRate extends Popup {
     private _rates: Array<string | number> = [2, 1.75, 1.5, 1.25, 1, 0.75, 0.5, 0.25]
 
-    constructor(rp: RPlayer, options: PlayRateOptions = {}) {
-        super(rp, "rplayer-rate-popup", HIDDEN_CLASS)
+    constructor(p: Player, options: PlayRateOptions = {}) {
+        super(p, "rplayer-rate-popup", HIDDEN_CLASS)
 
         const {
             rates,
             defaultRate = 1
         } = options
-        this.player = rp
+        this.player = p
 
         if (rates && rates.length) {
             this._rates = rates
         }
-        
-        rp.video.setPlaybackRate(defaultRate)
+
+        p.video.setPlaybackRate(defaultRate)
 
         this.initEvents()
         this.mount()
@@ -52,7 +52,7 @@ class PlaybackRate extends Popup {
     getRateString(rate = this.player.video.getPlaybackRate()) {
         let rateString = String(rate)
 
-        switch(rateString.length) {
+        switch (rateString.length) {
             case 1: //maybe 1
                 rateString += ".0"
                 break
@@ -62,7 +62,7 @@ class PlaybackRate extends Popup {
                 break
 
             default:
-                //do nothing
+            //do nothing
         }
 
         return rateString
@@ -85,12 +85,12 @@ class PlaybackRate extends Popup {
 export default {
     classNames: ["rplayer-addon-btn", "rplayer-rate-btn"],
     text: "1.0",
-    init(this: HTMLElement, rp: RPlayer, options?: PlayRateOptions) {
-        const addon = new PlaybackRate(rp, options)
-        const handleChange = () =>  this.innerText = addon.getRateString()
+    init(this: HTMLElement, p: Player, options?: PlayRateOptions) {
+        const addon = new PlaybackRate(p, options)
+        const handleChange = () => this.innerText = addon.getRateString()
 
         handleChange()
-        rp.on("ratechange", handleChange)
+        p.on("ratechange", handleChange)
         addListeners(this, {
             mouseleave: handleMouseLeave.bind(addon),
             mouseenter: handleMouseEnter.bind(addon)

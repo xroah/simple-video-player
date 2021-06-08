@@ -1,4 +1,4 @@
-import RPlayer from "../src/ts"
+import RPlayer, { Player } from "../src/ts"
 import miniProgress from "../src/ts/plugins/mini-progress"
 import fullscreenBtn from "../src/ts/addons/fullscreen-btn"
 import volume from "../src/ts/addons/volume"
@@ -14,7 +14,7 @@ const hotkeyOptions: HotkeyOptions = {
 
 let rp = new RPlayer({
     container: "#player",
-    url: "http://10.132.100.105:8000/videos/test.mp4",
+    url: "http://192.168.1.222:8000/videos/test.mp4",
     plugins: [
         miniProgress,
         {
@@ -38,25 +38,25 @@ let rp = new RPlayer({
 
     contextmenu: [
         {
-            text(rp: RPlayer) {
-                return rp.video.isPaused() ? "play" : "pause"
+            text(p: Player) {
+                return p.video.isPaused() ? "play" : "pause"
             },
-            action(rp: RPlayer) {
-                rp.togglePlay()
+            action(p: Player) {
+                p.togglePlay()
             }
         },
         {
             text: "copy video url",
-            action(rp: RPlayer) {
+            action(p: Player) {
                 if (navigator.clipboard) {
                     navigator.clipboard
-                        .writeText(rp.video.getCurrentSrc())
+                        .writeText(p.video.getCurrentSrc())
                         .then(() => alert("success"))
                         .catch(() => alert("error"))
                 } else {
                     const input = document.createElement("input")
 
-                    input.value = rp.video.getCurrentSrc()
+                    input.value = p.video.getCurrentSrc()
 
                     document.body.appendChild(input)
                     input.select()
@@ -67,9 +67,9 @@ let rp = new RPlayer({
         },
         {
             text: "about",
-            action(rp: RPlayer) {
+            action(p: Player) {
                 setTimeout(() => alert("r-player"))
-                console.log(rp)
+                console.log(p)
             }
         }
     ]

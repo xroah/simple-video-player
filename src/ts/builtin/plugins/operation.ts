@@ -1,14 +1,14 @@
-import RPlayer from "../.."
+import { Player } from "../.."
 import { addListener, removeAllListeners } from "../../commons/dom-event"
 import { createEl } from "../../commons/utils"
 
 export default {
-    install(rp: RPlayer) {
+    install(p: Player) {
         const el = createEl("div", "rplayer-operation-plugin")
 
-        addListener(el, "click", rp.togglePlay.bind(rp))
-        rp.once("destroy", () => removeAllListeners(el))
+        addListener(el, "click", p.togglePlay.bind(p))
+        p.once("destroy", () => removeAllListeners(el))
 
-        rp.body.appendChild(el)
+        p.body.appendChild(el)
     }
 }

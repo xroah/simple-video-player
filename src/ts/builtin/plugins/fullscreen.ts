@@ -1,4 +1,4 @@
-import RPlayer from "../.."
+import { Player } from "../.."
 import { addListener, removeListener } from "../../commons/dom-event"
 import { EventObject } from "../../commons/event-emitter"
 
@@ -39,8 +39,8 @@ const fullscreenApi = (() => {
     return ret
 })()
 
-export default function requestFullscreen(rp: RPlayer) {
-    const video = rp.video.el as any
+export default function requestFullscreen(p: Player) {
+    const video = p.video.el as any
 
     if (!fullscreenApi.hasApi) {
         //ios
@@ -53,7 +53,7 @@ export default function requestFullscreen(rp: RPlayer) {
 
     const doc = document as any
     const toggleFS = () => {
-        const root = rp.root as any
+        const root = p.root as any
 
         if (!getEl()) {
             root[fullscreenApi.request]()
@@ -68,14 +68,14 @@ export default function requestFullscreen(rp: RPlayer) {
         }
     }
     const handleFSChange = () => {
-        const {classList} = rp.root
+        const { classList } = p.root
         const fn: "add" | "remove" = getEl() ? "add" : "remove"
 
         classList[fn]("rplayer-fullscreen")
     }
 
     addListener(document, fullscreenApi.change, handleFSChange)
-    rp
+    p
         .on("keydown", handleKeydown)
         .on("fullscreen", toggleFS)
         .once(

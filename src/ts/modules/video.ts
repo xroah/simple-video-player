@@ -1,4 +1,4 @@
-import {createEl, isUndef} from "../commons/utils"
+import { createEl, isUndef } from "../commons/utils"
 import EventEmitter from "../commons/event-emitter"
 
 interface videoOptions {
@@ -21,7 +21,7 @@ export default class Player extends EventEmitter {
         this.el.preload = "auto"
         this.el.src = options.url
         this.el.crossOrigin = ""
-        const {poster, defaultVolume = 0} = options
+        const { poster, defaultVolume = 0 } = options
         let volume = 50
 
         if (poster) {
