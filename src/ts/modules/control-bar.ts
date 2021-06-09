@@ -16,7 +16,7 @@ export interface AddonOptions {
     classNames?: string[]
     text?: string
     //return false will not add the btn to control bar
-    init?: (rp: RPlayer, options?: object) => void | false 
+    init?: (rp: RPlayer, options?: object) => void | false
     action?: (rp: RPlayer) => void
     title?: string
     options?: object
@@ -57,12 +57,18 @@ export default class ControlBar extends Transition {
     }
 
     private init(rp: RPlayer) {
+        const { addons = [] } = rp.options
+
+        addons.forEach(addon => this.initAddon(addon, rp, true))
         //init before time addon
         this.initAddon(playBtn, rp)
-        this._time.mountTo(this.leftAddonContainer)
+
+        this.initEvents()
+
         this.updateTime(0)
         this.updateTime(0, "duration")
-        this.initEvents()
+
+        this._time.mountTo(this.leftAddonContainer)
         this.mountTo(rp.root)
     }
 

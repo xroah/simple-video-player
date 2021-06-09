@@ -2,22 +2,16 @@ import { Player } from ".."
 import { addListener } from "../commons/dom-event"
 import { EventObject } from "../commons/event-emitter"
 import { throttle } from "../commons/utils"
-import ControlBar, { AddonOptions } from "./control-bar"
+import ControlBar from "./control-bar"
 
 export default class Control {
     private _player: Player
 
     bar: ControlBar
 
-    constructor(p: Player, timeout: number, addons?: AddonOptions[]) {
+    constructor(p: Player, timeout: number) {
         this._player = p
         this.bar = new ControlBar(p, timeout)
-
-        this.init(addons)
-    }
-
-    private init(addons: AddonOptions[] = []) {
-        addons.forEach(addon => this.bar.initAddon(addon, this._player, true))
 
         this.initEvents()
     }
