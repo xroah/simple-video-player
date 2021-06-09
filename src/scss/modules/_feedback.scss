@@ -42,6 +42,7 @@
         display: inline-block;
         width: $size;
         height: $size;
+        vertical-align: middle;
         background: url(../../icons/play_feedback.svg) no-repeat center center/#{$bg_size} #{$bg_size};
     }
 }
