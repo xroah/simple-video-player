@@ -19,7 +19,6 @@ import FeedbackInfo from "./modules/feedback-info"
 
 interface RPlayerOptions {
     container: string | HTMLElement | Node
-    // autoPlay?: boolean
     url: string
     defaultVolume?: number
     contextmenu?: ContextmenuItem[]
@@ -52,8 +51,8 @@ export default class Player extends EventEmitter {
     control: Control
     message: MessageManager
     feedback: FeedbackInfo
+    options: RPlayerOptions
 
-    private _options: RPlayerOptions
     private _contextmenu: Contextmenu | null = null
     private _container: HTMLElement
 
@@ -78,7 +77,6 @@ export default class Player extends EventEmitter {
         const controlBarTimeout = options.controlBarTimeout || CONTROL_BAR_HIDE_TIMEOUT
 
         this._container = container as HTMLElement
-        this._options = options
 
         this.video = new Video(
             body,
@@ -90,7 +88,8 @@ export default class Player extends EventEmitter {
         )
         this.root = el
         this.body = body
-        this.control = new Control(this, controlBarTimeout, options.addons)
+        this.options = options
+        this.control = new Control(this, controlBarTimeout)
         this.message = new MessageManager(el)
         this.feedback = new FeedbackInfo(el)
 
@@ -104,7 +103,7 @@ export default class Player extends EventEmitter {
             switchState,
             requestFullscreen
         ]
-        const plugins = builtinPlugins.concat(this._options.plugins || [])
+        const plugins = builtinPlugins.concat(this.options.plugins || [])
         this.root.tabIndex = -1
 
         this.initContextmenu()
@@ -118,7 +117,7 @@ export default class Player extends EventEmitter {
     }
 
     private initContextmenu() {
-        const ctxMenu = this._options.contextmenu
+        const ctxMenu = this.options.contextmenu
 
         if (!ctxMenu || !ctxMenu.length) {
             return
@@ -141,7 +140,7 @@ export default class Player extends EventEmitter {
     private handleVideoEvents = (evt: Event) => {
         const type = evt.type
 
-        switch(type) {
+        switch (type) {
             case "play":
                 if (this.feedback.currentInfo === "pause") {
                     this.feedback.setVisible(false)
@@ -151,7 +150,7 @@ export default class Player extends EventEmitter {
                 this.feedback.showInfo("pause")
                 break
         }
-        
+
         this.emit(type, evt)
     }
 
