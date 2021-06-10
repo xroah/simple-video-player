@@ -23,8 +23,8 @@ interface RPlayerOptions {
     defaultVolume?: number
     contextmenu?: ContextmenuItem[]
     poster?: string
-    playOnClick?: boolean
     controlBarTimeout?: number
+    showProgressTooltip?: boolean
     plugins?: Plugins
     addons?: AddonOptions[]
 }

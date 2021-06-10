@@ -43,9 +43,9 @@ export default class ControlBar extends Transition {
         this._progress = new Slider(
             this._progressBar,
             {
-                tooltip: {
+                tooltip: rp.options.showProgressTooltip ? {
                     formatter: this.tooltipFormatter
-                },
+                } : undefined,
                 secondary: true
             }
         )
