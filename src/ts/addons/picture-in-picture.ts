@@ -1,7 +1,7 @@
 import { Player } from "..";
 
 export default {
-    classNames: ["rplayer-pip-btn", "rplayer-addon-btn"],
+    classNames: ["rplayer-pip-btn"],
     init() {
         if (!("pictureInPictureEnabled" in document)) {
             console.warn("The Picture-in-Picture Web API is not available.")

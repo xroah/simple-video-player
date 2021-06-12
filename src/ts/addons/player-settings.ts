@@ -261,7 +261,7 @@ class PlayerSettings extends Popup {
 }
 
 export default {
-    classNames: ["rplayer-addon-btn", "rplayer-settings-btn"],
+    classNames: ["rplayer-settings-btn"],
     init(this: HTMLElement, p: Player) {
         const addon = new PlayerSettings(p)
 

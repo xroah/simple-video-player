@@ -91,7 +91,7 @@ export default class ControlBar extends Transition {
             options,
             action
         } = addon
-        const el = createEl("button", ...classNames)
+        const el = createEl("button", "rplayer-addon-btn", ...classNames)
         const onDestroy = () => removeAllListeners(el)
         const container = right ? this.rightAddonContainer : this.leftAddonContainer
 

@@ -83,7 +83,7 @@ class PlaybackRate extends Popup {
 }
 
 export default {
-    classNames: ["rplayer-addon-btn", "rplayer-rate-btn"],
+    classNames: ["rplayer-rate-btn"],
     text: "1.0",
     init(this: HTMLElement, p: Player, options?: PlayRateOptions) {
         const addon = new PlaybackRate(p, options)

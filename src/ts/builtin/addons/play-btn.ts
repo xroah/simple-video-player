@@ -14,7 +14,7 @@ function init(this: HTMLElement, p: Player) {
 }
 
 export default {
-    classNames: ["rplayer-addon-btn", "rplayer-play-btn"],
+    classNames: ["rplayer-play-btn"],
     init,
     action(p: Player) {
         p.togglePlay()
