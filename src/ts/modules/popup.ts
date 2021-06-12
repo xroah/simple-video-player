@@ -44,10 +44,6 @@ export default class Popup extends Transition {
 
     }
 
-    handleIconClick = () => {
-        this.setVisible(!this.visible)
-    }
-
     handleControlBarHidden = () => {
         this.setVisible(false, true)
     }
