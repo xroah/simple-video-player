@@ -44,7 +44,9 @@ interface AdditionData {
 
 type Plugins = Array<PluginFunction | Plugin>
 export default class Player extends EventEmitter {
+    // actionable plugin/addon mount to root
     root: HTMLElement
+    // others mount to body
     body: HTMLElement
 
     video: Video
@@ -91,7 +93,7 @@ export default class Player extends EventEmitter {
         this.options = options
         this.control = new Control(this, controlBarTimeout)
         this.message = new MessageManager(el)
-        this.feedback = new FeedbackInfo(el)
+        this.feedback = new FeedbackInfo(body)
 
         this.init()
     }

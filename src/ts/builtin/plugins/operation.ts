@@ -9,6 +9,6 @@ export default {
         addListener(el, "click", p.togglePlay.bind(p))
         p.once("destroy", () => removeAllListeners(el))
 
-        p.body.appendChild(el)
+        p.root.appendChild(el)
     }
 }
