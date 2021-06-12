@@ -8,13 +8,13 @@ import pip from "../src/ts/addons/picture-in-picture"
 import settings from "../src/ts/addons/player-settings"
 
 const hotkeyOptions: HotkeyOptions = {
-    showSeekFeedback: true,
+    showSeekFeedback: true, 
     showVolumeFeedback: true
 }
 
 let rp = new RPlayer({
     container: "#player",
-    url: "http://192.168.1.222:8000/videos/test.mp4",
+    url: "http://10.132.100.105:8000/videos/test.mp4",
     plugins: [
         miniProgress,
         {

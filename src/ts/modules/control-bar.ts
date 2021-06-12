@@ -93,7 +93,8 @@ export default class ControlBar extends Transition {
         } = addon
         const el = createEl("button", "rplayer-addon-btn", ...classNames)
         const onDestroy = () => removeAllListeners(el)
-        const container = right ? this.rightAddonContainer : this.leftAddonContainer
+        const container = right ? this.rightAddonContainer :
+            this.leftAddonContainer
 
         this.once("destroy", onDestroy)
 
@@ -180,7 +181,10 @@ export default class ControlBar extends Transition {
         }
     }
 
-    updateTime(val: number = 0, type: "duration" | "currentTime" = "currentTime") {
+    updateTime(
+        val: number = 0,
+        type: "duration" | "currentTime" = "currentTime"
+    ) {
         if (val === undefined) {
             return
         }
@@ -202,7 +206,9 @@ export default class ControlBar extends Transition {
     //if the progress slider still moving or mouse has entered
     //the control bar should not hide
     needDelay() {
-        return this.prevented || this._progress.isMoving() || this._mouseEntered
+        return this.prevented ||
+            this._progress.isMoving() ||
+            this._mouseEntered
     }
 
     destroy() {
