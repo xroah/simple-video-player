@@ -47,7 +47,10 @@ export default class Message extends Transition {
     }
 
     private mountTo(container: HTMLElement, prepend = false) {
-        this.el.appendChild(this._textEl)
+        // apply background to inner
+        const inner = createEl("div", "rplayer-message-item-inner")
+        
+        inner.appendChild(this._textEl)
 
         if (this._options.closable) {
             this._closeEl = createEl("span", "rplayer-close-btn")
@@ -58,8 +61,11 @@ export default class Message extends Transition {
                 this.handleClose,
                 { once: true }
             )
-            this.el.appendChild(this._closeEl)
+
+            inner.appendChild(this._closeEl)
         }
+
+        this.el.appendChild(inner)
 
         if (prepend) {
             const first = container.firstElementChild
@@ -75,6 +81,10 @@ export default class Message extends Transition {
     }
 
     private handleMouseEnterLeave = (evt: MouseEvent) => {
+        if (!this.autoHide) {
+            return
+        }
+
         if (evt.type === "mouseenter") {
             this.clearTimeout()
         } else {
@@ -84,6 +94,8 @@ export default class Message extends Transition {
 
     private handleClose = (evt: MouseEvent) => {
         preventAndStop(evt)
+
+        this.hide()
     }
 
     update(msg: string | HTMLElement = "") {
@@ -95,19 +107,19 @@ export default class Message extends Transition {
             this._textEl.appendChild(msg)
         }
 
-        if (this.visible && this._options.autoHide) {
+        if (this.autoHide) {
             this.delayHide()
-        } 
+        }
     }
 
     show(msg?: string | HTMLElement) {
-        super.setVisible(true)
+        this.setVisible(true)
 
         this.update(msg)
     }
 
     hide() {
-        super.delayHide()
+        this.setVisible(false)
     }
 
     destroy() {
