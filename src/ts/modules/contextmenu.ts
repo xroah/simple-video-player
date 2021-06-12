@@ -244,7 +244,7 @@ export default class Contextmenu extends Transition {
         }
     }
 
-    updateText() {
+    private updateText() {
         const items: any = this.el.children
 
         for (let item of items) {

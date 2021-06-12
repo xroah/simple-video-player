@@ -24,7 +24,7 @@ export default class FeedbackInfo extends Transition {
         this.mountTo(container)
     }
 
-    mountTo(container: HTMLElement) {
+    private mountTo(container: HTMLElement) {
         const icon = createEl("span", "rplayer-volume-info-icon")
 
         this._volumeFeedbackEl.appendChild(icon)

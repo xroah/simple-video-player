@@ -68,11 +68,11 @@ class PlaybackRate extends Popup {
         return rateString
     }
 
-    initEvents() {
+    private initEvents() {
         addListener(this.el, "click", this.handleItemClick)
     }
 
-    handleItemClick = (evt: MouseEvent) => {
+    private handleItemClick = (evt: MouseEvent) => {
         const rate = (evt.target as any)[VALUE_KEY] || 1
 
         evt.stopPropagation()

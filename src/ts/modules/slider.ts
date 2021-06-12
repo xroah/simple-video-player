@@ -137,7 +137,7 @@ export default class Slider extends EventEmitter {
         }
     }
 
-    getPercent(val: number) {
+    private getPercent(val: number) {
         const elRect = this._el.getBoundingClientRect()
         const v = this._vertical ? val / elRect.height : val / elRect.width
 

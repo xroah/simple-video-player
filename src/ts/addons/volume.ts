@@ -28,7 +28,7 @@ class Volume extends Popup {
         this.mount()
     }
 
-    handleVolumeChange = () => {
+    private handleVolumeChange = () => {
         const {
             player: { video }
         } = this
@@ -37,13 +37,13 @@ class Volume extends Popup {
         this.updateText(val * 100)
     }
 
-    handleSliderValueChange = (evt: EventObject) => {
+    private handleSliderValueChange = (evt: EventObject) => {
         const val = evt.details / 100
 
         this.player.video.setVolume(val)
     }
 
-    initEvents() {
+    private initEvents() {
         this.player.on("volumechange", this.handleVolumeChange)
         this._slider.on("valuechange", this.handleSliderValueChange)
     }

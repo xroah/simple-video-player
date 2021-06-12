@@ -18,7 +18,7 @@ class Hotkey {
     }
 
 
-    handleKeydown = (evt: KeyboardEvent) => {
+    private handleKeydown = (evt: KeyboardEvent) => {
         const key = evt.key.toLowerCase()
         const { _player: rp } = this
 
@@ -107,7 +107,7 @@ class Hotkey {
         video.setCurrentTime(curTime)
         //update the progress, if the keys were press for long time
         //the timeupdate may not fire (waiting)
-        rp.control.handleTimeupdate()
+        rp.control.updateTime()
 
 
         if (feedback && _options.showSeekFeedback) {

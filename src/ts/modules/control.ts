@@ -27,7 +27,7 @@ export default class Control {
         this.bar.on("progresschange", this.handleProgressChange)
         this._player.on(
             "timeupdate",
-            throttle(this.handleTimeupdate)
+            throttle(this.updateTime)
         ).on("progress", this.handleBuffer)
     }
 
@@ -45,7 +45,7 @@ export default class Control {
 
         this.bar.setVisible(true)
         // sync progress and current time
-        this.handleTimeupdate()
+        this.updateTime()
     }
 
     hideControlBar = (force = false) => {
@@ -92,7 +92,7 @@ export default class Control {
     }
 
 
-    handleBuffer = () => {
+    private handleBuffer = () => {
         const buffered = this._player.video.getBuffered()
         const curTime = this._player.video.getCurrentTime()
         let ret = 0
@@ -111,7 +111,7 @@ export default class Control {
         this.bar.updateBuffer(ret)
     }
 
-    handleTimeupdate = () => {
+    updateTime = () => {
         const curTime = this._player.video.getCurrentTime()
         const duration = this._player.video.getDuration()
         const val = curTime / duration * 100

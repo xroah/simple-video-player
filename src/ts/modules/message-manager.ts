@@ -11,7 +11,7 @@ export default class MessageManager {
         container.appendChild(this._wrapper)
     }
 
-    removeMessage(message: Message) {
+    private removeMessage(message: Message) {
         const {uid} = message
 
         if (this._messages && this._messages.has(uid)) {
