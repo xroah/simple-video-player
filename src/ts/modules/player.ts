@@ -1,21 +1,21 @@
-import EventEmitter from "./commons/event-emitter"
-import Video from "./modules/video"
-import Contextmenu, { ContextmenuItem } from "./modules/contextmenu"
-import { addListener, removeAllListeners } from "./commons/dom-event"
-import Control from "./modules/control"
+import EventEmitter from "../commons/event-emitter"
+import Video from "./video"
+import Contextmenu, { ContextmenuItem } from "./contextmenu"
+import { addListener, removeAllListeners } from "../commons/dom-event"
+import Control from "./control"
 import {
     isPlainObject,
     createEl,
     getContainer
-} from "./commons/utils"
-import { AddonOptions } from "./modules/control-bar"
-import { CONTROL_BAR_HIDE_TIMEOUT, videoEvents } from "./commons/constants"
-import operation from "./builtin/plugins/operation"
-import loadState from "./builtin/plugins/load-state"
-import switchState from "./builtin/plugins/switch-state"
-import requestFullscreen from "./builtin/plugins/fullscreen"
-import MessageManager from "./modules/message-manager"
-import FeedbackInfo from "./modules/feedback-info"
+} from "../commons/utils"
+import { AddonOptions } from "./control-bar"
+import { CONTROL_BAR_HIDE_TIMEOUT, videoEvents } from "../commons/constants"
+import operation from "../builtin/plugins/operation"
+import loadState from "../builtin/plugins/load-state"
+import switchState from "../builtin/plugins/switch-state"
+import requestFullscreen from "../builtin/plugins/fullscreen"
+import MessageManager from "./message-manager"
+import FeedbackInfo from "./feedback-info"
 
 interface RPlayerOptions {
     container: string | HTMLElement | Node

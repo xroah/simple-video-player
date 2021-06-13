@@ -1,4 +1,4 @@
-import VideoPlayer from "./player"
+import VideoPlayer from "./modules/player"
 import fullscreenBtn from "./addons/fullscreen-btn"
 import pictureInPicture from "./addons/picture-in-picture"
 import playbackRate from "./addons/playback-rate"
