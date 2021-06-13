@@ -4,12 +4,14 @@ export default class PlayerTime {
     private _currentTimeEl: HTMLElement
     private _durationEl: HTMLElement
 
-    constructor() {
+    constructor(container: HTMLElement) {
         this._currentTimeEl = createEl("span")
         this._durationEl = createEl("span")
+
+        this.mountTo(container)
     }
 
-    mountTo(container: HTMLElement) {
+    private mountTo(container: HTMLElement) {
         const timeFrag = document.createDocumentFragment()
         const el = createEl("div", "rplayer-time-info")
 

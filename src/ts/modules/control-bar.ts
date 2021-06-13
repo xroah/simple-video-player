@@ -31,7 +31,7 @@ export default class ControlBar extends Transition {
     private _progress: Slider
     private _duration = 0
     private _mouseEntered = false
-    private _time: PlayerTime
+    private _time!: PlayerTime
 
     constructor(rp: RPlayer, hideTimeout: number) {
         super("rplayer-control", HIDDEN_CLASS)
@@ -51,7 +51,6 @@ export default class ControlBar extends Transition {
         )
         this.hideTimeout = hideTimeout
         this.autoHide = true
-        this._time = new PlayerTime()
 
         this.init(rp)
     }
@@ -63,12 +62,13 @@ export default class ControlBar extends Transition {
         //init before time addon
         this.initAddon(playBtn, rp)
 
+        this._time = new PlayerTime(this.leftAddonContainer)
+
         this.initEvents()
 
         this.updateTime(0)
         this.updateTime(0, "duration")
 
-        this._time.mountTo(this.leftAddonContainer)
         this.mountTo(rp.root)
     }
 
