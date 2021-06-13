@@ -39,7 +39,7 @@ let rp = new RPlayer({
     contextmenu: [
         {
             text(p: Player) {
-                return p.video.isPaused() ? "play" : "pause"
+                return p.video.paused ? "play" : "pause"
             },
             action(p: Player) {
                 p.togglePlay()
@@ -50,13 +50,13 @@ let rp = new RPlayer({
             action(p: Player) {
                 if (navigator.clipboard) {
                     navigator.clipboard
-                        .writeText(p.video.getCurrentSrc())
+                        .writeText(p.video.currentSrc)
                         .then(() => alert("success"))
                         .catch(() => alert("error"))
                 } else {
                     const input = document.createElement("input")
 
-                    input.value = p.video.getCurrentSrc()
+                    input.value = p.video.currentSrc
 
                     document.body.appendChild(input)
                     input.select()
