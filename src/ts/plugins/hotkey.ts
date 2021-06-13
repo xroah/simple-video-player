@@ -39,7 +39,7 @@ class Hotkey {
                 rp.togglePlay()
                 break
             case "m":
-                rp.video.setMuted(!rp.video.isMuted())
+                rp.video.muted = !rp.video.muted
                 break
         }
 
@@ -55,8 +55,8 @@ class Hotkey {
             },
             _options
         } = this
-        const STEP = .05
-        let volume = video.getVolume() //the volume of video is 0-1
+        const STEP = 0.05
+        let volume = video.volume //the volume of video is 0-1
 
         if (add) {
             volume += STEP
@@ -70,12 +70,12 @@ class Hotkey {
             volume = 1
         }
 
-        video.setMuted(false)
-        video.setVolume(volume)
+        video.muted = false
+        video.volume = volume
 
         if (feedback && _options.showVolumeFeedback) {
             feedback.showInfo("volume")
-            feedback.updateVolumeFeedback(Math.round(volume * 100))
+            feedback.updateVolumeFeedback(video.getPercentVolume())
         }
     }
 
@@ -89,8 +89,8 @@ class Hotkey {
             _options
         } = this
         const STEP = 5
-        const duration = video.getDuration()
-        let curTime = video.getCurrentTime()
+        const duration = video.duration
+        let curTime = video.currentTime
 
         if (forward) {
             curTime += STEP
@@ -104,7 +104,7 @@ class Hotkey {
             curTime = duration
         }
 
-        video.setCurrentTime(curTime)
+        video.currentTime = curTime
         //update the progress, if the keys were press for long time
         //the timeupdate may not fire (waiting)
         rp.control.updateTime()

@@ -31,10 +31,10 @@ export default function miniProgress(p: Player) {
     const mp = new MiniProgress(p.root)
     const updateProgress = () => {
         const { video } = p
-        const duration = video.getDuration()
+        const duration = video.duration
 
         if (duration && mp.isVisible()) {
-            const val = video.getCurrentTime() / duration * 100
+            const val = video.currentTime / duration * 100
 
             mp.updateProgress(val)
         }

@@ -32,7 +32,7 @@ export default class Player extends EventEmitter {
             volume = +defaultVolume || volume
         }
 
-        this.setVolume(volume / 100)
+        this.volume = (volume / 100)
 
         this._wrapper.appendChild(this.el)
         container.appendChild(this._wrapper)
@@ -54,11 +54,11 @@ export default class Player extends EventEmitter {
         return this.el.pause()
     }
 
-    isPaused() {
+    get paused() {
         return this.el.paused
     }
 
-    isEnded() {
+    get ended() {
         return this.el.ended
     }
 
@@ -66,67 +66,83 @@ export default class Player extends EventEmitter {
         this.el.poster = poster
     }
 
-    setMuted(mute: boolean) {
+    set muted(mute: boolean) {
         this.el.muted = mute
     }
 
-    isMuted() {
+    get muted() {
         return this.el.muted
     }
 
-    setVolume(volume: number) {
+    set volume(volume: number) {
         this.el.volume = volume
     }
 
-    getVolume() {
+    get volume() {
         return this.el.volume
     }
 
-    getCurrentTime() {
+    getPercentVolume() {
+        return Math.round(this.volume * 100)
+    }
+
+    setPercentVolume(volume: number) {
+        this.volume = volume / 100
+    }
+
+    get currentTime() {
         return this.el.currentTime
     }
 
-    setCurrentTime(time: number) {
+    set currentTime(time: number) {
         this.el.currentTime = time || 0
     }
 
-    getDuration() {
+    get duration() {
         return this.el.duration
     }
 
-    getCurrentSrc() {
+    get currentSrc() {
         return this.el.currentSrc
     }
 
-    getBuffered() {
+    get buffered() {
         return this.el.buffered
     }
 
-    getError() {
+    get error() {
         return this.el.error
     }
 
-    getPlaybackRate() {
+    get playbackRate() {
         return this.el.playbackRate
     }
 
-    setPlaybackRate(rate: number) {
+    set playbackRate(rate: number) {
         this.el.playbackRate = rate
     }
 
-    setAutoplay(autoPlay: boolean) {
+    set autoplay(autoPlay: boolean) {
         this.el.autoplay = autoPlay
     }
 
-    getAutoplay() {
+    get autoplay() {
         return this.el.autoplay
     }
 
-    setLoop(loop: boolean) {
+    set loop(loop: boolean) {
         this.el.loop = loop
     }
 
-    getLoop() {
+    get loop() {
         return this.el.loop
+    }
+
+    get seekable() {
+        return this.el.seekable
+    }
+
+    get readySate() {
+        return this.el.readyState
     }
 }

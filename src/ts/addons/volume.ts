@@ -32,15 +32,13 @@ class Volume extends Popup {
         const {
             player: { video }
         } = this
-        const val = video.isMuted() ? 0 : video.getVolume()
+        const val = video.muted ? 0 : video.volume
 
         this.updateText(val * 100)
     }
 
     private handleSliderValueChange = (evt: EventObject) => {
-        const val = evt.details / 100
-
-        this.player.video.setVolume(val)
+        this.player.video.setPercentVolume(evt.details)
     }
 
     private initEvents() {
@@ -81,7 +79,7 @@ class Volume extends Popup {
 const KEY = "volumeAddon"
 
 function handleMuted(el: HTMLElement, video: Video) {
-    const muted = video.getVolume() === 0 || video.isMuted()
+    const muted = video.volume === 0 || video.muted
     const MUTED_CLS = "rplayer-muted"
     const fn: "add" | "remove" = muted ? "add" : "remove"
 
@@ -107,7 +105,7 @@ export default {
         const video = p.video
 
         if (addon.visible) {
-            video.setMuted(!video.isMuted())
+            video.muted =!video.muted
             handleMuted(this, video)
         }
     }

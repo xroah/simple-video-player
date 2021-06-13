@@ -99,7 +99,7 @@ class PlayerSettings extends Popup {
             const time = saved[key]
 
             if (time) {
-                video.setCurrentTime(time)
+                video.currentTime = time
                 player.message.show(`已为您跳转至上次播放位置: ${formatTime(time)}`)
             }
         }
@@ -160,7 +160,7 @@ class PlayerSettings extends Popup {
     }
 
     private getVideoKey() {
-        const url = this.player.video.getCurrentSrc()
+        const url = this.player.video.currentSrc
         const a = document.createElement("a")
         let key = ''
 
@@ -181,7 +181,7 @@ class PlayerSettings extends Popup {
         const saved = <any>this.getLocalData(TIME_KEY)
         const key = this.getVideoKey()
 
-        saved[key] = this.player.video.getCurrentTime()
+        saved[key] = this.player.video.currentTime
 
         localStorage.setItem(TIME_KEY, JSON.stringify(saved))
     }
@@ -203,8 +203,8 @@ class PlayerSettings extends Popup {
         } = <any>this.getLocalData(SETTINGS_KEY)
         const { player: { video } } = this
 
-        video.setAutoplay(autoplay)
-        video.setLoop(loop)
+        video.autoplay = autoplay
+        video.loop = loop
 
         if (rememberPosition) {
             this.addTimeUpdateEvent()

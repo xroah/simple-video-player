@@ -36,8 +36,8 @@ class SwitchState {
 
     private handleState(visible = false) {
         const PAUSED_CLASS = "rplayer-paused"
-        const { _el } = this
-        const fn: "remove" | "add" = this._player.video.isPaused() ? "add" : "remove"
+        const { _el, _player } = this
+        const fn: "remove" | "add" = _player.video.paused ? "add" : "remove"
 
         _el.classList[fn](PAUSED_CLASS)
 

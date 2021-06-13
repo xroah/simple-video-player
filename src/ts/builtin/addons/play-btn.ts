@@ -2,7 +2,7 @@ import { Player } from "../.."
 
 function init(this: HTMLElement, p: Player) {
     const handlePlay = () => {
-        const fn: "remove" | "add" = p.video.isPaused() ? "remove" : "add"
+        const fn: "remove" | "add" = p.video.paused ? "remove" : "add"
 
         this.classList[fn]("rplayer-paused")
     }

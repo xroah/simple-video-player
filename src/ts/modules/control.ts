@@ -37,7 +37,7 @@ export default class Control {
 
     showControlBar(force = false) {
         if (
-            (this._player.video.getError() || this.bar.prevented) &&
+            (this._player.video.error || this.bar.prevented) &&
             !force
         ) {
             return
@@ -63,7 +63,7 @@ export default class Control {
 
         switch (type) {
             case "loadedmetadata":
-                bar.updateTime(video.getDuration(), "duration")
+                bar.updateTime(video.duration, "duration")
                 this.showControlBar()
                 break
             case "loadstart":
@@ -76,7 +76,7 @@ export default class Control {
                 this.hideControlBar(true)
                 break
             case "durationchange":
-                bar.updateTime(video.getDuration(), "duration")
+                bar.updateTime(video.duration, "duration")
                 break
         }
     }
@@ -84,17 +84,17 @@ export default class Control {
     //user click or move the progress bar manually
     private handleProgressChange = (evt: EventObject) => {
         const { video } = this._player
-        const duration = video.getDuration()
+        const duration = video.duration
         const time = evt.details / 100 * duration
 
-        video.setCurrentTime(time)
+        video.currentTime = time
         this.bar.updateTime(time)
     }
 
 
     private handleBuffer = () => {
-        const buffered = this._player.video.getBuffered()
-        const curTime = this._player.video.getCurrentTime()
+        const buffered = this._player.video.buffered
+        const curTime = this._player.video.currentTime
         let ret = 0
 
         for (let i = 0, l = buffered.length; i < l; i++) {
@@ -112,8 +112,8 @@ export default class Control {
     }
 
     updateTime = () => {
-        const curTime = this._player.video.getCurrentTime()
-        const duration = this._player.video.getDuration()
+        const curTime = this._player.video.currentTime
+        const duration = this._player.video.duration
         const val = curTime / duration * 100
 
         this.bar.updateProgress(val)

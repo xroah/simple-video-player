@@ -27,7 +27,7 @@ class PlaybackRate extends Popup {
             this._rates = rates
         }
 
-        p.video.setPlaybackRate(defaultRate)
+        p.video.playbackRate = defaultRate
 
         this.initEvents()
         this.mount()
@@ -49,7 +49,7 @@ class PlaybackRate extends Popup {
         super.mount()
     }
 
-    getRateString(rate = this.player.video.getPlaybackRate()) {
+    getRateString(rate = this.player.video.playbackRate) {
         let rateString = String(rate)
 
         switch (rateString.length) {
@@ -78,7 +78,7 @@ class PlaybackRate extends Popup {
         evt.stopPropagation()
 
         this.setVisible(false)
-        this.player.video.setPlaybackRate(rate)
+        this.player.video.playbackRate = rate
     }
 }
 

@@ -183,11 +183,11 @@ export default class Player extends EventEmitter {
     togglePlay() {
         const { video } = this
 
-        if (video.getError()) {
+        if (video.error) {
             return
         }
 
-        if (video.isPaused()) {
+        if (video.paused) {
             video.play()
         } else {
             video.pause()

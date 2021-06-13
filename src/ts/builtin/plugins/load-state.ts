@@ -72,7 +72,7 @@ export default {
         const state = new LoadState(p.body)
         const show = () => state.setVisible(true)
         const hide = () => state.setVisible(false)
-        const handleError = () => state.setVisible(true, "error", p.video.getError())
+        const handleError = () => state.setVisible(true, "error", p.video.error)
 
         p
             .on("loadstart", show)
