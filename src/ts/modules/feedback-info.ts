@@ -48,30 +48,18 @@ export default class FeedbackInfo extends Transition {
     }
 
     showInfo(type: InfoType) {
-        const els = [
-            this._pauseFeedbackEl,
-            this._seekFeedbackEl,
-            this._volumeFeedbackEl
-        ]
+        const classListMap: Map<InfoType, DOMTokenList> = new Map([
+            ["volume", this._volumeFeedbackEl.classList],
+            ["seek", this._seekFeedbackEl.classList],
+            ["pause", this._pauseFeedbackEl.classList]
+        ])
         this.autoHide = type !== "pause"
         this.currentInfo = type
 
         this.setVisible(true)
 
-        els.forEach(el => el.classList.add(HIDDEN_CLASS))
+        classListMap.forEach(classList => classList.add(HIDDEN_CLASS))
 
-        switch (type) {
-            case "volume":
-                this._volumeFeedbackEl.classList.remove(HIDDEN_CLASS)
-                break
-            case "seek":
-                this._seekFeedbackEl.classList.remove(HIDDEN_CLASS)
-                break
-            case "pause":
-                this._pauseFeedbackEl.classList.remove(HIDDEN_CLASS)
-                break
-            default:
-            //do nothing
-        }
+        classListMap.get(type)?.remove(HIDDEN_CLASS)
     }
 }
