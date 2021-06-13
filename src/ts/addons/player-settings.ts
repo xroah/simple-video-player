@@ -79,7 +79,7 @@ class PlayerSettings extends Popup {
         const {
             autoplay,
             rememberPosition
-        } = <any>this.getLocalSettings()
+        } = <any>this.getLocalData(SETTINGS_KEY)
         const {
             player,
             player: { video }
@@ -94,7 +94,7 @@ class PlayerSettings extends Popup {
         }
 
         if (rememberPosition) {
-            const saved = this.getSavedTime()
+            const saved = this.getLocalData(TIME_KEY)
             const key = this.getVideoKey()
             const time = saved[key]
 
@@ -105,8 +105,8 @@ class PlayerSettings extends Popup {
         }
     }
 
-    private getLocalSettings() {
-        const settings = localStorage.getItem(SETTINGS_KEY)
+    private getLocalData(key: string) {
+        const settings = localStorage.getItem(key)
         const empty = {}
 
         if (settings) {
@@ -131,7 +131,7 @@ class PlayerSettings extends Popup {
             autoplay,
             rememberPosition,
             loop
-        } = <any>this.getLocalSettings()
+        } = <any>this.getLocalData(SETTINGS_KEY)
         const { _switches } = this
         const check = (s?: Switch) => s && s.check(true)
         const switches: Array<Switch | undefined> = []
@@ -177,25 +177,8 @@ class PlayerSettings extends Popup {
         return window.btoa(key)
     }
 
-    private getSavedTime() {
-        const localTime = localStorage.getItem(TIME_KEY)
-        const empty = {}
-
-        if (localTime) {
-            try {
-                const json = JSON.parse(localTime)
-
-                return json
-            } catch (error) {
-                return empty
-            }
-        }
-
-        return empty
-    }
-
     private saveTimeToLocal = () => {
-        const saved = <any>this.getSavedTime()
+        const saved = <any>this.getLocalData(TIME_KEY)
         const key = this.getVideoKey()
 
         saved[key] = this.player.video.getCurrentTime()
@@ -217,7 +200,7 @@ class PlayerSettings extends Popup {
             autoplay,
             loop,
             rememberPosition
-        } = <any>this.getLocalSettings()
+        } = <any>this.getLocalData(SETTINGS_KEY)
         const { player: { video } } = this
 
         video.setAutoplay(autoplay)
@@ -235,7 +218,7 @@ class PlayerSettings extends Popup {
             id,
             checked
         } = evt.details || {}
-        let localSettings = <any>this.getLocalSettings()
+        let localSettings = <any>this.getLocalData(SETTINGS_KEY)
 
         if (id.indexOf(REMEMBER_ID_PREFIX) > -1) {
             localSettings.rememberPosition = checked
