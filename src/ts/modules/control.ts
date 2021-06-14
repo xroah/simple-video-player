@@ -54,6 +54,10 @@ export default class Control {
         }
     }
 
+    preventHide(prevented: boolean) {
+        this.bar.prevented = prevented
+    }
+
     private handleVideoEvents = (evt: any) => {
         const type = evt.type
         const {
@@ -90,7 +94,6 @@ export default class Control {
         video.currentTime = time
         this.bar.updateTime(time)
     }
-
 
     private handleBuffer = () => {
         const buffered = this._player.video.buffered
