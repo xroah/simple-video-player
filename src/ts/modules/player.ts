@@ -111,8 +111,6 @@ export default class Player extends EventEmitter {
         this.initContextmenu()
         this.initEvents()
         this.installPlugins(plugins)
-        //show pause feedback
-        this.feedback.showInfo("pause")
 
         this.root.appendChild(this.body)
         this._container.appendChild(this.root)
@@ -141,18 +139,25 @@ export default class Player extends EventEmitter {
 
     private handleVideoEvents = (evt: Event) => {
         const type = evt.type
+        const { feedback, video } = this
 
         switch (type) {
             case "play":
-                if (this.feedback.currentInfo === "pause") {
-                    this.feedback.setVisible(false)
+                // hide pause feedback
+                if (feedback.currentInfo === "pause") {
+                    feedback.setVisible(false)
                 }
-                break
-            case "pause":
-                this.feedback.showInfo("pause")
+
                 break
         }
-
+        if (
+            video.paused &&
+            video.readySate >= HTMLMediaElement.HAVE_FUTURE_DATA &&
+            !video.error
+        ) {
+            feedback.showInfo("pause")
+        }
+        
         this.emit(type, evt)
     }
 
