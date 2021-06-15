@@ -39,9 +39,23 @@
 }
 
 // operation plugin
-.rplayer-operation-plugin {
+.rplayer-operation {
     @include fill_parent();
     z-index: 99;
+
+    .rplayer-operation-pause {
+        $size: 80px;
+        position: absolute;
+        right: 30px;
+        bottom: 60px;
+        $bg_size: 80%;
+        display: inline-block;
+        width: $size;
+        height: $size;
+        border-radius: 5px;
+        vertical-align: middle;
+        background: rgba(0,0,0,.2) url(../../icons/play_feedback.svg) no-repeat center center/#{$bg_size} #{$bg_size};
+    }
 }
 
 // load state plugin

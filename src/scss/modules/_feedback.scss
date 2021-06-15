@@ -35,14 +35,4 @@
     .rplayer-volume-text {
         margin-top: 60px;
     }
-
-    .feedback-pause-icon {
-        $size: 60px;
-        $bg_size: 100%;
-        display: inline-block;
-        width: $size;
-        height: $size;
-        vertical-align: middle;
-        background: url(../../icons/play_feedback.svg) no-repeat center center/#{$bg_size} #{$bg_size};
-    }
 }

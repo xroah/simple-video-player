@@ -138,27 +138,7 @@ export default class Player extends EventEmitter {
     }
 
     private handleVideoEvents = (evt: Event) => {
-        const type = evt.type
-        const { feedback, video } = this
-
-        switch (type) {
-            case "play":
-                // hide pause feedback
-                if (feedback.currentInfo === "pause") {
-                    feedback.setVisible(false)
-                }
-
-                break
-        }
-        if (
-            video.paused &&
-            video.readySate >= HTMLMediaElement.HAVE_FUTURE_DATA &&
-            !video.error
-        ) {
-            feedback.showInfo("pause")
-        }
-        
-        this.emit(type, evt)
+        this.emit(evt.type, evt)
     }
 
     private installPlugins(plugins: Plugins) {

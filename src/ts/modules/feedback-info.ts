@@ -2,24 +2,21 @@ import { HIDDEN_CLASS } from "../commons/constants"
 import { createEl, formatTime } from "../commons/utils"
 import Transition from "./transition"
 
-type InfoType = "volume" | "seek" | "pause"
+type InfoType = "volume" | "seek"
 
 export default class FeedbackInfo extends Transition {
     private _text: HTMLElement
     private _volumeFeedbackEl: HTMLElement
     private _seekFeedbackEl: HTMLElement
-    private _pauseFeedbackEl: HTMLElement
-
-    currentInfo: InfoType | undefined
 
     constructor(container: HTMLElement) {
         super("rplayer-feedback-wrapper", HIDDEN_CLASS)
 
         this._text = createEl("span")
         this.hideTimeout = 1000
+        this.autoHide = true
         this._volumeFeedbackEl = createEl("div", HIDDEN_CLASS)
         this._seekFeedbackEl = createEl("div", HIDDEN_CLASS)
-        this._pauseFeedbackEl = createEl("div", "feedback-pause-icon", HIDDEN_CLASS)
 
         this.mountTo(container)
     }
@@ -31,7 +28,6 @@ export default class FeedbackInfo extends Transition {
         this._volumeFeedbackEl.appendChild(this._text)
         this.el.appendChild(this._volumeFeedbackEl)
         this.el.appendChild(this._seekFeedbackEl)
-        this.el.appendChild(this._pauseFeedbackEl)
         container.appendChild(this.el)
     }
 
@@ -50,11 +46,8 @@ export default class FeedbackInfo extends Transition {
     showInfo(type: InfoType) {
         const classListMap: Map<InfoType, DOMTokenList> = new Map([
             ["volume", this._volumeFeedbackEl.classList],
-            ["seek", this._seekFeedbackEl.classList],
-            ["pause", this._pauseFeedbackEl.classList]
+            ["seek", this._seekFeedbackEl.classList]
         ])
-        this.autoHide = type !== "pause"
-        this.currentInfo = type
 
         this.setVisible(true)
 
