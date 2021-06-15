@@ -145,4 +145,8 @@ export default class Player extends EventEmitter {
     get readySate() {
         return this.el.readyState
     }
+
+    get seeking() {
+        return this.el.seeking
+    }
 }

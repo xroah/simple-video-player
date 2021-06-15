@@ -77,6 +77,7 @@ export default {
         p
             .on("loadstart", show)
             .on("waiting", show)
+            .on("seeking", show)
             .on("canplay", hide)
             .on("error", handleError)
     }
