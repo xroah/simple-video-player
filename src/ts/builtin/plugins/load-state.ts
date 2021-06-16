@@ -73,11 +73,17 @@ export default {
         const show = () => state.setVisible(true)
         const hide = () => state.setVisible(false)
         const handleError = () => state.setVisible(true, "error", p.video.error)
+        const handleSeeked = () => {
+            if (p.video.readySate >= HTMLMediaElement.HAVE_CURRENT_DATA) {
+                hide()
+            }
+        }
 
         p
             .on("loadstart", show)
             .on("waiting", show)
             .on("seeking", show)
+            .on("seeked", handleSeeked)
             .on("canplay", hide)
             .on("error", handleError)
     }
