@@ -81,7 +81,7 @@ const KEY = "volumeAddon"
 function handleMuted(el: HTMLElement, video: Video) {
     const muted = video.volume === 0 || video.muted
     const MUTED_CLS = "rplayer-muted"
-    const fn: "add" | "remove" = muted ? "add" : "remove"
+    const fn = muted ? "add" : "remove"
 
     el.classList[fn](MUTED_CLS)
 }

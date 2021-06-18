@@ -50,7 +50,7 @@ export default class Tooltip extends EventEmitter {
             return
         }
 
-        const fn: "add" | "remove" = visible ? "remove" : "add"
+        const fn = visible ? "remove" : "add"
         
         this._visible = visible
 

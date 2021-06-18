@@ -69,7 +69,7 @@ export default function requestFullscreen(p: Player) {
     }
     const handleFSChange = () => {
         const { classList } = p.root
-        const fn: "add" | "remove" = getEl() ? "add" : "remove"
+        const fn = getEl() ? "add" : "remove"
 
         classList[fn]("rplayer-fullscreen")
     }
