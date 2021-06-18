@@ -3,12 +3,12 @@ import { addListener, removeListener } from "../../commons/dom-event"
 import { createEl, reflow } from "../../commons/utils"
 import { HIDDEN_CLASS, TRANSITION_CLASS } from "../../commons/constants"
 
-class SwitchState {
+class PlayState {
     private _el: HTMLElement
     private _player: Player
 
     constructor(p: Player) {
-        this._el = createEl("span", "rplayer-switch-state-icon", HIDDEN_CLASS)
+        this._el = createEl("span", "rplayer-play-state-icon", HIDDEN_CLASS)
         this._player = p
 
         p.body.appendChild(this._el)
@@ -67,16 +67,7 @@ class SwitchState {
 }
 
 export default (p: Player) => {
-    let instance: SwitchState | null = new SwitchState(p)
+    let instance: PlayState = new PlayState(p)
 
-    p.once(
-        "destroy",
-        () => {
-            if (instance) {
-                instance.destroy()
-
-                instance = null
-            }
-        }
-    )
+    p.once("destroy", () => instance.destroy())
 }

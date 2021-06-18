@@ -12,7 +12,7 @@ import { AddonOptions } from "./control-bar"
 import { CONTROL_BAR_HIDE_TIMEOUT, videoEvents } from "../commons/constants"
 import operation from "../builtin/plugins/operation"
 import loadState from "../builtin/plugins/load-state"
-import switchState from "../builtin/plugins/switch-state"
+import playState from "../builtin/plugins/play-state"
 import requestFullscreen from "../builtin/plugins/fullscreen"
 import MessageManager from "./message-manager"
 import FeedbackInfo from "./feedback-info"
@@ -102,7 +102,7 @@ export default class Player extends EventEmitter {
         const builtinPlugins: Plugins = [
             operation,
             loadState,
-            switchState,
+            playState,
             requestFullscreen
         ]
         const plugins = builtinPlugins.concat(this.options.plugins || [])
