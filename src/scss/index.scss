@@ -22,6 +22,7 @@
 
     .rplayer-body {
         @include fill_parent();
+        z-index: 10;
     }
 }
 
