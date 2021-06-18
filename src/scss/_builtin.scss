@@ -121,10 +121,10 @@
         background-image: url("../../icons/pause.svg");
     }
 
-    &.rplayer-transition {
+    &.rplayer-show {
         transform: translate(-50%, -50%) scale(1.5);
         opacity: 0;
-        transition: all .8s;
+        transition: opacity .8s, transform .8s;
         will-change: opacity transform;
     }
 }

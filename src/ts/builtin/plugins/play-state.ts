@@ -1,17 +1,15 @@
 import { Player } from "../.."
-import { addListener, removeListener } from "../../commons/dom-event"
-import { createEl, reflow } from "../../commons/utils"
-import { HIDDEN_CLASS, TRANSITION_CLASS } from "../../commons/constants"
+import { HIDDEN_CLASS } from "../../commons/constants"
+import Transition from "../../modules/transition"
 
-class PlayState {
-    private _el: HTMLElement
+class PlayState extends Transition {
     private _player: Player
 
     constructor(p: Player) {
-        this._el = createEl("span", "rplayer-play-state-icon", HIDDEN_CLASS)
+        super("rplayer-play-state-icon", HIDDEN_CLASS)
         this._player = p
 
-        p.body.appendChild(this._el)
+        p.body.appendChild(this.el)
         this.initEvents()
     }
 
@@ -21,48 +19,35 @@ class PlayState {
             .on("pause", this.switchState)
     }
 
-    setVisible(visible: boolean) {
-        this._el.classList[visible ? "remove" : "add"](HIDDEN_CLASS)
+    handleTransitionEnd = () => {
+        super._handleTransitionEnd()
+
+        // hide after showing transition end
+        this.hide()
     }
 
-    private removeTransition() {
-        const { _el } = this
-
-        if (_el.classList.contains(TRANSITION_CLASS)) {
-            removeListener(_el, "transitionend", this.hide)
-            _el.classList.remove(TRANSITION_CLASS)
-        }
-    }
-
-    private handleState(visible = false) {
+    private handleState() {
         const PAUSED_CLASS = "rplayer-paused"
-        const { _el, _player } = this
-        const fn: "remove" | "add" = _player.video.paused ? "add" : "remove"
+        const { el, _player } = this
+        const fn = _player.video.paused ? "add" : "remove"
 
-        _el.classList[fn](PAUSED_CLASS)
-
-        if (visible) {
-            _el.classList.add(TRANSITION_CLASS)
-            addListener(_el, "transitionend", this.hide)
-        }
+        el.classList[fn](PAUSED_CLASS)
     }
 
-    private hide = () => {
-        this.removeTransition()
-        this.handleState()
-        this.setVisible(false)
+    private hide() {
+        // hide with no transition
+        this.setVisible(false, true)
     }
 
-    switchState = () => {
-        //may click continuously
+    private switchState = () => {
+        //may click continuously, hide and show
         this.hide()
         this.setVisible(true)
-        reflow(this._el)
-        this.handleState(true)
+        this.handleState()
     }
 
     destroy() {
-        this.removeTransition()
+        this.removeTransitionendListener()
     }
 }
 
