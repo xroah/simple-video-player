@@ -4,4 +4,8 @@
 
 .rplayer-pip-btn {
     background-image: url("../../icons/picture_in_picture.svg");
+
+    &.rplayer-pip-entered {
+        background-image: url("../../icons/picture_in_picture_exit.svg");
+    }
 }
