@@ -27,7 +27,6 @@ export default class ControlBar extends Transition {
     rightAddonContainer: HTMLElement
     prevented = false
 
-    private _progressBar: HTMLElement
     private _progress: Slider
     private _duration = 0
     private _mouseEntered = false
@@ -39,9 +38,12 @@ export default class ControlBar extends Transition {
 
         this.leftAddonContainer = createEl("div", "left-addon-container")
         this.rightAddonContainer = createEl("div", "right-addon-container")
-        this._progressBar = createEl("div", "rplayer-progress-bar")
+        this.hideTimeout = hideTimeout
+        this.autoHide = true
+
+        const progressWrapper = createEl("div", "rplayer-progress-wrapper")
         this._progress = new Slider(
-            this._progressBar,
+            progressWrapper,
             {
                 tooltip: rp.options.showProgressTooltip ? {
                     formatter: this.tooltipFormatter
@@ -49,13 +51,11 @@ export default class ControlBar extends Transition {
                 secondary: true
             }
         )
-        this.hideTimeout = hideTimeout
-        this.autoHide = true
 
-        this.init(rp)
+        this.init(rp, progressWrapper)
     }
 
-    private init(rp: RPlayer) {
+    private init(rp: RPlayer, wrapper:HTMLElement) {
         const { addons = [] } = rp.options
 
         addons.forEach(addon => this.initAddon(addon, rp, true))
@@ -69,17 +69,15 @@ export default class ControlBar extends Transition {
         this.updateTime(0)
         this.updateTime(0, "duration")
 
-        this.mountTo(rp.root)
+        this.mountTo(rp.root, wrapper)
     }
 
-    private mountTo(container: HTMLElement) {
+    private mountTo(container: HTMLElement, wrapper: HTMLElement) {
         const addonContainer = createEl("div", "rplayer-addon-wrapper")
-        const progressWrapper = createEl("div", "rplayer-progress-wrapper")
 
-        progressWrapper.appendChild(this._progressBar)
         addonContainer.appendChild(this.leftAddonContainer)
         addonContainer.appendChild(this.rightAddonContainer)
-        this.el.appendChild(progressWrapper)
+        this.el.appendChild(wrapper)
         this.el.appendChild(addonContainer)
         container.appendChild(this.el)
     }

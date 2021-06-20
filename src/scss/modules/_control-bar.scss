@@ -20,13 +20,6 @@
   }
 
   .rplayer-progress-wrapper {
-    @include flex-v-center();
-    color: #fff;
-
-    .rplayer-progress-bar {
-      flex: 1;
-    }
-
     .rplayer-slider-marker {
       opacity: 0;
     }
