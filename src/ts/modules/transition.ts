@@ -62,7 +62,13 @@ export default class Transition extends EventEmitter {
     }
 
     addTransitionEndListener = () => {
-        addListener(this.el, "transitionend", this.handleTransitionEnd)
+        addListener(
+            this.el,
+            "transitionend",
+            this.handleTransitionEnd,
+            // avoid triggered multiple times(multi transition property)
+            {once: true} 
+        )
     }
 
     removeTransitionendListener = () => {
@@ -108,7 +114,7 @@ export default class Transition extends EventEmitter {
         this.emit("hide")
         this.el.classList.remove(SHOW_CLASS)
 
-        if(noTransition) {
+        if (noTransition) {
             this.handleTransitionEnd()
         } else {
             this.addTransitionEndListener()
