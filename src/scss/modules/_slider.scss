@@ -34,22 +34,12 @@ $track_size: 5px;
         z-index: 5;
     }
 
-    .rplayer-slider-primary-progress {
+    .rplayer-slider-primary {
         position: relative;
         width: 0;
         height: 100%;
         background-color: $color;
         z-index: 2;
-    }
-
-    .rplayer-slider-secondary-progress {
-        position: absolute;
-        left: 0;
-        bottom: 0;
-        width: 0;
-        height: 100%;
-        background-color: rgba(255, 255, 255, .5);
-        z-index: 1;
     }
 }
 
@@ -69,16 +59,11 @@ $track_size: 5px;
         z-index: 5;
     }
 
-    .rplayer-slider-primary-progress {
+    .rplayer-slider-primary {
         position: absolute;
         bottom: 0;
         left: 0;
         width: 100%;
         height: 0;
-    }
-
-    .rplayer-slider-secondary-progress {
-        height: 0;
-        width: 100%;
     }
 }
