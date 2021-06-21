@@ -1,13 +1,11 @@
 @import "../vars";
 
-$track_size: 5px;
-
 .rplayer-slider-wrapper {
     $marker_size: 14px;
 
     position: relative;
     bottom: 0;
-    height: $track_size;
+    height: $slider_height;
     background-color: rgba(255, 255, 255, .5);
     transition: all .3s;
     user-select: none;
