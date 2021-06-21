@@ -5,7 +5,7 @@
 
     position: relative;
     bottom: 0;
-    height: $slider_height;
+    height: $slider_size;
     background-color: rgba(255, 255, 255, .5);
     transition: all .3s;
     user-select: none;
@@ -42,7 +42,7 @@
 }
 
 .rplayer-slider-wrapper-vertical {
-    width: $track_size;
+    width: $slider_size;
     height: 100%;
 
     .rplayer-slider-marker {
