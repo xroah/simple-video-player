@@ -1,5 +1,4 @@
 import {
-    formatTime,
     createEl,
     preventAndStop
 } from "../commons/utils"
@@ -32,6 +31,8 @@ export default class ControlBar extends Transition {
     private _mouseEntered = false
     private _time!: PlayerTime
 
+    private _bufferedEl: HTMLElement
+
     constructor(rp: RPlayer, hideTimeout: number) {
         super("rplayer-control", HIDDEN_CLASS)
 
@@ -42,20 +43,14 @@ export default class ControlBar extends Transition {
         this.autoHide = true
 
         const progressWrapper = createEl("div", "rplayer-progress-wrapper")
-        this._progress = new Slider(
-            progressWrapper,
-            {
-                tooltip: rp.options.showProgressTooltip ? {
-                    formatter: this.tooltipFormatter
-                } : undefined,
-                secondary: true
-            }
-        )
+
+        this._progress = new Slider(progressWrapper)
+        this._bufferedEl = createEl("div", "rplayer-buffered-progress")
 
         this.init(rp, progressWrapper)
     }
 
-    private init(rp: RPlayer, wrapper:HTMLElement) {
+    private init(rp: RPlayer, wrapper: HTMLElement) {
         const { addons = [] } = rp.options
 
         addons.forEach(addon => this.initAddon(addon, rp, true))
@@ -77,7 +72,10 @@ export default class ControlBar extends Transition {
 
         addonContainer.appendChild(this.leftAddonContainer)
         addonContainer.appendChild(this.rightAddonContainer)
+
         this.el.appendChild(wrapper)
+        wrapper.prepend(this._bufferedEl)
+
         this.el.appendChild(addonContainer)
         container.appendChild(this.el)
     }
@@ -136,13 +134,6 @@ export default class ControlBar extends Transition {
         }
     }
 
-    //val: percent(eg. 50(50%))
-    private tooltipFormatter = (val: number) => {
-        return this._duration ?
-            formatTime(this._duration * val / 100) :
-            ""
-    }
-
     private handleSliderEvents = (evt: EventObject) => {
         switch (evt.type) {
             case "valuechange":
@@ -162,7 +153,17 @@ export default class ControlBar extends Transition {
         this.emit("progresschange", evt.details)
         //click progress bar or slide end, the current time may not buffered
         //just set the buffered bar to 0
-        this._progress.updateSecondary(0)
+        this.updateBuffer(0)
+    }
+
+    updateBuffer(val: number) {
+        if (!this._duration) {
+            return
+        }
+
+        const width = val / this._duration * 100
+
+        this._bufferedEl.style.width = `${width}%`
     }
 
     updateProgress(val: number) {
@@ -170,12 +171,6 @@ export default class ControlBar extends Transition {
         // and visible
         if (!this._progress.isMoving() && this.visible) {
             this._progress.update(val)
-        }
-    }
-
-    updateBuffer(val: number) {
-        if (this._duration) {
-            this._progress.updateSecondary(val / this._duration * 100)
         }
     }
 
