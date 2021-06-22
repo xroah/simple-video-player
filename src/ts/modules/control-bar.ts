@@ -22,8 +22,6 @@ export interface AddonOptions {
 }
 
 export default class ControlBar extends Transition {
-    leftAddonContainer: HTMLElement
-    rightAddonContainer: HTMLElement
     prevented = false
 
     private _progress: Slider
@@ -32,13 +30,15 @@ export default class ControlBar extends Transition {
     private _time!: PlayerTime
 
     private _bufferedEl: HTMLElement
+    private _leftAddonEl: HTMLElement
+    private _rightAddonEl: HTMLElement
 
     constructor(rp: RPlayer, hideTimeout: number) {
         super("rplayer-control", HIDDEN_CLASS)
 
 
-        this.leftAddonContainer = createEl("div", "rplayer-left-addon-container")
-        this.rightAddonContainer = createEl("div", "rplayer-right-addon-container")
+        this._leftAddonEl = createEl("div", "rplayer-left-addon-container")
+        this._rightAddonEl = createEl("div", "rplayer-right-addon-container")
         this.hideTimeout = hideTimeout
         this.autoHide = true
 
@@ -57,7 +57,7 @@ export default class ControlBar extends Transition {
         //init before time addon
         this.initAddon(playBtn, rp)
 
-        this._time = new PlayerTime(this.leftAddonContainer)
+        this._time = new PlayerTime(this._leftAddonEl)
 
         this.initEvents()
 
@@ -70,8 +70,8 @@ export default class ControlBar extends Transition {
     private mountTo(container: HTMLElement, wrapper: HTMLElement) {
         const addonContainer = createEl("div", "rplayer-addon-wrapper")
 
-        addonContainer.appendChild(this.leftAddonContainer)
-        addonContainer.appendChild(this.rightAddonContainer)
+        addonContainer.appendChild(this._leftAddonEl)
+        addonContainer.appendChild(this._rightAddonEl)
 
         this.el.appendChild(wrapper)
         wrapper.prepend(this._bufferedEl)
@@ -89,8 +89,7 @@ export default class ControlBar extends Transition {
         } = addon
         const el = createEl("button", "rplayer-addon-btn", ...classNames)
         const onDestroy = () => removeAllListeners(el)
-        const container = right ? this.rightAddonContainer :
-            this.leftAddonContainer
+        const container = right ? this._leftAddonEl : this._rightAddonEl
 
         this.once("destroy", onDestroy)
 
