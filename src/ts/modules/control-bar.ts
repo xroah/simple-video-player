@@ -70,14 +70,14 @@ export default class ControlBar extends Transition {
     private mountTo(container: HTMLElement, wrapper: HTMLElement) {
         const addonContainer = createEl("div", "rplayer-addon-wrapper")
 
-        addonContainer.appendChild(this._leftAddonEl)
-        addonContainer.appendChild(this._rightAddonEl)
+        addonContainer.append(this._leftAddonEl)
+        addonContainer.append(this._rightAddonEl)
 
-        this.el.appendChild(wrapper)
+        this.el.append(wrapper)
         wrapper.prepend(this._bufferedEl)
 
-        this.el.appendChild(addonContainer)
-        container.appendChild(this.el)
+        this.el.append(addonContainer)
+        container.append(this.el)
     }
 
     initAddon(addon: AddonOptions, rp: RPlayer, right = false) {
@@ -89,7 +89,7 @@ export default class ControlBar extends Transition {
         } = addon
         const el = createEl("button", "rplayer-addon-btn", ...classNames)
         const onDestroy = () => removeAllListeners(el)
-        const container = right ? this._leftAddonEl : this._rightAddonEl
+        const container = right ? this._rightAddonEl : this._leftAddonEl
 
         this.once("destroy", onDestroy)
 
@@ -108,7 +108,7 @@ export default class ControlBar extends Transition {
         el.innerText = addon.text || ""
         el.title = addon.title || ""
 
-        container.appendChild(el)
+        container.append(el)
     }
 
     private initEvents() {

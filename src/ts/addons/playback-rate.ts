@@ -43,7 +43,7 @@ class PlaybackRate extends Popup {
             Object.defineProperty(item, VALUE_KEY, { value: rateNumber })
 
             item.classList.add("rplayer-rate-item")
-            this.el.appendChild(item)
+            this.el.append(item)
         })
 
         super.mount()

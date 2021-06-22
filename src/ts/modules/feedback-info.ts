@@ -24,11 +24,11 @@ export default class FeedbackInfo extends Transition {
     private mountTo(container: HTMLElement) {
         const icon = createEl("span", "rplayer-volume-info-icon")
 
-        this._volumeFeedbackEl.appendChild(icon)
-        this._volumeFeedbackEl.appendChild(this._text)
-        this.el.appendChild(this._volumeFeedbackEl)
-        this.el.appendChild(this._seekFeedbackEl)
-        container.appendChild(this.el)
+        this._volumeFeedbackEl.append(icon)
+        this._volumeFeedbackEl.append(this._text)
+        this.el.append(this._volumeFeedbackEl)
+        this.el.append(this._seekFeedbackEl)
+        container.append(this.el)
     }
 
     updateVolumeFeedback(val: number | string) {

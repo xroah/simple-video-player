@@ -8,7 +8,7 @@ export default class MessageManager {
     constructor(container: HTMLElement) {
         this._wrapper = createEl("div", `${PREFIX}-wrapper`)
 
-        container.appendChild(this._wrapper)
+        container.append(this._wrapper)
     }
 
     private removeMessage(message: Message) {

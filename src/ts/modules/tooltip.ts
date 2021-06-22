@@ -19,7 +19,7 @@ export default class Tooltip extends EventEmitter {
             _options.vertical ? "rplayer-tooltip-vertical" : "",
             HIDDEN_CLASS
         )
-        _container.appendChild(this._el)
+        _container.append(this._el)
     }
 
     updatePosition(val: number) {

@@ -50,7 +50,7 @@ export default class Message extends Transition {
         // apply background to inner
         const inner = createEl("div", "rplayer-message-item-inner")
         
-        inner.appendChild(this._textEl)
+        inner.append(this._textEl)
 
         if (this._options.closable) {
             this._closeEl = createEl("span", "rplayer-close-btn")
@@ -62,10 +62,10 @@ export default class Message extends Transition {
                 { once: true }
             )
 
-            inner.appendChild(this._closeEl)
+            inner.append(this._closeEl)
         }
 
-        this.el.appendChild(inner)
+        this.el.append(inner)
 
         if (prepend) {
             const first = container.firstElementChild
@@ -77,7 +77,7 @@ export default class Message extends Transition {
             }
         }
 
-        container.appendChild(this.el)
+        container.append(this.el)
     }
 
     private handleMouseEnterLeave = (evt: MouseEvent) => {
@@ -104,7 +104,7 @@ export default class Message extends Transition {
         if (typeof msg === "string") {
             this._textEl.innerHTML = msg
         } else {
-            this._textEl.appendChild(msg)
+            this._textEl.append(msg)
         }
 
         if (this.autoHide) {

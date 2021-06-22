@@ -9,7 +9,7 @@ class PlayState extends Transition {
         super("rplayer-play-state-icon", HIDDEN_CLASS)
         this._player = p
 
-        p.body.appendChild(this.el)
+        p.body.append(this.el)
         this.initEvents()
     }
 

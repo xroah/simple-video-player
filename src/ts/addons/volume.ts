@@ -47,8 +47,8 @@ class Volume extends Popup {
     }
 
     mount() {
-        this.el.appendChild(this._text)
-        this.el.appendChild(this._wrapper)
+        this.el.append(this._text)
+        this.el.append(this._wrapper)
 
         super.mount()
     }

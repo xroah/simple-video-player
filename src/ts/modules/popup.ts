@@ -20,7 +20,7 @@ export default class Popup extends Transition {
     }
 
     mount() {
-        this.player.root.appendChild(this.el)
+        this.player.root.append(this.el)
     }
 
     addListeners() {

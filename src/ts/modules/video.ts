@@ -34,8 +34,8 @@ export default class Player extends EventEmitter {
 
         this.volume = (volume / 100)
 
-        this._wrapper.appendChild(this.el)
-        container.appendChild(this._wrapper)
+        this._wrapper.append(this.el)
+        container.append(this._wrapper)
     }
 
     updateUrl(url: string) {

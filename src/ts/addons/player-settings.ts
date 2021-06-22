@@ -30,7 +30,7 @@ class PlayerSettings extends Popup {
 
         label.innerText = labelText
 
-        el.appendChild(label)
+        el.append(label)
 
         if (typeof callback === "function") {
             callback(el)
@@ -60,9 +60,9 @@ class PlayerSettings extends Popup {
         ]
         const frag = document.createDocumentFragment()
 
-        items.forEach(item => frag.appendChild(item))
+        items.forEach(item => frag.append(item))
 
-        el.appendChild(frag)
+        el.append(frag)
 
         super.mount()
     }

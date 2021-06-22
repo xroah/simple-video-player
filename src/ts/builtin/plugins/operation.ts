@@ -26,7 +26,7 @@ export default {
             .on("play", hidePauseIcon)
             .on("playing", hidePauseIcon)
 
-        el.appendChild(pauseIcon)
-        p.root.appendChild(el)
+        el.append(pauseIcon)
+        p.root.append(el)
     }
 }

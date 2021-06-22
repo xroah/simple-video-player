@@ -48,10 +48,10 @@ export default class Slider extends EventEmitter {
     private mountTo(container: HTMLElement) {
         const track = createEl("div", "rplayer-slider-track")
 
-        track.appendChild(this._primaryProgress)
-        track.appendChild(this._marker)
-        this._el.appendChild(track)
-        container.appendChild(this._el)
+        track.append(this._primaryProgress)
+        track.append(this._marker)
+        this._el.append(track)
+        container.append(this._el)
     }
 
     private initEvents() {

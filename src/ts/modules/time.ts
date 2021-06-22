@@ -15,10 +15,10 @@ export default class PlayerTime {
         const timeFrag = document.createDocumentFragment()
         const el = createEl("div", "rplayer-time-info")
 
-        timeFrag.appendChild(this._currentTimeEl)
-        timeFrag.appendChild(this._durationEl)
-        el.appendChild(timeFrag)
-        container.appendChild(el)
+        timeFrag.append(this._currentTimeEl)
+        timeFrag.append(this._durationEl)
+        el.append(timeFrag)
+        container.append(el)
     }
 
     updateCurrentTime(val: number) {

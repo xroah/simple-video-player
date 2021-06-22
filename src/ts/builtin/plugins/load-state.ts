@@ -23,9 +23,9 @@ class LoadState {
             ...eMsg
         }
 
-        this._el.appendChild(this._spinnerEl)
-        this._el.appendChild(this._errEl)
-        container.appendChild(this._el)
+        this._el.append(this._spinnerEl)
+        this._el.append(this._errEl)
+        container.append(this._el)
     }
 
     updateMessage(error?: MediaError | null) {

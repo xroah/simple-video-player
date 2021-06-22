@@ -112,8 +112,8 @@ export default class Player extends EventEmitter {
         this.initEvents()
         this.installPlugins(plugins)
 
-        this.root.appendChild(this.body)
-        this._container.appendChild(this.root)
+        this.root.append(this.body)
+        this._container.append(this.root)
     }
 
     private initContextmenu() {

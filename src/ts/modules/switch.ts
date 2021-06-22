@@ -27,14 +27,14 @@ export class Switch extends EventEmitter {
         const label = createEl("label")
 
         label.setAttribute("for", this._input.id)
-        this._wrapper.appendChild(this._input)
-        this._wrapper.appendChild(label)
+        this._wrapper.append(this._input)
+        this._wrapper.append(label)
 
         addListener(this._input, "change", this.handleChange)
     }
 
     mountTo(container: HTMLElement) {
-        container.appendChild(this._wrapper)
+        container.append(this._wrapper)
     }
 
     check(checked: boolean) {

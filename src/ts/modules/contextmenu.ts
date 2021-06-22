@@ -71,11 +71,11 @@ export default class Contextmenu extends Transition {
                 value: textFn
             })
 
-            frag.appendChild(li)
+            frag.append(li)
         })
 
-        this.el.appendChild(frag)
-        this._player.root.appendChild(this.el)
+        this.el.append(frag)
+        this._player.root.append(this.el)
     }
 
     private handleContextMenu = (evt: MouseEvent) => {

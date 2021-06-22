@@ -10,8 +10,8 @@ class MiniProgress {
         this._bar = createEl("div", "rplayer-mini-progress-bar")
         this._progress = createEl("div", "rplayer-mini-progress")
 
-        this._bar.appendChild(this._progress)
-        container.appendChild(this._bar)
+        this._bar.append(this._progress)
+        container.append(this._bar)
     }
 
     updateProgress(val: number) {
