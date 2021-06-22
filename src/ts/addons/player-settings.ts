@@ -1,4 +1,5 @@
 import { Player } from ".."
+import { HIDDEN_CLASS } from "../commons/constants"
 import { addListeners } from "../commons/dom-event"
 import { EventObject } from "../commons/event-emitter"
 import { createEl, formatTime, throttle } from "../commons/utils"
@@ -17,8 +18,8 @@ class PlayerSettings extends Popup {
     private _uid = uid++
     private _switches: Map<string, Switch> = new Map()
 
-    constructor(p: Player, ...classes: string[]) {
-        super(p, "rplayer-settings-popup", ...classes)
+    constructor(p: Player) {
+        super(p, "rplayer-settings-popup", HIDDEN_CLASS)
 
         this.init()
     }
