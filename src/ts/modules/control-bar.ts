@@ -37,8 +37,8 @@ export default class ControlBar extends Transition {
         super("rplayer-control", HIDDEN_CLASS)
 
 
-        this.leftAddonContainer = createEl("div", "left-addon-container")
-        this.rightAddonContainer = createEl("div", "right-addon-container")
+        this.leftAddonContainer = createEl("div", "rplayer-left-addon-container")
+        this.rightAddonContainer = createEl("div", "rplayer-right-addon-container")
         this.hideTimeout = hideTimeout
         this.autoHide = true
 

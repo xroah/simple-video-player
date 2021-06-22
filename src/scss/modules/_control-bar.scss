@@ -45,12 +45,12 @@
         @include flex-v-center();
         flex: 1;
 
-        .left-addon-container,
-        .right-addon-container {
+        .rplayer-left-addon-container,
+        .rplayer-right-addon-container {
             @include flex-v-center();
         }
 
-        .left-addon-container {
+        .rplayer-left-addon-container {
             margin-right: auto;
         }
     }
