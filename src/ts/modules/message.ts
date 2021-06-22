@@ -49,7 +49,7 @@ export default class Message extends Transition {
     private mountTo(container: HTMLElement, prepend = false) {
         // apply background to inner
         const inner = createEl("div", "rplayer-message-item-inner")
-        
+
         inner.append(this._textEl)
 
         if (this._options.closable) {
@@ -68,16 +68,10 @@ export default class Message extends Transition {
         this.el.append(inner)
 
         if (prepend) {
-            const first = container.firstElementChild
-
-            if (first) {
-                container.insertBefore(this.el, first)
-
-                return
-            }
+            container.prepend(this.el)
+        } else {
+            container.append(this.el)
         }
-
-        container.append(this.el)
     }
 
     private handleMouseEnterLeave = (evt: MouseEvent) => {
