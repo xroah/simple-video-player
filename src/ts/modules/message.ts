@@ -131,6 +131,6 @@ export default class Message extends Transition {
         removeAllListeners(this.el)
         this.emit("destroy", this.uid)
         this.off()
-        this.el.parentNode.removeChild(this.el)
+        this.el.remove()
     }
 }

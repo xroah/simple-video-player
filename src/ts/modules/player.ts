@@ -182,7 +182,7 @@ export default class Player extends EventEmitter {
     destroy() {
         this.emit("destroy")
         this.control.destroy()
-        this.root.parentNode?.removeChild(this.root)
+        this.root.remove()
         this._contextmenu?.destroy()
         removeAllListeners(this.video.el)
         removeAllListeners(this.root)
