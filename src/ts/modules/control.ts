@@ -1,5 +1,4 @@
 import { Player } from ".."
-import { addListener } from "../commons/dom-event"
 import { EventObject } from "../commons/event-emitter"
 import { throttle } from "../commons/utils"
 import ControlBar from "./control-bar"
@@ -23,16 +22,11 @@ export default class Control {
             "error",
             "durationchange"
         ].forEach(name => this._player.on(name, this.handleVideoEvents))
-        addListener(this._player.root, "mousemove", this.handleMouseMove)
         this.bar.on("progresschange", this.handleProgressChange)
         this._player.on(
             "timeupdate",
             throttle(this.updateTime)
         ).on("progress", this.handleBuffer)
-    }
-
-    private handleMouseMove = () => {
-        this.showControlBar()
     }
 
     showControlBar(force = false) {
