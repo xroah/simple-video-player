@@ -47,7 +47,7 @@ export default function miniProgress(p: Player) {
     p
         .on("timeupdate", throttle(updateProgress))
         .on("loadstart", () => mp.updateProgress(0))
-        .control.bar
+        .controlBar
         .on("show", show)
         .on("hidden", () => mp.setVisible(true))
 }

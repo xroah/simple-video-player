@@ -2,13 +2,12 @@ import EventEmitter from "../commons/event-emitter"
 import Video from "./video"
 import Contextmenu, { ContextmenuItem } from "./contextmenu"
 import { addListener, removeAllListeners } from "../commons/dom-event"
-import Control from "./control"
 import {
     isPlainObject,
     createEl,
     getContainer
 } from "../commons/utils"
-import { AddonOptions } from "./control-bar"
+import ControlBar, { AddonOptions } from "./control-bar"
 import { CONTROL_BAR_HIDE_TIMEOUT, videoEvents } from "../commons/constants"
 import operation from "../builtin/plugins/operation"
 import loadState from "../builtin/plugins/load-state"
@@ -16,6 +15,7 @@ import playState from "../builtin/plugins/play-state"
 import requestFullscreen from "../builtin/plugins/fullscreen"
 import MessageManager from "./message-manager"
 import FeedbackInfo from "./feedback-info"
+import control from "../builtin/plugins/control"
 
 interface RPlayerOptions {
     container: string | HTMLElement | Node
@@ -50,10 +50,10 @@ export default class Player extends EventEmitter {
     body: HTMLElement
 
     video: Video
-    control: Control
     message: MessageManager
     feedback: FeedbackInfo
     options: RPlayerOptions
+    controlBar: ControlBar
 
     private _contextmenu: Contextmenu | null = null
     private _container: HTMLElement
@@ -91,26 +91,19 @@ export default class Player extends EventEmitter {
         this.root = el
         this.body = body
         this.options = options
-        this.control = new Control(this, controlBarTimeout)
         this.message = new MessageManager(el)
         this.feedback = new FeedbackInfo(body)
+        this.controlBar = new ControlBar(this, controlBarTimeout)
 
         this.init()
     }
 
     private init() {
-        const builtinPlugins: Plugins = [
-            operation,
-            loadState,
-            playState,
-            requestFullscreen
-        ]
-        const plugins = builtinPlugins.concat(this.options.plugins || [])
         this.root.tabIndex = -1
 
         this.initContextmenu()
         this.initEvents()
-        this.installPlugins(plugins)
+        this.installPlugins(this.options.plugins || [])
 
         this.root.append(this.body)
         this._container.append(this.root)
@@ -142,6 +135,15 @@ export default class Player extends EventEmitter {
     }
 
     private installPlugins(plugins: Plugins) {
+        const builtinPlugins: Plugins = [
+            operation,
+            loadState,
+            playState,
+            requestFullscreen,
+            control
+        ]
+        plugins = [...builtinPlugins, ...plugins]
+
         plugins.forEach(plugin => {
             if (this._installedPlugins.indexOf(plugin) >= 0) {
                 return
@@ -181,7 +183,7 @@ export default class Player extends EventEmitter {
 
     destroy() {
         this.emit("destroy")
-        this.control.destroy()
+        this.controlBar.destroy()
         this.root.remove()
         this._contextmenu?.destroy()
         removeAllListeners(this.video.el)

@@ -1,16 +1,15 @@
-import { Player } from ".."
-import { EventObject } from "../commons/event-emitter"
-import { throttle } from "../commons/utils"
-import ControlBar from "./control-bar"
+import { Player } from "../.."
+import { EventObject } from "../../commons/event-emitter"
+import { throttle } from "../../commons/utils"
+import ControlBar from "../../modules/control-bar"
 
-export default class Control {
+class Control {
     private _player: Player
+    private _bar: ControlBar
 
-    bar: ControlBar
-
-    constructor(p: Player, timeout: number) {
+    constructor(p: Player) {
         this._player = p
-        this.bar = new ControlBar(p, timeout)
+        this._bar = p.controlBar
 
         this.initEvents()
     }
@@ -22,7 +21,7 @@ export default class Control {
             "error",
             "durationchange"
         ].forEach(name => this._player.on(name, this.handleVideoEvents))
-        this.bar.on("progresschange", this.handleProgressChange)
+        this._bar.on("progresschange", this.handleProgressChange)
         this._player.on(
             "timeupdate",
             throttle(this.updateTime)
@@ -31,62 +30,62 @@ export default class Control {
 
     showControlBar(force = false) {
         if (
-            (this._player.video.error || this.bar.prevented) &&
+            (this._player.video.error || this._bar.prevented) &&
             !force
         ) {
             return
         }
 
-        this.bar.setVisible(true)
+        this._bar.setVisible(true)
         // sync progress and current time
         this.updateTime()
     }
 
     hideControlBar = (force = false) => {
-        if (!this.bar.prevented || force) {
-            this.bar.setVisible(false)
+        if (!this._bar.prevented || force) {
+            this._bar.setVisible(false)
         }
     }
 
     preventHide(prevented: boolean) {
-        this.bar.prevented = prevented
+        this._bar.prevented = prevented
     }
 
     private handleVideoEvents = (evt: any) => {
         const type = evt.type
         const {
-            bar,
+            _bar,
             _player: { video }
         } = this
 
         switch (type) {
             case "loadedmetadata":
-                bar.updateTime(video.duration, "duration")
+                _bar.updateTime(video.duration, "duration")
                 this.showControlBar()
                 break
             case "loadstart":
-                bar.updateProgress(0)
-                bar.updateBuffer(0)
-                bar.updateTime(0)
-                bar.updateTime(0, "duration")
+                _bar.updateProgress(0)
+                _bar.updateBuffer(0)
+                _bar.updateTime(0)
+                _bar.updateTime(0, "duration")
                 break
             case "error":
                 this.hideControlBar(true)
                 break
             case "durationchange":
-                bar.updateTime(video.duration, "duration")
+                _bar.updateTime(video.duration, "duration")
                 break
         }
     }
 
-    //user click or move the progress bar manually
+    //user click or move the progress _bar manually
     private handleProgressChange = (evt: EventObject) => {
         const { video } = this._player
         const duration = video.duration
         const time = evt.details / 100 * duration
 
         video.currentTime = time
-        this.bar.updateTime(time)
+        this._bar.updateTime(time)
     }
 
     private handleBuffer = () => {
@@ -105,7 +104,7 @@ export default class Control {
             }
         }
 
-        this.bar.updateBuffer(ret)
+        this._bar.updateBuffer(ret)
     }
 
     updateTime = () => {
@@ -113,12 +112,11 @@ export default class Control {
         const duration = this._player.video.duration
         const val = curTime / duration * 100
 
-        this.bar.updateProgress(val)
-        this.bar.updateTime(curTime)
+        this._bar.updateProgress(val)
+        this._bar.updateTime(curTime)
     }
+}
 
-    destroy() {
-        this.bar.off()
-        this.bar.destroy()
-    }
+export default function control(p: Player) {
+    new Control(p)
 }
