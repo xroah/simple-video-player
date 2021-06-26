@@ -7,7 +7,7 @@ import { addListener, addListeners, removeAllListeners } from "../commons/dom-ev
 import Transition from "./transition"
 import { EventObject } from "../commons/event-emitter"
 import PlayerTime from "./time"
-import RPlayer from "./player"
+import {Player} from ".."
 import playBtn from "../builtin/addons/play-btn"
 import classNames from "../commons/class-names"
 import { HIDDEN_CLASS } from "../commons/constants"
@@ -16,8 +16,8 @@ export interface AddonOptions {
     classNames?: string[]
     text?: string
     //return false will not add the btn to control bar
-    init?: (rp: RPlayer, options?: object) => void | false
-    action?: (rp: RPlayer) => void
+    init?: (p: Player, options?: object) => void | false
+    action?: (p: Player) => void
     title?: string
     options?: object
 }
@@ -34,7 +34,7 @@ export default class ControlBar extends Transition {
     private _leftAddonEl: HTMLElement
     private _rightAddonEl: HTMLElement
 
-    constructor(rp: RPlayer, hideTimeout: number) {
+    constructor(p: Player, hideTimeout: number) {
         super(
             classNames.modules.CONTROL,
             HIDDEN_CLASS
@@ -52,10 +52,10 @@ export default class ControlBar extends Transition {
         this._progress = new Slider(progressWrapper)
         this._bufferedEl = createEl("div", modules.BUFFERED_PROGRESS)
 
-        this.init(rp, progressWrapper)
+        this.init(p, progressWrapper)
     }
 
-    private init(rp: RPlayer, wrapper: HTMLElement) {
+    private init(rp: Player, wrapper: HTMLElement) {
         const { addons = [] } = rp.options
 
         addons.forEach(addon => this.initAddon(addon, rp, true))
@@ -85,7 +85,7 @@ export default class ControlBar extends Transition {
         container.append(this.el)
     }
 
-    initAddon(addon: AddonOptions, rp: RPlayer, right = false) {
+    initAddon(addon: AddonOptions, p: Player, right = false) {
         const {
             classNames: classes = [],
             init,
@@ -103,7 +103,7 @@ export default class ControlBar extends Transition {
         this.once("destroy", onDestroy)
 
         if (typeof init === "function") {
-            const ret = init.call(el, rp, options)
+            const ret = init.call(el, p, options)
 
             if (ret === false) {
                 return
@@ -111,7 +111,7 @@ export default class ControlBar extends Transition {
         }
 
         if (typeof action === "function") {
-            addListener(el, "click", () => action.call(el, rp))
+            addListener(el, "click", () => action.call(el, p))
         }
 
         el.innerText = addon.text || ""

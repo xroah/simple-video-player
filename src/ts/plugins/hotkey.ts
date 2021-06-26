@@ -107,7 +107,7 @@ class Hotkey {
         video.currentTime = curTime
         //update the progress, if the keys were press for long time
         //the timeupdate may not fire (waiting)
-        rp.control.updateTime()
+        rp.emit("timeupdate")
 
 
         if (feedback && _options.showSeekFeedback) {
