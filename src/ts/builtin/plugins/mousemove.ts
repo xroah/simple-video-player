@@ -1,15 +1,14 @@
 import { Player } from "../.."
+import classNames from "../../commons/class-names"
 import { addListener } from "../../commons/dom-event"
 import { throttle } from "../../commons/utils"
-
-const CLASS = "rplayer-no-cursor"
 
 export default function mousemove(p: Player) {
     let timer: number | null = null
     const handleMouseMove = () => {
         p.controlBar.setVisible(true)
 
-        p.root.classList.remove(CLASS)
+        p.root.classList.remove(classNames.plugins.NO_CURSOR)
 
         if (timer) {
             clearTimeout(timer)
@@ -18,7 +17,7 @@ export default function mousemove(p: Player) {
         }
 
         timer = window.setTimeout(
-            () => p.root.classList.add(CLASS),
+            () => p.root.classList.add(classNames.plugins.NO_CURSOR),
             3000
         )
     }

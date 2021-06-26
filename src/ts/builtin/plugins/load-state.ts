@@ -1,6 +1,7 @@
-import { HIDDEN_CLASS } from "../../commons/constants"
 import { createEl } from "../../commons/utils"
 import { Player } from "../.."
+import classNames from "../../commons/class-names"
+import { HIDDEN_CLASS } from "../../commons/constants"
 
 export interface ErrorMessage {
     abort?: string
@@ -16,9 +17,13 @@ class LoadState {
     private _errorMessage: ErrorMessage = {}
 
     constructor(container: HTMLElement, eMsg?: ErrorMessage) {
-        this._el = createEl("div", "rplayer-state-wrapper", HIDDEN_CLASS)
-        this._spinnerEl = createEl("div", "rplayer-loading-spinner")
-        this._errEl = createEl("div", "rplayer-error-message")
+        this._el = createEl(
+            "div",
+            classNames.plugins.STATE_WRAPPER,
+            HIDDEN_CLASS
+        )
+        this._spinnerEl = createEl("div", classNames.plugins.LOADING_SPINNER)
+        this._errEl = createEl("div", classNames.plugins.ERROR_MESSAGE)
         this._errorMessage = {
             ...eMsg
         }

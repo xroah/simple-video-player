@@ -1,4 +1,5 @@
 import { Player } from ".."
+import classNames from "../commons/class-names"
 import { HIDDEN_CLASS } from "../commons/constants"
 import { addListeners } from "../commons/dom-event"
 import { EventObject } from "../commons/event-emitter"
@@ -19,14 +20,18 @@ class PlayerSettings extends Popup {
     private _switches: Map<string, Switch> = new Map()
 
     constructor(p: Player) {
-        super(p, "rplayer-settings-popup", HIDDEN_CLASS)
+        super(
+            p,
+            classNames.addons.SETTINGS_POPUP,
+            HIDDEN_CLASS
+        )
 
         this.init()
     }
 
     private createItem(labelText: string, callback?: (el: HTMLElement) => void) {
-        const el = createEl("div", "rplayer-settings-item")
-        const label = createEl("div", "rplayer-settings-label")
+        const el = createEl("div", classNames.addons.SETTINGS_ITEM)
+        const label = createEl("div", classNames.addons.SETTINGS_LABEL)
 
         label.innerText = labelText
 

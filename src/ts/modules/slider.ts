@@ -5,7 +5,7 @@ import {
     removeAllListeners,
     removeListener
 } from "../commons/dom-event"
-import { MOVING_CLASS } from "../commons/constants"
+import classNames from "../commons/class-names"
 
 interface Options {
     vertical?: boolean
@@ -30,15 +30,17 @@ export default class Slider extends EventEmitter {
             options = {}
         }
 
+        const {modules} = classNames
+
         this._vertical = !!options.vertical
         this._value = Number(options.defaultValue) || 0
         this._el = createEl(
             "div",
-            "rplayer-slider-wrapper",
-            this._vertical ? "rplayer-slider-wrapper-vertical" : ""
+            modules.SLIDER_WRAPPER,
+            this._vertical ? modules.SLIDER_WRAPPER_VERTICAL : ""
         )
-        this._marker = createEl("div", "rplayer-slider-marker")
-        this._primaryProgress = createEl("div", "rplayer-slider-primary")
+        this._marker = createEl("div", modules.SLIDER_MARKER)
+        this._primaryProgress = createEl("div", modules.SLIDER_PRIMARY)
 
         this.update(this._value)
         this.initEvents()
@@ -140,6 +142,7 @@ export default class Slider extends EventEmitter {
         //moved distance
         const disX = x - this._startX
         const disY = y - this._startY
+        const MOVING_CLASS = classNames.modules.SLIDER_MOVING
         let width = origWidth + disX
         let height = origHeight - disY
         let val: number
@@ -202,7 +205,7 @@ export default class Slider extends EventEmitter {
 
         if (this._moving) {
             this._moving = false
-            this._el.classList.remove(MOVING_CLASS)
+            this._el.classList.remove(classNames.modules.SLIDER_MOVING)
 
             this.emit("slideend", this._value)
         }

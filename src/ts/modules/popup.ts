@@ -5,12 +5,13 @@ import {
 } from "../commons/dom-event"
 import { Player } from ".."
 import Transition from "../modules/transition"
+import classNames from "../commons/class-names"
 
 export default class Popup extends Transition {
     player: Player
 
     constructor(p: Player, ...classes: string[]) {
-        super("rplayer-popup", ...classes)
+        super(classNames.modules.POPUP, ...classes)
 
         this.player = p
         this.hideTimeout = 300

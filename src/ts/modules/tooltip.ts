@@ -1,6 +1,7 @@
 import EventEmitter from "../commons/event-emitter"
 import { createEl } from "../commons/utils"
 import { HIDDEN_CLASS } from "../commons/constants"
+import classNames from "../commons/class-names"
 
 interface Options {
     vertical?: boolean
@@ -15,8 +16,8 @@ export default class Tooltip extends EventEmitter {
 
         this._el = createEl(
             "div",
-            "rplayer-tooltip",
-            _options.vertical ? "rplayer-tooltip-vertical" : "",
+            classNames.modules.TOOLTIP,
+            _options.vertical ? classNames.modules.TOOLTIP_VERTICAL : "",
             HIDDEN_CLASS
         )
         _container.append(this._el)

@@ -1,5 +1,6 @@
 import { createEl, isUndef } from "../commons/utils"
 import EventEmitter from "../commons/event-emitter"
+import classNames from "../commons/class-names"
 
 interface videoOptions {
     url: string
@@ -15,8 +16,8 @@ export default class Player extends EventEmitter {
     constructor(container: HTMLElement, options: videoOptions) {
         super()
 
-        this._wrapper = createEl("div", "rplayer-video-wrapper")
-        this.el = createEl("video", "rplayer-video") as HTMLVideoElement
+        this._wrapper = createEl("div", classNames.modules.VIDEO_WRAPPER)
+        this.el = <HTMLVideoElement>createEl("video", classNames.modules.VIDEO)
         this.el.controls = false
         this.el.preload = "auto"
         this.el.src = options.url

@@ -1,4 +1,3 @@
-import { HIDDEN_CLASS } from "../commons/constants"
 import {
     addListener,
     addListeners,
@@ -11,17 +10,18 @@ import {
     createEl,
     preventAndStop
 } from "../commons/utils"
-import {Player} from ".."
+import { Player } from ".."
 import Transition from "./transition"
-
-const ITEM_CLASS = "rplayer-contextmenu-item"
-const ACTIVE_CLASS = "rplayer-active"
+import classNames from "../commons/class-names"
+import { HIDDEN_CLASS } from "../commons/constants"
 
 export interface ContextmenuItem {
     text: string | ((p?: Player) => string)
     id?: string
     action?: (p?: Player) => void
 }
+
+const ITEM_CLASS = classNames.modules.CONTEXTMENU_ITEM
 
 export default class Contextmenu extends Transition {
     private _player: Player
@@ -30,7 +30,10 @@ export default class Contextmenu extends Transition {
         player: Player,
         items: ContextmenuItem[]
     ) {
-        super("rplayer-contextmenu", HIDDEN_CLASS)
+        super(
+            classNames.modules.CONTEXTMENU,
+            HIDDEN_CLASS
+        )
 
         this._player = player
         this.el.tabIndex = -1
@@ -47,7 +50,7 @@ export default class Contextmenu extends Transition {
         const frag = document.createDocumentFragment()
 
         items.forEach(item => {
-            const li = createEl("li", ITEM_CLASS)
+            const li = createEl("li", classNames.modules.CONTEXTMENU_ITEM)
             const action = isFunc(item.action) ? item.action : noop
             const text = item.text as any
             let textFn: Function
@@ -130,7 +133,7 @@ export default class Contextmenu extends Transition {
         let el: HTMLElement | null = target.parentNode as HTMLElement
 
         while (el && el !== this.el && this.el.contains(el)) {
-            if (el.classList.contains(ITEM_CLASS)) {
+            if (el.classList.contains(classNames.modules.CONTEXTMENU_ITEM)) {
                 return el
             }
 
@@ -182,10 +185,11 @@ export default class Contextmenu extends Transition {
             index = len - 1
         }
 
-        items[index].classList.add(ACTIVE_CLASS)
+        items[index].classList.add(classNames.commons.ACTIVE)
     }
 
     private handleMouseOut = () => {
+        const ACTIVE_CLASS = classNames.commons.ACTIVE
         const active = this.el.querySelector(`.${ACTIVE_CLASS}`)
 
         if (active) {
@@ -206,7 +210,7 @@ export default class Contextmenu extends Transition {
             target.classList.contains(ITEM_CLASS) ||
             ((target = parent) && target.classList.contains(ITEM_CLASS))
         ) {
-            target.classList.add(ACTIVE_CLASS)
+            target.classList.add(classNames.commons.ACTIVE)
         }
     }
 
@@ -220,7 +224,7 @@ export default class Contextmenu extends Transition {
 
         if (el && el.classList.contains(ITEM_CLASS)) {
             item.__action__(this._player)
-            el.classList.remove(ACTIVE_CLASS)
+            el.classList.remove(classNames.commons.ACTIVE)
         }
 
         this.setVisible(false, true)

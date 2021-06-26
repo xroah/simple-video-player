@@ -1,3 +1,4 @@
+import classNames from "../commons/class-names"
 import { addListener } from "../commons/dom-event"
 import EventEmitter from "../commons/event-emitter"
 import { createEl } from "../commons/utils"
@@ -9,16 +10,18 @@ export class Switch extends EventEmitter {
     private _wrapper: HTMLElement
     private _id: string
 
-    constructor(id: string = `rplayer-switch-${uid++}`) {
+    constructor(id?: string) {
         super()
 
         const input = createEl("input") as HTMLInputElement
-        input.id = id
+        const CLASS = classNames.modules.SWITCH
+
+        input.id = id || `${CLASS}-${uid++}`
         input.type = "checkbox"
 
         this._input = input
-        this._id = id
-        this._wrapper = createEl("span", "rplayer-switch")
+        this._id = input.id
+        this._wrapper = createEl("span", CLASS)
 
         this.init()
     }

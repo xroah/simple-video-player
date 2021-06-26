@@ -1,8 +1,8 @@
 import { Player } from ".."
 import { addListener, addListeners } from "../commons/dom-event"
-import { HIDDEN_CLASS } from "../commons/constants"
 import Popup from "../modules/popup"
 import { handleMouseEnter, handleMouseLeave } from "./commons"
+import classNames from "../commons/class-names"
 
 const VALUE_KEY = "__RATE__"
 
@@ -15,7 +15,11 @@ class PlaybackRate extends Popup {
     private _rates: Array<string | number> = [2, 1.75, 1.5, 1.25, 1, 0.75, 0.5, 0.25]
 
     constructor(p: Player, options: PlayRateOptions = {}) {
-        super(p, "rplayer-rate-popup", HIDDEN_CLASS)
+        super(
+            p,
+            classNames.addons.RATE_POPUP,
+            classNames.commons.HIDDEN
+        )
 
         const {
             rates,
@@ -83,7 +87,7 @@ class PlaybackRate extends Popup {
 }
 
 export default {
-    classNames: ["rplayer-rate-btn"],
+    classNames: [classNames.addons.RATE_BTN],
     text: "1.0",
     init(this: HTMLElement, p: Player, options?: PlayRateOptions) {
         const addon = new PlaybackRate(p, options)

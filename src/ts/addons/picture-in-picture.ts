@@ -1,8 +1,9 @@
 import { Player } from "..";
+import classNames from "../commons/class-names";
 import { addListeners } from "../commons/dom-event";
 
 export default {
-    classNames: ["rplayer-pip-btn"],
+    classNames: [classNames.addons.PIP_BTN],
     init(this: HTMLElement, p: Player) {
         if (!("pictureInPictureEnabled" in document)) {
             console.warn("The Picture-in-Picture Web API is not available.")
@@ -11,7 +12,7 @@ export default {
         }
 
         const handlePipLeaveOrEnter = (evt: Event) => {
-            const CLASS = "rplayer-pip-entered"
+            const CLASS = classNames.addons.PIP_ENTERED
 
             if (evt.type === "enterpictureinpicture") {
                 this.classList.add(CLASS)

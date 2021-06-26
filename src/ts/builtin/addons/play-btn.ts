@@ -1,10 +1,11 @@
 import { Player } from "../.."
+import classNames from "../../commons/class-names"
 
 function init(this: HTMLElement, p: Player) {
     const handlePlay = () => {
         const fn: "remove" | "add" = p.video.paused ? "remove" : "add"
 
-        this.classList[fn]("rplayer-paused")
+        this.classList[fn](classNames.commons.PAUSED)
     }
 
     p
@@ -14,7 +15,7 @@ function init(this: HTMLElement, p: Player) {
 }
 
 export default {
-    classNames: ["rplayer-play-btn"],
+    classNames: [classNames.addons.PLAY_BTN],
     init,
     action(p: Player) {
         p.togglePlay()

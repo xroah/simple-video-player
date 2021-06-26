@@ -1,12 +1,13 @@
+import classNames from "../commons/class-names"
 import {isUndef, createEl} from "../commons/utils"
-import Message, {MessageOptions, PREFIX} from "./message"
+import Message, {MessageOptions} from "./message"
 
 export default class MessageManager {
     private _messages: Map<number, Message> | null = null
     private _wrapper: HTMLElement
 
     constructor(container: HTMLElement) {
-        this._wrapper = createEl("div", `${PREFIX}-wrapper`)
+        this._wrapper = createEl("div", classNames.modules.MESSAGE_WRAPPER)
 
         container.append(this._wrapper)
     }

@@ -1,4 +1,5 @@
 import { Player } from "../.."
+import classNames from "../../commons/class-names"
 import { addListener, removeListener } from "../../commons/dom-event"
 import { EventObject } from "../../commons/event-emitter"
 
@@ -71,7 +72,7 @@ export default function requestFullscreen(p: Player) {
         const { classList } = p.root
         const fn = getEl() ? "add" : "remove"
 
-        classList[fn]("rplayer-fullscreen")
+        classList[fn](classNames.commons.FULLSCREEN)
     }
 
     addListener(document, fullscreenApi.change, handleFSChange)

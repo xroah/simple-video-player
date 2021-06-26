@@ -17,6 +17,7 @@ import MessageManager from "./message-manager"
 import FeedbackInfo from "./feedback-info"
 import control from "../builtin/plugins/control"
 import mousemove from "../builtin/plugins/mousemove"
+import classNames from "../commons/class-names"
 
 interface RPlayerOptions {
     container: string | HTMLElement | Node
@@ -75,9 +76,10 @@ export default class Player extends EventEmitter {
             throw new Error("Can not find a container")
         }
 
-        const el = createEl("div", "rplayer-root")
-        const body = createEl("div", "rplayer-body")
-        const controlBarTimeout = options.controlBarTimeout || CONTROL_BAR_HIDE_TIMEOUT
+        const el = createEl("div", classNames.modules.ROOT)
+        const body = createEl("div", classNames.modules.BODY)
+        const controlBarTimeout = options.controlBarTimeout ||
+            CONTROL_BAR_HIDE_TIMEOUT
 
         this._container = container as HTMLElement
 

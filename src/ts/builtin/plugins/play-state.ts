@@ -1,4 +1,5 @@
 import { Player } from "../.."
+import classNames from "../../commons/class-names"
 import { HIDDEN_CLASS } from "../../commons/constants"
 import Transition from "../../modules/transition"
 
@@ -6,7 +7,10 @@ class PlayState extends Transition {
     private _player: Player
 
     constructor(p: Player) {
-        super("rplayer-play-state-icon", HIDDEN_CLASS)
+        super(
+            classNames.plugins.PLAY_STATE_ICON,
+            HIDDEN_CLASS
+        )
         this._player = p
 
         p.body.append(this.el)
@@ -27,11 +31,10 @@ class PlayState extends Transition {
     }
 
     private handleState() {
-        const PAUSED_CLASS = "rplayer-paused"
         const { el, _player } = this
         const fn = _player.video.paused ? "add" : "remove"
 
-        el.classList[fn](PAUSED_CLASS)
+        el.classList[fn](classNames.commons.PAUSED)
     }
 
     private hide() {

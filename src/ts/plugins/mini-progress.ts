@@ -1,4 +1,5 @@
 import { Player } from ".."
+import classNames from "../commons/class-names"
 import { HIDDEN_CLASS } from "../commons/constants"
 import { createEl, throttle } from "../commons/utils"
 
@@ -7,8 +8,8 @@ class MiniProgress {
     private _progress: HTMLElement
 
     constructor(container: HTMLElement) {
-        this._bar = createEl("div", "rplayer-mini-progress-bar")
-        this._progress = createEl("div", "rplayer-mini-progress")
+        this._bar = createEl("div", classNames.plugins.MINI_PROGRESS_BAR)
+        this._progress = createEl("div", classNames.plugins.MINI_PROGRESS)
 
         this._bar.append(this._progress)
         container.append(this._bar)

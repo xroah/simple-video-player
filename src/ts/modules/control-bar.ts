@@ -5,11 +5,12 @@ import {
 import Slider from "./slider"
 import { addListener, addListeners, removeAllListeners } from "../commons/dom-event"
 import Transition from "./transition"
-import { HIDDEN_CLASS } from "../commons/constants"
 import { EventObject } from "../commons/event-emitter"
 import PlayerTime from "./time"
 import RPlayer from "./player"
 import playBtn from "../builtin/addons/play-btn"
+import classNames from "../commons/class-names"
+import { HIDDEN_CLASS } from "../commons/constants"
 
 export interface AddonOptions {
     classNames?: string[]
@@ -34,18 +35,22 @@ export default class ControlBar extends Transition {
     private _rightAddonEl: HTMLElement
 
     constructor(rp: RPlayer, hideTimeout: number) {
-        super("rplayer-control", HIDDEN_CLASS)
+        super(
+            classNames.modules.CONTROL,
+            HIDDEN_CLASS
+        )
 
+        const { modules } = classNames
 
-        this._leftAddonEl = createEl("div", "rplayer-left-addon-container")
-        this._rightAddonEl = createEl("div", "rplayer-right-addon-container")
+        this._leftAddonEl = createEl("div", modules.CONTROL_BAR_LEFT_ADDON)
+        this._rightAddonEl = createEl("div", modules.CONTROL_BAR_RIGHT_ADDON)
         this.hideTimeout = hideTimeout
         this.autoHide = true
 
-        const progressWrapper = createEl("div", "rplayer-progress-wrapper")
+        const progressWrapper = createEl("div", modules.PROGRESS_WRAPPER)
 
         this._progress = new Slider(progressWrapper)
-        this._bufferedEl = createEl("div", "rplayer-buffered-progress")
+        this._bufferedEl = createEl("div", modules.BUFFERED_PROGRESS)
 
         this.init(rp, progressWrapper)
     }
@@ -68,26 +73,30 @@ export default class ControlBar extends Transition {
     }
 
     private mountTo(container: HTMLElement, wrapper: HTMLElement) {
-        const addonContainer = createEl("div", "rplayer-addon-wrapper")
+        const addon = createEl("div", classNames.modules.ADDON_WRAPPER)
 
-        addonContainer.append(this._leftAddonEl)
-        addonContainer.append(this._rightAddonEl)
+        addon.append(this._leftAddonEl)
+        addon.append(this._rightAddonEl)
 
         this.el.append(wrapper)
         wrapper.prepend(this._bufferedEl)
 
-        this.el.append(addonContainer)
+        this.el.append(addon)
         container.append(this.el)
     }
 
     initAddon(addon: AddonOptions, rp: RPlayer, right = false) {
         const {
-            classNames = [],
+            classNames: classes = [],
             init,
             options,
             action
         } = addon
-        const el = createEl("button", "rplayer-addon-btn", ...classNames)
+        const el = createEl(
+            "button",
+            classNames.addons.ADDON_BTN,
+            ...classes
+        )
         const onDestroy = () => removeAllListeners(el)
         const container = right ? this._rightAddonEl : this._leftAddonEl
 

@@ -1,3 +1,4 @@
+import classNames from "../commons/class-names"
 import { createEl, formatTime } from "../commons/utils"
 
 export default class PlayerTime {
@@ -13,7 +14,7 @@ export default class PlayerTime {
 
     private mountTo(container: HTMLElement) {
         const timeFrag = document.createDocumentFragment()
-        const el = createEl("div", "rplayer-time-info")
+        const el = createEl("div", classNames.modules.TIME_INFO)
 
         timeFrag.append(this._currentTimeEl)
         timeFrag.append(this._durationEl)

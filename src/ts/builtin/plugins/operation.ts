@@ -1,5 +1,5 @@
 import { Player } from "../.."
-import { HIDDEN_CLASS } from "../../commons/constants"
+import classNames from "../../commons/class-names"
 import { addListener, removeAllListeners } from "../../commons/dom-event"
 import { createEl } from "../../commons/utils"
 
@@ -8,15 +8,16 @@ export default {
         const el = createEl("div", "rplayer-operation")
         const pauseIcon = createEl(
             "div",
-            "rplayer-operation-pause",
-            HIDDEN_CLASS
+            classNames.plugins.OPERATION,
+            classNames.commons.HIDDEN
         )
         const showPauseIcon = () => {
             if (p.video.paused && !p.video.error) {
-                pauseIcon.classList.remove(HIDDEN_CLASS)
+                pauseIcon.classList.remove(classNames.commons.HIDDEN)
             }
         }
-        const hidePauseIcon = () => pauseIcon.classList.add(HIDDEN_CLASS)
+        const hidePauseIcon =
+            () => pauseIcon.classList.add(classNames.commons.HIDDEN)
 
         addListener(el, "click", p.togglePlay.bind(p))
         p

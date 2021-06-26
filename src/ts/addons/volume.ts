@@ -1,12 +1,13 @@
 import { Player } from ".."
 import Slider from "../modules/slider"
-import { HIDDEN_CLASS } from "../commons/constants"
 import Popup from "../modules/popup"
 import { createEl } from "../commons/utils"
 import { EventObject } from "../commons/event-emitter"
 import { addListeners } from "../commons/dom-event"
 import Video from "../modules/video"
 import { handleMouseEnter, handleMouseLeave } from "./commons"
+import classNames from "../commons/class-names"
+import { HIDDEN_CLASS } from "../commons/constants"
 
 class Volume extends Popup {
     private _slider: Slider
@@ -14,9 +15,13 @@ class Volume extends Popup {
     private _wrapper: HTMLElement
 
     constructor(p: Player) {
-        super(p, "rplayer-volume-popup", HIDDEN_CLASS)
+        super(
+            p,
+            classNames.addons.VOLUME_POPUP,
+            HIDDEN_CLASS
+        )
 
-        this._wrapper = createEl("div", "rplayer-volume-slider")
+        this._wrapper = createEl("div", classNames.addons.VOLUME_SLIDER)
         this._slider = new Slider(this._wrapper, {
             vertical: true
         })
@@ -80,14 +85,13 @@ const KEY = "volumeAddon"
 
 function handleMuted(el: HTMLElement, video: Video) {
     const muted = video.volume === 0 || video.muted
-    const MUTED_CLS = "rplayer-muted"
     const fn = muted ? "add" : "remove"
 
-    el.classList[fn](MUTED_CLS)
+    el.classList[fn](classNames.commons.MUTED)
 }
 
 export default {
-    classNames: ["rplayer-addon-btn", "rplayer-volume-btn"],
+    classNames: [classNames.addons.VOLUME_BTN],
     init(this: HTMLElement, p: Player) {
         const addon = new Volume(p)
         const handleVolumeChange = () => handleMuted(this, p.video)
@@ -105,7 +109,7 @@ export default {
         const video = p.video
 
         if (addon.visible) {
-            video.muted =!video.muted
+            video.muted = !video.muted
             handleMuted(this, video)
         }
     }

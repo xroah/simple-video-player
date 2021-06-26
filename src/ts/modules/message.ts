@@ -1,9 +1,8 @@
+import classNames from "../commons/class-names"
 import { HIDDEN_CLASS } from "../commons/constants"
 import { addListener, removeAllListeners } from "../commons/dom-event"
 import { createEl, preventAndStop } from "../commons/utils"
 import Transition from "./transition"
-
-export const PREFIX = "rplayer-message"
 
 let uid = 0
 
@@ -23,12 +22,12 @@ export default class Message extends Transition {
     public uid = 0
 
     constructor(container: HTMLElement, options: MessageOptions = {}) {
-        super(`${PREFIX}-item`, HIDDEN_CLASS)
+        super(classNames.modules.MESSAGE_ITEM, HIDDEN_CLASS)
 
         this._options = {
             ...options
         }
-        this._textEl = createEl("div", `${PREFIX}-text`)
+        this._textEl = createEl("div", classNames.modules.MESSAGE_TEXT)
         this.hideTimeout = this._options.delay || 3000
         this.autoHide = this._options.autoHide !== false
 
@@ -48,12 +47,12 @@ export default class Message extends Transition {
 
     private mountTo(container: HTMLElement, prepend = false) {
         // apply background to inner
-        const inner = createEl("div", "rplayer-message-item-inner")
+        const inner = createEl("div", classNames.modules.MESSAGE_ITEM_INNER)
 
         inner.append(this._textEl)
 
         if (this._options.closable) {
-            this._closeEl = createEl("span", "rplayer-close-btn")
+            this._closeEl = createEl("span", classNames.commons.CLOSE_BTN)
 
             addListener(
                 this._closeEl,

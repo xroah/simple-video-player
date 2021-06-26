@@ -1,3 +1,4 @@
+import classNames from "../commons/class-names"
 import { HIDDEN_CLASS } from "../commons/constants"
 import { createEl, formatTime } from "../commons/utils"
 import Transition from "./transition"
@@ -10,7 +11,7 @@ export default class FeedbackInfo extends Transition {
     private _seekFeedbackEl: HTMLElement
 
     constructor(container: HTMLElement) {
-        super("rplayer-feedback-wrapper", HIDDEN_CLASS)
+        super(classNames.modules.FEEDBACK_WRAPPER, HIDDEN_CLASS)
 
         this._text = createEl("span")
         this.hideTimeout = 1000
@@ -22,7 +23,7 @@ export default class FeedbackInfo extends Transition {
     }
 
     private mountTo(container: HTMLElement) {
-        const icon = createEl("span", "rplayer-volume-info-icon")
+        const icon = createEl("span", classNames.modules.VOLUME_INFO_ICON)
 
         this._volumeFeedbackEl.append(icon)
         this._volumeFeedbackEl.append(this._text)
