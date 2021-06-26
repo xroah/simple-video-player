@@ -16,6 +16,7 @@ import requestFullscreen from "../builtin/plugins/fullscreen"
 import MessageManager from "./message-manager"
 import FeedbackInfo from "./feedback-info"
 import control from "../builtin/plugins/control"
+import mousemove from "../builtin/plugins/mousemove"
 
 interface RPlayerOptions {
     container: string | HTMLElement | Node
@@ -140,7 +141,8 @@ export default class Player extends EventEmitter {
             loadState,
             playState,
             requestFullscreen,
-            control
+            control,
+            mousemove
         ]
         plugins = [...builtinPlugins, ...plugins]
 
