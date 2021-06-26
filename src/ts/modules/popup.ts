@@ -65,7 +65,7 @@ export default class Popup extends Transition {
 
     setVisible(visible: boolean, noTransition = false) {
         // if visible the control bar should not hide
-        this.player.control.preventHide(visible)
+        this.player.controlBar.preventHide(visible)
 
         super.setVisible(visible, noTransition)
     }

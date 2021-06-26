@@ -22,7 +22,7 @@ export interface AddonOptions {
 }
 
 export default class ControlBar extends Transition {
-    prevented = false
+    private _prevented = false
 
     private _progress: Slider
     private _duration = 0
@@ -195,10 +195,18 @@ export default class ControlBar extends Transition {
         this._time.updateDuration(val)
     }
 
+    preventHide(prevent: boolean) {
+        this._prevented = prevent
+    }
+
+    isPrevented() {
+        return this._prevented
+    }
+
     //if the progress slider still moving or mouse has entered
     //the control bar should not hide
     needDelay() {
-        return this.prevented ||
+        return this._prevented ||
             this._progress.isMoving() ||
             this._mouseEntered
     }

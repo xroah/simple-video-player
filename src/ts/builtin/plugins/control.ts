@@ -30,7 +30,7 @@ class Control {
 
     showControlBar(force = false) {
         if (
-            (this._player.video.error || this._bar.prevented) &&
+            (this._player.video.error || this._bar.isPrevented()) &&
             !force
         ) {
             return
@@ -42,13 +42,9 @@ class Control {
     }
 
     hideControlBar = (force = false) => {
-        if (!this._bar.prevented || force) {
+        if (!this._bar.isPrevented() || force) {
             this._bar.setVisible(false)
         }
-    }
-
-    preventHide(prevented: boolean) {
-        this._bar.prevented = prevented
     }
 
     private handleVideoEvents = (evt: any) => {
