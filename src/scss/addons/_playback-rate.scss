@@ -1,7 +1,6 @@
 .rplayer-addon-btn.rplayer-rate-btn {
     width: auto;
     text-align: center;
-    font-size: 14px;
 }
 
 .rplayer-popup.rplayer-rate-popup {
@@ -11,6 +10,7 @@
         outline: none;
         background-color: transparent;
         cursor: pointer;
+        font-size: 14px;
 
         &:hover {
             background-color: rgba(255, 255, 255, 0.1);

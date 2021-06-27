@@ -2,25 +2,29 @@
 
 // addon btns
 .rplayer-addon-btn {
+    $size: 26px;
+
     display: inline-block;
-    width: 24px;
-    height: 20px;
-    line-height: 20px;
-    margin: 0 5px;
+    width: $size;
+    height: $size;
+    line-height: $size;
+    margin: 0 10px;
+    padding: 0;
     border: none;
     outline: none;
+    vertical-align: middle;
     background-repeat: no-repeat;
     background-color: transparent;
     background-position: center center;
     background-size: 96% 96%;
     color: #fff;
     transition: all 0.3s;
-    opacity: 0.9;
+    opacity: 0.8;
     cursor: pointer;
+    font-size: 14px;
 
     &:hover {
         opacity: 1;
-        transform: scale(1.1);
     }
 }
 
