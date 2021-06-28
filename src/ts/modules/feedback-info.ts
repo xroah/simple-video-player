@@ -41,7 +41,8 @@ export default class FeedbackInfo extends Transition {
             return
         }
 
-        this._seekFeedbackEl.innerText = `${formatTime(curTime)} / ${formatTime(duration)}`
+        this._seekFeedbackEl.innerText =
+            `${formatTime(curTime)} / ${formatTime(duration)}`
     }
 
     showInfo(type: InfoType) {

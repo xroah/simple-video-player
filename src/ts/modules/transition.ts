@@ -1,6 +1,10 @@
 import EventEmitter from "../commons/event-emitter"
 import { HIDDEN_CLASS, SHOW_CLASS } from "../commons/constants"
-import { createEl, noop, reflow } from "../commons/utils"
+import {
+    createEl,
+    noop,
+    reflow
+} from "../commons/utils"
 import { addListener, removeListener } from "../commons/dom-event"
 
 export default class Transition extends EventEmitter {
@@ -67,12 +71,16 @@ export default class Transition extends EventEmitter {
             "transitionend",
             this.handleTransitionEnd,
             // avoid triggered multiple times(multi transition property)
-            {once: true} 
+            { once: true }
         )
     }
 
     removeTransitionendListener = () => {
-        removeListener(this.el, "transitionend", this.handleTransitionEnd)
+        removeListener(
+            this.el,
+            "transitionend",
+            this.handleTransitionEnd
+        )
     }
 
     setVisible(visible: boolean, noTransition = false) {

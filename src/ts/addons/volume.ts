@@ -58,9 +58,10 @@ class Volume extends Popup {
         super.mount()
     }
 
-    //update slider and text, when volumechange or mute
+    // update slider and text, when volumechange or mute
     updateText(val: number) {
-        //prevent racing(volume change and slider value change(moving) simultaneously)
+        // prevent racing(volume change and 
+        // slider value change(moving) simultaneously)
         if (!this._slider.isMoving()) {
             this._slider.update(val)
         }

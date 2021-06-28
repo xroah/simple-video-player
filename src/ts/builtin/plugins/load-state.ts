@@ -3,20 +3,12 @@ import { Player } from "../.."
 import classNames from "../../commons/class-names"
 import { HIDDEN_CLASS } from "../../commons/constants"
 
-export interface ErrorMessage {
-    abort?: string
-    network?: string
-    decode?: string
-    notSupport?: string
-}
-
 class LoadState {
     private _el: HTMLElement
     private _spinnerEl: HTMLElement
     private _errEl: HTMLElement
-    private _errorMessage: ErrorMessage = {}
 
-    constructor(container: HTMLElement, eMsg?: ErrorMessage) {
+    constructor(container: HTMLElement) {
         this._el = createEl(
             "div",
             classNames.plugins.STATE_WRAPPER,
@@ -24,9 +16,6 @@ class LoadState {
         )
         this._spinnerEl = createEl("div", classNames.plugins.LOADING_SPINNER)
         this._errEl = createEl("div", classNames.plugins.ERROR_MESSAGE)
-        this._errorMessage = {
-            ...eMsg
-        }
 
         this._el.append(this._spinnerEl)
         this._el.append(this._errEl)
@@ -38,16 +27,14 @@ class LoadState {
             return
         }
 
-        const eMsg = this._errorMessage as any
-        const map = new Map([
+        /* const map = new Map([
             [MediaError.MEDIA_ERR_ABORTED, "abort"],
             [MediaError.MEDIA_ERR_DECODE, "decode"],
             [MediaError.MEDIA_ERR_NETWORK, "network"],
             [MediaError.MEDIA_ERR_SRC_NOT_SUPPORTED, "notSupport"]
-        ])
-        let msg = eMsg[map.get(error.code) as any]
+        ]) */
 
-        this._errEl.innerHTML = msg || error.message || "未知错误"
+        this._errEl.innerHTML = error.message || "未知错误"
     }
 
     setVisible(
@@ -56,12 +43,16 @@ class LoadState {
         error: MediaError | null = null
     ) {
         if (visible) {
+            [
+                this._spinnerEl,
+                this._errEl
+            ].forEach(el => el.classList.add(HIDDEN_CLASS))
+
             if (state === "loading") {
                 this._spinnerEl.classList.remove(HIDDEN_CLASS)
-                this._errEl.classList.add(HIDDEN_CLASS)
             } else {
-                this._spinnerEl.classList.add(HIDDEN_CLASS)
                 this._errEl.classList.remove(HIDDEN_CLASS)
+
                 this.updateMessage(error)
             }
 
@@ -77,7 +68,8 @@ export default {
         const state = new LoadState(p.body)
         const show = () => state.setVisible(true)
         const hide = () => state.setVisible(false)
-        const handleError = () => state.setVisible(true, "error", p.video.error)
+        const handleError = () =>
+            state.setVisible(true, "error", p.video.error)
         const handleSeeked = () => {
             if (p.video.readySate >= HTMLMediaElement.HAVE_CURRENT_DATA) {
                 hide()

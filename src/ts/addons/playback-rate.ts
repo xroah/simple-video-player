@@ -12,7 +12,7 @@ export interface PlayRateOptions {
 }
 
 class PlaybackRate extends Popup {
-    private _rates: Array<string | number> = [2, 1.75, 1.5, 1.25, 1, 0.75, 0.5, 0.25]
+    private _rates: Array<string | number>
 
     constructor(p: Player, options: PlayRateOptions = {}) {
         super(
@@ -29,6 +29,8 @@ class PlaybackRate extends Popup {
 
         if (rates && rates.length) {
             this._rates = rates
+        } else {
+            this._rates = [2, 1.75, 1.5, 1.25, 1, 0.75, 0.5, 0.25]
         }
 
         p.video.playbackRate = defaultRate

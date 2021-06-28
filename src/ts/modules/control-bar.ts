@@ -133,7 +133,6 @@ export default class ControlBar extends Transition {
                 selectstart: preventAndStop
             }
         )
-
     }
 
     private handleMouseEnterLeave = (evt: MouseEvent) => {

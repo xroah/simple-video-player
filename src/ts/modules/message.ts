@@ -21,7 +21,10 @@ export default class Message extends Transition {
 
     public uid = 0
 
-    constructor(container: HTMLElement, options: MessageOptions = {}) {
+    constructor(
+        container: HTMLElement,
+        options: MessageOptions = {}
+    ) {
         super(classNames.modules.MESSAGE_ITEM, HIDDEN_CLASS)
 
         this._options = {

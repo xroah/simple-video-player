@@ -14,7 +14,7 @@ const hotkeyOptions: HotkeyOptions = {
 
 let rp = new RPlayer({
     container: "#player",
-    url: "http://10.132.100.105:8000/videos/test.mp4",
+    url: "http://192.168.1.222:8000/videos/test.mp4",
     plugins: [
         miniProgress,
         {

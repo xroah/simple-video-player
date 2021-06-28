@@ -11,7 +11,10 @@ export default class Tooltip extends EventEmitter {
     private _el: HTMLElement
     private _visible = false
 
-    constructor(private _container: HTMLElement, private _options: Options = {}) {
+    constructor(
+        private _container: HTMLElement,
+        private _options: Options = {}
+    ) {
         super()
 
         this._el = createEl(
@@ -52,7 +55,7 @@ export default class Tooltip extends EventEmitter {
         }
 
         const fn = visible ? "remove" : "add"
-        
+
         this._visible = visible
 
         this._el.classList[fn](HIDDEN_CLASS)

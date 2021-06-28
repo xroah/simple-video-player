@@ -81,6 +81,10 @@ export default function requestFullscreen(p: Player) {
         .on("fullscreen", toggleFS)
         .once(
             "destroy",
-            () => removeListener(document, fullscreenApi.change, handleFSChange)
+            () => removeListener(
+                document,
+                fullscreenApi.change,
+                handleFSChange
+            )
         )
 }

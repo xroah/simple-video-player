@@ -3,7 +3,11 @@ import classNames from "../commons/class-names"
 import { HIDDEN_CLASS } from "../commons/constants"
 import { addListeners } from "../commons/dom-event"
 import { EventObject } from "../commons/event-emitter"
-import { createEl, formatTime, throttle } from "../commons/utils"
+import {
+    createEl,
+    formatTime,
+    throttle
+} from "../commons/utils"
 import Popup from "../modules/popup"
 import { Switch } from "../modules/switch"
 import { handleMouseEnter, handleMouseLeave } from "./commons"
@@ -29,7 +33,10 @@ class PlayerSettings extends Popup {
         this.init()
     }
 
-    private createItem(labelText: string, callback?: (el: HTMLElement) => void) {
+    private createItem(
+        labelText: string,
+        callback?: (el: HTMLElement) => void
+    ) {
         const el = createEl("div", classNames.addons.SETTINGS_ITEM)
         const label = createEl("div", classNames.addons.SETTINGS_LABEL)
 
@@ -250,7 +257,7 @@ class PlayerSettings extends Popup {
 }
 
 export default {
-    classNames: ["rplayer-settings-btn"],
+    classNames: [classNames.addons.SETTINGS_BTN],
     init(this: HTMLElement, p: Player) {
         const addon = new PlayerSettings(p)
 

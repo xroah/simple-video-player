@@ -22,6 +22,7 @@ export default {
         SETTINGS_POPUP: prefix("settings-popup"),
         SETTINGS_ITEM: prefix("settings-item"),
         SETTINGS_LABEL: prefix("settings-label"),
+        SETTINGS_BTN: prefix("settings-btn"),
         VOLUME_POPUP: prefix("volume-popup"),
         VOLUME_SLIDER: prefix("volume-slider"),
         VOLUME_BTN: prefix("volume-btn"),

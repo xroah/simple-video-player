@@ -8,7 +8,10 @@ import {
     getContainer
 } from "../commons/utils"
 import ControlBar, { AddonOptions } from "./control-bar"
-import { CONTROL_BAR_HIDE_TIMEOUT, videoEvents } from "../commons/constants"
+import {
+    CONTROL_BAR_HIDE_TIMEOUT,
+    videoEvents
+} from "../commons/constants"
 import operation from "../builtin/plugins/operation"
 import loadState from "../builtin/plugins/load-state"
 import playState from "../builtin/plugins/play-state"
@@ -187,12 +190,14 @@ export default class Player extends EventEmitter {
 
     destroy() {
         this.emit("destroy")
+
+        this.off()
         this.controlBar.destroy()
         this.root.remove()
         this._contextmenu?.destroy()
+
         removeAllListeners(this.video.el)
         removeAllListeners(this.root)
         removeAllListeners(this.body)
-        this.off()
     }
 }

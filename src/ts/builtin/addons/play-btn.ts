@@ -3,7 +3,7 @@ import classNames from "../../commons/class-names"
 
 function init(this: HTMLElement, p: Player) {
     const handlePlay = () => {
-        const fn: "remove" | "add" = p.video.paused ? "remove" : "add"
+        const fn = p.video.paused ? "remove" : "add"
 
         this.classList[fn](classNames.commons.PAUSED)
     }
