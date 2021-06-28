@@ -11,7 +11,7 @@ import {
     preventAndStop
 } from "../commons/utils"
 import { Player } from ".."
-import Transition from "./transition"
+import Transition from "../modules/transition"
 import classNames from "../commons/class-names"
 import { HIDDEN_CLASS } from "../commons/constants"
 
@@ -21,9 +21,11 @@ export interface ContextmenuItem {
     action?: (p?: Player) => void
 }
 
-const ITEM_CLASS = classNames.modules.CONTEXTMENU_ITEM
+interface Options {
+    items?: ContextmenuItem[]
+}
 
-export default class Contextmenu extends Transition {
+class Contextmenu extends Transition {
     private _player: Player
 
     constructor(
@@ -35,7 +37,7 @@ export default class Contextmenu extends Transition {
         this._player = player
         this.el = createEl(
             "ul",
-            classNames.modules.CONTEXTMENU,
+            classNames.plugins.CONTEXTMENU,
             HIDDEN_CLASS
         )
         this.el.tabIndex = -1
@@ -56,7 +58,7 @@ export default class Contextmenu extends Transition {
         const frag = document.createDocumentFragment()
 
         items.forEach(item => {
-            const li = createEl("li", classNames.modules.CONTEXTMENU_ITEM)
+            const li = createEl("li", classNames.plugins.CONTEXTMENU_ITEM)
             const action = isFunc(item.action) ? item.action : noop
             const text = item.text as any
             let textFn: Function
@@ -137,9 +139,10 @@ export default class Contextmenu extends Transition {
 
     private getItemParent(target: HTMLElement) {
         let el: HTMLElement | null = target.parentNode as HTMLElement
+        const ITEM_CLASS = classNames.plugins.CONTEXTMENU_ITEM
 
         while (el && el !== this.el && this.el.contains(el)) {
-            if (el.classList.contains(classNames.modules.CONTEXTMENU_ITEM)) {
+            if (el.classList.contains(ITEM_CLASS)) {
                 return el
             }
 
@@ -208,13 +211,17 @@ export default class Contextmenu extends Transition {
     private handleMouseOver = (evt: MouseEvent) => {
         let target = evt.target as HTMLElement
         let parent = this.getItemParent(target) as HTMLElement
+        const ITEM_CLASS = classNames.plugins.CONTEXTMENU_ITEM
 
         this.handleMouseOut()
 
         //target may be an child element
         if (
             target.classList.contains(ITEM_CLASS) ||
-            ((target = parent) && target.classList.contains(ITEM_CLASS))
+            (
+                (target = parent) &&
+                target.classList.contains(ITEM_CLASS)
+            )
         ) {
             target.classList.add(classNames.commons.ACTIVE)
         }
@@ -222,6 +229,7 @@ export default class Contextmenu extends Transition {
 
     private select(item: any) {
         let el = item
+        const ITEM_CLASS = classNames.plugins.CONTEXTMENU_ITEM
 
         //the target may be an child element
         if (el && !el.classList.contains(ITEM_CLASS)) {
@@ -287,4 +295,17 @@ export default class Contextmenu extends Transition {
     destroy() {
         this.removeEvents()
     }
+}
+
+export default function contextmenu(
+    p: Player,
+    { items = [] }: Options = {}
+) {
+    if (!items.length) {
+        return
+    }
+
+    const ctxMenu = new Contextmenu(p, items)
+
+    p.on("destroy", () => ctxMenu.destroy())
 }

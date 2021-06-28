@@ -37,11 +37,11 @@ export default {
         OPERATION_PAUSE: prefix("operation-pause"),
         PLAY_STATE_ICON: prefix("play-state-icon"),
         MINI_PROGRESS: prefix("mini-progress"),
-        MINI_PROGRESS_BAR: prefix("mini-progress-bar")
+        MINI_PROGRESS_BAR: prefix("mini-progress-bar"),
+        CONTEXTMENU: prefix("contextmenu"),
+        CONTEXTMENU_ITEM: prefix("contextmenu-item")
     },
     modules: {
-        CONTEXTMENU: prefix("contextmenu"),
-        CONTEXTMENU_ITEM: prefix("contextmenu-item"),
         CONTROL: prefix("control"),
         ADDON_WRAPPER: prefix("addon-wrapper"),
         CONTROL_BAR_LEFT_ADDON: prefix("left-addon-container"),

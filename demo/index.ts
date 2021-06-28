@@ -6,11 +6,49 @@ import playbackRate from "../src/ts/addons/playback-rate"
 import hotkey, { HotkeyOptions } from "../src/ts/plugins/hotkey"
 import pip from "../src/ts/addons/picture-in-picture"
 import settings from "../src/ts/addons/player-settings"
+import contextmenu, { ContextmenuItem } from "../src/ts/plugins/contextmenu"
 
 const hotkeyOptions: HotkeyOptions = {
-    showSeekFeedback: true, 
+    showSeekFeedback: true,
     showVolumeFeedback: true
 }
+const ctxMenuItems: ContextmenuItem[] = [
+    {
+        text(p: Player) {
+            return p.video.paused ? "play" : "pause"
+        },
+        action(p: Player) {
+            p.togglePlay()
+        }
+    },
+    {
+        text: "copy video url",
+        action(p: Player) {
+            if (navigator.clipboard) {
+                navigator.clipboard
+                    .writeText(p.video.currentSrc)
+                    .then(() => alert("success"))
+                    .catch(() => alert("error"))
+            } else {
+                const input = document.createElement("input")
+
+                input.value = p.video.currentSrc
+
+                document.body.appendChild(input)
+                input.select()
+                document.execCommand("copy")
+                document.body.removeChild(input)
+            }
+        }
+    },
+    {
+        text: "about",
+        action(p: Player) {
+            setTimeout(() => alert("r-player"))
+            console.log(p)
+        }
+    }
+]
 
 let rp = new RPlayer({
     container: "#player",
@@ -20,6 +58,12 @@ let rp = new RPlayer({
         {
             install: hotkey,
             options: hotkeyOptions
+        },
+        {
+            install: contextmenu,
+            options: {
+                items: ctxMenuItems
+            }
         }
     ],
     addons: [
@@ -34,43 +78,5 @@ let rp = new RPlayer({
         pip,
         settings,
         fullscreenBtn
-    ],
-
-    contextmenu: [
-        {
-            text(p: Player) {
-                return p.video.paused ? "play" : "pause"
-            },
-            action(p: Player) {
-                p.togglePlay()
-            }
-        },
-        {
-            text: "copy video url",
-            action(p: Player) {
-                if (navigator.clipboard) {
-                    navigator.clipboard
-                        .writeText(p.video.currentSrc)
-                        .then(() => alert("success"))
-                        .catch(() => alert("error"))
-                } else {
-                    const input = document.createElement("input")
-
-                    input.value = p.video.currentSrc
-
-                    document.body.appendChild(input)
-                    input.select()
-                    document.execCommand("copy")
-                    document.body.removeChild(input)
-                }
-            }
-        },
-        {
-            text: "about",
-            action(p: Player) {
-                setTimeout(() => alert("r-player"))
-                console.log(p)
-            }
-        }
     ]
 })

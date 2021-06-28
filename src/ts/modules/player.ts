@@ -1,7 +1,9 @@
 import EventEmitter from "../commons/event-emitter"
 import Video from "./video"
-import Contextmenu, { ContextmenuItem } from "./contextmenu"
-import { addListener, removeAllListeners } from "../commons/dom-event"
+import {
+    addListener,
+    removeAllListeners
+} from "../commons/dom-event"
 import {
     isPlainObject,
     createEl,
@@ -26,7 +28,6 @@ interface RPlayerOptions {
     container: string | HTMLElement | Node
     url: string
     defaultVolume?: number
-    contextmenu?: ContextmenuItem[]
     poster?: string
     controlBarTimeout?: number
     showProgressTooltip?: boolean
@@ -60,7 +61,6 @@ export default class Player extends EventEmitter {
     options: RPlayerOptions
     controlBar: ControlBar
 
-    private _contextmenu: Contextmenu | null = null
     private _container: HTMLElement
 
     private _installedPlugins: Plugins = []
@@ -107,22 +107,11 @@ export default class Player extends EventEmitter {
     private init() {
         this.root.tabIndex = -1
 
-        this.initContextmenu()
         this.initEvents()
         this.installPlugins(this.options.plugins || [])
 
         this.root.append(this.body)
         this._container.append(this.root)
-    }
-
-    private initContextmenu() {
-        const ctxMenu = this.options.contextmenu
-
-        if (!ctxMenu || !ctxMenu.length) {
-            return
-        }
-
-        this._contextmenu = new Contextmenu(this, ctxMenu)
     }
 
     private initEvents() {
@@ -194,7 +183,6 @@ export default class Player extends EventEmitter {
         this.off()
         this.controlBar.destroy()
         this.root.remove()
-        this._contextmenu?.destroy()
 
         removeAllListeners(this.video.el)
         removeAllListeners(this.root)
