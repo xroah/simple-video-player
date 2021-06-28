@@ -40,7 +40,7 @@ export default {
         MINI_PROGRESS_BAR: prefix("mini-progress-bar")
     },
     modules: {
-        CONTEXTMENU: prefix("contextmenu-item"),
+        CONTEXTMENU: prefix("contextmenu"),
         CONTEXTMENU_ITEM: prefix("contextmenu-item"),
         CONTROL: prefix("control"),
         ADDON_WRAPPER: prefix("addon-wrapper"),

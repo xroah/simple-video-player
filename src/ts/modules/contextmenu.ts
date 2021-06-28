@@ -30,12 +30,14 @@ export default class Contextmenu extends Transition {
         player: Player,
         items: ContextmenuItem[]
     ) {
-        super(
+        super()
+
+        this._player = player
+        this.el = createEl(
+            "ul",
             classNames.modules.CONTEXTMENU,
             HIDDEN_CLASS
         )
-
-        this._player = player
         this.el.tabIndex = -1
 
         this.init(items)
@@ -43,7 +45,11 @@ export default class Contextmenu extends Transition {
 
     private init(items: ContextmenuItem[]) {
         this.mount(items)
-        addListener(this._player.root, "contextmenu", this.handleContextMenu)
+        addListener(
+            this._player.root,
+            "contextmenu",
+            this.handleContextMenu
+        )
     }
 
     private mount(items: ContextmenuItem[]) {
