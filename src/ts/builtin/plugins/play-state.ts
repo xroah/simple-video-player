@@ -54,7 +54,7 @@ class PlayState extends Transition {
     }
 }
 
-export default (p: Player) => {
+export default function playState(p: Player) {
     let instance: PlayState = new PlayState(p)
 
     p.once("destroy", () => instance.destroy())

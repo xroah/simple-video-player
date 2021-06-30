@@ -3,8 +3,7 @@ import classNames from "../../commons/class-names"
 import { addListener, removeAllListeners } from "../../commons/dom-event"
 import { createEl } from "../../commons/utils"
 
-export default {
-    install(p: Player) {
+export default function operation(p: Player) {
         const el = createEl("div", "rplayer-operation")
         const pauseIcon = createEl(
             "div",
@@ -30,4 +29,3 @@ export default {
         el.append(pauseIcon)
         p.root.append(el)
     }
-}
