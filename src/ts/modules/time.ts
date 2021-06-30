@@ -27,6 +27,6 @@ export default class PlayerTime {
     }
 
     updateDuration(val: number) {
-        this._durationEl.innerHTML = " / " + formatTime(val)
+        this._durationEl.innerHTML = "&nbsp;/&nbsp;" + formatTime(val)
     }
 }
