@@ -28,7 +28,7 @@ class Control {
         ).on("progress", this.handleBuffer)
     }
 
-    showControlBar(force = false) {
+    private showControlBar(force = false) {
         if (
             (this._player.video.error || this._bar.isPrevented()) &&
             !force
@@ -41,7 +41,7 @@ class Control {
         this.updateTime()
     }
 
-    hideControlBar = (force = false) => {
+    private hideControlBar(force = false) {
         if (!this._bar.isPrevented() || force) {
             this._bar.setVisible(false)
         }
