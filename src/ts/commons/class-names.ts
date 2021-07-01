@@ -10,7 +10,7 @@ export default {
         PAUSED: prefix("paused"),
         FULLSCREEN: prefix("fullscreen"),
         CLOSE_BTN: prefix("close-btn"),
-        MUTED: prefix("muited")
+        MUTED: prefix("muted")
     },
     addons: {
         ADDON_BTN: prefix("addon-btn"),
