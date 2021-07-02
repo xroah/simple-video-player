@@ -3,11 +3,15 @@ import {
     preventAndStop
 } from "../commons/utils"
 import Slider from "./slider"
-import { addListener, addListeners, removeAllListeners } from "../commons/dom-event"
+import {
+    addListener,
+    addListeners,
+    removeAllListeners
+} from "../commons/dom-event"
 import Transition from "./transition"
 import { EventObject } from "../commons/event-emitter"
 import PlayerTime from "./time"
-import {Player} from ".."
+import { Player } from ".."
 import playBtn from "../builtin/addons/play-btn"
 import classNames from "../commons/class-names"
 import { HIDDEN_CLASS } from "../commons/constants"

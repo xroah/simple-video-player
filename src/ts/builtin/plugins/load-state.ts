@@ -9,13 +9,15 @@ class LoadState {
     private _errEl: HTMLElement
 
     constructor(container: HTMLElement) {
+        const { plugins } = classNames
+
         this._el = createEl(
             "div",
-            classNames.plugins.STATE_WRAPPER,
+            plugins.STATE_WRAPPER,
             HIDDEN_CLASS
         )
-        this._spinnerEl = createEl("div", classNames.plugins.LOADING_SPINNER)
-        this._errEl = createEl("div", classNames.plugins.ERROR_MESSAGE)
+        this._spinnerEl = createEl("div", plugins.LOADING_SPINNER)
+        this._errEl = createEl("div", plugins.ERROR_MESSAGE)
 
         this._el.append(this._spinnerEl)
         this._el.append(this._errEl)

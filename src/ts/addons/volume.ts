@@ -111,6 +111,7 @@ export default {
 
         if (addon.visible) {
             video.muted = !video.muted
+            
             handleMuted(this, video)
         }
     }
