@@ -73,10 +73,14 @@ export default class Player extends EventEmitter {
             throw new Error("Options must be an object")
         }
 
-        const container = getContainer(options.container)
+        const container = getContainer(options.container) as HTMLElement
 
         if (!container) {
             throw new Error("Can not find a container")
+        }
+
+        if (container.firstElementChild) {
+            throw new Error("The container is not empty, please try another")
         }
 
         const el = createEl("div", classNames.modules.ROOT)
@@ -84,7 +88,7 @@ export default class Player extends EventEmitter {
         const controlBarTimeout = options.controlBarTimeout ||
             CONTROL_BAR_HIDE_TIMEOUT
 
-        this._container = container as HTMLElement
+        this._container = container 
 
         this.video = new Video(
             body,
