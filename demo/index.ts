@@ -74,7 +74,12 @@ let rp = new RPlayer({
                 defaultRate: 1.0
             }
         },
-        volume,
+        {
+            ...volume,
+            options: {
+                defaultValue: 50
+            }
+        },
         pip,
         settings,
         fullscreenBtn

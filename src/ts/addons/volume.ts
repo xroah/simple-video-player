@@ -9,6 +9,11 @@ import { handleMouseEnter, handleMouseLeave } from "./commons"
 import classNames from "../commons/class-names"
 import { HIDDEN_CLASS } from "../commons/constants"
 
+interface Options {
+    defaultMuted?: boolean
+    defaultValue?: number
+}
+
 class Volume extends Popup {
     private _slider: Slider
     private _text: HTMLElement
@@ -91,13 +96,28 @@ function handleMuted(el: HTMLElement, video: Video) {
     el.classList[fn](classNames.commons.MUTED)
 }
 
+
 export default {
     classNames: [classNames.addons.VOLUME_BTN],
-    init(this: HTMLElement, p: Player) {
+    init(this: HTMLElement, p: Player, options: Options = {}) {
         const addon = new Volume(p)
         const handleVolumeChange = () => handleMuted(this, p.video)
+        const initVolume = ({ defaultMuted, defaultValue }: Options) => {
+            const {video} = p
 
-        handleVolumeChange()
+            video.defaultMuted = video.muted = !!defaultMuted
+
+            if(defaultValue !== undefined) {
+                video.setPercentVolume(defaultValue)
+            }
+
+            handleVolumeChange()
+            // update volume settings text
+            p.emit("volumechange")
+        }
+
+        initVolume(options)
+
         p.setAdditionData(KEY, addon)
         addListeners(this, {
             mouseleave: handleMouseLeave.bind(addon),
@@ -111,7 +131,7 @@ export default {
 
         if (addon.visible) {
             video.muted = !video.muted
-            
+
             handleMuted(this, video)
         }
     }

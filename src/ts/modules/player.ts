@@ -27,7 +27,6 @@ import classNames from "../commons/class-names"
 interface RPlayerOptions {
     container: string | HTMLElement | Node
     url: string
-    defaultVolume?: number
     poster?: string
     controlBarTimeout?: number
     plugins?: Plugins
@@ -93,8 +92,7 @@ export default class Player extends EventEmitter {
             body,
             {
                 url: options.url,
-                poster: options.poster,
-                defaultVolume: options.defaultVolume
+                poster: options.poster
             }
         )
         this.root = el

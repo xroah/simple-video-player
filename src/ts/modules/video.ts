@@ -1,11 +1,10 @@
-import { createEl, isUndef } from "../commons/utils"
+import { createEl } from "../commons/utils"
 import EventEmitter from "../commons/event-emitter"
 import classNames from "../commons/class-names"
 
 interface videoOptions {
     url: string
     poster?: string
-    defaultVolume?: number
 }
 
 export default class Player extends EventEmitter {
@@ -22,18 +21,11 @@ export default class Player extends EventEmitter {
         this.el.preload = "auto"
         this.el.src = options.url
         this.el.crossOrigin = ""
-        const { poster, defaultVolume = 0 } = options
-        let volume = 50
+        const { poster } = options
 
         if (poster) {
             this.setPoster(poster)
         }
-
-        if (!isUndef(defaultVolume)) {
-            volume = +defaultVolume || volume
-        }
-
-        this.volume = (volume / 100)
 
         this._wrapper.append(this.el)
         container.append(this._wrapper)
@@ -149,5 +141,13 @@ export default class Player extends EventEmitter {
 
     get seeking() {
         return this.el.seeking
+    }
+
+    set defaultMuted(muted: boolean) {
+        this.el.defaultMuted = muted
+    }
+
+    get defaultMuted() {
+        return this.el.defaultMuted
     }
 }
