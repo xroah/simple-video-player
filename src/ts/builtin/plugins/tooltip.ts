@@ -1,7 +1,7 @@
-import EventEmitter from "../commons/event-emitter"
-import { createEl } from "../commons/utils"
-import { HIDDEN_CLASS } from "../commons/constants"
-import classNames from "../commons/class-names"
+import EventEmitter from "../../commons/event-emitter"
+import { createEl } from "../../commons/utils"
+import { HIDDEN_CLASS } from "../../commons/constants"
+import classNames from "../../commons/class-names"
 
 interface Options {
     vertical?: boolean
