@@ -105,7 +105,7 @@ export default {
         const initVolume = ({ defaultMuted, defaultValue }: Options) => {
             const {video} = p
 
-            video.defaultMuted = video.muted = !!defaultMuted
+            video.muted = !!defaultMuted
 
             if(defaultValue !== undefined) {
                 video.setPercentVolume(defaultValue)
