@@ -30,7 +30,6 @@ interface RPlayerOptions {
     defaultVolume?: number
     poster?: string
     controlBarTimeout?: number
-    showProgressTooltip?: boolean
     plugins?: Plugins
     addons?: AddonOptions[]
 }
