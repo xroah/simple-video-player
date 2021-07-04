@@ -13,8 +13,9 @@ interface Options {
 }
 
 export default class Slider extends EventEmitter {
+    el: HTMLElement
+
     private _vertical: boolean
-    private _el: HTMLElement
     private _marker: HTMLElement
     private _primaryProgress: HTMLElement
     private _value = 0
@@ -34,7 +35,7 @@ export default class Slider extends EventEmitter {
 
         this._vertical = !!options.vertical
         this._value = Number(options.defaultValue) || 0
-        this._el = createEl(
+        this.el = createEl(
             "div",
             modules.SLIDER_WRAPPER,
             this._vertical ? modules.SLIDER_WRAPPER_VERTICAL : ""
@@ -52,12 +53,12 @@ export default class Slider extends EventEmitter {
 
         track.append(this._primaryProgress)
         track.append(this._marker)
-        this._el.append(track)
-        container.append(this._el)
+        this.el.append(track)
+        container.append(this.el)
     }
 
     private initEvents() {
-        addListener(this._el, "mousedown", this.handleMouseDown)
+        addListener(this.el, "mousedown", this.handleMouseDown)
         // addListener(this._el, "touchstart", this.handleMouseDown)
     }
 
@@ -97,7 +98,7 @@ export default class Slider extends EventEmitter {
     }
 
     private getPercent(val: number) {
-        const elRect = this._el.getBoundingClientRect()
+        const elRect = this.el.getBoundingClientRect()
         const v = this._vertical ? val / elRect.height : val / elRect.width
 
         return v * 100
@@ -110,7 +111,7 @@ export default class Slider extends EventEmitter {
             (isMouseDown && evt.button === 0) ||
             evt.type === "touchstart"
         ) {
-            const rect = this._el.getBoundingClientRect()
+            const rect = this.el.getBoundingClientRect()
             this._startX = isMouseDown ? evt.clientX : evt.touches[0].clientX
             this._startY = isMouseDown ? evt.clientY : evt.touches[0].clientY
             const val = this._vertical ?
@@ -134,7 +135,7 @@ export default class Slider extends EventEmitter {
     }
 
     private handleSliderMove = (evt: any) => {
-        const elRect = this._el.getBoundingClientRect()
+        const elRect = this.el.getBoundingClientRect()
         const origWidth = this._primaryProgress.offsetWidth
         const origHeight = this._primaryProgress.offsetHeight
         const x = evt.type === "mousemove" ? evt.clientX : evt.touches[0].clientX
@@ -183,8 +184,8 @@ export default class Slider extends EventEmitter {
             this._startX = startX
         }
 
-        if (!this._el.classList.contains(MOVING_CLASS)) {
-            this._el.classList.add(MOVING_CLASS)
+        if (!this.el.classList.contains(MOVING_CLASS)) {
+            this.el.classList.add(MOVING_CLASS)
         }
 
         percentVal = this.getPercent(val)
@@ -205,7 +206,7 @@ export default class Slider extends EventEmitter {
 
         if (this._moving) {
             this._moving = false
-            this._el.classList.remove(classNames.modules.SLIDER_MOVING)
+            this.el.classList.remove(classNames.modules.SLIDER_MOVING)
 
             this.emit("slidemoveend", this._value)
         }
@@ -214,12 +215,12 @@ export default class Slider extends EventEmitter {
     }
 
     destroy() {
-        if (!this._el.parentNode) {
+        if (!this.el.parentNode) {
             return
         }
 
         removeAllListeners(this._marker)
-        removeAllListeners(this._el)
+        removeAllListeners(this.el)
         removeListener(document, "mousemove", this.handleSliderMove)
         // removeListener(document, "touchmove", this.handleSliderMove)
         removeListener(document, "mouseup", this.handleMouseUp)

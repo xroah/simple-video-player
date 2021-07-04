@@ -27,9 +27,10 @@ export interface AddonOptions {
 }
 
 export default class ControlBar extends Transition {
+    progress: Slider
+
     private _prevented = false
 
-    private _progress: Slider
     private _duration = 0
     private _mouseEntered = false
     private _time!: PlayerTime
@@ -53,7 +54,7 @@ export default class ControlBar extends Transition {
 
         const progressWrapper = createEl("div", modules.PROGRESS_WRAPPER)
 
-        this._progress = new Slider(progressWrapper)
+        this.progress = new Slider(progressWrapper)
         this._bufferedEl = createEl("div", modules.BUFFERED_PROGRESS)
 
         this.init(p, progressWrapper)
@@ -125,7 +126,7 @@ export default class ControlBar extends Transition {
     }
 
     private initEvents() {
-        this._progress
+        this.progress
             .on("valuechange", this.handleSliderEvents)
             .on("slideend", this.handleSliderEvents)
         addListeners(
@@ -149,7 +150,7 @@ export default class ControlBar extends Transition {
         switch (evt.type) {
             case "valuechange":
                 //slider moving or click the track
-                if (!this._progress.isMoving()) {
+                if (!this.progress.isMoving()) {
                     this.handleProgressSlideEnd(evt)
                 }
                 break
@@ -180,8 +181,8 @@ export default class ControlBar extends Transition {
     updateProgress(val: number) {
         //prevent racing(slider moving and video time update)
         // and visible
-        if (!this._progress.isMoving() && this.visible) {
-            this._progress.update(val)
+        if (!this.progress.isMoving() && this.visible) {
+            this.progress.update(val)
         }
     }
 
@@ -219,15 +220,15 @@ export default class ControlBar extends Transition {
     //the control bar should not hide
     needDelay() {
         return this._prevented ||
-            this._progress.isMoving() ||
+            this.progress.isMoving() ||
             this._mouseEntered
     }
 
     destroy() {
         this.off()
         this.emit("destroy")
-        this._progress.off()
-        this._progress.destroy()
+        this.progress.off()
+        this.progress.destroy()
         removeAllListeners(this.el)
     }
 }
