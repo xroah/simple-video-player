@@ -207,8 +207,10 @@ export default class Slider extends EventEmitter {
             this._moving = false
             this._el.classList.remove(classNames.modules.SLIDER_MOVING)
 
-            this.emit("slideend", this._value)
+            this.emit("slidemoveend", this._value)
         }
+        
+        this.emit("slideend", this._value)
     }
 
     destroy() {
