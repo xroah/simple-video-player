@@ -26,7 +26,8 @@ export default {
         VOLUME_POPUP: prefix("volume-popup"),
         VOLUME_SLIDER: prefix("volume-slider"),
         VOLUME_BTN: prefix("volume-btn"),
-        PLAY_BTN: prefix("play-btn")
+        PLAY_BTN: prefix("play-btn"),
+        RATE_ITEM: prefix("rate-item")
     },
     plugins: {
         STATE_WRAPPER: prefix("state-wrapper"),
