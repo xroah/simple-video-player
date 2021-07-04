@@ -1,5 +1,5 @@
 import EventEmitter from "../commons/event-emitter"
-import { isPlainObject, createEl } from "../commons/utils"
+import { isPlainObject, createEl, preventAndStop } from "../commons/utils"
 import {
     addListener,
     removeAllListeners,
@@ -130,7 +130,7 @@ export default class Slider extends EventEmitter {
             // addListener(document, "touchend", this.handleMouseUp, { once: true })
         }
 
-        evt.stopPropagation()
+        preventAndStop(evt)
     }
 
     private handleSliderMove = (evt: any) => {
@@ -209,7 +209,7 @@ export default class Slider extends EventEmitter {
 
             this.emit("slidemoveend", this._value)
         }
-        
+
         this.emit("slideend", this._value)
     }
 
