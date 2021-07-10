@@ -1,4 +1,4 @@
-import { createEl, formatTime } from "../commons/utils"
+import { createEl, formatTime, preventAndStop } from "../commons/utils"
 import { HIDDEN_CLASS } from "../commons/constants"
 import classNames from "../commons/class-names"
 import { Player } from ".."
@@ -105,6 +105,7 @@ export default function tooltip(p: Player, options: Options) {
         const value = x / width
 
         updatePosition(value * 100, width)
+        preventAndStop(evt)
     }
     const handleMouseLeave = () => {
         mouseEntered = false
