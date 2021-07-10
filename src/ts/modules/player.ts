@@ -10,10 +10,7 @@ import {
     getContainer
 } from "../commons/utils"
 import ControlBar, { AddonOptions } from "./control-bar"
-import {
-    CONTROL_BAR_HIDE_TIMEOUT,
-    videoEvents
-} from "../commons/constants"
+import { videoEvents } from "../commons/constants"
 import operation from "../builtin/plugins/operation"
 import loadState from "../builtin/plugins/load-state"
 import playState from "../builtin/plugins/play-state"
@@ -47,6 +44,9 @@ interface AdditionData {
 }
 
 type Plugins = Array<PluginFunction | Plugin>
+
+const CONTROL_BAR_HIDE_TIMEOUT = 3000
+
 export default class Player extends EventEmitter {
     // actionable plugin/addon mount to root
     root: HTMLElement
@@ -86,7 +86,7 @@ export default class Player extends EventEmitter {
         const controlBarTimeout = options.controlBarTimeout ||
             CONTROL_BAR_HIDE_TIMEOUT
 
-        this._container = container 
+        this._container = container
 
         this.video = new Video(
             body,

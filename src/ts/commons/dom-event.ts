@@ -1,8 +1,9 @@
 import { isUndef } from "./utils"
-import { EVENT_LISTENER_KEY } from "./constants"
 
 type El = HTMLElement | Document | Window
 type Options = boolean | AddEventListenerOptions | undefined
+
+const EVENT_LISTENER_KEY = "__R_PLAYER_LISTENERS__"
 
 function handleOptions(options: Options) {
     let ret: AddEventListenerOptions
