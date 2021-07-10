@@ -140,28 +140,19 @@ class PlayerSettings extends Popup {
     }
 
     private initSwitchStatus() {
-        const {
-            autoplay,
-            rememberPosition,
-            loop
-        } = <any>this.getLocalData(SETTINGS_KEY)
-        const { _switches } = this
+        const localSettings = <any>this.getLocalData(SETTINGS_KEY)
         const check = (s?: Switch) => s && s.check(true)
-        const switches: Array<Switch | undefined> = []
-
-        if (autoplay) {
-            switches.push(_switches.get(this.getId(AUTOPLAY_ID_PREFIX)))
-        }
-
-        if (rememberPosition) {
-            switches.push(_switches.get(this.getId(REMEMBER_ID_PREFIX)))
-        }
-
-        if (loop) {
-            switches.push(_switches.get(this.getId(LOOP_ID_PREFIX)))
-        }
-
-        switches.forEach(check)
+        const keyMap = new Map([
+            ["autoplay", this.getId(AUTOPLAY_ID_PREFIX)], 
+            ["rememberPosition", this.getId(REMEMBER_ID_PREFIX)], 
+            ["loop", this.getId(LOOP_ID_PREFIX)]
+        ])
+        
+        keyMap.forEach((v, k) => {
+            if (localSettings[k]) {
+                check(this._switches.get(v))
+            }
+        })
     }
 
     private addTimeUpdateEvent() {
@@ -208,12 +199,12 @@ class PlayerSettings extends Popup {
         }
     )
 
-    private handleSettings() {
+    private handleSettings(settings?: object) {
         const {
             autoplay,
             loop,
             rememberPosition
-        } = <any>this.getLocalData(SETTINGS_KEY)
+        } = <any>(settings || this.getLocalData(SETTINGS_KEY))
         const { player: { video } } = this
 
         video.autoplay = autoplay
@@ -223,6 +214,8 @@ class PlayerSettings extends Popup {
             this.addTimeUpdateEvent()
         } else {
             this.removeTimeUpdateEvent()
+
+            localStorage.removeItem(TIME_KEY)
         }
     }
 
@@ -231,24 +224,22 @@ class PlayerSettings extends Popup {
             id,
             checked
         } = evt.details || {}
+        const idMap = new Map([
+            [this.getId(REMEMBER_ID_PREFIX), "rememberPosition"],
+            [this.getId(AUTOPLAY_ID_PREFIX), "autoplay"],
+            [this.getId(LOOP_ID_PREFIX), "loop"]
+        ])
+        const key = idMap.get(id)
         let localSettings = <any>this.getLocalData(SETTINGS_KEY)
 
-        if (id.indexOf(REMEMBER_ID_PREFIX) > -1) {
-            localSettings.rememberPosition = checked
-        }
-
-        if (id.indexOf(AUTOPLAY_ID_PREFIX) > -1) {
-            localSettings.autoplay = checked
-        }
-
-        if (id.indexOf(LOOP_ID_PREFIX) > -1) {
-            localSettings.loop = checked
+        if(key) {
+            localSettings[key] = checked
         }
 
         //save settings to localStorage
         localStorage.setItem(SETTINGS_KEY, JSON.stringify(localSettings))
 
-        this.handleSettings()
+        this.handleSettings(localSettings)
     }
 
     destroy() {
