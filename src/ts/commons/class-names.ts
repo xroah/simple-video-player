@@ -40,7 +40,9 @@ export default {
         MINI_PROGRESS: prefix("mini-progress"),
         MINI_PROGRESS_BAR: prefix("mini-progress-bar"),
         CONTEXTMENU: prefix("contextmenu"),
-        CONTEXTMENU_ITEM: prefix("contextmenu-item")
+        CONTEXTMENU_ITEM: prefix("contextmenu-item"),
+        TOOLTIP_WRAPPER: prefix("tooltip-wrapper"),
+        TOOLTIP_TEXT: prefix("tooltip-text")
     },
     modules: {
         CONTROL: prefix("control"),
@@ -66,8 +68,6 @@ export default {
         SLIDER_MOVING: prefix("slider-moving"),
         SWITCH: prefix("switch"),
         TIME_INFO: prefix("time-info"),
-        TOOLTIP: prefix("tooltip"),
-        TOOLTIP_VERTICAL: prefix("tooltip-vertical"),
         VIDEO: prefix("video"),
         VIDEO_WRAPPER: prefix("video-wrapper")
     }

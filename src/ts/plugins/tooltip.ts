@@ -1,52 +1,57 @@
-import EventEmitter from "../commons/event-emitter"
-import { createEl } from "../commons/utils"
+import { createEl, formatTime } from "../commons/utils"
 import { HIDDEN_CLASS } from "../commons/constants"
 import classNames from "../commons/class-names"
+import { Player } from ".."
+import { addListeners } from "../commons/dom-event"
+import { EventObject } from "../commons/event-emitter"
 
 interface Options {
-    vertical?: boolean
+    formatter?: (n: number) => string | false
 }
 
-export default class Tooltip extends EventEmitter {
+class Tooltip {
     private _el: HTMLElement
+    private _textEl: HTMLElement
     private _visible = false
 
     constructor(
         private _container: HTMLElement,
         private _options: Options = {}
     ) {
-        super()
+        if (typeof _options.formatter !== "function") {
+            _options.formatter = (n: number) => formatTime(n)
+        }
 
-        this._el = createEl(
+        const { plugins } = classNames
+        const el = this._el = createEl(
             "div",
-            classNames.modules.TOOLTIP,
-            _options.vertical ? classNames.modules.TOOLTIP_VERTICAL : "",
+            plugins.TOOLTIP_WRAPPER,
             HIDDEN_CLASS
         )
-        _container.append(this._el)
+        this._textEl = createEl("span", plugins.TOOLTIP_TEXT)
+
+        el.append(this._textEl)
+        _container.append(el)
     }
 
-    updatePosition(val: number) {
+    updatePosition(pos: number) {
         const containerRect = this._container.getBoundingClientRect()
         const elRect = this._el.getBoundingClientRect()
 
-        if (this._options.vertical) {
-            const max = containerRect.height - elRect.height
-            let bottom = val - elRect.height / 2
-            bottom = bottom < 0 ? 0 : bottom > max ? max : bottom
+        const max = containerRect.width - elRect.width
+        let left = pos - elRect.width / 2
+        left = left < 0 ? 0 : left > max ? max : left
 
-            this._el.style.transform = `translateY(${bottom}px)`
-        } else {
-            const max = containerRect.width - elRect.width
-            let left = val - elRect.width / 2
-            left = left < 0 ? 0 : left > max ? max : left
-
-            this._el.style.transform = `translateX(${left}px)`
-        }
+        this._el.style.transform = `translateX(${left}px)`
     }
 
-    updateText(text: string | false) {
-        this._el.innerHTML = text || ""
+    updateTime(time: number) {
+        const { formatter } = this._options
+        const text = formatter!(time)
+
+        if (text) {
+            this._textEl.innerText = text
+        }
     }
 
     setVisible(visible: boolean) {
@@ -60,4 +65,68 @@ export default class Tooltip extends EventEmitter {
 
         this._el.classList[fn](HIDDEN_CLASS)
     }
+}
+
+export default function tooltip(p: Player, options: Options) {
+    let mouseEntered = false
+
+    const {
+        controlBar: {
+            progress: { el: container },
+            progress
+        }
+    } = p
+    const tooltip = new Tooltip(container, options)
+    const hide = () => tooltip.setVisible(false)
+    const updatePosition = (percent: number, width: number) => {
+        const { video: { duration } } = p
+        percent /= 100
+        
+        tooltip.setVisible(true)
+
+        if (duration) {
+            tooltip.updateTime(percent * duration)
+            tooltip.updatePosition(percent * width)
+
+            return
+        }
+
+        hide()
+    }
+    const handleMouseEnterOrMove = (evt: MouseEvent) => {
+        mouseEntered = true
+
+        if (p.controlBar.progress.isMoving()) {
+            return
+        }
+
+        const x = evt.clientX - container.getBoundingClientRect().left
+        const width = container.offsetWidth
+        const value = x / width
+
+        updatePosition(value * 100, width)
+    }
+    const handleMouseLeave = () => {
+        mouseEntered = false
+
+        if (!p.controlBar.progress.isMoving()) {
+            hide()
+        }
+    }
+    const handleSliderMove = (evt: EventObject) => {
+        updatePosition(evt.details, container.offsetWidth)
+    }
+    const handleSlideEnd = () => {
+        if (!mouseEntered) {
+            hide()
+        }
+    }
+
+    addListeners(container, {
+        mouseenter: handleMouseEnterOrMove,
+        mousemove: handleMouseEnterOrMove,
+        mouseleave: handleMouseLeave
+    })
+    progress.on("slidemove", handleSliderMove)
+    progress.on("slideend", handleSlideEnd)
 }

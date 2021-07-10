@@ -7,6 +7,7 @@ import hotkey, { HotkeyOptions } from "../src/ts/plugins/hotkey"
 import pip from "../src/ts/addons/picture-in-picture"
 import settings from "../src/ts/addons/player-settings"
 import contextmenu, { ContextmenuItem } from "../src/ts/plugins/contextmenu"
+import tooltip from "../src/ts/plugins/tooltip"
 
 const hotkeyOptions: HotkeyOptions = {
     showSeekFeedback: true,
@@ -64,6 +65,9 @@ let rp = new RPlayer({
             options: {
                 items: ctxMenuItems
             }
+        },
+        {
+            install: tooltip
         }
     ],
     addons: [
