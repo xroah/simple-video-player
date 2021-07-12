@@ -20,7 +20,7 @@ export interface AddonOptions {
     classNames?: string[]
     text?: string
     //return false will not add the btn to control bar
-    init?: (p: Player, options?: object) => void | false
+    init?: (p: Player, options?: object) => void | boolean
     action?: (p: Player) => void
     title?: string
     options?: object
