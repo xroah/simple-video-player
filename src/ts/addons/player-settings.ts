@@ -44,10 +44,16 @@ function getLocalData(key: string) {
 }
 
 class SimpleSettings {
-    constructor(private _player: Player, private _options: Options) {
-        this.handleSettings(_options)
-
+    constructor(
+        private _player: Player,
+        private _options: Options,
+        initSettings = false
+    ) {
         _player.on("loadedmetadata", this.handleLoad)
+
+        if (initSettings) {
+            this.handleSettings(_options)
+        }
     }
 
     private handleLoad = () => {
@@ -279,14 +285,16 @@ export default {
     init(this: HTMLElement, p: Player, options: Options = {}) {
         let addon: SimpleSettings | PlayerSettings
 
-        if (!options.showUI) {
-            addon = new SimpleSettings(p, options)
+        if (options.showUI === false) {
+            addon = new SimpleSettings(p, options, true)
 
-            return
+            // remove settings from localStorage
+            localStorage.removeItem(SETTINGS_KEY)
+
+            return false
         }
 
         addon = new PlayerSettings(p, options)
-
 
         addListeners(this, {
             mouseleave: handleMouseLeave.bind(addon),

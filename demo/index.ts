@@ -85,7 +85,14 @@ let rp = new RPlayer({
             }
         },
         pip,
-        settings,
+        {
+            ...settings,
+            options: {
+                showUI: false,
+                rememberPosition: true,
+                autoplay: true
+            }
+        },
         fullscreenBtn
     ]
 })
