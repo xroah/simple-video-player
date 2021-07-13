@@ -75,9 +75,7 @@ class Volume extends Popup {
     }
 
     needDelay() {
-        const moving = this._slider.isMoving()
-
-        return moving
+        return this._slider.isMoving()
     }
 
     destroy() {
