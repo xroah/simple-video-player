@@ -2,73 +2,92 @@ function prefix(className: string) {
     return `rplayer-${className}`
 }
 
-export default {
+const classNames = {
     commons: {
-        SHOW: prefix("show"),
-        HIDDEN: prefix("hidden"),
-        ACTIVE: prefix("active"),
-        PAUSED: prefix("paused"),
-        FULLSCREEN: prefix("fullscreen"),
-        CLOSE_BTN: prefix("close-btn"),
-        MUTED: prefix("muted")
+        SHOW: "show",
+        HIDDEN: "hidden",
+        ACTIVE: "active",
+        PAUSED: "paused",
+        FULLSCREEN: "fullscreen",
+        CLOSE_BTN: "close-btn",
+        MUTED: "muted"
     },
     addons: {
-        ADDON_BTN: prefix("addon-btn"),
-        FULLSCREEN_BTN: prefix("fullscreen-btn"),
-        PIP_BTN: prefix("pip-btn"),
-        PIP_ENTERED: prefix("pip-entered"),
-        RATE_BTN: prefix("rate-btn"),
-        RATE_POPUP: prefix("rate-popup"),
-        SETTINGS_POPUP: prefix("settings-popup"),
-        SETTINGS_ITEM: prefix("settings-item"),
-        SETTINGS_LABEL: prefix("settings-label"),
-        SETTINGS_BTN: prefix("settings-btn"),
-        VOLUME_POPUP: prefix("volume-popup"),
-        VOLUME_SLIDER: prefix("volume-slider"),
-        VOLUME_BTN: prefix("volume-btn"),
-        PLAY_BTN: prefix("play-btn"),
-        RATE_ITEM: prefix("rate-item")
+        ADDON_BTN: "addon-btn",
+        FULLSCREEN_BTN: "fullscreen-btn",
+        PIP_BTN: "pip-btn",
+        PIP_ENTERED: "pip-entered",
+        RATE_BTN: "rate-btn",
+        RATE_POPUP: "rate-popup",
+        SETTINGS_POPUP: "settings-popup",
+        SETTINGS_ITEM: "settings-item",
+        SETTINGS_LABEL: "settings-label",
+        SETTINGS_BTN: "settings-btn",
+        VOLUME_POPUP: "volume-popup",
+        VOLUME_SLIDER: "volume-slider",
+        VOLUME_BTN: "volume-btn",
+        PLAY_BTN: "play-btn",
+        RATE_ITEM: "rate-item"
     },
     plugins: {
-        STATE_WRAPPER: prefix("state-wrapper"),
-        LOADING_SPINNER: prefix("loading-spinner"),
-        ERROR_MESSAGE: prefix("error-message"),
-        NO_CURSOR: prefix("no-cursor"),
-        OPERATION: prefix("operation"),
-        OPERATION_PAUSE: prefix("operation-pause"),
-        PLAY_STATE_ICON: prefix("play-state-icon"),
-        MINI_PROGRESS: prefix("mini-progress"),
-        MINI_PROGRESS_BAR: prefix("mini-progress-bar"),
-        CONTEXTMENU: prefix("contextmenu"),
-        CONTEXTMENU_ITEM: prefix("contextmenu-item"),
-        TOOLTIP_WRAPPER: prefix("tooltip-wrapper"),
-        TOOLTIP_TEXT: prefix("tooltip-text")
+        STATE_WRAPPER: "state-wrapper",
+        LOADING_SPINNER: "loading-spinner",
+        ERROR_MESSAGE: "error-message",
+        NO_CURSOR: "no-cursor",
+        OPERATION: "operation",
+        OPERATION_PAUSE: "operation-pause",
+        PLAY_STATE_ICON: "play-state-icon",
+        MINI_PROGRESS: "mini-progress",
+        MINI_PROGRESS_BAR: "mini-progress-bar",
+        CONTEXTMENU: "contextmenu",
+        CONTEXTMENU_ITEM: "contextmenu-item",
+        TOOLTIP_WRAPPER: "tooltip-wrapper",
+        TOOLTIP_TEXT: "tooltip-text"
     },
     modules: {
-        CONTROL: prefix("control"),
-        ADDON_WRAPPER: prefix("addon-wrapper"),
-        CONTROL_BAR_LEFT_ADDON: prefix("left-addon-container"),
-        CONTROL_BAR_RIGHT_ADDON: prefix("right-addon-container"),
-        PROGRESS_WRAPPER: prefix("progress-wrapper"),
-        BUFFERED_PROGRESS: prefix("buffered-progress"),
-        FEEDBACK_WRAPPER: prefix("feedback-wrapper"),
-        VOLUME_INFO_ICON: prefix("volume-info-icon"),
-        MESSAGE_WRAPPER: prefix("message-wrapper"),
-        MESSAGE_ITEM: prefix("message-item"),
-        MESSAGE_TEXT: prefix("message-text"),
-        MESSAGE_ITEM_INNER: prefix("message-item-inner"),
-        ROOT: prefix("root"),
-        BODY: prefix("body"),
-        POPUP: prefix("popup"),
-        SLIDER_WRAPPER: prefix("slider-wrapper"),
-        SLIDER_WRAPPER_VERTICAL: prefix("slider-wrapper-vertical"),
-        SLIDER_MARKER: prefix("slider-marker"),
-        SLIDER_PRIMARY: prefix("slider-primary"),
-        SLIDER_TRACK: prefix("slider-track"),
-        SLIDER_MOVING: prefix("slider-moving"),
-        SWITCH: prefix("switch"),
-        TIME_INFO: prefix("time-info"),
-        VIDEO: prefix("video"),
-        VIDEO_WRAPPER: prefix("video-wrapper")
+        CONTROL: "control",
+        ADDON_WRAPPER: "addon-wrapper",
+        CONTROL_BAR_LEFT_ADDON: "left-addon-container",
+        CONTROL_BAR_RIGHT_ADDON: "right-addon-container",
+        PROGRESS_WRAPPER: "progress-wrapper",
+        BUFFERED_PROGRESS: "buffered-progress",
+        FEEDBACK_WRAPPER: "feedback-wrapper",
+        VOLUME_INFO_ICON: "volume-info-icon",
+        MESSAGE_WRAPPER: "message-wrapper",
+        MESSAGE_ITEM: "message-item",
+        MESSAGE_TEXT: "message-text",
+        MESSAGE_ITEM_INNER: "message-item-inner",
+        ROOT: "root",
+        BODY: "body",
+        POPUP: "popup",
+        SLIDER_WRAPPER: "slider-wrapper",
+        SLIDER_WRAPPER_VERTICAL: "slider-wrapper-vertical",
+        SLIDER_MARKER: "slider-marker",
+        SLIDER_PRIMARY: "slider-primary",
+        SLIDER_TRACK: "slider-track",
+        SLIDER_MOVING: "slider-moving",
+        SWITCH: "switch",
+        TIME_INFO: "time-info",
+        VIDEO: "video",
+        VIDEO_WRAPPER: "video-wrapper"
     }
 }
+
+function prefixAll(classes: typeof classNames) {
+    let key: keyof typeof classes
+    
+    for (key in classes) {
+        const v = <any>classes[key] 
+        let clsKey: keyof typeof v
+
+        for (clsKey in v) {
+            const className = v[clsKey]
+
+            v[clsKey] = prefix(className)
+        }
+    }
+}
+
+prefixAll(classNames)
+
+export default classNames
