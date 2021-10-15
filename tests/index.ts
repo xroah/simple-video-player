@@ -1,4 +1,4 @@
-import {Server} from "karma"
+import {Server, config} from "karma"
 
 process.env.NODE_ENV = "test"
 
@@ -14,17 +14,17 @@ const conf = {
         "tests/spec/*.spec.ts"
     ],
     // list of files / patterns to exclude
-    exclude: [],
+    exclude: ["node_modules"],
     // preprocess matching files before serving them to the browser
     // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
     preprocessors: {
         "**/*.ts": "karma-typescript",
-        "src/**/*.ts": ["coverage"]
+        "src/**/*.ts": "coverage"
     },
     // test results reporter to use
     // possible values: "dots", "progress"
     // available reporters: https://npmjs.org/browse/keyword/karma-reporter
-    reporters: ["progress", "coverage"],
+    reporters: ["progress", "karma-typescript", "coverage"],
     // web server port
     port: 9876,
     // enable / disable colors in the output (reporters and logs)
@@ -47,12 +47,21 @@ const conf = {
     }
 }
 
-const server = new Server(
-    conf,
-    exitCode => {
-        console.log('Karma has exited with ' + exitCode)
-        process.exit(exitCode)
+config.parseConfig(
+    null,
+    conf as any,
+    {
+        promiseConfig: true,
+        throwErrors: true
     }
-)
+).then(karmaConf => {
+    const server = new Server(
+        karmaConf,
+        exitCode => {
+            console.log('Karma has exited with ' + exitCode)
+            process.exit(exitCode)
+        }
+    )
 
-server.start()
+    server.start()
+})

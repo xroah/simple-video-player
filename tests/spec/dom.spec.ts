@@ -1,9 +1,9 @@
 import {
     addListener,
     removeListener,
-    removeAllListeners
-} from "../../src/ts/dom-event"
-import {EVENT_LISTENER_KEY} from "../../src/ts/constants"
+    removeAllListeners,
+    EVENT_LISTENER_KEY
+} from "../../src/ts/commons/dom-event"
 
 function createBtn() {
     const btn = document.createElement("button")

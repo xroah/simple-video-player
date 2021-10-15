@@ -1,4 +1,4 @@
-import EventEmitter, {EventObject} from "../../src/ts/event-emitter"
+import EventEmitter, {EventObject} from "../../src/ts/commons/event-emitter"
 
 const noop1 = () => {}
 const noop2 = () => {}
