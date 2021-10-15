@@ -14,7 +14,7 @@ const conf = {
         "tests/spec/*.spec.ts"
     ],
     // list of files / patterns to exclude
-    exclude: ["node_modules"],
+    exclude: [],
     // preprocess matching files before serving them to the browser
     // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
     preprocessors: {
@@ -41,6 +41,9 @@ const conf = {
     // Concurrency level
     // how many browser should be started simultaneous
     concurrency: Infinity,
+    karmaTypescriptConfig: {
+        exclude: ["build", "node_modules"]
+    },
     coverageReporter: {
         type: "html",
         dir: "coverage/"
