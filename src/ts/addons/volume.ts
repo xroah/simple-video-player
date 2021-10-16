@@ -14,6 +14,8 @@ interface Options {
     defaultValue?: number
 }
 
+const VOLUME_KEY = "__RPLAYER_VOLUME__"
+
 class Volume extends Popup {
     private _slider: Slider
     private _text: HTMLElement
@@ -49,6 +51,9 @@ class Volume extends Popup {
 
     private handleSliderValueChange = (evt: EventObject) => {
         this.player.video.setPercentVolume(evt.details)
+
+        //save volume to localStorage
+        localStorage.setItem(VOLUME_KEY, evt.details)
     }
 
     private initEvents() {
@@ -85,7 +90,7 @@ class Volume extends Popup {
     }
 }
 
-const KEY = "volumeAddon"
+const ADDON_KEY = "volumeAddon"
 
 function handleMuted(el: HTMLElement, video: Video) {
     const muted = video.volume === 0 || video.muted
@@ -102,10 +107,13 @@ export default {
         const handleVolumeChange = () => handleMuted(this, p.video)
         const initVolume = ({ defaultMuted, defaultValue }: Options) => {
             const {video} = p
+            const savedVolume = localStorage.getItem(VOLUME_KEY)
 
             video.muted = !!defaultMuted
 
-            if(defaultValue !== undefined) {
+            if (savedVolume !== null) {
+                video.setPercentVolume(+savedVolume)
+            } else if(defaultValue !== undefined) {
                 video.setPercentVolume(defaultValue)
             }
 
@@ -116,7 +124,7 @@ export default {
 
         initVolume(options)
 
-        p.setAdditionData(KEY, addon)
+        p.setAdditionData(ADDON_KEY, addon)
         addListeners(this, {
             mouseleave: handleMouseLeave.bind(addon),
             mouseenter: handleMouseEnter.bind(addon)
@@ -124,7 +132,7 @@ export default {
         p.on("volumechange", handleVolumeChange)
     },
     action(this: HTMLElement, p: Player) {
-        const addon = p.getAdditionData(KEY)
+        const addon = p.getAdditionData(ADDON_KEY)
         const video = p.video
 
         if (addon.visible) {
