@@ -6,6 +6,7 @@ import playerSettings from "./addons/player-settings"
 import volume from "./addons/volume"
 import miniProgress from "./plugins/mini-progress"
 import hotkey from "./plugins/hotkey"
+import tooltip from "./plugins/tooltip"
 
 interface Addons {
     fullscreenBtn: typeof fullscreenBtn
@@ -18,6 +19,7 @@ interface Addons {
 interface Plugins {
     miniProgress: typeof miniProgress
     hotkey: typeof hotkey
+    tooltip: typeof tooltip
 }
 
 interface Props {
@@ -39,7 +41,8 @@ RPlayer.addons = {
 
 RPlayer.plugins = {
     miniProgress,
-    hotkey
+    hotkey,
+    tooltip
 }
 
 /**
