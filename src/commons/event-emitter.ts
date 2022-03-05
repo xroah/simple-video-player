@@ -1,10 +1,4 @@
-import { isFunc, isUndef } from "./utils"
-
-function checkFunction(fn: any) {
-    if (!isFunc(fn)) {
-        throw new Error(`The "listener" argument must be of type function.`)
-    }
-}
+import { isFunc, isUndef } from "../ts/commons/utils"
 
 export interface EventObject {
     type: string
@@ -21,6 +15,12 @@ function createListener(fn: Function, once: boolean): Listener {
     return {
         fn,
         once
+    }
+}
+
+function checkFunction(fn: any) {
+    if (!isFunc(fn)) {
+        throw new Error(`The "listener" argument must be of type function.`)
     }
 }
 
@@ -60,13 +60,9 @@ export default class EventEmitter {
     }
 
     on(eventName: string, listener: Function) {
-        this.addListener(eventName, listener)
+        this._addListener(eventName, listener)
 
         return this
-    }
-
-    addListener(eventName: string, listener: Function) {
-        return this._addListener(eventName, listener)
     }
 
     once(eventName: string, listener: Function) {
@@ -75,20 +71,14 @@ export default class EventEmitter {
         return this
     }
 
-    prependListener(eventName: string, listener: Function) {
-        this._addListener(eventName, listener, true)
-
-        return this
-    }
-
-    prependOnceListener(eventName: string, listener: Function) {
-        this._addListener(eventName, listener, true, true)
-
-        return this
-    }
-
     off(eventName?: string, fn?: Function) {
-        this.removeListener(eventName, fn)
+        if (isUndef(eventName)) {
+            this._removeAllListeners()
+        } else if (isUndef(fn)) {
+            this._removeAllListeners(eventName)
+        } else {
+            this._removeListener(eventName!, fn!)
+        }
 
         return this
     }
@@ -135,18 +125,6 @@ export default class EventEmitter {
         return this
     }
 
-    removeListener(eventName?: string, fn?: Function) {
-        if (isUndef(eventName)) {
-            this._removeAllListeners()
-        } else if (isUndef(fn)) {
-            this._removeAllListeners(eventName)
-        } else {
-            this._removeListener(eventName!, fn!)
-        }
-
-        return this
-    }
-
     emit(eventName: string, arg?: any) {
         let listeners = this._listeners.get(eventName)
 
@@ -164,7 +142,7 @@ export default class EventEmitter {
             }
 
             if (l.once) {
-                this.removeListener(eventName, l.fn)
+                this.off(eventName, l.fn)
             }
 
             l.fn.call(this, evt)
