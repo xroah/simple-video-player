@@ -14,6 +14,22 @@ export function noop() {
     //do nothing
 }
 
+export function formatTime(n: number) {
+	const ret: string[] = []
+	const pad = (n: number) => String(100 + n).substring(1)
+	let time = n
+	
+	while (time >= 60) {
+		const remainder = time % 60
+		time = Math.floor(time / 60)
+		ret.unshift(pad(remainder))
+	}
+	
+	ret.unshift(pad(time))
+	
+	return ret.join(":")
+}
+
 interface ThrottleOptions {
     trailing?: boolean
     delay?: number

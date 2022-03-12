@@ -1,5 +1,5 @@
-export const HIDDEN_CLASS = "hidden"
-export const SHOW_CLASS = "show"
+export const HIDDEN_CLASS = "rplayer-hidden"
+export const SHOW_CLASS = "rplayer-show"
 export const videoEvents = [
     "abort",
     "loadedmetadata",
