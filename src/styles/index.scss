@@ -1,4 +1,5 @@
 @import "./vars";
+@import "./components/slider";
 
 .rplayer-hidden {
     display: none !important;
@@ -33,4 +34,14 @@
     width: 100vw;
     height: 100vh;
     padding: 0;
+}
+
+.rplayer-video-wrapper {
+    @include flex_center();
+    @include size-100();
+
+    .rplayer-video {
+        @include size-100();
+        align-self: center;
+    }
 }

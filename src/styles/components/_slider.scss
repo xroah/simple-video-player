@@ -1,0 +1,36 @@
+@import "../vars";
+
+.rplayer-slider-wrapper {
+    $marker_size: 14px;
+
+    margin: 0 20px;
+    bottom: 50px;
+    position: relative;
+    height: $slider_size;
+    background-color: rgba(255, 255, 255, .5);
+    transition: all .3s;
+    user-select: none;
+    cursor: pointer;
+
+    .rplayer-slider-marker {
+        position: absolute;
+        left: 0%;
+        bottom: 50%;
+        width: $marker_size;
+        height: $marker_size;
+        border-radius: 50%;
+        background-color: #fff;
+        box-shadow: 0 0 5px 0 rgba(0, 0, 0, .8);
+        transform: translate(-50%, 50%);
+        z-index: 10;
+        transition: opacity .3s;
+    }
+
+    .rplayer-slider-progress {
+        position: relative;
+        width: 0;
+        height: 100%;
+        background-color: $color;
+        z-index: 2;
+    }
+}
