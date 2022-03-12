@@ -33,4 +33,13 @@
         background-color: $color;
         z-index: 2;
     }
+
+    .rplayer-slider-tooltip {
+        position: absolute;
+        bottom: 10px;
+        padding: 5px;
+        border-radius: 5px;
+        background-color: rgba(0, 0, 0, .5);
+        color: #fff;
+    }
 }
