@@ -12,6 +12,12 @@
     user-select: none;
     cursor: pointer;
 
+    &:hover, &.rplayer-moving {
+        .rplayer-slider-marker {
+            opacity: 1;
+        }
+    }
+
     .rplayer-slider-marker {
         position: absolute;
         left: 0%;
@@ -24,6 +30,7 @@
         transform: translate(-50%, 50%);
         z-index: 10;
         transition: opacity .3s;
+        opacity: 0;
     }
 
     .rplayer-slider-progress {
@@ -36,7 +43,7 @@
 
     .rplayer-slider-tooltip {
         position: absolute;
-        bottom: 10px;
+        bottom: 15px;
         padding: 5px;
         border-radius: 5px;
         background-color: rgba(0, 0, 0, .5);

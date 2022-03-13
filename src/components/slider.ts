@@ -151,6 +151,7 @@ export default class Slider extends EventEmitter {
             percent = 100
         }
 
+        this._el.classList.add("rplayer-moving")
         this._updateProgress(percent)
         this._showTooltip(e)
     }
@@ -158,6 +159,8 @@ export default class Slider extends EventEmitter {
     private _handleMouseUp = (e: MouseEvent) => {
         this._mouseDown = false
         this._moving = false
+
+        this._el.classList.remove("rplayer-moving")
 
         if (!this._entered) {
             this._hideToolTip()
