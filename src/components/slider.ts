@@ -1,9 +1,10 @@
 import { createEl } from "../commons/utils"
 import EventEmitter from "../commons/event-emitter"
-import {HIDDEN_CLASS} from "../commons/constants"
+import { HIDDEN_CLASS } from "../commons/constants"
 
 interface SliderOptions {
     tooltip?: boolean | ((v: number) => string)
+    buffer?: boolean
 }
 
 export default class Slider extends EventEmitter {
@@ -11,6 +12,7 @@ export default class Slider extends EventEmitter {
     private _progress: HTMLDivElement
     private _marker: HTMLDivElement
     private _tooltip: HTMLDivElement | null = null
+    private _buffer: HTMLDivElement
     private _value = 0
     private _moving = false
     private _mouseDown = false
@@ -36,9 +38,17 @@ export default class Slider extends EventEmitter {
             `${PREFIX}-marker`
         )
 
+        if (_options.buffer) {
+            this._buffer = <HTMLDivElement>createEl(
+                "div",
+                `${PREFIX}-buffer`
+            )
+            this._el.appendChild(this._buffer)
+        }
+
         if (this._tooltipAvail()) {
             this._tooltip = <HTMLDivElement>createEl(
-                "div", 
+                "div",
                 HIDDEN_CLASS,
                 `${PREFIX}-tooltip`
             )
@@ -83,15 +93,15 @@ export default class Slider extends EventEmitter {
     }
 
     private _showTooltip(e: MouseEvent) {
-        const {_tooltip: t} = this
+        const { _tooltip: t } = this
 
         if (!t) {
             return
         }
-        
+
         t.classList.remove(HIDDEN_CLASS)
 
-        const {left, percent} = this._getMousePosition(e)
+        const { left, percent } = this._getMousePosition(e)
         const tRect = t.getBoundingClientRect()
         const rect = this._el.getBoundingClientRect()
         const max = rect.width - tRect.width
@@ -105,7 +115,7 @@ export default class Slider extends EventEmitter {
         if (!this._tooltip) {
             return
         }
-        console.log(HIDDEN_CLASS)
+        
         this._tooltip.classList.add(HIDDEN_CLASS)
     }
 
@@ -117,14 +127,14 @@ export default class Slider extends EventEmitter {
 
     private _handleMouseEnter = (e: MouseEvent) => {
         this._entered = true
-        const {percent} = this._getMousePosition(e)
+        const { percent } = this._getMousePosition(e)
 
         this._showTooltip(e)
     }
 
     private _handleMouseLeave = (e: MouseEvent) => {
         this._entered = false
-        console.log(this._moving)
+        
         if (!this._moving) {
             this._hideToolTip()
         }
@@ -185,7 +195,7 @@ export default class Slider extends EventEmitter {
 
         this.updateProgress(val)
 
-        
+
     }
 
     updateProgress(val: number) {
