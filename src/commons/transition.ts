@@ -122,4 +122,12 @@ export default class Transition extends EventEmitter {
             this.addListener()
         }
     }
+
+    show() {
+        this.setVisible(true)
+    }
+
+    hide() {
+        this.setVisible(false)
+    }
 }

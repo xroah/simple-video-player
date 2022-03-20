@@ -82,7 +82,6 @@ export default class Slider extends EventEmitter {
     }
 
     private formatTooltip(v: number) {
-        v = Math.floor(v)
         v = v < 0 ? 0 : v > 100 ? 100 : v
 
         if (typeof this._options.tooltip === "function") {
@@ -143,6 +142,7 @@ export default class Slider extends EventEmitter {
     private _handleMouseDown = (e: MouseEvent) => {
         const pos = this._getMousePosition(e)
         this._mouseDown = true
+        this._moving = true
 
         this._updateProgress(pos.percent)
     }
@@ -153,7 +153,6 @@ export default class Slider extends EventEmitter {
         }
 
         let { percent } = this._getMousePosition(e)
-        this._moving = true
 
         if (percent < 0) {
             percent = 0
@@ -171,6 +170,7 @@ export default class Slider extends EventEmitter {
         this._moving = false
 
         this._el.classList.remove("rplayer-moving")
+        this.emit("value-change", this._value)
 
         if (!this._entered) {
             this._hideToolTip()
@@ -190,7 +190,7 @@ export default class Slider extends EventEmitter {
 
     private _updateProgress(val: number) {
         if (this._value !== val) {
-            this.emit("value-change", val)
+            this.emit("value-update", val)
         }
 
         this.updateProgress(val)
@@ -198,9 +198,13 @@ export default class Slider extends EventEmitter {
 
     }
 
-    updateProgress(val: number) {
+    public isMoving() {
+        return this._moving
+    }
+
+    public updateProgress(val: number) {
         const percent = `${val}%`
-        this._value = Math.floor(val)
+        this._value = val
         this._marker.style.left = percent
         this._progress.style.width = percent
     }

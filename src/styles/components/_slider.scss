@@ -3,8 +3,6 @@
 .rplayer-slider-wrapper {
     $marker_size: 14px;
 
-    margin: 0 20px;
-    bottom: 50px;
     position: relative;
     height: $slider_size;
     background-color: rgba(255, 255, 255, .5);
@@ -33,12 +31,22 @@
         opacity: 0;
     }
 
+    .rplayer-slider-buffer,
     .rplayer-slider-progress {
-        position: relative;
+        position: absolute;
         width: 0;
+        top: 0;
+        left: 0;
         height: 100%;
+    }
+
+    .rplayer-slider-buffer {
+        background-color: rgba(255, 255, 255, .8);
+    }
+
+    .rplayer-slider-progress {
         background-color: $color;
-        z-index: 2;
+        z-index: 5;
     }
 
     .rplayer-slider-tooltip {

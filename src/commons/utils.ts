@@ -26,6 +26,10 @@ export function formatTime(n: number) {
 	}
 	
 	ret.unshift(pad(time))
+
+    if (ret.length < 2) {
+        ret.unshift("00")
+    }
 	
 	return ret.join(":")
 }

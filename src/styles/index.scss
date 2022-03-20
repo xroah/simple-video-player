@@ -1,5 +1,12 @@
 @import "./vars";
 @import "./components/slider";
+@import "./components/control-bar";
+
+.rplayer-root {
+    &, * {
+        box-sizing: border-box;
+    }
+}
 
 .rplayer-hidden {
     display: none !important;
