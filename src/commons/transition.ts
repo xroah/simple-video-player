@@ -16,7 +16,7 @@ export default class Transition extends EventEmitter {
     constructor(...classes: string[]) {
         super()
 
-        this.el = createEl("div", ...classes)
+        this.el = createEl("div", HIDDEN_CLASS, ...classes)
     }
 
     needDelay() {

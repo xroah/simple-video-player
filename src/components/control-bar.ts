@@ -2,34 +2,39 @@ import { createEl, formatTime } from "../commons/utils"
 import Slider from "./slider"
 import Transition from "../commons/transition"
 import { EventObject } from "../commons/event-emitter"
+import Video from "./video"
 
 const html = `
-    <div class="rplayer-control-bar">
-        <div class="rplayer-progress-wrapper">
-        </div>
-        <div class="rplayer-btns-wrapper">
-            <div class="rplayer-left-btns"></div>
-            <div class="rplayer-right-btns"></div>
-        </div>
+    <div class="rplayer-progress-wrapper">
+    </div>
+    <div class="rplayer-controls-wrapper">
+        <div class="rplayer-left-controls"></div>
+        <div class="rplayer-right-controls"></div>
     </div>
 `
 
 export default class ControlBar extends Transition {
     private _slider: Slider
+    private _leftControlsEl: HTMLDivElement
+    private _rightControlsEl: HTMLDivElement
 
     constructor(
-        private _videoEl: HTMLVideoElement,
+        private _video: Video,
         parent: HTMLDivElement
     ) {
-        super()
+        super("rplayer-control-bar")
 
-        this.el = <HTMLDivElement>createEl(
-            "div",
-            "rplayer-control-bar"
-        )
+        this.autoHide = true
+        this.hideTimeout = 5000
         this.el.innerHTML = html
         const progressWrapper = <HTMLDivElement>this.el.querySelector(
             ".rplayer-progress-wrapper"
+        )
+        this._leftControlsEl = <HTMLDivElement>this.el.querySelector(
+            ".rplayer-left-controls"
+        )
+        this._rightControlsEl = <HTMLDivElement>this.el.querySelector(
+            ".rplayer-right-controls"
         )
         this._slider = new Slider(
             progressWrapper,
@@ -39,20 +44,19 @@ export default class ControlBar extends Transition {
             }
         )
 
-        this._slider.on("value-change", this._handleProgressChange)
+        this._slider.on("value-change", this._handleSliderChange)
         parent.appendChild(this.el)
 
-        this._initVideoEvent()
+        this._initEvent()
+        this.setVisible(false, true)
     }
 
-    private _initVideoEvent() {
-        const vEl = this._videoEl
-
-        vEl.addEventListener("timeupdate", this._handleTimeupdate)
+    private _initEvent() {
+        this._video.addListener("timeupdate", this._handleTimeupdate)
     }
 
     private _formatTooltip(v: number) {
-        const duration = this._videoEl.duration
+        const duration = this._video.getDuration()
 
         if (duration) {
             console.log(duration, v, duration * v / 100)
@@ -68,21 +72,21 @@ export default class ControlBar extends Transition {
         return this._slider.isMoving()
     }
 
-    private _handleProgressChange = (e: EventObject) => {
+    private _handleSliderChange = (e: EventObject) => {
         const { details: v } = e
-        const { duration } = this._videoEl
+        const duration = this._video.getDuration()
 
         if (duration && !this._slider.isMoving()) {
-            this._videoEl.currentTime = v / 100 * duration
+            this._video.setCurrentTime(v / 100 * duration)
         }
     }
 
     private _handleTimeupdate = () => {
         if (!this._slider.isMoving()) {
-            const vEl = this._videoEl
+            const v = this._video
 
             this._slider.updateProgress(
-                vEl.currentTime / vEl.duration * 100
+                v.getCurrentTime() / v.getDuration() * 100
             )
         }
     }

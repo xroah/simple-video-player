@@ -166,6 +166,10 @@ export default class Slider extends EventEmitter {
     }
 
     private _handleMouseUp = (e: MouseEvent) => {
+        if (!this._mouseDown) {
+            return
+        }
+
         this._mouseDown = false
         this._moving = false
 
