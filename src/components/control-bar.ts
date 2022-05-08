@@ -3,6 +3,7 @@ import Slider from "./slider"
 import Transition from "../commons/transition"
 import { EventObject } from "../commons/event-emitter"
 import Video from "./video"
+import TimeInfo from "./controls/time"
 
 const html = `
     <div class="rplayer-progress-wrapper">
@@ -17,6 +18,7 @@ export default class ControlBar extends Transition {
     private _slider: Slider
     private _leftControlsEl: HTMLDivElement
     private _rightControlsEl: HTMLDivElement
+    private _time: TimeInfo
 
     constructor(
         private _video: Video,
@@ -36,6 +38,7 @@ export default class ControlBar extends Transition {
         this._rightControlsEl = <HTMLDivElement>this.el.querySelector(
             ".rplayer-right-controls"
         )
+        this._time = new TimeInfo(this._leftControlsEl)
         this._slider = new Slider(
             progressWrapper,
             {
@@ -52,7 +55,10 @@ export default class ControlBar extends Transition {
     }
 
     private _initEvent() {
-        this._video.addListener("timeupdate", this._handleTimeupdate)
+        const v = this._video
+
+        v.addListener("timeupdate", this._handleTimeupdate)
+        v.addListener("durationchange", this._handleDuration)
     }
 
     private _formatTooltip(v: number) {
@@ -66,6 +72,12 @@ export default class ControlBar extends Transition {
         }
 
         return ""
+    }
+
+    private _handleDuration = () => {
+        const d = this._video.getDuration()
+
+        this._time.setDuration(d)
     }
 
     needDelay() {
@@ -82,12 +94,14 @@ export default class ControlBar extends Transition {
     }
 
     private _handleTimeupdate = () => {
-        if (!this._slider.isMoving()) {
-            const v = this._video
+        const v = this._video
 
+        if (!this._slider.isMoving()) {
             this._slider.updateProgress(
                 v.getCurrentTime() / v.getDuration() * 100
             )
         }
+
+        this._time.setTime(v.getCurrentTime())
     }
 }
