@@ -89,7 +89,10 @@ export default class ControlBar extends Transition {
         const duration = this._video.getDuration()
 
         if (duration && !this._slider.isMoving()) {
-            this._video.setCurrentTime(v / 100 * duration)
+            const time = v / 100 * duration
+
+            this._video.setCurrentTime(time)
+            this._time.setTime(time)
         }
     }
 

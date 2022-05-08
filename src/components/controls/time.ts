@@ -3,6 +3,7 @@ import { createEl, formatTime } from "../../commons/utils"
 export default class TimeInfo {
     private _timeEl: HTMLElement
     private _durationEl: HTMLElement
+    private _time = -1
 
     constructor(parent: HTMLElement) {
         const el = createEl("div", "rplayer-time-info")
@@ -22,7 +23,11 @@ export default class TimeInfo {
 
     setTime(time: number) {
         time = Math.floor(time)
-        this._timeEl.innerHTML = formatTime(time)
+
+        if (this._time !== time) {
+            this._time = time
+            this._timeEl.innerHTML = formatTime(time)
+        }
     }
 
     setDuration(d: number) {
