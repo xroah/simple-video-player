@@ -4,6 +4,7 @@ import Transition from "../commons/transition"
 import { EventObject } from "../commons/event-emitter"
 import Video from "./video"
 import TimeInfo from "./controls/time"
+import ToggleBtn from "./controls/toggle-btn"
 
 const html = `
     <div class="rplayer-progress-wrapper">
@@ -19,6 +20,7 @@ export default class ControlBar extends Transition {
     private _leftControlsEl: HTMLDivElement
     private _rightControlsEl: HTMLDivElement
     private _time: TimeInfo
+    private _toggleBtn: ToggleBtn
 
     constructor(
         private _video: Video,
@@ -38,6 +40,7 @@ export default class ControlBar extends Transition {
         this._rightControlsEl = <HTMLDivElement>this.el.querySelector(
             ".rplayer-right-controls"
         )
+        this._toggleBtn = new ToggleBtn(this._leftControlsEl, _video)
         this._time = new TimeInfo(this._leftControlsEl)
         this._slider = new Slider(
             progressWrapper,
