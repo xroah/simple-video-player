@@ -31,6 +31,10 @@
             align-items: center;
         }
 
+        .rplayer-left-controls .rplayer-btn {
+            margin-right: 10px;
+        }
+
         .rplayer-right-controls {
             margin-left: auto;
         }
@@ -57,7 +61,6 @@
     .rplayer-time-info {
         display: flex;
         align-items: center;
-        margin-left: 20px;
         height: 100%;
 
         span {

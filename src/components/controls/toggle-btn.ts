@@ -1,6 +1,6 @@
-import { createEl } from "../../commons/utils"
+import { createBtn, createEl } from "../../commons/utils"
 import Video from "../video"
-import {play, pause} from "../svg"
+import { play, pause } from "../svg"
 
 export default class ToggleBtn {
     private _el: HTMLButtonElement
@@ -10,11 +10,7 @@ export default class ToggleBtn {
         parent: HTMLDivElement,
         private _video: Video
     ) {
-        this._el = <HTMLButtonElement>createEl(
-            "button",
-            "rplayer-btn",
-            "rplayer-play-btn"
-        )
+        this._el = createBtn("rplayer-play-btn")
 
         _video.addListener("play", this._handlePlay)
         _video.addListener("pause", this._handlePause)
@@ -37,7 +33,7 @@ export default class ToggleBtn {
         }
 
         this._icon = icon
-        
+
         this._el.appendChild(icon)
     }
 

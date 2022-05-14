@@ -102,3 +102,15 @@ export function createEl(tag: string, ...classNames: string[]) {
 export function reflow(el: HTMLElement) {
     el.offsetHeight
 }
+
+export function createBtn(...cls: string[]) {
+    const btn = <HTMLButtonElement>createEl(
+        "button",
+        "rplayer-btn",
+        ...cls
+    )
+
+    btn.type = "button"
+
+    return btn
+}
