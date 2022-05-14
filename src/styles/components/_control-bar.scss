@@ -31,31 +31,27 @@
             align-items: center;
         }
 
-        .rplayer-btn {
-            width: 36px;
-            height: 36px;
-            padding: 0;
-            border: none;
-            background-color: transparent;
-            color: #fff;
-            cursor: pointer;
-
-            &:hover {
-                color: rgba(255, 255, 255, .9)
-            }
-            
-            &:active {
-                color: rgba(255, 255, 255, .6)
-            }
-        }
-
         .rplayer-right-controls {
             margin-left: auto;
         }
     }
 
     .rplayer-btn {
+        width: 36px;
+        height: 36px;
+        padding: 0;
+        border: none;
+        background-color: transparent;
+        color: #fff;
+        cursor: pointer;
 
+        &:hover {
+            color: rgba(255, 255, 255, .9)
+        }
+
+        &:active {
+            color: rgba(255, 255, 255, .6)
+        }
     }
 
     .rplayer-time-info {
