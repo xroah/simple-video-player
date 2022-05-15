@@ -14,7 +14,7 @@ export default class ToggleBtn {
 
         _video.addListener("play", this._handlePlay)
         _video.addListener("pause", this._handlePause)
-        this._setIcon(play)
+        this._setIcon(play())
         this._el.addEventListener("click", this._toggle)
         parent.appendChild(this._el)
     }
@@ -38,10 +38,10 @@ export default class ToggleBtn {
     }
 
     private _handlePlay = () => {
-        this._setIcon(pause)
+        this._setIcon(pause())
     }
 
     private _handlePause = () => {
-        this._setIcon(play)
+        this._setIcon(play())
     }
 }
