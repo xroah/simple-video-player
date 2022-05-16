@@ -63,13 +63,14 @@
     border-radius: 50%;
     transform: translate(-50%, -50%) scale(.8);
     box-shadow: 0 0 5px 0 rgba(255, 255, 255, .8);
-    background-color: rgba(0, 0, 0, .5);
+    background-color: rgba(0, 0, 0, .6);
+    color: #fff;
     opacity: 0.8;
     z-index: 1;
 
     svg {
-        width: 50px;
-        height: 50px;
+        width: 48px;
+        height: 48px;
     }
 
     &.rplayer-show {
@@ -77,6 +78,5 @@
         opacity: 0;
         transition: opacity 0.8s, transform 0.8s;
         will-change: opacity transform;
-        color: #fff;
     }
 }
