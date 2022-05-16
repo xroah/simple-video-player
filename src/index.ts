@@ -1,5 +1,6 @@
 import { createEl, getContainer } from "./commons/utils"
 import ControlBar from "./components/control-bar"
+import PlayState from "./components/play-state"
 import Video from "./components/video"
 
 export interface RPlayerOptions {
@@ -12,6 +13,7 @@ export default class RPlayer {
     root: HTMLDivElement
     body: HTMLDivElement
     private _container: HTMLElement | null
+    private _playState: PlayState
     controlBar: ControlBar
 
     constructor(private _options: RPlayerOptions) {
@@ -26,6 +28,7 @@ export default class RPlayer {
         this.root = <HTMLDivElement>createEl("div", "rplayer-root")
         this.body = <HTMLDivElement>createEl("div", "rplayer-body")
         this.video = new Video(this.body, _options.src)
+        this._playState = new PlayState(this.video, this.body)
         this.controlBar = new ControlBar(this.video, this.root)
 
 
