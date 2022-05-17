@@ -8,12 +8,15 @@ export interface RPlayerOptions {
     src: string
 }
 
+const NO_CURSOR = "rplayer-no-cursor"
+
 export default class RPlayer {
     video: Video
     root: HTMLDivElement
     body: HTMLDivElement
     private _container: HTMLElement | null
     private _playState: PlayState
+    private _cursorTimer = -1
     controlBar: ControlBar
 
     constructor(private _options: RPlayerOptions) {
@@ -40,7 +43,7 @@ export default class RPlayer {
     }
 
     private _initEvent() {
-        this.root.addEventListener("mousemove", this.showControlBar)
+        this.root.addEventListener("mousemove", this._handleMouseMove)
         this.body.addEventListener("click", this.toggle)
     }
 
@@ -48,11 +51,29 @@ export default class RPlayer {
         this.video.toggle()
     }
 
-    showControlBar = () => {
+    private _delayHideCursor() {
+        if (this._cursorTimer !== -1) {
+            clearTimeout(this._cursorTimer)
+        }
+
+        this._cursorTimer = window.setTimeout(() => {
+            this.root.classList.add(NO_CURSOR)
+
+            this._cursorTimer = -1
+        }, 5000)
+    }
+
+    private _handleMouseMove = () => {
+        this.root.classList.remove(NO_CURSOR)
+        this._delayHideCursor()
+        this.showControlBar()
+    }
+
+    showControlBar() {
         this.controlBar.setVisible(true)
     }
 
-    hideControlBar = () => {
+    hideControlBar() {
         this.controlBar.setVisible(false)
     }
 }
