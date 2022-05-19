@@ -1,3 +1,5 @@
+@import "../vars";
+
 .rplayer-control-bar {
     display: flex;
     flex-direction: column;
@@ -65,6 +67,20 @@
 
         span {
             margin: 3px;
+        }
+    }
+
+    .rplayer-volume-wrapper {
+        @include flex-v-center();
+
+        .rplayer-volume-slider {
+            margin: 0 10px;;
+            width: 100px;
+        }
+
+        .rplayer-volume-text {
+            margin-right: 5px;
+            width: 30px;
         }
     }
 

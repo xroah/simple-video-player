@@ -5,6 +5,7 @@ import { EventObject } from "../commons/event-emitter"
 import Video from "./video"
 import TimeInfo from "./controls/time"
 import ToggleBtn from "./controls/toggle-btn"
+import Volume from "./controls/volume"
 
 const html = `
     <div class="rplayer-progress-wrapper">
@@ -21,6 +22,7 @@ export default class ControlBar extends Transition {
     private _rightControlsEl: HTMLDivElement
     private _time: TimeInfo
     private _toggleBtn: ToggleBtn
+    private _volume: Volume
 
     constructor(
         private _video: Video,
@@ -41,6 +43,7 @@ export default class ControlBar extends Transition {
             ".rplayer-right-controls"
         )
         this._toggleBtn = new ToggleBtn(this._leftControlsEl, _video)
+        this._volume = new Volume(this._leftControlsEl, _video)
         this._time = new TimeInfo(this._leftControlsEl)
         this._slider = new Slider(
             progressWrapper,
@@ -84,7 +87,8 @@ export default class ControlBar extends Transition {
     }
 
     needDelay() {
-        return this._slider.isMoving()
+        return this._slider.isMoving() ||
+            this._volume.isChanging()
     }
 
     private _handleSliderChange = (e: EventObject) => {

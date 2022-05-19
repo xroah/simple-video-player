@@ -60,4 +60,20 @@ export default class Video {
     getDuration() {
         return this.el.duration
     }
+
+    getVolume() {
+        return Math.floor(this.el.volume * 100)
+    }
+
+    setVolume(v: number) {
+        if (v > 100) {
+            v = 100
+        }
+
+        this.el.volume = v / 100
+    }
+
+    isMuted() {
+        return this.el.muted
+    }
 }
