@@ -145,6 +145,7 @@ export default class Slider extends EventEmitter {
         this._moving = true
 
         this._updateProgress(pos.percent)
+        this.emit("slide-start")
     }
 
     private _handleSliderMove = (e: MouseEvent) => {
@@ -175,6 +176,7 @@ export default class Slider extends EventEmitter {
 
         this._el.classList.remove("rplayer-moving")
         this.emit("value-change", this._value)
+        this.emit("slide-end")
 
         if (!this._entered) {
             this._hideToolTip()
@@ -198,8 +200,6 @@ export default class Slider extends EventEmitter {
         }
 
         this.updateProgress(val)
-
-
     }
 
     public isMoving() {
