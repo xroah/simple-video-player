@@ -3,7 +3,9 @@
 @import "./components/control-bar";
 
 .rplayer-root {
-    &, * {
+
+    &,
+    * {
         box-sizing: border-box;
     }
 
@@ -57,7 +59,7 @@
     }
 }
 
-.rplayer-play-state{
+.rplayer-play-state {
     @include flex-center();
     position: absolute;
     left: 50%;
@@ -82,5 +84,15 @@
         opacity: 0;
         transition: opacity 0.8s, transform 0.8s;
         will-change: opacity transform;
+    }
+
+    .rplayer-video-wrapper {
+        @include flex_center();
+        @include size-100();
+
+        .rplayer-video {
+            width: 100%;
+            align-self: center;
+        }
     }
 }

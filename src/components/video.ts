@@ -9,9 +9,14 @@ export default class Video {
     el: HTMLVideoElement
 
     constructor(parent: HTMLElement, src: string = "") {
+        const wrapper = <HTMLDivElement>createEl(
+            "div",
+            "rplayer-video-wrapper"
+        )
         this.el = <HTMLVideoElement>createEl("video", "rplayer-video")
 
-        parent.appendChild(this.el)
+        wrapper.appendChild(this.el)
+        parent.appendChild(wrapper)
         this.setSrc(src)
     }
 
