@@ -76,4 +76,8 @@ export default class Video {
     isMuted() {
         return this.el.muted
     }
+
+    setMuted(muted: boolean) {
+        this.el.muted = muted
+    }
 }

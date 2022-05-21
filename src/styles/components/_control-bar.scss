@@ -72,13 +72,6 @@
 
     .rplayer-volume-wrapper {
         @include flex-v-center();
-        margin-right: 15px;
-
-        .rplayer-volume {
-            @include flex-v-center();
-            width: 0;
-            transition: width .3s;
-        }
 
         .rplayer-volume-slider {
             width: 0;
@@ -87,7 +80,7 @@
 
         .rplayer-volume-slider.rplayer-show {
             width: 80px;
-            margin-left: 10px;
+            margin-right: 15px;
         }
     }
 
