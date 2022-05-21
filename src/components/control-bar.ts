@@ -71,7 +71,6 @@ export default class ControlBar extends Transition {
         const duration = this._video.getDuration()
 
         if (duration) {
-            console.log(duration, v, duration * v / 100)
             const time = Math.floor(duration * v / 100)
 
             return formatTime(time)
