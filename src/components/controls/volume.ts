@@ -34,7 +34,7 @@ export default class Volume {
             "div",
             "rplayer-volume-slider"
         )
-        this._slider = new Slider(this._sliderEl, { tooltip: false })
+        this._slider = new Slider(this._sliderEl)
 
         this._updateIcon()
         this._handleVolumeChange()

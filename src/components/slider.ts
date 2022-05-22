@@ -88,7 +88,7 @@ export default class Slider extends EventEmitter {
             return this._options.tooltip(v)
         }
 
-        return v.toString()
+        return Math.floor(v).toString()
     }
 
     private _showTooltip(e: MouseEvent) {
