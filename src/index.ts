@@ -2,6 +2,7 @@ import { createEl, getContainer } from "./commons/utils"
 import ControlBar from "./components/control-bar"
 import PlayState from "./components/play-state"
 import Video from "./components/video"
+import HotKey from "./components/hotkey"
 
 export interface RPlayerOptions {
     container: HTMLElement | Node | string
@@ -17,6 +18,7 @@ export default class RPlayer {
     private _container: HTMLElement | null
     private _playState: PlayState
     private _cursorTimer = -1
+    private _hotkey: HotKey
     controlBar: ControlBar
 
     constructor(private _options: RPlayerOptions) {
@@ -29,10 +31,12 @@ export default class RPlayer {
         const videoWrapper = createEl("div", "rplayer-video-wrapper")
         this._container = <HTMLElement>container
         this.root = <HTMLDivElement>createEl("div", "rplayer-root")
+        this.root.tabIndex = -1
         this.body = <HTMLDivElement>createEl("div", "rplayer-body")
         this.video = new Video(this.body, _options.src)
         this._playState = new PlayState(this.video, this.body)
         this.controlBar = new ControlBar(this.video, this.root)
+        this._hotkey = new HotKey(this.video, this.root)
 
 
         this.body.append(videoWrapper)
