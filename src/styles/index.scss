@@ -54,7 +54,7 @@
     @include size-100();
 
     .rplayer-video {
-        @include size-100();
+        width: 100%;
         align-self: center;
     }
 }
@@ -84,15 +84,5 @@
         opacity: 0;
         transition: opacity 0.8s, transform 0.8s;
         will-change: opacity transform;
-    }
-
-    .rplayer-video-wrapper {
-        @include flex_center();
-        @include size-100();
-
-        .rplayer-video {
-            width: 100%;
-            align-self: center;
-        }
     }
 }
