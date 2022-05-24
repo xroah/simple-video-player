@@ -5,7 +5,7 @@ import { EventObject } from "../commons/event-emitter"
 import Video from "./video"
 import TimeInfo from "./controls/time"
 import ToggleBtn from "./controls/toggle-btn"
-import Volume from "./controls/volume"
+import Volume from "./controls/volume-control"
 
 const html = `
     <div class="rplayer-progress-wrapper">

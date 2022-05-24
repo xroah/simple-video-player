@@ -81,6 +81,5 @@ export default class Hotkey {
         v.setCurrentTime(curTime)
         //update the progress, if the keys were press for long time
         //the timeupdate may not fire (waiting)
-        // rp.emit("timeupdate")
     }
 }

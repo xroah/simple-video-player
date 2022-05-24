@@ -9,10 +9,10 @@ import Video from "../video"
 import Slider from "../slider"
 import { EventObject } from "../../commons/event-emitter"
 import { SHOW_CLASS } from "../../commons/constants"
+import Volume from "../volume"
 
-export default class Volume {
+export default class VolumeControl extends Volume {
     private _el: HTMLDivElement
-    private _btnEl: HTMLButtonElement
     private _sliderEl: HTMLDivElement
     private _slider: Slider
     private _mouseEntered = false
@@ -21,14 +21,15 @@ export default class Volume {
         parent: HTMLElement,
         private _video: Video
     ) {
-        this._el = <HTMLDivElement>createEl(
-            "div",
-            "rplayer-volume-wrapper"
-        )
-        this._btnEl = <HTMLButtonElement>createEl(
+        super(
             "button",
             "rplayer-volume-btn",
             "rplayer-btn"
+        )
+        
+        this._el = <HTMLDivElement>createEl(
+            "div",
+            "rplayer-volume-wrapper"
         )
         this._sliderEl = <HTMLDivElement>createEl(
             "div",
@@ -61,26 +62,11 @@ export default class Volume {
         this._updateIcon()
     }
 
-    private _updateIcon() {
+    protected _updateIcon() {
         const v = this._video
-        const btn = this._btnEl
-        const children = btn.children
-        const volume = v.getVolume()
-        const threshold = 100 / 3
 
-        if (children.length) {
-            btn.removeChild(children[0])
-        }
+        super._updateIcon(v.getVolume(), v.isMuted())
 
-        if (volume === 0 || v.isMuted()) {
-            btn.appendChild(volumeOff())
-        } else if (volume <= threshold) {
-            btn.appendChild(volumeLow())
-        } else if (volume > threshold && volume <= threshold * 2) {
-            btn.appendChild(volumeMedium())
-        } else {
-            btn.appendChild(volumeHigh())
-        }
     }
 
     private _showSlider() {
