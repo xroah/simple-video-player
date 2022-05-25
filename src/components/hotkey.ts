@@ -1,15 +1,14 @@
 import Video from "./video"
-
-export interface HotkeyOptions {
-    showVolumeFeedback?: boolean
-    showSeekFeedback?: boolean
-}
+import VolumeState from "./volume-state"
 
 export default class Hotkey {
+    private _state: VolumeState
+
     constructor(
         private _video: Video,
         private _target: HTMLElement
     ) {
+        this._state = new VolumeState(_target as any)
 
         _target.addEventListener("keydown", this.handleKeydown)
     }
@@ -57,7 +56,8 @@ export default class Hotkey {
         }
 
         v.setMuted(false)
-        v.setVolume(volume)   
+        v.setVolume(volume) 
+        this._state.update(volume, false)
     }
 
     fastSeek(forward = true) {

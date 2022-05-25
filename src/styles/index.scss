@@ -25,6 +25,7 @@
     overflow: hidden;
     padding-bottom: 56.25%;
     background-color: #000;
+    user-select: none;
 
     &:focus {
         outline: none;
@@ -84,5 +85,30 @@
         opacity: 0;
         transition: opacity 0.8s, transform 0.8s;
         will-change: opacity transform;
+    }
+}
+
+.rplayer-volume-state {
+    display: none;
+    @include abs-center();
+    align-items: center;
+    padding: 10px;
+    border-radius: 5px;
+    background-color: rgba(0, 0, 0, .5);
+    color: #fff;
+    font-size: 20px;
+    z-index: 10;
+
+    span, svg {
+        display: inline-block;
+        vertical-align: middle;
+    }
+
+    span {
+        width: 36px;
+    }
+
+    .rplayer-volume-text {
+        margin-left: 5px;
     }
 }

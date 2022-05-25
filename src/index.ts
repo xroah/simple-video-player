@@ -28,7 +28,6 @@ export default class RPlayer {
             throw new Error("Container is invalid")
         }
 
-        const videoWrapper = createEl("div", "rplayer-video-wrapper")
         this._container = <HTMLElement>container
         this.root = <HTMLDivElement>createEl("div", "rplayer-root")
         this.root.tabIndex = -1
@@ -38,8 +37,6 @@ export default class RPlayer {
         this.controlBar = new ControlBar(this.video, this.root)
         this._hotkey = new HotKey(this.video, this.root)
 
-
-        this.body.append(videoWrapper)
         this.root.appendChild(this.body)
         this._container.appendChild(this.root)
 
