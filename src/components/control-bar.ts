@@ -23,6 +23,7 @@ export default class ControlBar extends Transition {
     private _time: TimeInfo
     private _toggleBtn: ToggleBtn
     private _volume: Volume
+    private _mouseEntered = false
 
     constructor(
         private _video: Video,
@@ -62,9 +63,17 @@ export default class ControlBar extends Transition {
 
     private _initEvent() {
         const v = this._video
+        const {el} = this
 
         v.addListener("timeupdate", this._handleTimeupdate)
         v.addListener("durationchange", this._handleDuration)
+
+        el.addEventListener("mouseenter", this._handleMouseEnter)
+        el.addEventListener("mouseleave", this._handleMouseEnter)
+    }
+
+    private _handleMouseEnter = (evt: MouseEvent) => {
+        this._mouseEntered = evt.type === "mouseenter"
     }
 
     private _formatTooltip(v: number) {
@@ -87,7 +96,8 @@ export default class ControlBar extends Transition {
 
     needDelay() {
         return this._slider.isMoving() ||
-            this._volume.isChanging()
+            this._volume.isChanging() ||
+            this._mouseEntered
     }
 
     private _handleSliderChange = (e: EventObject) => {
