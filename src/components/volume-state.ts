@@ -29,7 +29,7 @@ export default class VolumeState extends Volume {
         }
 
         this._el.style.display = "block"
-        this._textEl.innerHTML = String(volume)
+        this._textEl.innerHTML = muted ? "静音" : String(volume)
         this._timer = window.setTimeout(() => {
             this._el.style.display = "none"
             this._timer = -1

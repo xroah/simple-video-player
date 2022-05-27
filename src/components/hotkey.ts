@@ -17,6 +17,7 @@ export default class Hotkey {
 
     private handleKeydown = (evt: KeyboardEvent) => {
         const key = evt.key.toLowerCase()
+        const v = this._video
 
         switch (key) {
             case "arrowdown":
@@ -32,9 +33,12 @@ export default class Hotkey {
                 this.fastSeek()
                 break
             case " ": //space key
-                this._video.toggle()
+                v.toggle()
                 break
             case "m":
+                const muted = !v.isMuted()
+                v.setMuted(muted)
+                this._state.update(v.getVolume(), muted)
                 break
             case "enter": // fullscreen
                 toggleScreen(this._target)
@@ -59,7 +63,7 @@ export default class Hotkey {
         }
 
         v.setMuted(false)
-        v.setVolume(volume) 
+        v.setVolume(volume)
         this._state.update(volume, false)
     }
 
