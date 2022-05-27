@@ -1,3 +1,4 @@
+import { toggleScreen } from "../commons/utils"
 import Video from "./video"
 import VolumeState from "./volume-state"
 
@@ -35,6 +36,8 @@ export default class Hotkey {
                 break
             case "m":
                 break
+            case "enter": // fullscreen
+                toggleScreen(this._target)
         }
     }
 

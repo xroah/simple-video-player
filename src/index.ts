@@ -44,8 +44,15 @@ export default class RPlayer {
     }
 
     private _initEvent() {
-        this.root.addEventListener("mousemove", this._handleMouseMove)
-        this.body.addEventListener("click", this.toggle)
+        const { root, body } = this
+
+        root.addEventListener("mousemove", this._handleMouseMove)
+        body.addEventListener("click", this.toggle)
+
+        document.addEventListener(
+            "fullscreenchange",
+            this._handleFullscreenChange
+        )
     }
 
     toggle = () => {
@@ -76,5 +83,16 @@ export default class RPlayer {
 
     hideControlBar() {
         this.controlBar.setVisible(false)
+    }
+
+    private _handleFullscreenChange = () => {
+        const fsEl = document.fullscreenElement
+        const CLS = "rplayer-fullscreen"
+
+        this.root.classList.remove(CLS)
+        
+        if (fsEl && fsEl === this.root){
+            this.root.classList.add(CLS)
+        }
     }
 }
