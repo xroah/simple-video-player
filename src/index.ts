@@ -3,6 +3,7 @@ import ControlBar from "./components/control-bar"
 import PlayState from "./components/play-state"
 import Video from "./components/video"
 import HotKey from "./components/hotkey"
+import MiniProgress from "./components/mini-progress"
 
 export interface RPlayerOptions {
     container: HTMLElement | Node | string
@@ -19,6 +20,7 @@ export default class RPlayer {
     private _playState: PlayState
     private _cursorTimer = -1
     private _hotkey: HotKey
+    private _miniProgress: MiniProgress
     controlBar: ControlBar
 
     constructor(private _options: RPlayerOptions) {
@@ -36,9 +38,11 @@ export default class RPlayer {
         this._playState = new PlayState(this.video, this.body)
         this.controlBar = new ControlBar(this.video, this.root)
         this._hotkey = new HotKey(this.video, this.root)
+        this._miniProgress = new MiniProgress(this.root, this.video)
 
         this.root.appendChild(this.body)
         this._container.appendChild(this.root)
+        this.showControlBar()
 
         this._initEvent()
     }
@@ -48,6 +52,9 @@ export default class RPlayer {
 
         root.addEventListener("mousemove", this._handleMouseMove)
         body.addEventListener("click", this.toggle)
+
+        this.controlBar.on("show", this._handleControlBarShow)
+        this.controlBar.on("hidden", this._hideControlBarHidden)
 
         document.addEventListener(
             "fullscreenchange",
@@ -83,6 +90,14 @@ export default class RPlayer {
 
     hideControlBar() {
         this.controlBar.setVisible(false)
+    }
+
+    private _handleControlBarShow = () => {
+        this._miniProgress.hide()
+    }
+
+    private _hideControlBarHidden = () => {
+        this._miniProgress.show()
     }
 
     private _handleFullscreenChange = () => {

@@ -85,4 +85,15 @@ export default class Video {
     setMuted(muted: boolean) {
         this.el.muted = muted
     }
+
+    getProgress() {
+        const duration = this.getDuration()
+        const currentTime = this.getCurrentTime()
+
+        if (!duration) {
+            return 0
+        }
+
+        return currentTime / duration * 100
+    }
 }

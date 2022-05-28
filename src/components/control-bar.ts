@@ -6,6 +6,7 @@ import Video from "./video"
 import TimeInfo from "./controls/time"
 import ToggleBtn from "./controls/toggle-btn"
 import Volume from "./controls/volume-control"
+import MiniProgress from "./mini-progress"
 
 const html = `
     <div class="rplayer-progress-wrapper">
@@ -113,14 +114,12 @@ export default class ControlBar extends Transition {
     }
 
     private _handleTimeupdate = () => {
-        const v = this._video
+        const value = this._video.getProgress()
 
         if (!this._slider.isMoving()) {
-            this._slider.updateProgress(
-                v.getCurrentTime() / v.getDuration() * 100
-            )
+            this._slider.updateProgress(value)
         }
 
-        this._time.setTime(v.getCurrentTime())
+        this._time.setTime(this._video.getCurrentTime())
     }
 }
