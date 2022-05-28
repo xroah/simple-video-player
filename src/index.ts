@@ -4,6 +4,7 @@ import PlayState from "./components/play-state"
 import Video from "./components/video"
 import HotKey from "./components/hotkey"
 import MiniProgress from "./components/mini-progress"
+import VideoState from "./components/video-state"
 
 export interface RPlayerOptions {
     container: HTMLElement | Node | string
@@ -21,6 +22,7 @@ export default class RPlayer {
     private _cursorTimer = -1
     private _hotkey: HotKey
     private _miniProgress: MiniProgress
+    private _videoState: VideoState
     controlBar: ControlBar
 
     constructor(private _options: RPlayerOptions) {
@@ -34,27 +36,35 @@ export default class RPlayer {
         this.root = <HTMLDivElement>createEl("div", "rplayer-root")
         this.root.tabIndex = -1
         this.body = <HTMLDivElement>createEl("div", "rplayer-body")
-        this.video = new Video(this.body, _options.src)
+        this.video = new Video(this.body)
         this._playState = new PlayState(this.video, this.body)
         this.controlBar = new ControlBar(this.video, this.root)
         this._hotkey = new HotKey(this.video, this.root)
         this._miniProgress = new MiniProgress(this.root, this.video)
+        this._videoState = new VideoState(this.root, this.video)
 
         this.root.appendChild(this.body)
         this._container.appendChild(this.root)
         this.showControlBar()
-
         this._initEvent()
+        this.video.setSrc(_options.src)
     }
 
     private _initEvent() {
-        const { root, body } = this
+        const {
+            root,
+            body,
+            video
+        } = this
 
         root.addEventListener("mousemove", this._handleMouseMove)
         body.addEventListener("click", this.toggle)
 
         this.controlBar.on("show", this._handleControlBarShow)
         this.controlBar.on("hidden", this._hideControlBarHidden)
+
+        video.addListener("waiting", this._showLoading)
+        video.addListener("canplaythrough", this._hideLoading)
 
         document.addEventListener(
             "fullscreenchange",
@@ -92,6 +102,14 @@ export default class RPlayer {
         this.controlBar.setVisible(false)
     }
 
+    private _showLoading = () => {
+        this._videoState.show()
+    }
+
+    private _hideLoading = () => {
+        this._videoState.hide()
+    }
+
     private _handleControlBarShow = () => {
         this._miniProgress.hide()
     }
@@ -105,8 +123,8 @@ export default class RPlayer {
         const CLS = "rplayer-fullscreen"
 
         this.root.classList.remove(CLS)
-        
-        if (fsEl && fsEl === this.root){
+
+        if (fsEl && fsEl === this.root) {
             this.root.classList.add(CLS)
         }
     }

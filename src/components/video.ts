@@ -8,7 +8,7 @@ export interface RPlayerOptions {
 export default class Video {
     el: HTMLVideoElement
 
-    constructor(parent: HTMLElement, src: string = "") {
+    constructor(parent: HTMLElement) {
         const wrapper = <HTMLDivElement>createEl(
             "div",
             "rplayer-video-wrapper"
@@ -17,7 +17,6 @@ export default class Video {
 
         wrapper.appendChild(this.el)
         parent.appendChild(wrapper)
-        this.setSrc(src)
     }
 
     addListener(name: keyof HTMLVideoElementEventMap, handler: Function) {

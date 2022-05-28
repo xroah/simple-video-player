@@ -124,3 +124,30 @@
         background-color: $color;
     }
 }
+
+.rplayer-video-state {
+    $size: 50px;
+    display: none;
+    @include abs-center();
+    z-index: 50;
+
+    .rplayer-spinner {
+        width: $size;
+        height: $size;
+        border: 5px solid rgba(255, 255, 255, 0.8);
+        border-bottom-color: transparent;
+        border-left-color: transparent;
+        border-radius: 50%;
+        animation: rplayer-spinner linear 0.8s infinite;
+    }
+}
+
+@keyframes rplayer-spinner {
+    0% {
+        transform: rotate(0);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
