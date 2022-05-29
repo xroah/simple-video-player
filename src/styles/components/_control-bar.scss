@@ -72,16 +72,19 @@
 
     .rplayer-volume-wrapper {
         @include flex-v-center();
-
-        .rplayer-volume-slider {
-            width: 0;
-            transition: width .3s;
-        }
-
-        .rplayer-volume-slider.rplayer-show {
-            width: 80px;
-            margin-right: 15px;
-        }
     }
 
+    .rplayer-volume-slider {
+        width: 0;
+        transition: width .3s;
+    }
+
+    .rplayer-volume-slider.rplayer-show {
+        width: 80px;
+        margin-right: 15px;
+
+        .rplayer-slider-marker {
+            opacity: 1;
+        }
+    }
 }

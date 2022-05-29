@@ -5,6 +5,7 @@ import Video from "./components/video"
 import HotKey from "./components/hotkey"
 import MiniProgress from "./components/mini-progress"
 import VideoState from "./components/video-state"
+import VolumeState from "./components/volume-state"
 
 export interface RPlayerOptions {
     container: HTMLElement | Node | string
@@ -23,6 +24,7 @@ export default class RPlayer {
     private _hotkey: HotKey
     private _miniProgress: MiniProgress
     private _videoState: VideoState
+    private _volumeState: VolumeState
     controlBar: ControlBar
 
     constructor(private _options: RPlayerOptions) {
@@ -39,7 +41,8 @@ export default class RPlayer {
         this.video = new Video(this.body)
         this._playState = new PlayState(this.video, this.body)
         this.controlBar = new ControlBar(this.video, this.root)
-        this._hotkey = new HotKey(this.video, this.root)
+        this._volumeState = new VolumeState(this.root)
+        this._hotkey = new HotKey(this.video, this.root, this._volumeState)
         this._miniProgress = new MiniProgress(this.root, this.video)
         this._videoState = new VideoState(this.root, this.video)
 

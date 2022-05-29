@@ -3,14 +3,11 @@ import Video from "./video"
 import VolumeState from "./volume-state"
 
 export default class Hotkey {
-    private _state: VolumeState
-
     constructor(
         private _video: Video,
-        private _target: HTMLElement
+        private _target: HTMLElement,
+        private _state: VolumeState
     ) {
-        this._state = new VolumeState(_target as any)
-
         _target.addEventListener("keydown", this.handleKeydown)
     }
 
