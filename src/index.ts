@@ -63,8 +63,7 @@ export default class RPlayer {
         this.controlBar.on("show", this._handleControlBarShow)
         this.controlBar.on("hidden", this._hideControlBarHidden)
 
-        video.addListener("waiting", this._showLoading)
-        video.addListener("canplaythrough", this._hideLoading)
+        video.addListener("error", this._handleError)
 
         document.addEventListener(
             "fullscreenchange",
@@ -89,25 +88,29 @@ export default class RPlayer {
     }
 
     private _handleMouseMove = () => {
+        if (this.video.getError()) {
+            return
+        }
+
         this.root.classList.remove(NO_CURSOR)
         this._delayHideCursor()
         this.showControlBar()
     }
 
+    private _handleError = () => {
+        this.hideControlBar()
+    }
+
     showControlBar() {
+        if (this.video.getError()) {
+            return
+        }
+
         this.controlBar.setVisible(true)
     }
 
     hideControlBar() {
         this.controlBar.setVisible(false)
-    }
-
-    private _showLoading = () => {
-        this._videoState.show()
-    }
-
-    private _hideLoading = () => {
-        this._videoState.hide()
     }
 
     private _handleControlBarShow = () => {

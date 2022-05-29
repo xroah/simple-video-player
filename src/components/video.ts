@@ -85,6 +85,10 @@ export default class Video {
         this.el.muted = muted
     }
 
+    getError() {
+        return this.el.error
+    }
+
     getProgress() {
         const duration = this.getDuration()
         const currentTime = this.getCurrentTime()

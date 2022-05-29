@@ -127,16 +127,15 @@
 
 .rplayer-video-state {
     $size: 50px;
-    display: none;
     @include abs-center();
     z-index: 50;
+    color: #fff;
 
     .rplayer-spinner {
         width: $size;
         height: $size;
-        border: 5px solid rgba(255, 255, 255, 0.8);
-        border-bottom-color: transparent;
-        border-left-color: transparent;
+        border: 5px solid rgba(255, 255, 255, 0.1);
+        border-left-color: rgba(255, 255, 255, .8);
         border-radius: 50%;
         animation: rplayer-spinner linear 0.8s infinite;
     }
