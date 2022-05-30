@@ -1,6 +1,9 @@
 import RPlayer from "../src"
 
+import "./index.scss"
+import "../src/styles/index.scss"
+
 let rp = new RPlayer({
     container: "#player",
-    src: "http://localhost:3000/videos/test.mp4"
+    src: "https://archive.org/download/BigBuckBunny_124/Content/big_buck_bunny_720p_surround.mp4"
 })
