@@ -11,7 +11,10 @@ interface Listener {
     once: boolean
 }
 
-function createListener(fn: Function, once: boolean): Listener {
+function createListener(
+    fn: Function,
+    once: boolean
+): Listener {
     return {
         fn,
         once
@@ -30,10 +33,10 @@ export default class EventEmitter {
     private _addListener(
         eventName: string,
         listener: Function,
-        prepend = false,
         once = false
     ) {
         let listeners = this._listeners.get(eventName)
+        let exists = false
 
         checkFunction(listener)
 
@@ -44,31 +47,25 @@ export default class EventEmitter {
         for (let l of listeners) {
             //the listener already exists
             if (l.fn === listener) {
-                return this
+                exists = true
+
+                break
             }
         }
 
-        const _listener = createListener(listener, once)
-
-        if (prepend) {
-            listeners.unshift(_listener)
-        } else {
-            listeners.push(_listener)
+        if (!exists) {
+            listeners.push(createListener(listener, once))
         }
 
         return this
     }
 
     on(eventName: string, listener: Function) {
-        this._addListener(eventName, listener)
-
-        return this
+        return this._addListener(eventName, listener)
     }
 
     once(eventName: string, listener: Function) {
-        this._addListener(eventName, listener, false, true)
-
-        return this
+        return this._addListener(eventName, listener, true)
     }
 
     off(eventName?: string, fn?: Function) {
@@ -150,21 +147,4 @@ export default class EventEmitter {
 
         return true
     }
-
-    listeners(eventName: string) {
-        return this._listeners.get(eventName) || []
-    }
-
-    listenerCount(eventName: string) {
-        if (isUndef(eventName)) {
-            return 0
-        }
-
-        return this.listeners(eventName).length
-    }
-
-    eventNames() {
-        return Array.from(this._listeners.keys())
-    }
-
 }
