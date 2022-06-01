@@ -5,6 +5,12 @@ export interface RPlayerOptions {
     src: string
 }
 
+type EventName = keyof HTMLVideoElementEventMap
+
+interface EventHandler<K extends EventName> {
+    (ev: HTMLVideoElementEventMap[K]): unknown
+}
+
 export default class Video {
     el: HTMLVideoElement
 
@@ -19,12 +25,20 @@ export default class Video {
         parent.appendChild(wrapper)
     }
 
-    addListener(name: keyof HTMLVideoElementEventMap, handler: Function) {
-        return this.el.addEventListener(name, handler as any)
+    addListener<K extends EventName>(
+        name: K,
+        handler: EventHandler<K>,
+        options?: boolean | AddEventListenerOptions
+    ) {
+        return this.el.addEventListener(name, handler, options)
     }
 
-    removeListener(name: keyof HTMLVideoElementEventMap, handler: Function) {
-        return this.el.removeEventListener(name, handler as any)
+    removeListener<K extends EventName>(
+        name: K,
+        handler: EventHandler<K>,
+        options?: boolean | AddEventListenerOptions
+    ) {
+        return this.el.removeEventListener(name, handler, options)
     }
 
     setSrc(src: string) {
