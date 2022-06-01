@@ -15,23 +15,23 @@ export function noop() {
 }
 
 export function formatTime(n: number) {
-	const ret: string[] = []
-	const pad = (n: number) => String(100 + n).substring(1)
-	let time = n
-	
-	while (time >= 60) {
-		const remainder = time % 60
-		time = Math.floor(time / 60)
-		ret.unshift(pad(remainder))
-	}
-	
-	ret.unshift(pad(time))
+    const ret: string[] = []
+    const pad = (n: number) => String(100 + n).substring(1)
+    let time = n
+
+    while (time >= 60) {
+        const remainder = time % 60
+        time = Math.floor(time / 60)
+        ret.unshift(pad(remainder))
+    }
+
+    ret.unshift(pad(time))
 
     if (ret.length < 2) {
         ret.unshift("00")
     }
-	
-	return ret.join(":")
+
+    return ret.join(":")
 }
 
 interface ThrottleOptions {
@@ -75,7 +75,9 @@ export function throttle(fn: Function, options?: ThrottleOptions) {
     return throttled
 }
 
-export function getContainer(container: string | HTMLElement | Node) {
+export function getContainer(
+    container: string | HTMLElement | Node
+) {
     if (container) {
         if (typeof container === "string") {
             return document.querySelector(container)
@@ -100,25 +102,5 @@ export function createEl(tag: string, ...classNames: string[]) {
 }
 
 export function reflow(el: HTMLElement) {
-    el.offsetHeight
-}
-
-export function createBtn(...cls: string[]) {
-    const btn = <HTMLButtonElement>createEl(
-        "button",
-        "rplayer-btn",
-        ...cls
-    )
-
-    btn.type = "button"
-
-    return btn
-}
-
-export function toggleFullscreen(el: HTMLElement) {
-    if (document.fullscreenElement) {
-        document.exitFullscreen()
-    } else {
-        el.requestFullscreen()
-    }
+    return el.offsetHeight
 }
