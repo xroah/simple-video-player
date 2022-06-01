@@ -115,7 +115,7 @@ export function createBtn(...cls: string[]) {
     return btn
 }
 
-export function toggleScreen(el: HTMLElement) {
+export function toggleFullscreen(el: HTMLElement) {
     if (document.fullscreenElement) {
         document.exitFullscreen()
     } else {
