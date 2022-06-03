@@ -1,3 +1,3 @@
-import RPlayer from "./components/player"
+import RPlayer from "./modules/player"
 
 export default RPlayer
