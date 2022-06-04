@@ -118,7 +118,7 @@ export default class Transition extends EventEmitter {
         )
     }
 
-    private setVisible(visible: boolean, force = false) {
+    protected setVisible(visible: boolean, force = false) {
         if (this.visible === visible) {
             if (visible && this.autoHide) {
                 // clearTimeout and reset
@@ -166,11 +166,11 @@ export default class Transition extends EventEmitter {
         }
     }
 
-    protected show() {
+    public show() {
         this.setVisible(true)
     }
 
-    protected hide() {
+    public hide() {
         this.setVisible(false)
     }
 }
