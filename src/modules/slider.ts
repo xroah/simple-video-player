@@ -114,7 +114,7 @@ export default class Slider extends EventEmitter {
         if (!this._tooltip) {
             return
         }
-        
+
         this._tooltip.classList.add(HIDDEN_CLASS)
     }
 
@@ -133,7 +133,7 @@ export default class Slider extends EventEmitter {
 
     private _handleMouseLeave = (e: MouseEvent) => {
         this._entered = false
-        
+
         if (!this._moving) {
             this._hideToolTip()
         }
@@ -175,7 +175,6 @@ export default class Slider extends EventEmitter {
         this._moving = false
 
         this._el.classList.remove("rplayer-moving")
-        this.emit("value-change", this._value)
         this.emit("slide-end")
 
         if (!this._entered) {
@@ -196,10 +195,9 @@ export default class Slider extends EventEmitter {
 
     private _updateProgress(val: number) {
         if (this._value !== val) {
-            this.emit("value-update", val)
+            this.emit("value-change", val)
+            this.updateProgress(val)
         }
-
-        this.updateProgress(val)
     }
 
     public isMoving() {
