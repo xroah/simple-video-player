@@ -11,26 +11,39 @@ export default class Transition extends EventEmitter {
     protected el: HTMLElement
     // for auto hide
     protected hideTimeout = 0
-    protected timer = -1
     protected autoHide = false
 
+    private _autoHideTimer = -1
     private _transitionEndTimer = -1
 
-    constructor(...classes: string[]) {
+    constructor(cls: string = "", el?: HTMLElement) {
         super()
 
-        this.el = createEl("div", HIDDEN_CLASS, ...classes)
+        this.el = el || createEl("div", HIDDEN_CLASS, cls)
+    }
+
+    protected init() {
+        if (this.autoHide) {
+            this.el.addEventListener(
+                "mouseenter",
+                this._handleMouseEnter
+            )
+            this.el.addEventListener(
+                "mouseleave",
+                this._handleMouseLeave
+            )
+        }
     }
 
     protected shouldDelay() {
         return false
     }
 
-    protected clearTimeout() {
-        if (this.timer !== -1) {
-            clearTimeout(this.timer)
+    protected clearHideTimeout() {
+        if (this._autoHideTimer !== -1) {
+            window.clearTimeout(this._autoHideTimer)
 
-            this.timer = -1
+            this._autoHideTimer = -1
         }
     }
 
@@ -39,11 +52,11 @@ export default class Transition extends EventEmitter {
             return
         }
 
-        this.clearTimeout()
+        this.clearHideTimeout()
 
-        this.timer = window.setTimeout(
+        this._autoHideTimer = window.setTimeout(
             () => {
-                this.timer = -1
+                this._autoHideTimer = -1
 
                 if (this.shouldDelay()) {
                     this.delayHide(force)
@@ -56,8 +69,6 @@ export default class Transition extends EventEmitter {
     }
 
     protected _handleTransitionEnd() {
-        this._transitionEndTimer = -1
-
         if (this.visible) {
             this.emit("shown")
         } else {
@@ -68,7 +79,7 @@ export default class Transition extends EventEmitter {
 
     private clearTransitionTimeout() {
         if (this._transitionEndTimer !== -1) {
-            clearTimeout(this._transitionEndTimer)
+            window.clearTimeout(this._transitionEndTimer)
 
             this._transitionEndTimer = -1
         }
@@ -82,7 +93,7 @@ export default class Transition extends EventEmitter {
     }
 
     private getTransitionDuration() {
-        let {transitionDelay, transitionDuration} = getComputedStyle(this.el)
+        let { transitionDelay, transitionDuration } = getComputedStyle(this.el)
         // If multiple durations only take the first
         transitionDelay = transitionDelay.split(",")[0]
         transitionDuration = transitionDuration.split(",")[0]
@@ -104,6 +115,8 @@ export default class Transition extends EventEmitter {
         // in case transitioned not firing
         this._transitionEndTimer = window.setTimeout(
             () => {
+                this._transitionEndTimer = -1
+
                 this._handleTransitionEnd()
                 this.removeListener()
             },
@@ -116,12 +129,29 @@ export default class Transition extends EventEmitter {
             "transitionend",
             this.handleTransitionEnd
         )
+        this.clearTransitionTimeout()
+    }
+
+    private _handleMouseEnter = () => {
+        if (this.autoHide) {
+            this.clearHideTimeout()
+        }
+
+        console.log(this.autoHide, "eeeeee")
+    }
+
+    private _handleMouseLeave = () => {
+        if (this.autoHide) {
+            this.delayHide()
+        }
+
+        console.log(this.autoHide, "mouse leave")
     }
 
     protected setVisible(visible: boolean, force = false) {
         if (this.visible === visible) {
             if (visible && this.autoHide) {
-                // clearTimeout and reset
+                // clearHideTimeout and reset
                 this.delayHide(force)
             }
 
@@ -166,8 +196,8 @@ export default class Transition extends EventEmitter {
         }
     }
 
-    public show() {
-        this.setVisible(true)
+    public show(force = false) {
+        this.setVisible(true, force)
     }
 
     public hide() {
