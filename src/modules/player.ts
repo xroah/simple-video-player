@@ -1,5 +1,7 @@
 import { createEl, getContainer } from "../commons/utils"
+import ControlBar from "./control-bar"
 import Transition from "./transition"
+import Video from "./video"
 
 interface PlayerOptions {
     container: string | HTMLElement | Node
@@ -11,7 +13,9 @@ interface PlayerOptions {
 export default class Player extends Transition {
     public root: HTMLElement
     public body: HTMLElement
-    
+    public video: Video
+
+    private _controlBar: ControlBar
     private _container: HTMLElement
     private _options: PlayerOptions
 
@@ -35,6 +39,8 @@ export default class Player extends Transition {
         this._container = container
         this.root = el
         this.body = body
+        this.video = new Video(body)
+        this._controlBar = new ControlBar(el, this.video)
         this._options = options
 
         this.init()
@@ -43,5 +49,14 @@ export default class Player extends Transition {
     init() {
         this.root.appendChild(this.body)
         this._container.appendChild(this.root)
+
+        this.body.addEventListener(
+            "mousemove",
+            this._handleMouseMove
+        )
+    }
+
+    private _handleMouseMove = () => {
+        this._controlBar.show()
     }
 }
