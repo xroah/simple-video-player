@@ -1,11 +1,11 @@
 import { createEl, getContainer } from "../commons/utils"
 import ControlBar from "./control-bar"
 import Transition from "./transition"
-import Video from "./video"
+import Video, { RPlayerOptions } from "./video"
 
 interface PlayerOptions {
     container: string | HTMLElement | Node
-    url: string
+    src: string
     poster?: string
     controlBarTimeout?: number
 }
@@ -17,12 +17,13 @@ export default class Player extends Transition {
 
     private _controlBar: ControlBar
     private _container: HTMLElement
-    private _options: PlayerOptions
 
-    constructor(options: PlayerOptions) {
+    constructor(
+        private _options: RPlayerOptions
+    ) {
         super()
 
-        const container = <HTMLElement>getContainer(options.container)
+        const container = <HTMLElement>getContainer(_options.container)
 
         if (!container) {
             throw new Error("Can not find a container")
@@ -41,12 +42,12 @@ export default class Player extends Transition {
         this.body = body
         this.video = new Video(body)
         this._controlBar = new ControlBar(el, this.video)
-        this._options = options
 
-        this.init()
+        this.video.setSrc(_options.src)
+        this._init()
     }
 
-    init() {
+    private _init() {
         this.root.appendChild(this.body)
         this._container.appendChild(this.root)
 
@@ -54,6 +55,11 @@ export default class Player extends Transition {
             "mousemove",
             this._handleMouseMove
         )
+        this.body.addEventListener("click", this._togglePlay)
+    }
+
+    private _togglePlay = () => {
+        this.video.toggle()
     }
 
     private _handleMouseMove = () => {
