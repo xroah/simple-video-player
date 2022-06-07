@@ -47,7 +47,7 @@ export default class Transition extends EventEmitter {
         }
     }
 
-    protected delayHide(force = false) {
+    protected delayHide() {
         if (!this.visible) {
             return
         }
@@ -59,9 +59,9 @@ export default class Transition extends EventEmitter {
                 this._autoHideTimer = -1
 
                 if (this.shouldDelay()) {
-                    this.delayHide(force)
+                    this.delayHide()
                 } else {
-                    this.setVisible(false, force)
+                    this.setVisible(false)
                 }
             },
             this.hideTimeout
@@ -136,23 +136,19 @@ export default class Transition extends EventEmitter {
         if (this.autoHide) {
             this.clearHideTimeout()
         }
-
-        console.log(this.autoHide, "eeeeee")
     }
 
     private _handleMouseLeave = () => {
         if (this.autoHide) {
             this.delayHide()
         }
-
-        console.log(this.autoHide, "mouse leave")
     }
 
     protected setVisible(visible: boolean, force = false) {
         if (this.visible === visible) {
             if (visible && this.autoHide) {
                 // clearHideTimeout and reset
-                this.delayHide(force)
+                this.delayHide()
             }
 
             return
@@ -200,7 +196,7 @@ export default class Transition extends EventEmitter {
         this.setVisible(true, force)
     }
 
-    public hide() {
-        this.setVisible(false)
+    public hide(force = false) {
+        this.setVisible(false, force)
     }
 }

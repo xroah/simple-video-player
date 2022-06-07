@@ -1,3 +1,4 @@
+import Slider from "./slider"
 import Transition from "./transition"
 import Video from "./video"
 
@@ -11,6 +12,8 @@ const html = `
 `
 
 export default class ControlBar extends Transition {
+    private _slider: Slider
+
     constructor(
         private _parent: HTMLElement,
         private _video: Video
@@ -20,9 +23,17 @@ export default class ControlBar extends Transition {
         this.el.innerHTML = html
         this.autoHide = true
         this.hideTimeout = 3000
+        const sliderWrapper = this.el.querySelector(
+            ".rplayer-progress-wrapper"
+        ) as HTMLElement
+        this._slider = new Slider(sliderWrapper)
 
         this._parent.appendChild(this.el)
         this.show(true)
         super.init()
+    }
+    
+    protected shouldDelay() {
+        return this._slider.isMoving()
     }
 }
