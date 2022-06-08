@@ -68,13 +68,24 @@ export default class Transition extends EventEmitter {
         )
     }
 
-    protected _handleTransitionEnd() {
+    protected _handleTransitionEnd (e?: TransitionEvent) {
+        if (e && e.target !== this.el) {
+            return
+        }
+
         if (this.visible) {
             this.emit("shown")
         } else {
             this.el.classList.add(HIDDEN_CLASS)
             this.emit("hidden")
         }
+
+        this.clearTransitionTimeout()
+        console.log(this.el.className, "eeeeeend")
+    }
+
+    protected handleTransitionEnd = (e?: TransitionEvent) => {
+        this._handleTransitionEnd(e)
     }
 
     private clearTransitionTimeout() {
@@ -82,13 +93,6 @@ export default class Transition extends EventEmitter {
             window.clearTimeout(this._transitionEndTimer)
 
             this._transitionEndTimer = -1
-        }
-    }
-
-    protected handleTransitionEnd = (ev: TransitionEvent) => {
-        if (ev.target === this.el) {
-            this.clearTransitionTimeout()
-            this._handleTransitionEnd()
         }
     }
 
@@ -103,7 +107,7 @@ export default class Transition extends EventEmitter {
         return (duration + delay) * 1000
     }
 
-    protected addListener = () => {
+    protected addListener() {
         this.el.addEventListener(
             "transitionend",
             this.handleTransitionEnd,
@@ -117,14 +121,14 @@ export default class Transition extends EventEmitter {
             () => {
                 this._transitionEndTimer = -1
 
-                this._handleTransitionEnd()
+                this.handleTransitionEnd()
                 this.removeListener()
             },
             this.getTransitionDuration() + PAD
         )
     }
 
-    protected removeListener = () => {
+    protected removeListener() {
         this.el.removeEventListener(
             "transitionend",
             this.handleTransitionEnd
@@ -169,10 +173,10 @@ export default class Transition extends EventEmitter {
 
             if (force) {
                 show()
-                this._handleTransitionEnd()
+                this.handleTransitionEnd()
             } else {
-                this.addListener()
                 show(reflow)
+                this.addListener()
             }
 
             if (this.autoHide) {
@@ -186,7 +190,7 @@ export default class Transition extends EventEmitter {
         this.el.classList.remove(SHOW_CLASS)
 
         if (force) {
-            this._handleTransitionEnd()
+            this.handleTransitionEnd()
         } else {
             this.addListener()
         }
