@@ -1,0 +1,27 @@
+// toggle-state
+.rplayer-toggle-state {
+    display: inline-block;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    transform: translate(-50%, -50%) scale(1);
+    /*parcel relative to index.scss*/
+    background: url("../../icons/play.svg") no-repeat center center/36px 36px
+        #000;
+    box-shadow: 0 0 5px 0 rgba(255, 255, 255, 0.8);
+    opacity: 0.8;
+    z-index: 10;
+
+    &.rplayer-paused {
+        background-image: url("../../icons/pause.svg");
+    }
+
+    &.rplayer-show {
+        transform: translate(-50%, -50%) scale(1.5);
+        opacity: 0;
+        transition: opacity 0.8s, transform 0.8s;
+    }
+}

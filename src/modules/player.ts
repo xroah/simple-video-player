@@ -1,4 +1,5 @@
 import { createEl, getContainer } from "../commons/utils"
+import ToggleState from "../extentions/toggle-state"
 import ControlBar from "./control-bar"
 import Transition from "./transition"
 import Video, { RPlayerOptions } from "./video"
@@ -42,6 +43,7 @@ export default class Player extends Transition {
         this.body = body
         this.video = new Video(body)
         this._controlBar = new ControlBar(el, this.video)
+        new ToggleState(this.video, this.root)
 
         this.video.setSrc(_options.src)
         this._init()
