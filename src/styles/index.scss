@@ -1,7 +1,7 @@
-@import "./vars";
-@import "./slider";
-@import "./control-bar";
-@import "./extentions";
+@use "./vars";
+@use "./slider";
+@use "./control-bar";
+@use "./extensions";
 
 .rplayer-root {
 
@@ -33,121 +33,7 @@
     }
 
     .rplayer-body {
-        @include fill_parent();
+        @include vars.fill_parent();
         z-index: 1;
-    }
-}
-
-.rplayer-text-primary {
-    color: $color;
-}
-
-.rplayer-root.rplayer-fullscreen {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    padding: 0;
-}
-
-.rplayer-video-wrapper {
-    @include flex_center();
-    @include size-100();
-
-    .rplayer-video {
-        width: 100%;
-        align-self: center;
-    }
-}
-
-.rplayer-play-state {
-    @include flex-center();
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    width: 60px;
-    height: 60px;
-    border-radius: 50%;
-    transform: translate(-50%, -50%) scale(.8);
-    box-shadow: 0 0 5px 0 rgba(255, 255, 255, .8);
-    background-color: rgba(0, 0, 0, .6);
-    color: #fff;
-    opacity: 0.8;
-    z-index: 1;
-
-    svg {
-        width: 48px;
-        height: 48px;
-    }
-
-    &.rplayer-show {
-        transform: translate(-50%, -50%) scale(1.5);
-        opacity: 0;
-        transition: opacity 0.8s, transform 0.8s;
-        will-change: opacity transform;
-    }
-}
-
-.rplayer-volume-state {
-    display: none;
-    @include abs-center();
-    align-items: center;
-    padding: 10px;
-    border-radius: 5px;
-    background-color: rgba(0, 0, 0, .5);
-    color: #fff;
-    font-size: 20px;
-    z-index: 10;
-
-    span,
-    svg {
-        display: inline-block;
-        vertical-align: middle;
-    }
-
-    .rplayer-volume-text {
-        margin-left: 5px;
-    }
-}
-
-.rplayer-mini-progress-wrapper {
-    display: none;
-    position: absolute;
-    left: 0;
-    bottom: 0;
-    width: 100%;
-    height: 2px;
-    z-index: 20;
-
-    .rplayer-mini-progress-bar {
-        height: inherit;
-        background-color: $color;
-    }
-}
-
-.rplayer-video-state {
-    $size: 50px;
-    @include abs-center();
-    z-index: 50;
-    color: #fff;
-
-    .rplayer-spinner {
-        width: $size;
-        height: $size;
-        border: 5px solid rgba(255, 255, 255, 0.1);
-        border-left-color: rgba(255, 255, 255, .8);
-        border-radius: 50%;
-        animation: rplayer-spinner linear 0.8s infinite;
-    }
-}
-
-@keyframes rplayer-spinner {
-    0% {
-        transform: rotate(0);
-    }
-
-    100% {
-        transform: rotate(360deg);
     }
 }
