@@ -17,12 +17,10 @@ export default class ToggleState extends Transition {
     handleTransitionEnd = () => {
         this._handleTransitionEnd()
         
-        console.log("tttt", this.visible)
         // // hide after showing transition end
         if (this.visible) {
-            this.hide(true)
+            this.hide(true) 
         }
-        console.log(11111)
     }
 
     switchState = () => {
