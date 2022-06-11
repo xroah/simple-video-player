@@ -4,6 +4,7 @@ import ToggleState from "../extentions/toggle-state"
 import ControlBar from "./control-bar"
 import Transition from "./transition"
 import Video, { RPlayerOptions } from "./video"
+import DblClickEmulator from "../utils/emulate-dbl-cilck"
 
 interface PlayerOptions {
     container: string | HTMLElement | Node
@@ -19,6 +20,7 @@ export default class Player extends Transition {
 
     private _controlBar: ControlBar
     private _container: HTMLElement
+    private _dblClickEmulator: DblClickEmulator
 
     constructor(
         private _options: RPlayerOptions
@@ -44,6 +46,9 @@ export default class Player extends Transition {
         this.body = body
         this.video = new Video(body)
         this._controlBar = new ControlBar(el, this.video)
+        this._dblClickEmulator = new DblClickEmulator({
+            onClick: this._togglePlay
+        })
         new ToggleState(this.video, el)
         new Loading(this.video, el)
 
@@ -59,10 +64,7 @@ export default class Player extends Transition {
             "mousemove",
             this._handleMouseMove
         )
-        this.body.addEventListener("click", this._togglePlay)
-        this.body.addEventListener("dblclick", (e) => {
-            console.log(111)
-        })
+        this._dblClickEmulator.emulate(this.body)
     }
 
     private _togglePlay = () => {
