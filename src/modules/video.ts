@@ -1,4 +1,4 @@
-import { createEl, getContainer } from "../commons/utils"
+import { createEl } from "../commons/utils"
 
 export interface RPlayerOptions {
     container: HTMLElement | Node | string
@@ -19,7 +19,10 @@ export default class Video {
             "div",
             "rplayer-video-wrapper"
         )
-        this.el = <HTMLVideoElement>createEl("video", "rplayer-video")
+        this.el = <HTMLVideoElement>createEl(
+            "video",
+            "rplayer-video"
+        )
 
         wrapper.appendChild(this.el)
         parent.appendChild(wrapper)

@@ -12,7 +12,7 @@
     background: url("../../icons/play.svg") no-repeat center center/36px 36px #000;
     box-shadow: 0 0 5px 0 rgba(255, 255, 255, 0.8);
     opacity: 0.8;
-    z-index: 10;
+    z-index: 9;
 
     &.rplayer-paused {
         background-image: url("../../icons/pause.svg");
@@ -22,5 +22,34 @@
         transform: translate(-50%, -50%) scale(1.5);
         opacity: 0;
         transition: opacity 0.8s, transform 0.8s;
+    }
+}
+
+//loading
+$translate: translate(-50%, -50%);
+
+.rplayer-loading {
+    $size: 50px;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    display: block;
+    width: $size;
+    height: $size;
+    border: 5px solid rgba(255, 255, 255, 0.8);
+    border-bottom-color: transparent;
+    border-left-color: transparent;
+    border-radius: 50%;
+    animation: rplayer-spinner linear 0.8s infinite;
+    z-index: 10;
+}
+
+@keyframes rplayer-spinner {
+    0% {
+        transform: #{$translate} rotate(0);
+    }
+
+    100% {
+        transform: #{$translate} rotate(360deg);
     }
 }

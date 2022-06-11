@@ -1,4 +1,5 @@
 import { createEl, getContainer } from "../commons/utils"
+import Loading from "../extentions/loading"
 import ToggleState from "../extentions/toggle-state"
 import ControlBar from "./control-bar"
 import Transition from "./transition"
@@ -43,7 +44,8 @@ export default class Player extends Transition {
         this.body = body
         this.video = new Video(body)
         this._controlBar = new ControlBar(el, this.video)
-        new ToggleState(this.video, this.root)
+        new ToggleState(this.video, el)
+        new Loading(this.video, el)
 
         this.video.setSrc(_options.src)
         this._init()
@@ -58,6 +60,9 @@ export default class Player extends Transition {
             this._handleMouseMove
         )
         this.body.addEventListener("click", this._togglePlay)
+        this.body.addEventListener("dblclick", (e) => {
+            console.log(111)
+        })
     }
 
     private _togglePlay = () => {

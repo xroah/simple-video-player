@@ -33,7 +33,17 @@
     }
 
     .rplayer-body {
-        @include vars.fill_parent();
+        @include vars.fill-parent();
         z-index: 1;
+    }
+}
+
+.rplayer-video-wrapper {
+    @include vars.flex-center();
+    @include vars.size-100();
+
+    .rplayer-video {
+        width: 100%;
+        align-self: center;
     }
 }
