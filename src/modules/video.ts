@@ -1,4 +1,4 @@
-import { createEl } from "../commons/utils"
+import { createEl } from "../utils"
 
 export interface RPlayerOptions {
     container: HTMLElement | Node | string

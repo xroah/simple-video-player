@@ -1,4 +1,4 @@
-import { createEl } from "../commons/utils"
+import { createEl } from "../utils"
 import EventEmitter from "../commons/event-emitter"
 import { HIDDEN_CLASS } from "../commons/constants"
 

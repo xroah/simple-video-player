@@ -4,7 +4,7 @@ import {
     createEl,
     noop,
     reflow
-} from "../commons/utils"
+} from "../utils"
 
 export default class Transition extends EventEmitter {
     protected visible = false
@@ -81,7 +81,6 @@ export default class Transition extends EventEmitter {
         }
 
         this.clearTransitionTimeout()
-        console.log(this.el.className, "eeeeeend")
     }
 
     protected handleTransitionEnd = (e?: TransitionEvent) => {

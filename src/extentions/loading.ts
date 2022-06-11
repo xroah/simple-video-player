@@ -1,4 +1,4 @@
-import { createEl } from "../commons/utils"
+import { createEl } from "../utils"
 import { HIDDEN_CLASS } from "../commons/constants"
 import Video from "../modules/video"
 
