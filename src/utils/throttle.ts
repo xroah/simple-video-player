@@ -4,7 +4,10 @@ interface ThrottleOptions {
 }
 
 // original: https://github.com/jashkenas/underscore/blob/master/modules/throttle.js
-export function throttle(fn: Function, options?: ThrottleOptions) {
+export default function throttle(
+    fn: Function,
+    options?: ThrottleOptions
+) {
     let timer: any = null
     let previous = 0
     const throttled = function throttled(...args: any[]) {
