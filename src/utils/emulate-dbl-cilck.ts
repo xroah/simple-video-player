@@ -5,7 +5,6 @@ interface Handler {
 interface Options {
     onClick?: Handler
     onDblClick?: Handler
-    type?: "mouse" | "touch" | "both"
 }
 
 const THRESHOLD = 200
@@ -25,12 +24,12 @@ export default class DblClickEmulator {
         }
     }
 
-    private _handleMouseDown = (ev: MouseEvent) => {
+    private _handleMouseDown = () => {
         this._clickTimes++
         this._prevTimestamp = Date.now()
     }
 
-    private _click(ev: MouseEvent) {
+    private _click(ev: PointerEvent) {
         this._timer = -1
         this._clickTimes = 0
         this._options.onClick?.(ev)
@@ -42,7 +41,7 @@ export default class DblClickEmulator {
         console.log("double click", Math.random())
     }
 
-    private _handleMouseUp = (ev: MouseEvent) => {
+    private _handleMouseUp = (ev: PointerEvent) => {
         const now = Date.now()
 
         if (
@@ -62,7 +61,7 @@ export default class DblClickEmulator {
     }
 
     public emulate(el: HTMLElement) {
-        el.addEventListener("mousedown", this._handleMouseDown)
-        el.addEventListener("mouseup", this._handleMouseUp)
+        el.addEventListener("pointerdown", this._handleMouseDown)
+        el.addEventListener("pointerup", this._handleMouseUp)
     }
 }
