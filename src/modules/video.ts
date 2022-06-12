@@ -23,6 +23,7 @@ export default class Video {
             "video",
             "rplayer-video"
         )
+        this.el.playsInline = true
 
         wrapper.appendChild(this.el)
         parent.appendChild(wrapper)
