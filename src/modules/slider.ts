@@ -17,6 +17,7 @@ export default class Slider extends EventEmitter {
     private _moving = false
     private _mouseDown = false
     private _entered = false
+    private _updated = false
 
     constructor(
         parent: HTMLElement,
@@ -171,15 +172,23 @@ export default class Slider extends EventEmitter {
             return
         }
 
+        const { percent } = this._getMousePosition(e)
+        const updated = this._updated
+        this._updated = false
         this._mouseDown = false
         this._moving = false
 
+        this._updateProgress(percent)
         this._el.classList.remove("rplayer-moving")
         this.emit("slide-end")
 
-        if (!this._entered) {
-            this._hideToolTip()
+        if (updated) {
+            this.emit("value-change", this._value)
         }
+        
+        if (!this._entered) {
+                this._hideToolTip()
+            }
     }
 
     private _getMousePosition(e: MouseEvent) {
@@ -195,7 +204,9 @@ export default class Slider extends EventEmitter {
 
     private _updateProgress(val: number) {
         if (this._value !== val) {
-            this.emit("value-change", val)
+            this._updated = true
+
+            this.emit("value-update", val)
             this.updateProgress(val)
         }
     }
