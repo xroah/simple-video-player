@@ -3,7 +3,6 @@ import EventEmitter from "../commons/event-emitter"
 import { HIDDEN_CLASS } from "../commons/constants"
 
 interface SliderOptions {
-    tooltip?: boolean | ((v: number) => string)
     buffer?: boolean
 }
 
@@ -11,7 +10,6 @@ export default class Slider extends EventEmitter {
     private _el: HTMLDivElement
     private _progress: HTMLDivElement
     private _marker: HTMLDivElement
-    private _tooltip: HTMLDivElement | null = null
     private _buffer: HTMLDivElement
     private _value = 0
     private _moving = false
@@ -47,16 +45,6 @@ export default class Slider extends EventEmitter {
             this._el.appendChild(this._buffer)
         }
 
-        if (this._tooltipAvail()) {
-            this._tooltip = <HTMLDivElement>createEl(
-                "div",
-                HIDDEN_CLASS,
-                `${PREFIX}-tooltip`
-            )
-
-            this._el.appendChild(this._tooltip)
-        }
-
         this._el.appendChild(this._progress)
         this._el.appendChild(this._marker)
         parent.appendChild(this._el)
@@ -67,76 +55,29 @@ export default class Slider extends EventEmitter {
     private _initEvent() {
         const el = this._el
 
-        if (this._tooltipAvail()) {
-            el.addEventListener("mousemove", this._handleMouseMove)
-        }
-
-        el.addEventListener("mousedown", this._handleMouseDown)
-        el.addEventListener("mouseenter", this._handleMouseEnter)
-        el.addEventListener("mouseleave", this._handleMouseLeave)
-        document.addEventListener("mousemove", this._handleSliderMove)
-        document.addEventListener("mouseup", this._handleMouseUp)
-    }
-
-    private _tooltipAvail() {
-        return this._options.tooltip !== false
-    }
-
-    private formatTooltip(v: number) {
-        v = v < 0 ? 0 : v > 100 ? 100 : v
-
-        if (typeof this._options.tooltip === "function") {
-            return this._options.tooltip(v)
-        }
-
-        return Math.floor(v).toString()
-    }
-
-    private _showTooltip(e: MouseEvent) {
-        const { _tooltip: t } = this
-
-        if (!t) {
-            return
-        }
-
-        t.classList.remove(HIDDEN_CLASS)
-
-        const { left, percent } = this._getMousePosition(e)
-        const tRect = t.getBoundingClientRect()
-        const rect = this._el.getBoundingClientRect()
-        const max = rect.width - tRect.width
-        t.innerHTML = this.formatTooltip(percent)
-        let l = left - tRect.width / 2
-        l = l < 0 ? 0 : l > max ? max : l
-        t.style.left = `${l}px`
-    }
-
-    private _hideToolTip() {
-        if (!this._tooltip) {
-            return
-        }
-
-        this._tooltip.classList.add(HIDDEN_CLASS)
+        el.addEventListener("pointerdown", this._handleMouseDown)
+        el.addEventListener("pointerenter", this._handleMouseEnter)
+        el.addEventListener("pointerleave", this._handleMouseLeave)
+        document.addEventListener("pointermove", this._handleSliderMove)
+        document.addEventListener("pointerup", this._handleMouseUp)
     }
 
     private _handleMouseMove = (e: MouseEvent) => {
         if (!this._moving) {
-            this._showTooltip(e)
+            // this._showTooltip(e)
         }
     }
 
     private _handleMouseEnter = (e: MouseEvent) => {
         this._entered = true
-        const { percent } = this._getMousePosition(e)
-
-        this._showTooltip(e)
+        // this._showTooltip(e)
     }
 
     private _handleMouseLeave = (e: MouseEvent) => {
         this._entered = false
 
         if (!this._moving) {
-            this._hideToolTip()
+            // this._hideToolTip()
         }
     }
 
@@ -164,7 +105,7 @@ export default class Slider extends EventEmitter {
 
         this._el.classList.add("rplayer-moving")
         this._updateProgress(percent)
-        this._showTooltip(e)
+        this.emit("slide-move")
     }
 
     private _handleMouseUp = (e: MouseEvent) => {
@@ -185,10 +126,10 @@ export default class Slider extends EventEmitter {
         if (updated) {
             this.emit("value-change", this._value)
         }
-        
+
         if (!this._entered) {
-                this._hideToolTip()
-            }
+            // this._hideToolTip()
+        }
     }
 
     private _getMousePosition(e: MouseEvent) {
