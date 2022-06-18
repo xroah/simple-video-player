@@ -1,16 +1,19 @@
 import { createEl } from "../utils"
 import EventEmitter from "../commons/event-emitter"
-import { HIDDEN_CLASS } from "../commons/constants"
+import Tooltip from "./tooltip"
 
 interface SliderOptions {
     buffer?: boolean
+    tooltip?: boolean | ((v: number) => string)
+    tooltipContainer?: HTMLElement
 }
 
 export default class Slider extends EventEmitter {
-    private _el: HTMLDivElement
-    private _progress: HTMLDivElement
-    private _marker: HTMLDivElement
-    private _buffer: HTMLDivElement
+    private _el: HTMLElement
+    private _progress: HTMLElement
+    private _marker: HTMLElement
+    private _buffer: HTMLElement
+    private _tooltip?: Tooltip
     private _value = 0
     private _moving = false
     private _PointerDown = false
@@ -24,25 +27,20 @@ export default class Slider extends EventEmitter {
         super()
 
         const PREFIX = "rplayer-slider"
-        this._el = <HTMLDivElement>createEl(
-            "div",
-            `${PREFIX}-wrapper`
-        )
-        this._progress = <HTMLDivElement>createEl(
-            "div",
-            `${PREFIX}-progress`
-        )
-        this._marker = <HTMLDivElement>createEl(
-            "div",
-            `${PREFIX}-marker`
-        )
+        this._el = createEl("div", `${PREFIX}-wrapper`)
+        this._progress = createEl("div", `${PREFIX}-progress`)
+        this._marker = createEl("div", `${PREFIX}-marker`)
 
         if (_options.buffer) {
-            this._buffer = <HTMLDivElement>createEl(
-                "div",
-                `${PREFIX}-buffer`
-            )
+            this._buffer = createEl("div", `${PREFIX}-buffer`)
             this._el.appendChild(this._buffer)
+        }
+
+        if (_options.tooltip !== false) {
+            this._tooltip = new Tooltip(
+                _options.tooltipContainer || parent,
+                this._el
+            )
         }
 
         this._el.appendChild(this._progress)
@@ -56,28 +54,56 @@ export default class Slider extends EventEmitter {
         const el = this._el
 
         el.addEventListener("pointerdown", this._handlePointerDown)
-        el.addEventListener("pointerenter", this._handlePointerEnter)
-        el.addEventListener("pointerleave", this._handlePointerLeave)
         document.addEventListener("pointermove", this._handleSliderMove)
         document.addEventListener("pointerup", this._handlePointerUp)
+
+        if (this._tooltip) {
+            el.addEventListener("pointermove", this._handlePointerMove)
+            el.addEventListener("pointerenter", this._handlePointerEnter)
+            el.addEventListener("pointerleave", this._handlePointerLeave)
+        }
+    }
+
+    private _showTooltip(e: PointerEvent) {
+        if (!this._tooltip) {
+            return
+        }
+
+        const { tooltip } = this._options
+        const rect = this._el.getBoundingClientRect()
+        const left = e.clientX - rect.left
+        const value = left / rect.width * 100
+        let text = Math.floor(value).toString()
+
+        if (typeof tooltip === "function") {
+            text = tooltip(value)
+        }
+
+        this._tooltip.updateText(text)
+        this._tooltip.show(e.clientX, e.clientY)
+    }
+
+    private _hideTooltip() {
+        this._tooltip?.hide()
     }
 
     private _handlePointerMove = (e: PointerEvent) => {
         if (!this._moving) {
-            // this._showTooltip(e)
+            this._showTooltip(e)
         }
     }
 
     private _handlePointerEnter = (e: PointerEvent) => {
         this._entered = true
-        // this._showTooltip(e)
+
+        this._showTooltip(e)
     }
 
     private _handlePointerLeave = (e: PointerEvent) => {
         this._entered = false
 
         if (!this._moving) {
-            // this._hideToolTip()
+            this._hideTooltip()
         }
     }
 
@@ -106,6 +132,7 @@ export default class Slider extends EventEmitter {
         this._el.classList.add("rplayer-moving")
         this._updateProgress(percent)
         this.emit("slide-move")
+        this._showTooltip(e)
     }
 
     private _handlePointerUp = (e: PointerEvent) => {
@@ -128,7 +155,7 @@ export default class Slider extends EventEmitter {
         }
 
         if (!this._entered) {
-            // this._hideToolTip()
+            this._hideTooltip()
         }
     }
 

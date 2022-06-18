@@ -1,4 +1,5 @@
 import { EventObject } from "../commons/event-emitter"
+import { formatTime } from "../utils"
 import Slider from "./slider"
 import Transition from "./transition"
 import Video from "./video"
@@ -27,13 +28,34 @@ export default class ControlBar extends Transition {
         const sliderWrapper = this.el.querySelector(
             ".rplayer-progress-wrapper"
         ) as HTMLElement
-        this._slider = new Slider(sliderWrapper)
+        this._slider = new Slider(
+            sliderWrapper,
+            {
+                tooltipContainer: _parent,
+                tooltip(v) {
+                    const duration = _video.getDuration()
+                    let time = duration * v / 100
+
+                    if (time >= duration) {
+                        time = duration
+                    } else if (time <= 0) {
+                        time = 0
+                    }
+
+                    if (!duration) {
+                        return "00:00"
+                    }
+
+                    return formatTime(Math.floor(time))
+                }
+            }
+        )
 
         this._parent.appendChild(this.el)
         this.show(true)
         this.init()
     }
-    
+
     protected shouldDelay() {
         return this._slider.isMoving()
     }

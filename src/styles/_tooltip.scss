@@ -1,0 +1,14 @@
+.rplayer-tooltip {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 90;
+
+    .rplayer-tooltip-text {
+        padding: 5px;
+        border-radius: 3px;
+        font-size: 12px;
+        background-color: rgba(0, 0, 0, 0.5);
+        color: #fff;
+    }
+}
