@@ -6,13 +6,10 @@ export default class Tooltip {
     private _textEl: HTMLElement
     private _visible = true
 
-    constructor(
-        private _parent: HTMLElement,
-        private _related: HTMLElement
-        ) {
+    constructor(private _parent: HTMLElement) {
         this._el = createEl("div", "rplayer-tooltip")
         this._textEl = createEl("span", "rplayer-tooltip-text")
-        
+
         this._el.appendChild(this._textEl)
         _parent.appendChild(this._el)
         this.hide()
@@ -21,11 +18,10 @@ export default class Tooltip {
     public updatePosition(x: number, y: number) {
         const rect = this._el.getBoundingClientRect()
         const parentRect = this._parent.getBoundingClientRect()
-        const relateRect = this._related.getBoundingClientRect()
         const maxLeft = parentRect.width - rect.width
         const SPACE = 20
-        const top = relateRect.top - SPACE - rect.height - parentRect.top
-        let left = x  - parentRect.left - rect.width / 2
+        const top = - SPACE - rect.height
+        let left = x - parentRect.left - rect.width / 2
 
         if (left <= 0) {
             left = 0
@@ -44,7 +40,7 @@ export default class Tooltip {
 
             this._el.classList.remove(HIDDEN_CLASS)
         }
-        
+
         this.updatePosition(x, y)
     }
 

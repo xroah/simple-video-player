@@ -31,7 +31,6 @@ export default class ControlBar extends Transition {
         this._slider = new Slider(
             sliderWrapper,
             {
-                tooltipContainer: _parent,
                 tooltip(v) {
                     const duration = _video.getDuration()
                     let time = duration * v / 100

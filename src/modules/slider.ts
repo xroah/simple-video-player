@@ -5,7 +5,6 @@ import Tooltip from "./tooltip"
 interface SliderOptions {
     buffer?: boolean
     tooltip?: boolean | ((v: number) => string)
-    tooltipContainer?: HTMLElement
 }
 
 export default class Slider extends EventEmitter {
@@ -37,10 +36,7 @@ export default class Slider extends EventEmitter {
         }
 
         if (_options.tooltip !== false) {
-            this._tooltip = new Tooltip(
-                _options.tooltipContainer || parent,
-                this._el
-            )
+            this._tooltip = new Tooltip(this._el)
         }
 
         this._el.appendChild(this._progress)
