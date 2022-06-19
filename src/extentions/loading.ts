@@ -1,40 +1,18 @@
-import { createEl } from "../utils"
-import { HIDDEN_CLASS } from "../commons/constants"
 import Video from "../modules/video"
+import Toggle from "../commons/toggle"
 
-export default class Loading {
-    private _el: HTMLElement
-    private _visible = true
-
+export default class Loading extends Toggle {
     constructor(
         private _video: Video,
         parent: HTMLElement
     ) {
-        this._el = createEl("div", "rplayer-loading")
+       super(parent, "rplayer-loading")
 
-        parent.appendChild(this._el)
-        this._hide()
         this._video.addListener("waiting", this._show)
         this._video.addListener("canplay", this._hide)
     }
 
-    private _show = () => {
-        if (this._visible) {
-            return
-        }
+    private _show = () => this.show()
 
-        this._visible = true
-
-        this._el.classList.remove(HIDDEN_CLASS)
-    }
-
-    private _hide = () => {
-        if(!this._visible) {
-            return
-        }
-
-        this._visible = false
-
-        this._el.classList.add(HIDDEN_CLASS)
-    }
+    private _hide = () => this.hide()
 }
