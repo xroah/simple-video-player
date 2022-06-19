@@ -5,6 +5,7 @@ import Tooltip from "./tooltip"
 interface SliderOptions {
     buffer?: boolean
     tooltip?: boolean | ((v: number) => string)
+    showTooltipOnHover?: boolean
 }
 
 export default class Slider extends EventEmitter {
@@ -53,7 +54,10 @@ export default class Slider extends EventEmitter {
         document.addEventListener("pointermove", this._handleSliderMove)
         document.addEventListener("pointerup", this._handlePointerUp)
 
-        if (this._tooltip) {
+        if (
+            this._tooltip &&
+            this._options.showTooltipOnHover !== false
+        ) {
             el.addEventListener("pointermove", this._handlePointerMove)
             el.addEventListener("pointerenter", this._handlePointerEnter)
             el.addEventListener("pointerleave", this._handlePointerLeave)
@@ -110,6 +114,7 @@ export default class Slider extends EventEmitter {
 
         this._updateProgress(pos.percent)
         this.emit("slide-start")
+        this._showTooltip(e)
     }
 
     private _handleSliderMove = (e: PointerEvent) => {
