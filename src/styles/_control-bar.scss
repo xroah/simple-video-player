@@ -87,3 +87,17 @@
         }
     }
 }
+
+.rplayer-mini-progress-wrapper {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    height: 3px;
+    z-index: 10;
+
+    .rplayer-mini-progress {
+        height: 100%;
+        background-color: $color;
+    }
+}

@@ -1,5 +1,6 @@
 import { EventObject } from "../commons/event-emitter"
 import { formatTime } from "../utils"
+import MiniProgress from "./mini-progress"
 import Slider from "./slider"
 import Transition from "./transition"
 import Video from "./video"
@@ -13,12 +14,18 @@ const html = `
     </div>
 `
 
+interface Options {
+    showMiniProgress?: boolean
+}
+
 export default class ControlBar extends Transition {
     private _slider: Slider
+    private _miniProgress?: MiniProgress
 
     constructor(
         private _parent: HTMLElement,
-        private _video: Video
+        private _video: Video,
+        private _options: Options = {}
     ) {
         super("rplayer-control-bar")
 
@@ -50,6 +57,10 @@ export default class ControlBar extends Transition {
             }
         )
 
+        if (_options.showMiniProgress !== false) {
+            this._miniProgress = new MiniProgress(this._parent)
+        }
+
         this._parent.appendChild(this.el)
         this.show(true)
         this.init()
@@ -63,7 +74,16 @@ export default class ControlBar extends Transition {
         super.init()
         this._video.addListener("timeupdate", this._handleTimeUpdate)
         this._slider.on("value-change", this._handleSliderChange)
+
+        if(this._miniProgress) {
+            this.on("show", this._hideMiniProgress)
+            this.on("hidden", this._showMiniProgress)
+        }
     }
+
+    private _showMiniProgress = () => this._miniProgress?.show()
+
+    private _hideMiniProgress = () => this._miniProgress?.hide()
 
     private _handleTimeUpdate = () => {
         const duration = this._video.getDuration()
@@ -73,7 +93,10 @@ export default class ControlBar extends Transition {
             return
         }
 
-        this._slider.updateProgress(currentTime / duration * 100)
+        const progress = currentTime / duration * 100
+
+        this._slider.updateProgress(progress)
+        this._miniProgress?.update(progress)
     }
 
     private _handleSliderChange = (eo: EventObject) => {
