@@ -41,6 +41,7 @@ export default class Player extends Transition {
 
         const el = createEl("div", "rplayer-root")
         const body = createEl("div", "rplayer-body")
+        body.tabIndex = -1
         this._container = container
         this.root = el
         this.body = body
