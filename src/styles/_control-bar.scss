@@ -1,4 +1,4 @@
-@import "./vars";
+@use "./vars";
 
 .rplayer-control-bar {
     display: flex;
@@ -70,7 +70,7 @@
     }
 
     .rplayer-volume-wrapper {
-        @include flex-v-center();
+        @include vars.flex-v-center();
     }
 
     .rplayer-volume-slider {
@@ -98,6 +98,6 @@
 
     .rplayer-mini-progress {
         height: 100%;
-        background-color: $color;
+        background-color: vars.$color;
     }
 }

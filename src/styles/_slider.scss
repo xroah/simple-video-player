@@ -1,10 +1,10 @@
-@import "./vars";
+@use "./vars";
 
 .rplayer-slider-wrapper {
     $marker_size: 14px;
 
     position: relative;
-    height: $slider_size;
+    height: vars.$slider_size;
     background-color: rgba(255, 255, 255, .5);
     transition: all .3s;
     user-select: none;
@@ -45,7 +45,7 @@
     }
 
     .rplayer-slider-progress {
-        background-color: $color;
+        background-color: vars.$color;
         z-index: 5;
     }
 
