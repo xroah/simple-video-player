@@ -1,10 +1,5 @@
 import { createEl } from "../utils"
 
-export interface RPlayerOptions {
-    container: HTMLElement | Node | string
-    src: string
-}
-
 type EventName = keyof HTMLVideoElementEventMap
 
 interface EventHandler<K extends EventName> {

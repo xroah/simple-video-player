@@ -3,7 +3,7 @@ import Loading from "../extentions/loading"
 import ToggleState from "../extentions/toggle-state"
 import ControlBar from "./control-bar"
 import Transition from "./transition"
-import Video, { RPlayerOptions } from "./video"
+import Video from "./video"
 import DblClickEmulator from "../utils/emulate-dbl-cilck"
 
 interface PlayerOptions {
@@ -11,6 +11,7 @@ interface PlayerOptions {
     src: string
     poster?: string
     controlBarTimeout?: number
+    showMiniProgress?: boolean
 }
 
 export default class Player extends Transition {
@@ -23,7 +24,7 @@ export default class Player extends Transition {
     private _dblClickEmulator: DblClickEmulator
 
     constructor(
-        private _options: RPlayerOptions
+        private _options: PlayerOptions
     ) {
         super()
 
@@ -46,7 +47,13 @@ export default class Player extends Transition {
         this.root = el
         this.body = body
         this.video = new Video(body)
-        this._controlBar = new ControlBar(el, this.video)
+        this._controlBar = new ControlBar(
+            el, 
+            this.video,
+            {
+                showMiniProgress: _options.showMiniProgress
+            }
+            )
         this._dblClickEmulator = new DblClickEmulator({
             onClick: this._togglePlay
         })
