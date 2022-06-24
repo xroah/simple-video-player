@@ -1,22 +1,21 @@
-import { HIDDEN_CLASS } from "../commons/constants"
+import Toggle from "../commons/toggle"
 import { createEl } from "../utils"
 
-export default class Tooltip {
-    private _el: HTMLElement
+export default class Tooltip extends Toggle {
     private _textEl: HTMLElement
-    private _visible = true
 
     constructor(private _parent: HTMLElement) {
-        this._el = createEl("div", "rplayer-tooltip")
+        super(_parent, "rplayer-tooltip")
+
         this._textEl = createEl("span", "rplayer-tooltip-text")
 
-        this._el.appendChild(this._textEl)
-        _parent.appendChild(this._el)
+        this.el.appendChild(this._textEl)
+        _parent.appendChild(this.el)
         this.hide()
     }
 
-    public updatePosition(x: number, y: number) {
-        const rect = this._el.getBoundingClientRect()
+    public updatePosition(x: number = 0, y: number = 0) {
+        const rect = this.el.getBoundingClientRect()
         const parentRect = this._parent.getBoundingClientRect()
         const maxLeft = parentRect.width - rect.width
         const SPACE = 20
@@ -29,27 +28,14 @@ export default class Tooltip {
             left = maxLeft
         }
 
-        this._el.style.left = `${left}px`
-        this._el.style.top = `${top}px`
+        this.el.style.left = `${left}px`
+        this.el.style.top = `${top}px`
     }
 
     // x, y relative to page
-    public show(x: number, y: number) {
-        if (!this._visible) {
-            this._visible = true
-
-            this._el.classList.remove(HIDDEN_CLASS)
-        }
-
+    public show(x?: number, y?: number) {
+        super.show()
         this.updatePosition(x, y)
-    }
-
-    public hide() {
-        if (this._visible) {
-            this._visible = false
-
-            this._el.classList.add(HIDDEN_CLASS)
-        }
     }
 
     public updateText(text: string) {
