@@ -63,3 +63,34 @@ export function createEl(tag: string, ...classNames: string[]) {
 export function reflow(el: HTMLElement) {
     return el.offsetHeight
 }
+
+function exitFullscreen() {
+    const doc = document as any
+
+    if (doc.exitFullscreen) {
+        document.exitFullscreen()
+    } else if (doc.webkitExitFullscreen) {
+        doc.webkitExitFullscreen()
+    } else if (doc.mozCancelFullscreen) {
+        doc.mozCancelFullscreen()
+    }
+}
+
+export function toggleFullScreen(el: any) {
+    const doc = document as any
+    const fsEl = doc.fullscreenElement ||
+        doc.webkitFullscreenElement ||
+        doc.mozFullscreenElement
+
+    if (fsEl) {
+        exitFullscreen()
+    } else {
+        if (el.requestFullscreen) {
+            el.requestFullscreen()
+        } else if (el.webkitRequestFullscreen) {
+            el.webkitRequestFullscreen()
+        } else if (el.mozRequestFullScreen) {
+            el.mozRequestFullScreen()
+        }
+    }
+}

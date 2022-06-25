@@ -5,6 +5,7 @@ import ControlBar from "./control-bar"
 import Transition from "./transition"
 import Video from "./video"
 import DblClickEmulator from "../utils/emulate-dbl-cilck"
+import Hotkey from "../extentions/hotkey"
 
 interface PlayerOptions {
     container: string | HTMLElement | Node
@@ -42,7 +43,7 @@ export default class Player extends Transition {
 
         const el = createEl("div", "rplayer-root")
         const body = createEl("div", "rplayer-body")
-        body.tabIndex = -1
+        el.tabIndex = -1
         this._container = container
         this.root = el
         this.body = body
@@ -59,6 +60,7 @@ export default class Player extends Transition {
         })
         new ToggleState(this.video, el)
         new Loading(this.video, el)
+        new Hotkey(el, this.video)
 
         this.video.setSrc(_options.src)
         this._init()
