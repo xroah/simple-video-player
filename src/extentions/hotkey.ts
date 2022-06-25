@@ -1,30 +1,38 @@
 import Video from "../modules/video"
+import throttle from "../utils/throttle"
 import { toggleFullScreen } from "../utils"
 
 export default class Hotkey {
+    private _seek = throttle(
+        this._fastSeek.bind(this),
+        {
+            delay: 300
+        }
+    )
+
     constructor(
         private _target: HTMLElement,
         private _video: Video
     ) {
-        _target.addEventListener("keydown", this.handleKeydown)
+        _target.addEventListener("keydown", this._handleKeydown)
     }
 
-    private handleKeydown = (evt: KeyboardEvent) => {
+    private _handleKeydown = (evt: KeyboardEvent) => {
         const key = evt.key.toLowerCase()
         const v = this._video
 
         switch (key) {
             case "arrowdown":
-                this.setVolume(false)
+                this._setVolume(false)
                 break
             case "arrowup":
-                this.setVolume()
+                this._setVolume()
                 break
             case "arrowleft":
-                this.fastSeek(false)
+                this._seek(false)
                 break
             case "arrowright":
-                this.fastSeek()
+                this._seek()
                 break
             case " ": //space key
                 v.toggle()
@@ -38,7 +46,7 @@ export default class Hotkey {
         }
     }
 
-    setVolume(add = true) {
+    private _setVolume(add = true) {
         const STEP = 5
         const v = this._video
         let volume = v.getVolume()
@@ -59,7 +67,7 @@ export default class Hotkey {
         v.setVolume(volume)
     }
 
-    fastSeek(forward = true) {
+    private _fastSeek(forward = true) {
         const v = this._video
         const STEP = 5
         const duration = v.getDuration()
@@ -78,7 +86,5 @@ export default class Hotkey {
         }
 
         v.setCurrentTime(curTime)
-        //update the progress, if the keys were press for long time
-        //the timeupdate may not fire (waiting)
     }
 }
