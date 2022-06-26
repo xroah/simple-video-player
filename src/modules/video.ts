@@ -10,10 +10,7 @@ export default class Video {
     el: HTMLVideoElement
 
     constructor(parent: HTMLElement) {
-        const wrapper = <HTMLDivElement>createEl(
-            "div",
-            "rplayer-video-wrapper"
-        )
+        const wrapper = createEl("div", "rplayer-video-wrapper")
         this.el = <HTMLVideoElement>createEl(
             "video",
             "rplayer-video"
@@ -24,7 +21,7 @@ export default class Video {
         parent.appendChild(wrapper)
     }
 
-    addListener<K extends EventName>(
+    on<K extends EventName>(
         name: K,
         handler: EventHandler<K>,
         options?: boolean | AddEventListenerOptions
@@ -32,7 +29,7 @@ export default class Video {
         return this.el.addEventListener(name, handler, options)
     }
 
-    removeListener<K extends EventName>(
+    off<K extends EventName>(
         name: K,
         handler: EventHandler<K>,
         options?: boolean | AddEventListenerOptions

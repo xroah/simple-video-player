@@ -72,7 +72,7 @@ export default class ControlBar extends Transition {
 
     protected init() {
         super.init()
-        this._video.addListener("timeupdate", this._handleTimeUpdate)
+        this._video.on("timeupdate", this._handleTimeUpdate)
         this._slider.on("value-change", this._handleSliderChange)
 
         if(this._miniProgress) {
