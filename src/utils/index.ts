@@ -52,9 +52,7 @@ export function createEl(tag: string, ...classNames: string[]) {
     const el = document.createElement(tag)
 
     if (classNames.length) {
-        el.classList.add(
-            ...(classNames.filter(c => c))
-        )
+        el.classList.add(...(classNames.filter(c => c)))
     }
 
     return el
@@ -76,7 +74,17 @@ function exitFullscreen() {
     }
 }
 
-export function toggleFullScreen(el: any) {
+function requestFullscreen(el: any) {
+    if (el.requestFullscreen) {
+        el.requestFullscreen()
+    } else if (el.webkitRequestFullscreen) {
+        el.webkitRequestFullscreen()
+    } else if (el.mozRequestFullScreen) {
+        el.mozRequestFullScreen()
+    }
+}
+
+export function toggleFullScreen(el: HTMLElement) {
     const doc = document as any
     const fsEl = doc.fullscreenElement ||
         doc.webkitFullscreenElement ||
@@ -85,12 +93,6 @@ export function toggleFullScreen(el: any) {
     if (fsEl) {
         exitFullscreen()
     } else {
-        if (el.requestFullscreen) {
-            el.requestFullscreen()
-        } else if (el.webkitRequestFullscreen) {
-            el.webkitRequestFullscreen()
-        } else if (el.mozRequestFullScreen) {
-            el.mozRequestFullScreen()
-        }
+        requestFullscreen(el)
     }
 }

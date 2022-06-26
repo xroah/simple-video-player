@@ -6,7 +6,7 @@ export default class Hotkey {
     private _seek = throttle(
         this._fastSeek.bind(this),
         {
-            delay: 300
+            delay: 500
         }
     )
 

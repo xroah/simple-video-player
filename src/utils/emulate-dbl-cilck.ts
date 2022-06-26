@@ -32,13 +32,12 @@ export default class DblClickEmulator {
     private _click(ev: PointerEvent) {
         this._timer = -1
         this._clickTimes = 0
+
         this._options.onClick?.(ev)
-        console.log("click")
     }
 
     private _dblClick() {
         this._clickTimes = 0
-        console.log("double click", Math.random())
     }
 
     private _handleMouseUp = (ev: PointerEvent) => {
