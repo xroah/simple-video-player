@@ -86,14 +86,11 @@ export default class ControlBar extends Transition {
     private _hideMiniProgress = () => this._miniProgress?.hide()
 
     private _handleTimeUpdate = () => {
-        const duration = this._video.getDuration()
-        const currentTime = this._video.getCurrentTime()
-
-        if (!duration || this._slider.isMoving()) {
+        if (this._slider.isMoving()) {
             return
         }
 
-        const progress = currentTime / duration * 100
+        const progress = this._video.getProgress()
 
         this._slider.updateProgress(progress)
         this._miniProgress?.update(progress)
