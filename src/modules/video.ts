@@ -7,7 +7,7 @@ interface EventHandler<K extends EventName> {
 }
 
 export default class Video {
-    el: HTMLVideoElement
+    public el: HTMLVideoElement
 
     constructor(parent: HTMLElement) {
         const wrapper = createEl("div", "rplayer-video-wrapper")
@@ -21,7 +21,7 @@ export default class Video {
         parent.appendChild(wrapper)
     }
 
-    on<K extends EventName>(
+    public on<K extends EventName>(
         name: K,
         handler: EventHandler<K>,
         options?: boolean | AddEventListenerOptions
@@ -29,7 +29,7 @@ export default class Video {
         return this.el.addEventListener(name, handler, options)
     }
 
-    off<K extends EventName>(
+    public off<K extends EventName>(
         name: K,
         handler: EventHandler<K>,
         options?: boolean | AddEventListenerOptions
@@ -37,21 +37,21 @@ export default class Video {
         return this.el.removeEventListener(name, handler, options)
     }
 
-    setSrc(src: string) {
+    public setSrc(src: string) {
         this.el.src = src
 
         this.el.load()
     }
 
-    play() {
+    public play() {
         this.el.play()
     }
 
-    pause() {
+    public pause() {
         this.el.pause()
     }
 
-    toggle() {
+    public toggle() {
         if (this.isPaused()) {
             this.play()
         } else {
@@ -59,27 +59,27 @@ export default class Video {
         }
     }
 
-    isPaused() {
+    public isPaused() {
         return this.el.paused
     }
 
-    getCurrentTime() {
+    public getCurrentTime() {
         return this.el.currentTime
     }
 
-    setCurrentTime(time: number) {
+    public setCurrentTime(time: number) {
         this.el.currentTime = time
     }
 
-    getDuration() {
+    public getDuration() {
         return this.el.duration
     }
 
-    getVolume() {
+    public getVolume() {
         return Math.floor(this.el.volume * 100)
     }
 
-    setVolume(v: number) {
+    public setVolume(v: number) {
         if (v > 100) {
             v = 100
         }
@@ -87,19 +87,19 @@ export default class Video {
         this.el.volume = v / 100
     }
 
-    isMuted() {
+    public isMuted() {
         return this.el.muted
     }
 
-    setMuted(muted: boolean) {
+    public setMuted(muted: boolean) {
         this.el.muted = muted
     }
 
-    getError() {
+    public getError() {
         return this.el.error
     }
 
-    getProgress() {
+    public getProgress() {
         const duration = this.getDuration()
         const currentTime = this.getCurrentTime()
 
