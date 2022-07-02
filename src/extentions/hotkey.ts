@@ -47,7 +47,7 @@ export default class Hotkey {
     }
 
     private _setVolume(add = true) {
-        const STEP = 5
+        const STEP = 10
         const v = this._video
         let volume = v.getVolume()
 
