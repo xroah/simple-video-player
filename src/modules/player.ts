@@ -6,6 +6,7 @@ import Transition from "./transition"
 import Video from "./video"
 import DblClickEmulator from "../utils/emulate-dbl-cilck"
 import Hotkey from "../extentions/hotkey"
+import VolumeState from "../extentions/volume-state"
 
 interface PlayerOptions {
     container: string | HTMLElement | Node
@@ -61,6 +62,7 @@ export default class Player extends Transition {
         new ToggleState(this.video, el)
         new Loading(this.video, el)
         new Hotkey(el, this.video)
+        new VolumeState(this.video, el)
 
         this.video.setSrc(_options.src)
         this._init()

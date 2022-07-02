@@ -96,3 +96,19 @@ export function toggleFullScreen(el: HTMLElement) {
         requestFullscreen(el)
     }
 }
+
+export function getVolumeClass(volume: number, muted = false) {
+    let ret = ""
+
+    if (volume === 0 || muted) {
+        ret = "muted"
+    } else if (volume <= 33) {
+        ret = "low"
+    } else if (volume <= 66) {
+        ret = "medium"
+    } else {
+        ret = "high"
+    }
+
+    return "rplayer-volume-" + ret
+}

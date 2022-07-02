@@ -48,3 +48,19 @@
         align-self: center;
     }
 }
+
+.rplayer-volume-muted {
+    background-image: url(../../icons/volume-muted.svg);
+}
+
+.rplayer-volume-low {
+    background-image: url(../../icons/volume-low.svg);
+}
+
+.rplayer-volume-medium {
+    background-image: url(../../icons/volume-medium.svg);
+}
+
+.rplayer-volume-high {
+    background-image: url(../../icons/volume-high.svg);
+}
