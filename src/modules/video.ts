@@ -37,6 +37,10 @@ export default class Video {
         return this.el.removeEventListener(name, handler, options)
     }
 
+    public emit<T extends EventName>(type: T) {
+        this.el.dispatchEvent(new Event(type))
+    }
+
     public setSrc(src: string) {
         this.el.src = src
 
