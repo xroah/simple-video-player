@@ -1,18 +1,10 @@
+import { controlBarHtml } from "../commons/constants"
 import { EventObject } from "../commons/event-emitter"
 import { formatTime } from "../utils"
 import MiniProgress from "./mini-progress"
 import Slider from "./slider"
 import Transition from "./transition"
 import Video from "./video"
-
-const html = `
-    <div class="rplayer-progress-wrapper">
-    </div>
-    <div class="rplayer-controls-wrapper">
-        <div class="rplayer-left-controls"></div>
-        <div class="rplayer-right-controls"></div>
-    </div>
-`
 
 interface Options {
     showMiniProgress?: boolean
@@ -29,7 +21,7 @@ export default class ControlBar extends Transition {
     ) {
         super("rplayer-control-bar")
 
-        this.el.innerHTML = html
+        this.el.innerHTML = controlBarHtml
         this.autoHide = true
         this.hideTimeout = 3000
         const sliderWrapper = this.el.querySelector(
@@ -37,24 +29,7 @@ export default class ControlBar extends Transition {
         ) as HTMLElement
         this._slider = new Slider(
             sliderWrapper,
-            {
-                tooltip(v) {
-                    const duration = _video.getDuration()
-                    let time = duration * v / 100
-
-                    if (time >= duration) {
-                        time = duration
-                    } else if (time <= 0) {
-                        time = 0
-                    }
-
-                    if (!duration) {
-                        return "00:00"
-                    }
-
-                    return formatTime(Math.floor(time))
-                }
-            }
+            { tooltip: this._formatTooltip }
         )
 
         if (_options.showMiniProgress !== false) {
@@ -75,10 +50,27 @@ export default class ControlBar extends Transition {
         this._video.addListener("timeupdate", this._handleTimeUpdate)
         this._slider.on("value-change", this._handleSliderChange)
 
-        if(this._miniProgress) {
+        if (this._miniProgress) {
             this.on("show", this._hideMiniProgress)
             this.on("hidden", this._showMiniProgress)
         }
+    }
+
+    private _formatTooltip = (v: number) => {
+        const duration = this._video.getDuration()
+        let time = duration * v / 100
+
+        if (time >= duration) {
+            time = duration
+        } else if (time <= 0) {
+            time = 0
+        }
+
+        if (!duration) {
+            return "00:00"
+        }
+
+        return formatTime(Math.floor(time))
     }
 
     private _showMiniProgress = () => this._miniProgress?.show()
