@@ -10,8 +10,8 @@ export default class ToggleState extends Transition {
     }
 
     private initEvents() {
-        this._video.on("play", this.switchState)
-        this._video.on("pause", this.switchState)
+        this._video.addListener("play", this.switchState)
+        this._video.addListener("pause", this.switchState)
     }
 
     handleTransitionEnd = () => {

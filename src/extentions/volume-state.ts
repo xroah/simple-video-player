@@ -22,7 +22,7 @@ export default class VolumeState extends Toggle {
         this.el.appendChild(this._textEl)
 
         this._updateState()
-        this._video.on("volumechange", this._handleVolumeChange)
+        this._video.addListener("volumechange", this._handleVolumeChange)
     }
 
     private _clearHideTimeout() {

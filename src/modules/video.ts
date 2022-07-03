@@ -1,3 +1,4 @@
+import EventEmitter from "../commons/event-emitter"
 import { createEl } from "../utils"
 
 type EventName = keyof HTMLVideoElementEventMap
@@ -6,10 +7,12 @@ interface EventHandler<K extends EventName> {
     (ev: HTMLVideoElementEventMap[K]): unknown
 }
 
-export default class Video {
+export default class Video extends EventEmitter {
     public el: HTMLVideoElement
 
     constructor(parent: HTMLElement) {
+        super()
+
         const wrapper = createEl("div", "rplayer-video-wrapper")
         this.el = <HTMLVideoElement>createEl(
             "video",
@@ -21,7 +24,7 @@ export default class Video {
         parent.appendChild(wrapper)
     }
 
-    public on<K extends EventName>(
+    public addListener<K extends EventName>(
         name: K,
         handler: EventHandler<K>,
         options?: boolean | AddEventListenerOptions
@@ -29,7 +32,7 @@ export default class Video {
         return this.el.addEventListener(name, handler, options)
     }
 
-    public off<K extends EventName>(
+    public removeListener<K extends EventName>(
         name: K,
         handler: EventHandler<K>,
         options?: boolean | AddEventListenerOptions
@@ -37,7 +40,7 @@ export default class Video {
         return this.el.removeEventListener(name, handler, options)
     }
 
-    public emit<T extends EventName>(type: T) {
+    public dispatch<T extends EventName>(type: T) {
         this.el.dispatchEvent(new Event(type))
     }
 
@@ -89,6 +92,9 @@ export default class Video {
         }
 
         this.el.volume = v / 100
+
+        // emit for other extensions(like: volume-state)
+        this.emit("update-volume")
     }
 
     public isMuted() {

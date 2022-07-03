@@ -8,8 +8,8 @@ export default class Loading extends Toggle {
     ) {
        super(parent, "rplayer-loading")
 
-        this._video.on("waiting", this._show)
-        this._video.on("canplay", this._hide)
+        this._video.addListener("waiting", this._show)
+        this._video.addListener("canplay", this._hide)
     }
 
     private _show = () => this.show()

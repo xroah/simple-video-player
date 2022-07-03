@@ -43,7 +43,7 @@ $translate: translate(-50%, -50%);
     border-left-color: transparent;
     border-radius: 50%;
     animation: rplayer-spinner linear 0.8s infinite;
-    z-index: 10;
+    z-index: 9;
 }
 
 @keyframes rplayer-spinner {
@@ -67,7 +67,7 @@ $translate: translate(-50%, -50%);
     color: #fff;
     font-size: 25px;
     font-weight: 600;
-    z-index: 20;
+    z-index: 9;
 
     .rplayer-volume-icon {
         $size: 36px;
