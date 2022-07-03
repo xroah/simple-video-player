@@ -10,6 +10,7 @@ export default class Loading extends Toggle {
 
         this._video.addListener("waiting", this._show)
         this._video.addListener("canplay", this._hide)
+        this._video.addListener("error", this._hide)
     }
 
     private _show = () => this.show()
