@@ -36,8 +36,10 @@ export default class DblClickEmulator {
         this._options.onClick?.(ev)
     }
 
-    private _dblClick() {
+    private _dblClick(ev: PointerEvent) {
         this._clickTimes = 0
+
+        this._options.onDblClick?.(ev)
     }
 
     private _handleMouseUp = (ev: PointerEvent) => {
@@ -48,7 +50,7 @@ export default class DblClickEmulator {
             this._prevTimestamp - now <= THRESHOLD
         ) {
             this._clearTimeout()
-            this._dblClick()
+            this._dblClick(ev)
 
             return
         }

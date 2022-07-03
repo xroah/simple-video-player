@@ -1,4 +1,4 @@
-import { createEl, getContainer } from "../utils"
+import { createEl, getContainer, toggleFullScreen } from "../utils"
 import Loading from "../extentions/loading"
 import ToggleState from "../extentions/toggle-state"
 import ControlBar from "./control-bar"
@@ -57,7 +57,8 @@ export default class Player extends Transition {
             }
             )
         this._dblClickEmulator = new DblClickEmulator({
-            onClick: this._togglePlay
+            onClick: this._togglePlay,
+            onDblClick: this._handleDblClick
         })
         new ToggleState(this.video, el)
         new Loading(this.video, el)
@@ -81,6 +82,11 @@ export default class Player extends Transition {
 
     private _togglePlay = () => {
         this.video.toggle()
+    }
+
+    private _handleDblClick = () => {
+        toggleFullScreen(this.root)
+        console.log("dblclick")
     }
 
     private _handleMouseMove = () => {
