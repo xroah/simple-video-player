@@ -23,6 +23,7 @@ export default class VolumeState extends Toggle {
 
         this._updateState()
         this._video.addListener("volumechange", this._handleVolumeChange)
+        this._video.on("set-volume", this._handleVolumeChange)
     }
 
     private _clearHideTimeout() {
