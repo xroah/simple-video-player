@@ -29,7 +29,10 @@ export default class ControlBar extends Transition {
         ) as HTMLElement
         this._slider = new Slider(
             sliderWrapper,
-            { tooltip: this._formatTooltip }
+            { 
+                buffer: true,
+                tooltip: this._formatTooltip 
+            }
         )
 
         if (_options.showMiniProgress !== false) {

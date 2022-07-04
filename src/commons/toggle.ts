@@ -2,7 +2,7 @@ import { createEl } from "../utils"
 import { HIDDEN_CLASS } from "../commons/constants"
 
 export default class Toggle {
-    protected el: HTMLElement
+    public el: HTMLElement
     protected visible = true
 
     constructor(
