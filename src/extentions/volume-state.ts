@@ -10,10 +10,7 @@ class VolumeState extends Toggle {
     private _textEl: HTMLElement
     private _timer = -1
 
-    constructor(
-        private _video: Video,
-        parent: HTMLElement
-    ) {
+    constructor(parent: HTMLElement, private _video: Video) {
         super(parent, "rplayer-volume-state")
 
         this._iconEl = createEl("span")
@@ -68,5 +65,5 @@ class VolumeState extends Toggle {
 }
 
 export default function install(player: Player) {
-    return new VolumeState(player.video, player.root)
+    return new VolumeState(player.root, player.video)
 }

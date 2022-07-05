@@ -3,7 +3,7 @@ import Transition from "../modules/transition"
 import Video from "../modules/video"
 
 class ToggleState extends Transition {
-    constructor(private _video: Video, parent: HTMLElement) {
+    constructor(parent: HTMLElement, private _video: Video) {
         super("rplayer-toggle-state")
 
         parent.append(this.el)
@@ -39,5 +39,5 @@ class ToggleState extends Transition {
 }
 
 export default function install(player: Player) {
-    return new ToggleState(player.video, player.root)
+    return new ToggleState(player.root, player.video)
 }

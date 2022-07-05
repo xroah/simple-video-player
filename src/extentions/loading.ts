@@ -4,8 +4,8 @@ import Player from "../modules/player"
 
 class Loading extends Toggle {
     constructor(
-        private _video: Video,
-        parent: HTMLElement
+        parent: HTMLElement,
+        private _video: Video
     ) {
        super(parent, "rplayer-loading")
 
@@ -20,5 +20,5 @@ class Loading extends Toggle {
 }
 
 export default function install(player: Player) {
-    return new Loading(player.video, player.root)
+    return new Loading(player.root, player.video)
 }
