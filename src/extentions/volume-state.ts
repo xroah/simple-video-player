@@ -1,10 +1,11 @@
 import Toggle from "../commons/toggle"
+import Player from "../modules/player"
 import Video from "../modules/video"
 import { createEl, getVolumeClass } from "../utils"
 
 const DELAY = 3000
 
-export default class VolumeState extends Toggle {
+class VolumeState extends Toggle {
     private _iconEl: HTMLElement
     private _textEl: HTMLElement
     private _timer = -1
@@ -64,4 +65,8 @@ export default class VolumeState extends Toggle {
             className
         )
     }
+}
+
+export default function install(player: Player) {
+    return new VolumeState(player.video, player.root)
 }

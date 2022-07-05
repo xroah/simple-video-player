@@ -1,7 +1,8 @@
 import Video from "../modules/video"
 import Toggle from "../commons/toggle"
+import Player from "../modules/player"
 
-export default class Loading extends Toggle {
+class Loading extends Toggle {
     constructor(
         private _video: Video,
         parent: HTMLElement
@@ -16,4 +17,8 @@ export default class Loading extends Toggle {
     private _show = () => this.show()
 
     private _hide = () => this.hide()
+}
+
+export default function install(player: Player) {
+    return new Loading(player.video, player.root)
 }

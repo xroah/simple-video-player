@@ -1,7 +1,8 @@
+import Player from "../modules/player"
 import Transition from "../modules/transition"
 import Video from "../modules/video"
 
-export default class ToggleState extends Transition {
+class ToggleState extends Transition {
     constructor(private _video: Video, parent: HTMLElement) {
         super("rplayer-toggle-state")
 
@@ -35,4 +36,8 @@ export default class ToggleState extends Transition {
         this.hide(true)
         this.setVisible(true)
     }
+}
+
+export default function install(player: Player) {
+    return new ToggleState(player.video, player.root)
 }

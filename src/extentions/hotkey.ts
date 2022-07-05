@@ -1,8 +1,9 @@
 import Video from "../modules/video"
 import throttle from "../utils/throttle"
 import { toggleFullScreen } from "../utils"
+import Player from "../modules/player"
 
-export default class Hotkey {
+class Hotkey {
     private _seek = throttle(
         this._fastSeek.bind(this),
         {
@@ -90,4 +91,8 @@ export default class Hotkey {
         //the timeupdate may not fire (waiting)
         this._video.emit("timeupdate")
     }
+}
+
+export default function install(player: Player) {
+    return new Hotkey(player.root, player.video)
 }

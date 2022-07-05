@@ -5,8 +5,15 @@ import ControlBar from "./control-bar"
 import Transition from "./transition"
 import Video from "./video"
 import DblClickEmulator from "../utils/emulate-dbl-cilck"
-import Hotkey from "../extentions/hotkey"
-import VolumeState from "../extentions/volume-state"
+
+interface ExtensionFn {
+    (player: Player, options?: unknown) : unknown
+}
+
+interface Extension {
+    options?: unknown
+    install: ExtensionFn
+}
 
 interface PlayerOptions {
     container: string | HTMLElement | Node
@@ -14,6 +21,7 @@ interface PlayerOptions {
     poster?: string
     controlBarTimeout?: number
     showMiniProgress?: boolean
+    extensions?: Array<Extension | ExtensionFn>
 }
 
 export default class Player extends Transition {
@@ -60,10 +68,6 @@ export default class Player extends Transition {
             onClick: this._togglePlay,
             onDblClick: this._handleDblClick
         })
-        new ToggleState(this.video, el)
-        new Loading(this.video, el)
-        new Hotkey(el, this.video)
-        new VolumeState(this.video, el)
 
         this.video.setSrc(_options.src)
         this._init()
