@@ -1,13 +1,15 @@
-import { createEl, getContainer, toggleFullScreen } from "../utils"
-import Loading from "../extentions/loading"
-import ToggleState from "../extentions/toggle-state"
+import {
+    createEl,
+    getContainer,
+    toggleFullScreen
+} from "../utils"
 import ControlBar from "./control-bar"
 import Transition from "./transition"
 import Video from "./video"
 import DblClickEmulator from "../utils/emulate-dbl-cilck"
 
 interface ExtensionFn {
-    (player: Player, options?: unknown) : unknown
+    (player: Player, options?: unknown): unknown
 }
 
 interface Extension {
@@ -33,9 +35,7 @@ export default class Player extends Transition {
     private _container: HTMLElement
     private _dblClickEmulator: DblClickEmulator
 
-    constructor(
-        private _options: PlayerOptions
-    ) {
+    constructor(private _options: PlayerOptions) {
         super()
 
         const container = <HTMLElement>getContainer(_options.container)
@@ -58,12 +58,12 @@ export default class Player extends Transition {
         this.body = body
         this.video = new Video(body)
         this._controlBar = new ControlBar(
-            el, 
+            el,
             this.video,
             {
                 showMiniProgress: _options.showMiniProgress
             }
-            )
+        )
         this._dblClickEmulator = new DblClickEmulator({
             onClick: this._togglePlay,
             onDblClick: this._handleDblClick
@@ -82,6 +82,24 @@ export default class Player extends Transition {
             this._handleMouseMove
         )
         this._dblClickEmulator.emulate(this.body)
+
+        this._installExtensions()
+    }
+
+    private _installExtensions() {
+        const { extensions } = this._options
+
+        if (!extensions) {
+            return
+        }
+
+        extensions.forEach(e => {
+            if (typeof e === "function") {
+                e(this)
+            } else {
+                e.install(this, e.options)
+            }
+        })
     }
 
     private _togglePlay = () => {
