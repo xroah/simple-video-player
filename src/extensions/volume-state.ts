@@ -21,7 +21,7 @@ class VolumeState extends Toggle {
 
         this._updateState()
         this._video.addListener("volumechange", this._handleVolumeChange)
-        this._video.on("set-volume", this._handleVolumeChange)
+        this._video.on("update-volume", this._handleVolumeChange)
     }
 
     private _clearHideTimeout() {
@@ -35,13 +35,9 @@ class VolumeState extends Toggle {
     private _handleVolumeChange = () => {
         this._clearHideTimeout()
         this.show()
-
-        this._timer = window.setTimeout(
-            () => this.hide(),
-            DELAY
-        )
-
         this._updateState()
+
+        this._timer = window.setTimeout(() => this.hide(),DELAY)
     }
 
     private _updateState() {
@@ -50,17 +46,9 @@ class VolumeState extends Toggle {
         const className = getVolumeClass(volume, muted)
         let volumeStr = volume.toString()
         this._iconEl.className = ""
-        
-        if (volume === 0 || muted) {
-            volumeStr = "静音"
-        }
+        this._textEl.innerHTML = volume === 0 || muted ? "静音" : volumeStr
 
-        this._textEl.innerHTML = volumeStr
-
-        this._iconEl.classList.add(
-            "rplayer-volume-icon",
-            className
-        )
+        this._iconEl.classList.add("rplayer-volume-icon", className)
     }
 }
 
