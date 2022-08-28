@@ -114,4 +114,12 @@ export default class Player extends Transition {
     private _handleMouseMove = () => {
         this._controlBar.show()
     }
+
+    public showControlBar() {
+        this._controlBar.show()
+    }
+
+    public hideControlBar() {
+        this._controlBar.hide()
+    }
 }

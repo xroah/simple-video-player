@@ -24,7 +24,7 @@ export default class DblClickEmulator {
         }
     }
 
-    private _handleMouseDown = () => {
+    private _handlePointerDown = () => {
         this._clickTimes++
         this._prevTimestamp = Date.now()
     }
@@ -42,7 +42,7 @@ export default class DblClickEmulator {
         this._options.onDblClick?.(ev)
     }
 
-    private _handleMouseUp = (ev: PointerEvent) => {
+    private _handlePointerUp = (ev: PointerEvent) => {
         const now = Date.now()
 
         if (
@@ -62,7 +62,7 @@ export default class DblClickEmulator {
     }
 
     public emulate(el: HTMLElement) {
-        el.addEventListener("pointerdown", this._handleMouseDown)
-        el.addEventListener("pointerup", this._handleMouseUp)
+        el.addEventListener("pointerdown", this._handlePointerDown)
+        el.addEventListener("pointerup", this._handlePointerUp)
     }
 }
