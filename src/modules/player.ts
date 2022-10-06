@@ -65,7 +65,7 @@ export default class Player extends Transition {
             }
         )
         this._dblClickEmulator = new DblClickEmulator({
-            onClick: this._togglePlay,
+            onClick: this._handleClick,
             onDblClick: this._handleDblClick
         })
 
@@ -78,8 +78,8 @@ export default class Player extends Transition {
         this._container.appendChild(this.root)
 
         this.body.addEventListener(
-            "mousemove",
-            this._handleMouseMove
+            "pointermove",
+            this._handlePointerMove
         )
         this._dblClickEmulator.emulate(this.body)
 
@@ -102,17 +102,30 @@ export default class Player extends Transition {
         })
     }
 
-    private _togglePlay = () => {
+    private _handleClick = (ev: PointerEvent) => {
+        if (ev.pointerType === "mouse") {
+            this.togglePlay()
+        } else {
+            this.showControlBar()
+        }
+    }
+
+    private _handleDblClick = (ev: PointerEvent) => {
+        if (ev.pointerType === "mouse") {
+            toggleFullScreen(this.root)
+        } else {
+            this.togglePlay()
+        }
+    }
+
+    public togglePlay = () => {
         this.video.toggle()
     }
 
-    private _handleDblClick = () => {
-        toggleFullScreen(this.root)
-        console.log("dblclick")
-    }
-
-    private _handleMouseMove = () => {
-        this._controlBar.show()
+    private _handlePointerMove = (ev: PointerEvent) => {
+        if (ev.pointerType === "mouse") {
+            this.showControlBar()
+        }
     }
 
     public showControlBar() {
