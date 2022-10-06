@@ -1,5 +1,5 @@
 interface Handler {
-    (e: MouseEvent): void
+    (e: PointerEvent): void
 }
 
 interface Options {
