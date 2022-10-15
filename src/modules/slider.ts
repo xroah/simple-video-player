@@ -16,7 +16,7 @@ export default class Slider extends EventEmitter {
     private _tooltip?: Tooltip
     private _value = 0
     private _moving = false
-    private _PointerDown = false
+    private _pointerDown = false
     private _entered = false
     private _updated = false
 
@@ -47,6 +47,10 @@ export default class Slider extends EventEmitter {
         this._initEvent()
     }
 
+    private _isTouchPointer(e: PointerEvent) {
+        return e.pointerType === "touch"
+    }
+
     private _initEvent() {
         const el = this._el
 
@@ -65,7 +69,7 @@ export default class Slider extends EventEmitter {
     }
 
     private _showTooltip(e: PointerEvent) {
-        if (!this._tooltip) {
+        if (!this._tooltip || this._isTouchPointer(e)) {
             return
         }
 
@@ -108,21 +112,23 @@ export default class Slider extends EventEmitter {
     }
 
     private _handlePointerDown = (e: PointerEvent) => {
-        const pos = this._getPointerPosition(e)
-        this._PointerDown = true
+        if (this._isTouchPointer(e)) {
+            return
+        }
+
+        const pos = this._getPointerPosition(e.clientY)
+        this._pointerDown = true
         this._moving = true
 
         this._updateProgress(pos.percent)
         this.emit("slide-start")
         this._showTooltip(e)
+
+        console.log("pointer down")
     }
 
-    private _handleSliderMove = (e: PointerEvent) => {
-        if (!this._PointerDown) {
-            return
-        }
-
-        let { percent } = this._getPointerPosition(e)
+    private updatePosition(clientX: number) {
+        let { percent } = this._getPointerPosition(clientX)
 
         if (percent < 0) {
             percent = 0
@@ -133,18 +139,26 @@ export default class Slider extends EventEmitter {
         this._el.classList.add("rplayer-moving")
         this._updateProgress(percent)
         this.emit("slide-move")
+    }
+
+    private _handleSliderMove = (e: PointerEvent) => {
+        if (!this._pointerDown || this._isTouchPointer(e)) {
+            return
+        }
+
+        this.updatePosition(e.clientX)
         this._showTooltip(e)
     }
 
     private _handlePointerUp = (e: PointerEvent) => {
-        if (!this._PointerDown) {
+        if (!this._pointerDown || this._isTouchPointer(e)) {
             return
         }
 
-        const { percent } = this._getPointerPosition(e)
+        const { percent } = this._getPointerPosition(e.clientX)
         const updated = this._updated
         this._updated = false
-        this._PointerDown = false
+        this._pointerDown = false
         this._moving = false
 
         this._updateProgress(percent)
@@ -160,9 +174,9 @@ export default class Slider extends EventEmitter {
         }
     }
 
-    private _getPointerPosition(e: PointerEvent) {
+    private _getPointerPosition(clientX: number) {
         const rect = this._el.getBoundingClientRect()
-        const x = e.clientX - rect.left
+        const x = clientX - rect.left
         const percent = x / rect.width * 100
 
         return {
