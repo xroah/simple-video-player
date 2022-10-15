@@ -7,7 +7,7 @@ import {
 } from "../utils"
 
 export default class Transition extends EventEmitter {
-    protected visible = false
+    public visible = false
     protected el: HTMLElement
     // for auto hide
     protected hideTimeout = 0

@@ -26,7 +26,7 @@ interface PlayerOptions {
     extensions?: Array<Extension | ExtensionFn>
 }
 
-export default class Player extends Transition {
+export default class Player {
     public root: HTMLElement
     public body: HTMLElement
     public video: Video
@@ -36,8 +36,6 @@ export default class Player extends Transition {
     private _dblClickEmulator: DblClickEmulator
 
     constructor(private _options: PlayerOptions) {
-        super()
-
         const container = <HTMLElement>getContainer(_options.container)
 
         if (!container) {
@@ -106,7 +104,11 @@ export default class Player extends Transition {
         if (ev.pointerType === "mouse") {
             this.togglePlay()
         } else {
-            this.showControlBar()
+            if (this._controlBar.visible) {
+                this.hideControlBar()
+            } else {
+                this.showControlBar()
+            }
         }
     }
 
