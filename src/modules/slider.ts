@@ -47,8 +47,13 @@ export default class Slider extends EventEmitter {
         this._initEvent()
     }
 
-    private _isTouchPointer(e: PointerEvent) {
-        return e.pointerType === "touch"
+    private _handlePointerEvent(
+        e: PointerEvent,
+        callback?: (e: PointerEvent) => void
+    ) {
+        if (e.pointerType !== "touch") {
+            callback?.(e)
+        }
     }
 
     private _initEvent() {
@@ -69,7 +74,7 @@ export default class Slider extends EventEmitter {
     }
 
     private _showTooltip(e: PointerEvent) {
-        if (!this._tooltip || this._isTouchPointer(e)) {
+        if (!this._tooltip) {
             return
         }
 
@@ -92,39 +97,55 @@ export default class Slider extends EventEmitter {
     }
 
     private _handlePointerMove = (e: PointerEvent) => {
-        if (!this._moving) {
-            this._showTooltip(e)
-        }
+        this._handlePointerEvent(
+            e,
+            () => {
+                if (!this._moving) {
+                    this._showTooltip(e)
+                }
+            }
+        )
     }
 
     private _handlePointerEnter = (e: PointerEvent) => {
-        this._entered = true
+        this._handlePointerEvent(
+            e,
+            () => {
+                this._entered = true
 
-        this._showTooltip(e)
+                this._showTooltip(e)
+            }
+        )
     }
 
     private _handlePointerLeave = (e: PointerEvent) => {
-        this._entered = false
+        this._handlePointerEvent(
+            e,
+            () => {
+                this._entered = false
 
-        if (!this._moving) {
-            this._hideTooltip()
-        }
+                if (!this._moving) {
+                    this._hideTooltip()
+                }
+            }
+        )
     }
 
     private _handlePointerDown = (e: PointerEvent) => {
-        if (this._isTouchPointer(e)) {
-            return
-        }
+        this._handlePointerEvent(
+            e,
+            ev => {
+                const pos = this._getPointerPosition(ev.clientX)
+                this._pointerDown = true
+                this._moving = true
 
-        const pos = this._getPointerPosition(e.clientY)
-        this._pointerDown = true
-        this._moving = true
+                this._updateProgress(pos.percent)
+                this.emit("slide-start")
+                this._showTooltip(e)
 
-        this._updateProgress(pos.percent)
-        this.emit("slide-start")
-        this._showTooltip(e)
-
-        console.log("pointer down")
+                console.log("pointer down")
+            }
+        )
     }
 
     private updatePosition(clientX: number) {
@@ -142,20 +163,19 @@ export default class Slider extends EventEmitter {
     }
 
     private _handleSliderMove = (e: PointerEvent) => {
-        if (!this._pointerDown || this._isTouchPointer(e)) {
-            return
-        }
-
-        this.updatePosition(e.clientX)
-        this._showTooltip(e)
+        this._handlePointerEvent(
+            e,
+            ev => {
+                if (this._pointerDown) {
+                    this.updatePosition(ev.clientX)
+                    this._showTooltip(e)
+                }
+            }
+        )
     }
 
-    private _handlePointerUp = (e: PointerEvent) => {
-        if (!this._pointerDown || this._isTouchPointer(e)) {
-            return
-        }
-
-        const { percent } = this._getPointerPosition(e.clientX)
+    private _handleMoveEnd(clientX: number) {
+        const { percent } = this._getPointerPosition(clientX)
         const updated = this._updated
         this._updated = false
         this._pointerDown = false
@@ -172,6 +192,17 @@ export default class Slider extends EventEmitter {
         if (!this._entered) {
             this._hideTooltip()
         }
+    }
+
+    private _handlePointerUp = (e: PointerEvent) => {
+        this._handlePointerEvent(
+            e,
+            ev => {
+                if (this._pointerDown) {
+                    this._handleMoveEnd(ev.clientX)
+                }
+            }
+        )
     }
 
     private _getPointerPosition(clientX: number) {
