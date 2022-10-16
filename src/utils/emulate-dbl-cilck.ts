@@ -5,6 +5,7 @@ interface Handler {
 interface Options {
     onClick?: Handler
     onDblClick?: Handler
+    target: HTMLElement
 }
 
 const THRESHOLD = 200
@@ -14,7 +15,16 @@ export default class DblClickEmulator {
     private _timer = -1
     private _prevTimestamp = 0
 
-    constructor(private _options: Options = {}) { }
+    constructor(private _options: Options) {
+        _options.target.addEventListener(
+            "pointerdown",
+            this._handlePointerDown
+        )
+        document.addEventListener(
+            "pointerup",
+            this._handlePointerUp
+        )
+    }
 
     private _clearTimeout() {
         if (this._timer !== -1) {
@@ -44,6 +54,17 @@ export default class DblClickEmulator {
 
     private _handlePointerUp = (ev: PointerEvent) => {
         const now = Date.now()
+        const target = ev.target as HTMLElement
+
+        // release pointer outside of the target
+        if (
+            target !== this._options.target &&
+            !this._options.target.contains(target)
+        ) {
+            this._clickTimes = 0
+
+            return
+        }
 
         if (
             this._clickTimes === 2 &&
@@ -59,10 +80,5 @@ export default class DblClickEmulator {
             () => this._click(ev),
             THRESHOLD
         )
-    }
-
-    public emulate(el: HTMLElement) {
-        el.addEventListener("pointerdown", this._handlePointerDown)
-        el.addEventListener("pointerup", this._handlePointerUp)
     }
 }

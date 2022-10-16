@@ -64,7 +64,8 @@ export default class Player {
         )
         this._dblClickEmulator = new DblClickEmulator({
             onClick: this._handleClick,
-            onDblClick: this._handleDblClick
+            onDblClick: this._handleDblClick,
+            target: this.body
         })
 
         this.video.setSrc(_options.src)
@@ -79,7 +80,6 @@ export default class Player {
             "pointermove",
             this._handlePointerMove
         )
-        this._dblClickEmulator.emulate(this.body)
 
         this._installExtensions()
     }
