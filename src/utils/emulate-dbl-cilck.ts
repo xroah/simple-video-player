@@ -35,7 +35,12 @@ export default class DblClickEmulator {
         }
     }
 
-    private _handlePointerDown = () => {
+    private _handlePointerDown = (ev: PointerEvent) => {
+        // main button click
+        if (ev.button !== undefined && ev.button !== 0) {
+            return
+        }
+
         const now = Date.now()
         // double click based on mousedown intervals
         this._interval = now - this._prevTimestamp
@@ -60,6 +65,10 @@ export default class DblClickEmulator {
     }
 
     private _handlePointerUp = (ev: PointerEvent) => {
+        if (ev.button !== undefined && ev.button !== 0) {
+            return
+        }
+
         const target = ev.target as HTMLElement
 
         // release pointer outside of the target
