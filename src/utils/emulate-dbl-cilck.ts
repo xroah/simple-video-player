@@ -14,6 +14,7 @@ export default class DblClickEmulator {
     private _clickTimes = 0
     private _timer = -1
     private _prevTimestamp = 0
+    private _interval = 0
 
     constructor(private _options: Options) {
         _options.target.addEventListener(
@@ -35,13 +36,19 @@ export default class DblClickEmulator {
     }
 
     private _handlePointerDown = () => {
-        this._clickTimes++
+        const now = Date.now()
+        // double click based on mousedown intervals
+        this._interval = now - this._prevTimestamp
         this._prevTimestamp = Date.now()
+        this._clickTimes++
+
+        if (this._clickTimes > 1) {
+            this._clearTimeout()
+        }
     }
 
     private _click(ev: PointerEvent) {
         this._timer = -1
-        this._clickTimes = 0
 
         this._options.onClick?.(ev)
     }
@@ -53,7 +60,6 @@ export default class DblClickEmulator {
     }
 
     private _handlePointerUp = (ev: PointerEvent) => {
-        const now = Date.now()
         const target = ev.target as HTMLElement
 
         // release pointer outside of the target
@@ -68,17 +74,25 @@ export default class DblClickEmulator {
 
         if (
             this._clickTimes === 2 &&
-            this._prevTimestamp - now <= THRESHOLD
+            this._interval <= THRESHOLD
         ) {
+            this._clickTimes = 0
+
             this._clearTimeout()
             this._dblClick(ev)
 
             return
         }
 
-        this._timer = window.setTimeout(
-            () => this._click(ev),
-            THRESHOLD
-        )
+        if (this._clickTimes === 1) {
+            this._timer = window.setTimeout(
+                () => {
+                    this._clickTimes = 0
+
+                    this._click(ev)
+                },
+                THRESHOLD
+            )
+        }
     }
 }
