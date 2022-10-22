@@ -86,17 +86,15 @@ export default class Contextmenu extends Toggle {
 
         document.addEventListener(
             "click",
-            // @ts-ignore
             this._handleClickOutside
         )
         document.addEventListener(
             "contextmenu",
-            // @ts-ignore
             this._handleClickOutside
         )
         this.el.addEventListener("keydown", this._handleKeydown)
         // @ts-ignore
-        this.el.addEventListener("click", this._handleClick)
+        this._menu.addEventListener("click", this._handleClick)
     }
 
     private _hide() {
@@ -104,12 +102,10 @@ export default class Contextmenu extends Toggle {
 
         document.removeEventListener(
             "click",
-            // @ts-ignore
             this._handleClickOutside
         )
         document.removeEventListener(
             "contextmenu",
-            // @ts-ignore
             this._handleClickOutside
         )
     }
@@ -141,6 +137,8 @@ export default class Contextmenu extends Toggle {
             action?.(this._player)
             this._hide()
         }
+
+        ev.stopPropagation()
     }
 
     private _handleKeydown = (ev: KeyboardEvent) => {
@@ -149,11 +147,7 @@ export default class Contextmenu extends Toggle {
         }
     }
 
-    private _handleClickOutside = (ev: PointerEvent) => {
-        const target = ev.target as HTMLElement
-
-        if (!this._menu.contains(target)) {
-            this._hide()
-        }
+    private _handleClickOutside = () => {
+        this._hide()
     }
 }
