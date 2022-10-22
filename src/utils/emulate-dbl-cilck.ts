@@ -52,18 +52,6 @@ export default class DblClickEmulator {
         }
     }
 
-    private _click(ev: PointerEvent) {
-        this._timer = -1
-
-        this._options.onClick?.(ev)
-    }
-
-    private _dblClick(ev: PointerEvent) {
-        this._clickTimes = 0
-
-        this._options.onDblClick?.(ev)
-    }
-
     private _handlePointerUp = (ev: PointerEvent) => {
         if (ev.button !== undefined && ev.button !== 0) {
             return
@@ -88,7 +76,7 @@ export default class DblClickEmulator {
             this._clickTimes = 0
 
             this._clearTimeout()
-            this._dblClick(ev)
+            this._options.onDblClick?.(ev)
 
             return
         }
@@ -97,8 +85,9 @@ export default class DblClickEmulator {
             this._timer = window.setTimeout(
                 () => {
                     this._clickTimes = 0
+                    this._timer = -1
 
-                    this._click(ev)
+                    this._options.onClick?.(ev)
                 },
                 THRESHOLD
             )
