@@ -7,6 +7,7 @@ import ControlBar from "./control-bar"
 import Transition from "./transition"
 import Video from "./video"
 import DblClickEmulator from "../utils/emulate-dbl-cilck"
+import Contextmenu, { ContextmenuOptions } from "./contextmenu"
 
 interface ExtensionFn {
     (player: Player, options?: unknown): unknown
@@ -24,6 +25,7 @@ interface PlayerOptions {
     controlBarTimeout?: number
     showMiniProgress?: boolean
     extensions?: Array<Extension | ExtensionFn>
+    contextmenu?: false | ContextmenuOptions
 }
 
 export default class Player {
@@ -34,6 +36,7 @@ export default class Player {
     private _controlBar: ControlBar
     private _container: HTMLElement
     private _dblClickEmulator: DblClickEmulator
+    private _contextmenu?: Contextmenu
 
     constructor(private _options: PlayerOptions) {
         const container = <HTMLElement>getContainer(_options.container)
@@ -67,6 +70,13 @@ export default class Player {
             onDblClick: this._handleDblClick,
             target: this.body
         })
+
+        if (_options.contextmenu) {
+            this._contextmenu = new Contextmenu(
+                this,
+                _options.contextmenu
+            )
+        }
 
         this.video.setSrc(_options.src)
         this._init()

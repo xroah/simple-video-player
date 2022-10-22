@@ -10,5 +10,21 @@ import "../src/styles/index.scss"
 let rp = new RPlayer({
     container: "#player",
     extensions: [hotkey, loading, volumeState, toggleState],
+    contextmenu: {
+        items: [
+            {
+                text: "菜单1",
+                action() {
+                    console.log("菜单11111")
+                }
+            },
+            {
+                text: "菜单2",
+                action() {
+                    console.log("菜单222222")
+                }
+            }
+        ]
+    },
     src: "https://ia600300.us.archive.org/17/items/BigBuckBunny_124/Content/big_buck_bunny_720p_surround.mp4"
 })
