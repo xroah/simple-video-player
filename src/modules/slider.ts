@@ -65,7 +65,9 @@ export default class Slider extends EventEmitter {
     }
 
     private _showTooltip(e: MouseEvent) {
-        if (!this._tooltip) {
+        const isMouse = (e as PointerEvent).pointerType === "mouse"
+
+        if (!this._tooltip || !isMouse) {
             return
         }
 

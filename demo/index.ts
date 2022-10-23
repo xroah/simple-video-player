@@ -11,6 +11,9 @@ let rp = new RPlayer({
     container: "#player",
     extensions: [hotkey, loading, volumeState, toggleState],
     contextmenu: {
+        beforeShow(ev){
+            return ev.pointerType === "mouse"
+        },
         items: [
             {
                 text: "菜单1",

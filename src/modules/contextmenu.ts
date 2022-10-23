@@ -13,7 +13,7 @@ interface ContextmenuItem {
 }
 
 interface BeforeShowCallback {
-    (ev: PointerEvent, el: HTMLElement): void
+    (ev: PointerEvent, el: HTMLElement): boolean
 }
 
 export type ContextmenuOptions = ContextmenuItem[] | {
@@ -115,7 +115,7 @@ export default class Contextmenu extends Toggle {
 
         ev.preventDefault()
         ev.stopPropagation()
-        
+
         if (this.el === target || this.el.contains(target)) {
             if (this.el === target) {
                 this._hide()
@@ -124,7 +124,12 @@ export default class Contextmenu extends Toggle {
             return
         }
 
-        this._beforeShow?.(ev, this.el)
+        const ret = this._beforeShow?.(ev, this.el)
+
+        if (ret === false) {
+            return
+        }
+
         this._show(ev)
     }
 
