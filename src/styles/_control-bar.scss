@@ -6,7 +6,7 @@
     position: absolute;
     bottom: 0;
     left: 0;
-    padding: 0 15px;
+    padding: 0 10px;
     width: 100%;
     height: 50px;
     transition: transform .3s;
@@ -18,72 +18,15 @@
         transform: translateY(100%);
     }
 
-    .rplayer-slider-wrapper {
-        bottom: 0;
-    }
-
-    .rplayer-controls-wrapper {
-        display: flex;
-        flex: 1;
-
-        .rplayer-left-controls,
-        .rplayer-right-controls {
-            display: flex;
-            align-items: center;
-        }
-
-        .rplayer-left-controls .rplayer-btn {
-            margin-right: 10px;
-        }
-
-        .rplayer-right-controls {
-            margin-left: auto;
-        }
-    }
-
-    .rplayer-btn {
-        width: 36px;
-        height: 36px;
-        padding: 0;
-        border: none;
-        background-color: transparent;
-        color: #fff;
-        cursor: pointer;
-
-        &:hover {
-            color: rgba(255, 255, 255, .9)
-        }
-
-        &:active {
-            color: rgba(255, 255, 255, .6)
-        }
-    }
-
-    .rplayer-time-info {
+    .rplayer-progress-wrapper {
         display: flex;
         align-items: center;
-        height: 100%;
+        font-size: 14px;
 
-        span {
-            margin: 3px;
-        }
-    }
-
-    .rplayer-volume-wrapper {
-        @include vars.flex-v-center();
-    }
-
-    .rplayer-volume-slider {
-        width: 0;
-        transition: width .3s;
-    }
-
-    .rplayer-volume-slider.rplayer-show {
-        width: 80px;
-        margin-right: 15px;
-
-        .rplayer-slider-marker {
-            opacity: 1;
+        .rplayer-progress {
+            margin: 0 10px;
+            flex-grow: 1;
+            flex-shrink: 0;
         }
     }
 }
