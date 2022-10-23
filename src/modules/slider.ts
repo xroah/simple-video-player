@@ -7,6 +7,11 @@ interface SliderOptions {
     tooltip?: boolean | ((v: number) => string)
 }
 
+interface Position {
+    clientX: number
+    clientY: number
+}
+
 export default class Slider extends EventEmitter {
     private _el: HTMLElement
     private _progress: HTMLElement
@@ -18,7 +23,6 @@ export default class Slider extends EventEmitter {
     private _mouseDown = false
     private _entered = false
     private _updated = false
-    private _isMouse = false
 
     constructor(
         parent: HTMLElement,
@@ -50,39 +54,19 @@ export default class Slider extends EventEmitter {
     private _initEvent() {
         const el = this._el
 
-        el.addEventListener(
-            "pointerdown",
-            this._handlePointerEvent,
-            true
-        )
-        el.addEventListener(
-            "pointerup",
-            this._handlePointerEvent,
-            true
-        )
-        el.addEventListener("mousedown", this._handleMouseDown)
-        document.addEventListener("mousemove", this._handleSliderMove)
-        document.addEventListener("mouseup", this._handleMouseUp)
+        el.addEventListener("pointerdown", this._handlePointerDown)
+        document.addEventListener("pointermove", this._handlePointerMove)
+        document.addEventListener("pointerup", this._handlePointerUp)
 
         if (this._tooltip) {
-            el.addEventListener("mousemove", this._handleMouseMove)
-            el.addEventListener("mouseenter", this._handleMouseEnter)
-            el.addEventListener("mouseleave", this._handleMouseLeave)
+            el.addEventListener("pointermove", this._handleElPointerMove)
+            el.addEventListener("pointerenter", this._handlePointerEnter)
+            el.addEventListener("pointerleave", this._handlePointerLeave)
         }
     }
 
-    private _handlePointerEvent = (ev: PointerEvent) => {
-        const isMouse = ev.pointerType === "mouse"
-
-        if (ev.type === "pointerdown") {
-            this._isMouse = isMouse
-        } else {
-            this._isMouse = false
-        }
-    }
-
-    private _showTooltip(e: MouseEvent) {
-        if (!this._tooltip || !this._isMouse) {
+    private _showTooltip(e: Position) {
+        if (!this._tooltip) {
             return
         }
 
@@ -104,32 +88,37 @@ export default class Slider extends EventEmitter {
         this._tooltip?.hide()
     }
 
-    private _handleMouseMove = (e: MouseEvent) => {
-        if (!this._moving) {
+    private _isTouch(e: PointerEvent) {
+        return e.pointerType === "touch"
+    }
+
+    private _handleElPointerMove = (e: PointerEvent) => {
+        if (!this._moving && !this._isTouch(e)) {
             this._showTooltip(e)
         }
     }
 
-    private _handleMouseEnter = (e: MouseEvent) => {
-        this._entered = true
+    private _handlePointerEnter = (e: PointerEvent) => {
+        if (!this._isTouch(e)) {
+            this._entered = true
+            this._showTooltip(e)
+        }
     }
 
-    private _handleMouseLeave = (e: MouseEvent) => {
+    private _handlePointerLeave = (e: PointerEvent) => {
         this._entered = false
 
-        if (!this._moving) {
+        if (!this._moving && !this._isTouch(e)) {
             this._hideTooltip()
         }
     }
 
-    private _handleMouseDown = (e: MouseEvent) => {
-        const pos = this._getMousePosition(e.clientX)
-        this._mouseDown = true
-        this._moving = true
+    private _handlePointerDown = (e: PointerEvent) => {
+        if (this._isTouch(e)) {
+            return
+        }
 
-        this._updateProgress(pos.percent)
-        this.emit("slide-start")
-        this._showTooltip(e)
+        this._handleStart(e)
     }
 
     private updatePosition(clientX: number) {
@@ -146,15 +135,29 @@ export default class Slider extends EventEmitter {
         this.emit("slide-move")
     }
 
-    private _handleSliderMove = (e: MouseEvent) => {
-        if (this._mouseDown) {
-            this.updatePosition(e.clientX)
-            this._showTooltip(e)
+    private _handleStart(position: Position) {
+        const pos = this._getMousePosition(position.clientX)
+        this._mouseDown = true
+        this._moving = true
+
+        this._updateProgress(pos.percent)
+        this.emit("slide-start")
+        this._showTooltip(position)
+    }
+
+    private _handleMoving(pos: Position) {
+            this.updatePosition(pos.clientX)
+            this._showTooltip(pos)
+    }
+
+    private _handlePointerMove = (e: PointerEvent) => {
+        if (this._mouseDown && !this._isTouch(e)) {
+            this._handleMoving(e)
         }
     }
 
-    private _handleMoveEnd(clientX: number) {
-        const { percent } = this._getMousePosition(clientX)
+    private _handleEnd(pos: Position) {
+        const { percent } = this._getMousePosition(pos.clientX)
         const updated = this._updated
         this._updated = false
         this._mouseDown = false
@@ -173,9 +176,9 @@ export default class Slider extends EventEmitter {
         }
     }
 
-    private _handleMouseUp = (e: MouseEvent) => {
-        if (this._mouseDown) {
-            this._handleMoveEnd(e.clientX)
+    private _handlePointerUp = (e: PointerEvent) => {
+        if (this._mouseDown && !this._isTouch(e)) {
+            this._handleEnd(e)
         }
     }
 
