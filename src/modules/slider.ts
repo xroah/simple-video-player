@@ -5,7 +5,6 @@ import Tooltip from "./tooltip"
 interface SliderOptions {
     buffer?: boolean
     tooltip?: boolean | ((v: number) => string)
-    showTooltipOnHover?: boolean
 }
 
 export default class Slider extends EventEmitter {
@@ -19,6 +18,7 @@ export default class Slider extends EventEmitter {
     private _mouseDown = false
     private _entered = false
     private _updated = false
+    private _isMouse = false
 
     constructor(
         parent: HTMLElement,
@@ -50,24 +50,39 @@ export default class Slider extends EventEmitter {
     private _initEvent() {
         const el = this._el
 
-        el.addEventListener("mousedown", this._handlemouseDown)
+        el.addEventListener(
+            "pointerdown",
+            this._handlePointerEvent,
+            true
+        )
+        el.addEventListener(
+            "pointerup",
+            this._handlePointerEvent,
+            true
+        )
+        el.addEventListener("mousedown", this._handleMouseDown)
         document.addEventListener("mousemove", this._handleSliderMove)
-        document.addEventListener("mouseup", this._handlemouseUp)
+        document.addEventListener("mouseup", this._handleMouseUp)
 
-        if (
-            this._tooltip &&
-            this._options.showTooltipOnHover !== false
-        ) {
-            el.addEventListener("mousemove", this._handlemouseMove)
-            el.addEventListener("mouseenter", this._handlemouseEnter)
-            el.addEventListener("mouseleave", this._handlemouseLeave)
+        if (this._tooltip) {
+            el.addEventListener("mousemove", this._handleMouseMove)
+            el.addEventListener("mouseenter", this._handleMouseEnter)
+            el.addEventListener("mouseleave", this._handleMouseLeave)
+        }
+    }
+
+    private _handlePointerEvent = (ev: PointerEvent) => {
+        const isMouse = ev.pointerType === "mouse"
+
+        if (ev.type === "pointerdown") {
+            this._isMouse = isMouse
+        } else {
+            this._isMouse = false
         }
     }
 
     private _showTooltip(e: MouseEvent) {
-        const isMouse = (e as PointerEvent).pointerType === "mouse"
-
-        if (!this._tooltip || !isMouse) {
+        if (!this._tooltip || !this._isMouse) {
             return
         }
 
@@ -89,19 +104,17 @@ export default class Slider extends EventEmitter {
         this._tooltip?.hide()
     }
 
-    private _handlemouseMove = (e: MouseEvent) => {
+    private _handleMouseMove = (e: MouseEvent) => {
         if (!this._moving) {
             this._showTooltip(e)
         }
     }
 
-    private _handlemouseEnter = (e: MouseEvent) => {
+    private _handleMouseEnter = (e: MouseEvent) => {
         this._entered = true
-
-        this._showTooltip(e)
     }
 
-    private _handlemouseLeave = (e: MouseEvent) => {
+    private _handleMouseLeave = (e: MouseEvent) => {
         this._entered = false
 
         if (!this._moving) {
@@ -109,8 +122,8 @@ export default class Slider extends EventEmitter {
         }
     }
 
-    private _handlemouseDown = (e: MouseEvent) => {
-        const pos = this._getmousePosition(e.clientX)
+    private _handleMouseDown = (e: MouseEvent) => {
+        const pos = this._getMousePosition(e.clientX)
         this._mouseDown = true
         this._moving = true
 
@@ -120,7 +133,7 @@ export default class Slider extends EventEmitter {
     }
 
     private updatePosition(clientX: number) {
-        let { percent } = this._getmousePosition(clientX)
+        let { percent } = this._getMousePosition(clientX)
 
         if (percent < 0) {
             percent = 0
@@ -141,7 +154,7 @@ export default class Slider extends EventEmitter {
     }
 
     private _handleMoveEnd(clientX: number) {
-        const { percent } = this._getmousePosition(clientX)
+        const { percent } = this._getMousePosition(clientX)
         const updated = this._updated
         this._updated = false
         this._mouseDown = false
@@ -160,13 +173,13 @@ export default class Slider extends EventEmitter {
         }
     }
 
-    private _handlemouseUp = (e: MouseEvent) => {
+    private _handleMouseUp = (e: MouseEvent) => {
         if (this._mouseDown) {
             this._handleMoveEnd(e.clientX)
         }
     }
 
-    private _getmousePosition(clientX: number) {
+    private _getMousePosition(clientX: number) {
         const rect = this._el.getBoundingClientRect()
         const x = clientX - rect.left
         const percent = x / rect.width * 100
