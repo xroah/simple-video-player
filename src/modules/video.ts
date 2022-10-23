@@ -76,6 +76,8 @@ export default class Video extends EventEmitter {
 
     public setCurrentTime(time: number) {
         this.el.currentTime = time
+
+        this.emit("update-time", time)
     }
 
     public getDuration() {
@@ -87,7 +89,9 @@ export default class Video extends EventEmitter {
     }
 
     public setVolume(v: number) {
-        if (v > 100) {
+        if (v < 0) {
+            v = 0
+        } else if (v > 100) {
             v = 100
         }
 

@@ -58,12 +58,6 @@ class Hotkey {
             volume -= STEP
         }
 
-        if (volume < 0) {
-            volume = 0
-        } else if (volume > 100) {
-            volume = 100
-        }
-
         v.setMuted(false)
         v.setVolume(volume)
     }
