@@ -152,18 +152,21 @@ export default class Slider extends EventEmitter {
         this._handleStart(e)
     }
 
-    private _handleMoving(pos: Position) {
+    private _handleMoving(pos: Position, tooltip = false) {
         if (!this._mouseDown) {
             return
         }
 
         this._updatePosition(pos.clientX)
+
+        if (tooltip) {
+            this._showTooltip(pos)
+        }
     }
 
     private _handlePointerMove = (e: PointerEvent) => {
         if (!this._isTouch(e)) {
-            this._handleMoving(e)
-            this._showTooltip(e)
+            this._handleMoving(e, true)
         }
     }
 
