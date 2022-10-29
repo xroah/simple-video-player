@@ -10,6 +10,13 @@ interface SliderOptions {
 interface Position {
     clientX: number
     clientY: number
+    pointerType?: string
+    type?: string
+}
+
+export interface Details {
+    value: number,
+    type?: string
 }
 
 export default class Slider extends EventEmitter {
@@ -100,6 +107,10 @@ export default class Slider extends EventEmitter {
         return e.pointerType === "touch"
     }
 
+    private _getPointerType(pos: Position) {
+        return pos.pointerType ?? "touch"
+    }
+
     private _handleElPointerMove = (e: PointerEvent) => {
         if (!this._moving && !this._isTouch(e)) {
             this._showTooltip(e)
@@ -121,8 +132,8 @@ export default class Slider extends EventEmitter {
         }
     }
 
-    private _updatePosition(clientX: number) {
-        let { percent } = this._getMousePosition(clientX)
+    private _updatePosition(pos: Position) {
+        let { percent } = this._getMousePosition(pos.clientX)
 
         if (percent < 0) {
             percent = 0
@@ -131,17 +142,29 @@ export default class Slider extends EventEmitter {
         }
 
         this._el.classList.add("rplayer-moving")
-        this._updateProgress(percent)
-        this.emit("slide-move")
+        this._updateProgress(percent, pos)
+        this.emit(
+            "slide-move",
+            {
+                value: percent,
+                type: this._getPointerType(pos)
+            }
+        )
     }
 
-    private _handleStart(position: Position) {
-        const pos = this._getMousePosition(position.clientX)
+    private _handleStart(pos: Position) {
+        const { percent } = this._getMousePosition(pos.clientX)
         this._mouseDown = true
         this._moving = true
 
-        this._updateProgress(pos.percent)
-        this.emit("slide-start")
+        this._updateProgress(percent, pos)
+        this.emit(
+            "slide-start",
+            {
+                value: percent,
+                type: this._getPointerType(pos)
+            }
+        )
     }
 
     private _handlePointerDown = (e: PointerEvent) => {
@@ -157,7 +180,7 @@ export default class Slider extends EventEmitter {
             return
         }
 
-        this._updatePosition(pos.clientX)
+        this._updatePosition(pos)
 
         if (tooltip) {
             this._showTooltip(pos)
@@ -181,12 +204,24 @@ export default class Slider extends EventEmitter {
         this._mouseDown = false
         this._moving = false
 
-        this._updateProgress(percent)
+        this._updateProgress(percent, pos)
         this._el.classList.remove("rplayer-moving")
-        this.emit("slide-end")
+        this.emit(
+            "slide-end",
+            {
+                value: percent,
+                type: this._getPointerType(pos)
+            }
+        )
 
         if (updated) {
-            this.emit("value-change", this._value)
+            this.emit(
+                "value-change",
+                {
+                    value: this._value,
+                    type: pos.pointerType
+                }
+            )
         }
     }
 
@@ -233,11 +268,17 @@ export default class Slider extends EventEmitter {
         }
     }
 
-    private _updateProgress(val: number) {
+    private _updateProgress(val: number, pos: Position) {
         if (this._value !== val) {
             this._updated = true
 
-            this.emit("value-update", val)
+            this.emit(
+                "value-update", 
+                {
+                    value: val,
+                    type: this._getPointerType(pos)
+                }
+            )
             this.updateProgress(val)
         }
     }

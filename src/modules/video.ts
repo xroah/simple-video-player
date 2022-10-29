@@ -76,8 +76,6 @@ export default class Video extends EventEmitter {
 
     public setCurrentTime(time: number) {
         this.el.currentTime = time
-
-        this.emit("update-time", time)
     }
 
     public getDuration() {

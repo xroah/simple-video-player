@@ -2,7 +2,7 @@ import { controlBarHtml } from "../commons/constants"
 import { EventObject } from "../commons/event-emitter"
 import { formatTime } from "../utils"
 import MiniProgress from "./mini-progress"
-import Slider from "./slider"
+import Slider, { Details } from "./slider"
 import Transition from "./transition"
 import Video from "./video"
 
@@ -67,6 +67,8 @@ export default class ControlBar extends Transition {
             this._handleDurationChange
         )
         this._slider.on("value-change", this._handleSliderChange)
+        this._slider.on("value-update", this._handleSliderUpdate)
+        this._slider.on("slide-end", this._handleSlideEnd)
 
         if (this._miniProgress) {
             this.on("show", this._hideMiniProgress)
@@ -119,10 +121,34 @@ export default class ControlBar extends Transition {
         this._miniProgress?.update(progress)
     }
 
-    private _handleSliderChange = (eo: EventObject) => {
-        const progress = eo.details as number
+    private _getSeekTime(eo: EventObject) {
+        const details = eo.details as Details
         const duration = this._video.getDuration()
 
-        this._video.setCurrentTime(duration * progress / 100)
+        return duration * details.value / 100
+    }
+
+    private _handleSliderChange = (eo: EventObject) => {
+        this._video.setCurrentTime(
+            this._getSeekTime(eo)
+        )
+    }
+
+    private _emitSeekEvent = (type: string, eo: EventObject) => {
+        this.emit(
+            type,
+            {
+                time: this._getSeekTime(eo),
+                ...eo.details
+            }
+        )
+    }
+
+    private _handleSliderUpdate = (eo: EventObject) => {
+        this._emitSeekEvent("seeking", eo)
+    }
+
+    private _handleSlideEnd = (eo: EventObject) => {
+        this._emitSeekEvent("seek-end", eo)
     }
 }
