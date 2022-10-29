@@ -1,12 +1,12 @@
 @use "./vars";
 
 .rplayer-slider-wrapper {
-    $marker_size: 14px;
+    $marker_size: 16px;
 
     position: relative;
     height: vars.$slider_size;
     background-color: rgba(255, 255, 255, .5);
-    transition: all .3s;
+    transition: all .15s;
     user-select: none;
     cursor: pointer;
 

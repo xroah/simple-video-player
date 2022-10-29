@@ -27,6 +27,11 @@
             margin: 0 10px;
             flex-grow: 1;
             flex-shrink: 0;
+
+            &:hover .rplayer-slider-wrapper,
+            .rplayer-slider-wrapper.rplayer-moving {
+                height: 10px;
+            }
         }
     }
 }
