@@ -11,8 +11,8 @@ class ToggleState extends Transition {
     }
 
     private initEvents() {
-        this._video.addListener("play", this.switchState)
-        this._video.addListener("pause", this.switchState)
+        this._video.addListener("play", this.toggleState)
+        this._video.addListener("pause", this.toggleState)
     }
 
     handleTransitionEnd = () => {
@@ -24,7 +24,7 @@ class ToggleState extends Transition {
         }
     }
 
-    switchState = () => {
+    toggleState = () => {
         if (this._video.isPaused()) {
             this.el.classList.add("rplayer-paused")
         } else {

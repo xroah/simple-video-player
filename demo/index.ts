@@ -26,6 +26,24 @@ let rp = new RPlayer({
                 action() {
                     console.log("菜单222222")
                 }
+            },
+            {
+                text: "菜单3",
+                action() {
+                    console.log("菜单333333")
+                }
+            },
+            {
+                text: "菜单4",
+                action() {
+                    console.log("菜单444444")
+                }
+            },
+            {
+                text: "菜单5",
+                action() {
+                    console.log("菜单555555")
+                }
             }
         ]
     },
