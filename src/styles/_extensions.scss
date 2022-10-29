@@ -9,6 +9,7 @@
     width: 50px;
     height: 50px;
     border-radius: 50%;
+    pointer-events: none;
     transform: translate(-50%, -50%) scale(1);
     /*parcel relative to index.scss*/
     background: url("../../icons/play.svg") no-repeat center center/36px 36px #000;
@@ -40,6 +41,7 @@ $translate: translate(-50%, -50%);
     height: $size;
     border: 5px solid rgba(255, 255, 255, 0.8);
     border-bottom-color: transparent;
+    pointer-events: none;
     border-left-color: transparent;
     border-radius: 50%;
     animation: rplayer-spinner linear 0.8s infinite;
@@ -63,6 +65,7 @@ $translate: translate(-50%, -50%);
     align-items: center;
     padding: 5px 10px;
     border-radius: 5px;
+    pointer-events: none;
     background-color: rgba(0, 0, 0, .3);
     color: #fff;
     font-size: 25px;
