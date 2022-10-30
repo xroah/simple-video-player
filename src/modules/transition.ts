@@ -7,7 +7,7 @@ import {
 } from "../utils"
 
 export default class Transition extends EventEmitter {
-    public visible = false
+    protected visible = false
     protected el: HTMLElement
     // for auto hide
     protected hideTimeout = 0
@@ -68,7 +68,7 @@ export default class Transition extends EventEmitter {
         )
     }
 
-    protected _handleTransitionEnd (e?: TransitionEvent) {
+    protected _handleTransitionEnd(e?: TransitionEvent) {
         if (e && e.target !== this.el) {
             return
         }
@@ -201,5 +201,13 @@ export default class Transition extends EventEmitter {
 
     public hide(force = false) {
         this.setVisible(false, force)
+    }
+
+    public toggle(force = false) {
+        if (this.visible) {
+            this.hide(force)
+        } else {
+            this.show(force)
+        }
     }
 }
