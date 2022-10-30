@@ -24,8 +24,16 @@
         padding: 10px;
         cursor: pointer;
 
+        @function get_color($alpha) {
+            @return rgba(255, 255, 255, $alpha)
+        }
+
+        &+.rplayer-contextmenu-item {
+            border-top: 1px solid get_color(.1);
+        }
+
         &:hover {
-            background-color: rgba(255, 255, 255, .2);
+            background-color: get_color(.2);
         }
     }
 }
