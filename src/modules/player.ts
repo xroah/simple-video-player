@@ -26,6 +26,10 @@ interface PlayerOptions {
     showMiniProgress?: boolean
     extensions?: Array<Extension | ExtensionFn>
     contextmenu?: false | ContextmenuOptions
+    // default pointer action
+    //for touch: click toggle control bar, dblclick toggle play
+    // for mouse or pen: click toggle play, dblclick toggle fullscreen
+    defaultPointerAction?: boolean
 }
 
 export default class Player {
@@ -35,7 +39,7 @@ export default class Player {
 
     private _controlBar: ControlBar
     private _container: HTMLElement
-    private _dblClickEmulator: DblClickEmulator
+    private _dblClickEmulator?: DblClickEmulator
     private _contextmenu?: Contextmenu
 
     constructor(private _options: PlayerOptions) {
@@ -65,11 +69,6 @@ export default class Player {
                 showMiniProgress: _options.showMiniProgress
             }
         )
-        this._dblClickEmulator = new DblClickEmulator({
-            onClick: this._handleClick,
-            onDblClick: this._handleDblClick,
-            target: this.body
-        })
 
         if (_options.contextmenu) {
             this._contextmenu = new Contextmenu(
@@ -78,11 +77,19 @@ export default class Player {
             )
         }
 
-        this.video.setSrc(_options.src)
+        if (_options.defaultPointerAction !== false) {
+            this._dblClickEmulator = new DblClickEmulator({
+                onClick: this._handleClick,
+                onDblClick: this._handleDblClick,
+                target: this.body
+            })
+        }
+
         this._init()
     }
 
     private _init() {
+        this.video.setSrc(this._options.src)
         this.root.appendChild(this.body)
         this._container.appendChild(this.root)
 
@@ -111,7 +118,7 @@ export default class Player {
     }
 
     private _handleClick = (ev: PointerEvent) => {
-        if (ev.pointerType === "mouse") {
+        if (ev.pointerType !== "touch") {
             this.togglePlay()
         } else {
             if (this._controlBar.visible) {
@@ -123,7 +130,7 @@ export default class Player {
     }
 
     private _handleDblClick = (ev: PointerEvent) => {
-        if (ev.pointerType === "mouse") {
+        if (ev.pointerType !== "touch") {
             toggleFullScreen(this.root)
         } else {
             this.togglePlay()
@@ -135,7 +142,7 @@ export default class Player {
     }
 
     private _handlePointerMove = (ev: PointerEvent) => {
-        if (ev.pointerType === "mouse") {
+        if (ev.pointerType !== "touch") {
             this.showControlBar()
         }
     }
