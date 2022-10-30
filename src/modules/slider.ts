@@ -168,7 +168,10 @@ export default class Slider extends EventEmitter {
     }
 
     private _handlePointerDown = (e: PointerEvent) => {
-        if (this._isTouch(e)) {
+        if (
+            this._isTouch(e) ||
+            (e.button !== undefined && e.button !== 0)
+        ) {
             return
         }
 
@@ -273,7 +276,7 @@ export default class Slider extends EventEmitter {
             this._updated = true
 
             this.emit(
-                "value-update", 
+                "value-update",
                 {
                     value: val,
                     type: this._getPointerType(pos)
