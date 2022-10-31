@@ -121,11 +121,7 @@ export default class Player {
         if (ev.pointerType !== "touch") {
             this.togglePlay()
         } else {
-            if (this._controlBar.visible) {
-                this.hideControlBar()
-            } else {
-                this.showControlBar()
-            }
+            this._controlBar.toggle()
         }
     }
 
