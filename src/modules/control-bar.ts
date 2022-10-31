@@ -10,6 +10,8 @@ interface Options {
     showMiniProgress?: boolean
 }
 
+const NO_CURSOR_CLASS = "rplayer-no-cursor"
+
 export default class ControlBar extends Transition {
     private _slider: Slider
     private _miniProgress?: MiniProgress
@@ -70,10 +72,8 @@ export default class ControlBar extends Transition {
         this._slider.on("value-update", this._handleSliderUpdate)
         this._slider.on("slide-end", this._handleSlideEnd)
 
-        if (this._miniProgress) {
-            this.on("show", this._hideMiniProgress)
-            this.on("hidden", this._showMiniProgress)
-        }
+        this.on("show", this._handleShow)
+        this.on("hidden", this._handleHidden)
     }
 
     private _formatTooltip = (v: number) => {
@@ -93,9 +93,15 @@ export default class ControlBar extends Transition {
         return formatTime(Math.floor(time))
     }
 
-    private _showMiniProgress = () => this._miniProgress?.show()
+    private _handleShow = () => {
+        this._miniProgress?.show()
+        this._parent.classList.remove(NO_CURSOR_CLASS)
+    }
 
-    private _hideMiniProgress = () => this._miniProgress?.hide()
+    private _handleHidden = () => {
+        this._miniProgress?.hide()
+        this._parent.classList.add(NO_CURSOR_CLASS)
+    }
 
     private _handleDurationChange = () => {
         const duration = this._video.getDuration()

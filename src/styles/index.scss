@@ -30,6 +30,10 @@
     background-color: #000;
     user-select: none;
 
+    .rplayer-no-cursor {
+        cursor: none;
+    }
+
     &:focus {
         outline: none;
     }
