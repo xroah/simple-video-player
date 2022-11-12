@@ -94,12 +94,12 @@ export default class ControlBar extends Transition {
     }
 
     private _handleShow = () => {
-        this._miniProgress?.show()
+        this._miniProgress?.hide()
         this._parent.classList.remove(NO_CURSOR_CLASS)
     }
 
     private _handleHidden = () => {
-        this._miniProgress?.hide()
+        this._miniProgress?.show()
         this._parent.classList.add(NO_CURSOR_CLASS)
     }
 
