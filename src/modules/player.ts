@@ -36,8 +36,8 @@ export default class Player {
     public root: HTMLElement
     public body: HTMLElement
     public video: Video
+    public controlBar: ControlBar
 
-    private _controlBar: ControlBar
     private _container: HTMLElement
     private _dblClickEmulator?: DblClickEmulator
     private _contextmenu?: Contextmenu
@@ -62,7 +62,7 @@ export default class Player {
         this.root = el
         this.body = body
         this.video = new Video(body)
-        this._controlBar = new ControlBar(
+        this.controlBar = new ControlBar(
             el,
             this.video,
             {
@@ -121,7 +121,7 @@ export default class Player {
         if (ev.pointerType !== "touch") {
             this.togglePlay()
         } else {
-            this._controlBar.toggle()
+            this.controlBar.toggle()
         }
     }
 
@@ -144,10 +144,10 @@ export default class Player {
     }
 
     public showControlBar() {
-        this._controlBar.show()
+        this.controlBar.show()
     }
 
     public hideControlBar() {
-        this._controlBar.hide()
+        this.controlBar.hide()
     }
 }
