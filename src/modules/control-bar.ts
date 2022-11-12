@@ -164,6 +164,7 @@ export default class ControlBar extends Transition {
         this._video.setCurrentTime(
             this._getSeekTime(eo)
         )
+        this._video.dispatch("timeupdate")
     }
 
     private _emitSeekEvent(type: string, eo: EventObject) {
