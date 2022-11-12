@@ -7,6 +7,12 @@ import toggleState from "../src/extensions/toggle-state"
 import "./index.scss"
 import "../src/styles/index.scss"
 
+declare global {
+    interface Window {
+        player: RPlayer
+    }
+}
+
 let rp = new RPlayer({
     container: "#player",
     extensions: [hotkey, loading, volumeState, toggleState],
@@ -49,3 +55,5 @@ let rp = new RPlayer({
     },
     src: "https://ia600300.us.archive.org/17/items/BigBuckBunny_124/Content/big_buck_bunny_720p_surround.mp4"
 })
+
+window.player = rp

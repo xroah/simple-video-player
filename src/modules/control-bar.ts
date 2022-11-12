@@ -17,6 +17,7 @@ export default class ControlBar extends Transition {
     private _miniProgress?: MiniProgress
     private _currentTimeEl: HTMLElement
     private _durationEl: HTMLElement
+    private _hidePrevented = false
 
     constructor(
         private _parent: HTMLElement,
@@ -57,10 +58,6 @@ export default class ControlBar extends Transition {
         this.init()
     }
 
-    protected shouldDelay() {
-        return this._slider.isMoving()
-    }
-
     protected init() {
         super.init()
         this._video.addListener("timeupdate", this._handleTimeUpdate)
@@ -74,6 +71,35 @@ export default class ControlBar extends Transition {
 
         this.on("show", this._handleShow)
         this.on("hidden", this._handleHidden)
+    }
+
+    protected override shouldDelay() {
+        return this._slider.isMoving()
+    }
+
+    protected override delayHide() {
+        if (this._hidePrevented) {
+            this.clearHideTimeout()
+
+            return
+        }
+
+        super.delayHide()
+    }
+
+    public preventHide(prevented = false) {
+        if (!this.visible) {
+            return
+        }
+
+        this._hidePrevented = prevented
+        this.autoHide = !prevented
+
+        if (prevented) {
+            this.clearHideTimeout()
+        } else {
+            this.delayHide()
+        }
     }
 
     private _formatTooltip = (v: number) => {
@@ -140,7 +166,7 @@ export default class ControlBar extends Transition {
         )
     }
 
-    private _emitSeekEvent = (type: string, eo: EventObject) => {
+    private _emitSeekEvent(type: string, eo: EventObject) {
         this.emit(
             type,
             {
