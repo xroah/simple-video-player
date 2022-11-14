@@ -141,15 +141,9 @@ export default class Slider extends EventEmitter {
             percent = 100
         }
 
-        this._el.classList.add("rplayer-moving")
         this._updateProgress(percent, pos)
-        this.emit(
-            "slide-move",
-            {
-                value: percent,
-                type: this._getPointerType(pos)
-            }
-        )
+
+        return percent
     }
 
     private _handleStart(pos: Position) {
@@ -183,7 +177,13 @@ export default class Slider extends EventEmitter {
             return
         }
 
-        this._updatePosition(pos)
+        this.emit(
+            "slide-move",
+            {
+                value: this._updatePosition(pos),
+                type: this._getPointerType(pos)
+            }
+        )
 
         if (tooltip) {
             this._showTooltip(pos)
@@ -202,6 +202,7 @@ export default class Slider extends EventEmitter {
         }
 
         const { percent } = this._getMousePosition(pos.clientX)
+        const pointerType = this._getPointerType(pos)
         const updated = this._updated
         this._updated = false
         this._mouseDown = false
@@ -213,7 +214,7 @@ export default class Slider extends EventEmitter {
             "slide-end",
             {
                 value: percent,
-                type: this._getPointerType(pos)
+                type: pointerType
             }
         )
 
@@ -222,7 +223,7 @@ export default class Slider extends EventEmitter {
                 "value-change",
                 {
                     value: this._value,
-                    type: pos.pointerType
+                    type: pointerType
                 }
             )
         }
@@ -239,17 +240,14 @@ export default class Slider extends EventEmitter {
     }
 
     private _handleTouchStart = (e: TouchEvent) => {
-        if (e.touches.length > 1) {
-            return
-        }
-
+        if (e.touches.length === 1) {
         this._handleStart(e.touches[0])
+        }
     }
 
     private _handleTouchMove = (e: TouchEvent) => {
         if (e.touches.length === 1) {
             this._handleMoving(e.touches[0])
-
             e.preventDefault()
         }
     }
