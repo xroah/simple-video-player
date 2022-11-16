@@ -60,7 +60,7 @@ export default class ControlBar extends Transition {
 
         _video.addListener("timeupdate", this._handleTimeUpdate)
         _video.addListener("durationchange", this._handleDurationChange)
-        _video.addListener("progress", this._updateBuffer)
+        _video.addListener("progress", this._handleVideoProgress)
 
         this._slider.on("value-change", this._handleSliderChange)
         this._slider.on("value-update", this._handleSliderUpdate)
@@ -84,11 +84,10 @@ export default class ControlBar extends Transition {
         super.delayHide()
     }
 
-    private _updateBuffer = () => {
+    private _handleVideoProgress = () => {
         const buffered = this._video.getBuffered()
         const len = buffered.length
         const currentTime = this._video.getCurrentTime()
-        const duration = this._video.getDuration()
 
         for (let i = 0; i < len; i++) {
             const end = buffered.end(i)
@@ -97,11 +96,16 @@ export default class ControlBar extends Transition {
                 currentTime >= buffered.start(i) &&
                 currentTime <= end
             ) {
-                this._slider.updateBuffer(end / duration * 100)
-
+                this._updateBuffer(end)
                 break
             }
         }
+    }
+
+    private _updateBuffer(time: number) {
+        const duration = this._video.getDuration()
+
+        this._slider.updateBuffer(time / duration * 100)
     }
 
     public preventHide(prevented = false) {

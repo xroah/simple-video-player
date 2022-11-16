@@ -152,6 +152,7 @@ export default class Slider extends EventEmitter {
         this._moving = true
 
         this._updateProgress(percent, pos)
+        this._el.classList.add("rplayer-moving")
         this.emit(
             "slide-start",
             {
