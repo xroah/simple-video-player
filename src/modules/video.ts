@@ -107,6 +107,10 @@ export default class Video extends EventEmitter {
         this.el.muted = muted
     }
 
+    public getBuffered() {
+        return this.el.buffered
+    }
+
     public getError() {
         return this.el.error
     }

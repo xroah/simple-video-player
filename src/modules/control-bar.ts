@@ -27,22 +27,17 @@ export default class ControlBar extends Transition {
         super("rplayer-control-bar")
 
         const DEFAULT_TIME = "00:00"
-        this.el.innerHTML = controlBarHtml
+        const { el } = this
+        el.innerHTML = controlBarHtml
         this.autoHide = true
         this.hideTimeout = 3000
-        const sliderWrapper = this.el.querySelector(
-            ".rplayer-progress"
-        ) as HTMLElement
-        this._currentTimeEl = this.el.querySelector(
-            ".rplayer-current-time"
-        ) as HTMLElement
-        this._durationEl = this.el.querySelector(
-            ".rplayer-duration"
-        ) as HTMLElement
+        const sliderWrapper = el.querySelector(".rplayer-progress")!
+        this._currentTimeEl = el.querySelector(".rplayer-current-time")!
+        this._durationEl = this.el.querySelector(".rplayer-duration")!
         this._currentTimeEl.innerHTML = DEFAULT_TIME
         this._durationEl.innerHTML = DEFAULT_TIME
         this._slider = new Slider(
-            sliderWrapper,
+            sliderWrapper as HTMLElement,
             {
                 buffer: true,
                 tooltip: this._formatTooltip
@@ -60,11 +55,13 @@ export default class ControlBar extends Transition {
 
     protected init() {
         super.init()
-        this._video.addListener("timeupdate", this._handleTimeUpdate)
-        this._video.addListener(
-            "durationchange",
-            this._handleDurationChange
-        )
+
+        const { _video } = this
+
+        _video.addListener("timeupdate", this._handleTimeUpdate)
+        _video.addListener("durationchange", this._handleDurationChange)
+        _video.addListener("progress", this._updateBuffer)
+
         this._slider.on("value-change", this._handleSliderChange)
         this._slider.on("value-update", this._handleSliderUpdate)
         this._slider.on("slide-end", this._handleSlideEnd)
@@ -85,6 +82,26 @@ export default class ControlBar extends Transition {
         }
 
         super.delayHide()
+    }
+
+    private _updateBuffer = () => {
+        const buffered = this._video.getBuffered()
+        const len = buffered.length
+        const currentTime = this._video.getCurrentTime()
+        const duration = this._video.getDuration()
+
+        for (let i = 0; i < len; i++) {
+            const end = buffered.end(i)
+
+            if (
+                currentTime >= buffered.start(i) &&
+                currentTime <= end
+            ) {
+                this._slider.updateBuffer(end / duration * 100)
+
+                break
+            }
+        }
     }
 
     public preventHide(prevented = false) {
@@ -164,6 +181,7 @@ export default class ControlBar extends Transition {
         this._video.setCurrentTime(
             this._getSeekTime(eo)
         )
+        this._updateBuffer(0)
         this._video.dispatch("timeupdate")
     }
 

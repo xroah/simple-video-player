@@ -294,4 +294,10 @@ export default class Slider extends EventEmitter {
         this._marker.style.left = percent
         this._progress.style.width = percent
     }
+
+    public updateBuffer(val: number) {
+        if (this._buffer) {
+            this._buffer.style.width = `${val}%`
+        }
+    }
 }
