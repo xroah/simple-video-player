@@ -64,7 +64,7 @@ class Hotkey {
 
     private _fastSeek(forward = true) {
         const v = this._video
-        const STEP = 5
+        const STEP = 10
         const duration = v.getDuration()
         let curTime = v.getCurrentTime()
 
@@ -83,7 +83,8 @@ class Hotkey {
         v.setCurrentTime(curTime)
         //update the progress, if the keys were press for long time
         //the timeupdate may not fire (waiting)
-        this._video.emit("timeupdate")
+        this._video.dispatch("timeupdate")
+        this._video.dispatch("progress")
     }
 }
 
