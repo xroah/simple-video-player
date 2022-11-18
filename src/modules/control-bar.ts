@@ -74,6 +74,12 @@ export default class ControlBar extends Transition {
         return this._slider.isMoving()
     }
 
+    public override hide() {
+        if (!this._hidePrevented) {
+            super.hide()
+        }
+    }
+
     protected override delayHide() {
         if (this._hidePrevented) {
             this.clearHideTimeout()
