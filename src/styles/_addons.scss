@@ -1,0 +1,20 @@
+.rplayer-addon {
+    $size: 26px;
+    width: $size;
+    height: $size;
+}
+
+.rplayer-addon-btn {
+    cursor: pointer;
+    border: none;
+    background-color: transparent;
+}
+
+// toggle-btn
+.rplayer-toggle-btn {
+    background: url(../../icons/pause.svg) center center / 100% 100% no-repeat;
+
+    &.rplayer-paused {
+        background-image: url(../../icons/play.svg);
+    }
+}

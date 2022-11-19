@@ -29,7 +29,9 @@ export default class Video extends EventEmitter {
         handler: EventHandler<K>,
         options?: boolean | AddEventListenerOptions
     ) {
-        return this.el.addEventListener(name, handler, options)
+        this.el.addEventListener(name, handler, options)
+
+        return this
     }
 
     public removeListener<K extends EventName>(
@@ -37,7 +39,9 @@ export default class Video extends EventEmitter {
         handler: EventHandler<K>,
         options?: boolean | AddEventListenerOptions
     ) {
-        return this.el.removeEventListener(name, handler, options)
+        this.el.removeEventListener(name, handler, options)
+
+        return this
     }
 
     public dispatch<T extends EventName>(type: T) {

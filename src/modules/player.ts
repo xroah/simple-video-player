@@ -4,10 +4,10 @@ import {
     toggleFullScreen
 } from "../utils"
 import ControlBar from "./control-bar"
-import Transition from "./transition"
 import Video from "./video"
 import DblClickEmulator from "../utils/emulate-dbl-cilck"
 import Contextmenu, { ContextmenuOptions } from "./contextmenu"
+import { OptionsWithAddons } from "../commons/types"
 
 interface ExtensionFn {
     (player: Player, options?: unknown): unknown
@@ -18,7 +18,7 @@ interface Extension {
     install: ExtensionFn
 }
 
-interface PlayerOptions {
+interface PlayerOptions extends OptionsWithAddons {
     container: string | HTMLElement | Node
     src: string
     poster?: string
@@ -64,8 +64,9 @@ export default class Player {
         this.video = new Video(body)
         this.controlBar = new ControlBar(
             el,
-            this.video,
+            this,
             {
+                addons: _options.addons,
                 showMiniProgress: _options.showMiniProgress
             }
         )

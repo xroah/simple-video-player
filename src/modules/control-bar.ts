@@ -1,12 +1,15 @@
 import { controlBarHtml } from "../commons/constants"
 import { EventObject } from "../commons/event-emitter"
+import { OptionsWithAddons } from "../commons/types"
 import { formatTime } from "../utils"
+import Addons from "./addons"
 import MiniProgress from "./mini-progress"
 import Slider, { Details } from "./slider"
 import Transition from "./transition"
+import Player from ".."
 import Video from "./video"
 
-interface Options {
+interface Options extends OptionsWithAddons {
     showMiniProgress?: boolean
 }
 
@@ -19,9 +22,12 @@ export default class ControlBar extends Transition {
     private _durationEl: HTMLElement
     private _hidePrevented = false
 
+    private _addons: Addons
+    private _video: Video
+
     constructor(
         private _parent: HTMLElement,
-        private _video: Video,
+        player: Player,
         private _options: Options = {}
     ) {
         super("rplayer-control-bar")
@@ -29,20 +35,28 @@ export default class ControlBar extends Transition {
         const DEFAULT_TIME = "00:00"
         const { el } = this
         el.innerHTML = controlBarHtml
+        this._video = player.video
         this.autoHide = true
         this.hideTimeout = 3000
-        const sliderWrapper = el.querySelector(".rplayer-progress")!
         this._currentTimeEl = el.querySelector(".rplayer-current-time")!
-        this._durationEl = this.el.querySelector(".rplayer-duration")!
+        this._durationEl = el.querySelector(".rplayer-duration")!
         this._currentTimeEl.innerHTML = DEFAULT_TIME
         this._durationEl.innerHTML = DEFAULT_TIME
         this._slider = new Slider(
-            sliderWrapper as HTMLElement,
+            el.querySelector(".rplayer-progress")!,
             {
                 buffer: true,
                 tooltip: this._formatTooltip
             }
         )
+
+        if (_options.addons) {
+            this._addons = new Addons(
+                el.querySelector(".rplayer-addons-wrapper")!,
+                player,
+                _options.addons
+            )
+        }
 
         if (_options.showMiniProgress !== false) {
             this._miniProgress = new MiniProgress(this._parent)
