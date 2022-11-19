@@ -8,8 +8,9 @@ export const controlBarHtml = `
         <div class="rplayer-progress"></div>
         <div class="rplayer-duration"></div>
     </div>
-    <div class="rplayer-controls-wrapper">
-        <div class="rplayer-left-controls"></div>
-        <div class="rplayer-right-controls"></div>
+    <div class="rplayer-addons-wrapper">
+        <div class="rplayer-left-addons"></div>
+        <div class="rplayer-center-addons"></div>
+        <div class="rplayer-right-addons"></div>
     </div>
 `
