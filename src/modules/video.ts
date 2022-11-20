@@ -79,6 +79,14 @@ export default class Video extends EventEmitter {
     }
 
     public setCurrentTime(time: number) {
+        const duration = this.getDuration() || 0
+
+        if (time < 0) {
+            time = 0
+        } else if (time > duration) {
+            time = duration
+        }
+
         this.el.currentTime = time
     }
 

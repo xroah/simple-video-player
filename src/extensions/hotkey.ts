@@ -6,9 +6,7 @@ import Player from "../modules/player"
 class Hotkey {
     private _seek = throttle(
         this._fastSeek.bind(this),
-        {
-            delay: 500
-        }
+        { delay: 500 }
     )
 
     constructor(
@@ -39,8 +37,7 @@ class Hotkey {
                 v.toggle()
                 break
             case "m":
-                const muted = !v.isMuted()
-                v.setMuted(muted)
+                v.setMuted(!v.isMuted())
                 break
             case "enter": // fullscreen
                 toggleFullScreen(this._target)
@@ -50,37 +47,18 @@ class Hotkey {
     private _setVolume(add = true) {
         const STEP = 10
         const v = this._video
-        let volume = v.getVolume()
-
-        if (add) {
-            volume += STEP
-        } else {
-            volume -= STEP
-        }
+        const volume = v.getVolume()
 
         v.setMuted(false)
-        v.setVolume(volume)
+        v.setVolume(volume + (add ? STEP : -STEP))
     }
 
     private _fastSeek(forward = true) {
         const v = this._video
         const STEP = 10
-        const duration = v.getDuration()
-        let curTime = v.getCurrentTime()
+        const time = v.getCurrentTime()
 
-        if (forward) {
-            curTime += STEP
-        } else {
-            curTime -= STEP
-        }
-
-        if (curTime < 0) {
-            curTime = 0
-        } else if (curTime > duration) {
-            curTime = duration
-        }
-
-        v.setCurrentTime(curTime)
+        v.setCurrentTime(time + (forward ? STEP : -STEP))
         //update the progress, if the keys were press for long time
         //the timeupdate may not fire (waiting)
         this._video.dispatch("timeupdate")
