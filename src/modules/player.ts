@@ -1,13 +1,10 @@
-import {
-    createEl,
-    getContainer,
-    toggleFullScreen
-} from "../utils"
+import { createEl, getContainer } from "../utils"
 import ControlBar from "./control-bar"
 import Video from "./video"
 import DblClickEmulator from "../utils/emulate-dbl-cilck"
 import Contextmenu, { ContextmenuOptions } from "./contextmenu"
 import { OptionsWithAddons } from "../commons/types"
+import { toggleFullScreen } from "../utils/fullscreen"
 
 interface ExtensionFn {
     (player: Player, options?: unknown): unknown

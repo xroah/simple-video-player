@@ -62,41 +62,6 @@ export function reflow(el: HTMLElement) {
     return el.offsetHeight
 }
 
-function exitFullscreen() {
-    const doc = document as any
-
-    if (doc.exitFullscreen) {
-        document.exitFullscreen()
-    } else if (doc.webkitExitFullscreen) {
-        doc.webkitExitFullscreen()
-    } else if (doc.mozCancelFullscreen) {
-        doc.mozCancelFullscreen()
-    }
-}
-
-function requestFullscreen(el: any) {
-    if (el.requestFullscreen) {
-        el.requestFullscreen()
-    } else if (el.webkitRequestFullscreen) {
-        el.webkitRequestFullscreen()
-    } else if (el.mozRequestFullScreen) {
-        el.mozRequestFullScreen()
-    }
-}
-
-export function toggleFullScreen(el: HTMLElement) {
-    const doc = document as any
-    const fsEl = doc.fullscreenElement ||
-        doc.webkitFullscreenElement ||
-        doc.mozFullscreenElement
-
-    if (fsEl) {
-        exitFullscreen()
-    } else {
-        requestFullscreen(el)
-    }
-}
-
 export function getVolumeClass(volume: number, muted = false) {
     let ret = ""
 
