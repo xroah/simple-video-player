@@ -2,7 +2,7 @@ import { Addon, AddonArray, AddonFunction } from "../commons/types"
 import { createEl } from "../utils"
 import Player from "./player"
 
-export default class Addons {
+export default class AddonManager {
     private _left: HTMLElement
     private _center: HTMLElement
     private _right: HTMLElement

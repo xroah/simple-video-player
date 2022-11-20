@@ -2,7 +2,7 @@ import { controlBarHtml } from "../commons/constants"
 import { EventObject } from "../commons/event-emitter"
 import { OptionsWithAddons } from "../commons/types"
 import { formatTime } from "../utils"
-import Addons from "./addons"
+import AddonManager from "./addon-manager"
 import MiniProgress from "./mini-progress"
 import Slider, { Details } from "./slider"
 import Transition from "./transition"
@@ -22,7 +22,7 @@ export default class ControlBar extends Transition {
     private _durationEl: HTMLElement
     private _hidePrevented = false
 
-    private _addons: Addons
+    private _addons: AddonManager
     private _video: Video
 
     constructor(
@@ -51,7 +51,7 @@ export default class ControlBar extends Transition {
         )
 
         if (_options.addons) {
-            this._addons = new Addons(
+            this._addons = new AddonManager(
                 el.querySelector(".rplayer-addons-wrapper")!,
                 player,
                 _options.addons
