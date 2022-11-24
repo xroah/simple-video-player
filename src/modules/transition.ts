@@ -159,6 +159,7 @@ export default class Transition extends EventEmitter {
 
         const show = (reflow: (el: HTMLElement) => void = noop) => {
             this.el.classList.remove(HIDDEN_CLASS)
+            this.emit("show")
             reflow(this.el)
             this.el.classList.add(SHOW_CLASS)
         }
@@ -168,10 +169,9 @@ export default class Transition extends EventEmitter {
         this.removeListener()
 
         if (visible) {
-            this.emit("show")
-
             if (force) {
                 show()
+                this.emit("show")
                 this.handleTransitionEnd()
             } else {
                 show(reflow)
@@ -185,8 +185,8 @@ export default class Transition extends EventEmitter {
             return
         }
 
-        this.emit("hide")
         this.el.classList.remove(SHOW_CLASS)
+        this.emit("hide")
 
         if (force) {
             this.handleTransitionEnd()
