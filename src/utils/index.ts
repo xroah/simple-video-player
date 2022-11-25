@@ -17,7 +17,7 @@ export function noop() {
 export function formatTime(n: number) {
     const ret: string[] = []
     const pad = (n: number) => String(100 + n).substring(1)
-    let time = n
+    let time = Math.floor(n)
 
     while (time >= 60) {
         const remainder = time % 60

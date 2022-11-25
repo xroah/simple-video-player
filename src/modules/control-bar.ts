@@ -145,19 +145,12 @@ export default class ControlBar extends Transition {
 
     private _formatTooltip = (v: number) => {
         const duration = this._video.getDuration()
-        let time = duration * v / 100
-
-        if (time >= duration) {
-            time = duration
-        } else if (time <= 0) {
-            time = 0
-        }
 
         if (!duration) {
             return "00:00"
         }
 
-        return formatTime(Math.floor(time))
+        return formatTime(duration * v / 100)
     }
 
     private _handleShow = () => {
@@ -174,8 +167,7 @@ export default class ControlBar extends Transition {
         const duration = this._video.getDuration()
 
         if (duration) {
-            const d = Math.floor(duration)
-            this._durationEl.innerHTML = formatTime(d)
+            this._durationEl.innerHTML = formatTime(duration)
         }
     }
 
@@ -185,7 +177,7 @@ export default class ControlBar extends Transition {
         }
 
         const progress = this._video.getProgress()
-        const time = Math.floor(this._video.getCurrentTime())
+        const time =this._video.getCurrentTime()
         this._currentTimeEl.innerHTML = formatTime(time)
 
         this._slider.updateProgress(progress)
