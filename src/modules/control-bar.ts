@@ -52,7 +52,7 @@ export default class ControlBar extends Transition {
 
         if (_options.addons) {
             this._addons = new AddonManager(
-                el.querySelector(".rplayer-addons-wrapper")!,
+                el,
                 player,
                 _options.addons
             )
@@ -174,9 +174,8 @@ export default class ControlBar extends Transition {
         const duration = this._video.getDuration()
 
         if (duration) {
-            this._durationEl.innerHTML = formatTime(
-                Math.floor(duration)
-            )
+            const d = Math.floor(duration)
+            this._durationEl.innerHTML = formatTime(d)
         }
     }
 
@@ -186,9 +185,8 @@ export default class ControlBar extends Transition {
         }
 
         const progress = this._video.getProgress()
-        this._currentTimeEl.innerHTML = formatTime(
-            Math.floor(this._video.getCurrentTime())
-        )
+        const time = Math.floor(this._video.getCurrentTime())
+        this._currentTimeEl.innerHTML = formatTime(time)
 
         this._slider.updateProgress(progress)
         this._miniProgress?.update(progress)
@@ -202,9 +200,7 @@ export default class ControlBar extends Transition {
     }
 
     private _handleSliderChange = (eo: EventObject) => {
-        this._video.setCurrentTime(
-            this._getSeekTime(eo)
-        )
+        this._video.setCurrentTime(this._getSeekTime(eo))
         this._updateBuffer(0)
         this._video.dispatch("timeupdate")
     }

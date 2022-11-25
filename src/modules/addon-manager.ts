@@ -1,4 +1,8 @@
-import { Addon, AddonArray, AddonFunction } from "../commons/types"
+import {
+    Addon,
+    AddonArray,
+    AddonFunction
+} from "../commons/types"
 import { createEl } from "../utils"
 import Player from "./player"
 
@@ -6,19 +10,22 @@ export default class AddonManager {
     private _left: HTMLElement
     private _center: HTMLElement
     private _right: HTMLElement
+    private _el: HTMLElement
 
     constructor(
         private _parent: HTMLElement,
         private _player: Player,
         addons: AddonArray
     ) {
+        this._el = createEl("div", "rplayer-addons-wrapper")
         this._left = createEl("div", "rplayer-left-addons")
         this._center = createEl("div", "rplayer-center-addons")
         this._right = createEl("div", "rplayer-right-addons")
 
-        _parent.appendChild(this._left)
-        _parent.appendChild(this._center)
-        _parent.appendChild(this._right)
+        this._el.appendChild(this._left)
+        this._el.appendChild(this._center)
+        this._el.appendChild(this._right)
+        _parent.appendChild(this._el)
 
         this._init(addons)
     }
@@ -47,7 +54,7 @@ export default class AddonManager {
         addon: Addon | AddonFunction
     ) {
         let tag = "div"
-        let installFunc: AddonFunction 
+        let installFunc: AddonFunction
         let options: unknown
         let classNames = ["rplayer-addon"]
 

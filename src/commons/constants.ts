@@ -8,5 +8,4 @@ export const controlBarHtml = `
         <div class="rplayer-progress"></div>
         <div class="rplayer-duration"></div>
     </div>
-    <div class="rplayer-addons-wrapper"></div>
 `
