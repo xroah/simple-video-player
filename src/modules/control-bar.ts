@@ -1,7 +1,7 @@
 import { controlBarHtml } from "../commons/constants"
 import { EventObject } from "../commons/event-emitter"
 import { OptionsWithAddons } from "../commons/types"
-import { formatTime } from "../utils"
+import { createEl, formatTime } from "../utils"
 import AddonManager from "./addon-manager"
 import MiniProgress from "./mini-progress"
 import Slider, { Details } from "./slider"
@@ -34,21 +34,27 @@ export default class ControlBar extends Transition {
 
         const DEFAULT_TIME = "00:00"
         const { el } = this
-        el.innerHTML = controlBarHtml
+        const progressWrapper = createEl("div", "rplayer-progress-wrapper")
+        const sliderWrapper = createEl("div", "rplayer-progress")
         this._video = player.video
         this.autoHide = true
         this.hideTimeout = 3000
-        this._currentTimeEl = el.querySelector(".rplayer-current-time")!
-        this._durationEl = el.querySelector(".rplayer-duration")!
+        this._currentTimeEl = createEl("div", "rplayer-current-time")
+        this._durationEl = createEl("div", "rplayer-duration")!
         this._currentTimeEl.innerHTML = DEFAULT_TIME
         this._durationEl.innerHTML = DEFAULT_TIME
         this._slider = new Slider(
-            el.querySelector(".rplayer-progress")!,
+            sliderWrapper,
             {
                 buffer: true,
                 tooltip: this._formatTooltip
             }
         )
+
+        progressWrapper.appendChild(this._currentTimeEl)
+        progressWrapper.appendChild(sliderWrapper)
+        progressWrapper.appendChild(this._durationEl)
+        this.el.appendChild(progressWrapper)
 
         if (_options.addons) {
             this._addons = new AddonManager(
@@ -177,7 +183,7 @@ export default class ControlBar extends Transition {
         }
 
         const progress = this._video.getProgress()
-        const time =this._video.getCurrentTime()
+        const time = this._video.getCurrentTime()
         this._currentTimeEl.innerHTML = formatTime(time)
 
         this._slider.updateProgress(progress)
