@@ -1,7 +1,7 @@
-import Toggle from "../commons/toggle"
+import ToggleVisible from "../commons/toggle-visible"
 import { createEl } from "../utils"
 
-export default class Tooltip extends Toggle {
+export default class Tooltip extends ToggleVisible {
     private _textEl: HTMLElement
 
     constructor(private _parent: HTMLElement) {

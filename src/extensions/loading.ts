@@ -1,8 +1,8 @@
 import Video from "../modules/video"
-import Toggle from "../commons/toggle"
+import ToggleVisible from "../commons/toggle-visible"
 import Player from "../modules/player"
 
-class Loading extends Toggle {
+class Loading extends ToggleVisible {
     constructor(
         parent: HTMLElement,
         private _video: Video

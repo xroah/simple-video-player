@@ -1,7 +1,7 @@
 import { createEl } from "../utils"
-import { HIDDEN_CLASS } from "../commons/constants"
+import { HIDDEN_CLASS } from "./constants"
 
-export default class Toggle {
+export default class ToggleVisible {
     public el: HTMLElement
     protected visible = true
 

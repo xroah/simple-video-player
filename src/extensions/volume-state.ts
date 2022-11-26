@@ -1,11 +1,11 @@
-import Toggle from "../commons/toggle"
+import ToggleVisible from "../commons/toggle-visible"
 import Player from "../modules/player"
 import Video from "../modules/video"
 import { createEl, getVolumeClass } from "../utils"
 
 const DELAY = 3000
 
-class VolumeState extends Toggle {
+class VolumeState extends ToggleVisible {
     private _iconEl: HTMLElement
     private _textEl: HTMLElement
     private _timer = -1

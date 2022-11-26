@@ -1,5 +1,5 @@
 import Player from ".."
-import Toggle from "../commons/toggle"
+import ToggleVisible from "../commons/toggle-visible"
 import { createEl } from "../utils"
 
 interface Action {
@@ -23,7 +23,7 @@ export type ContextmenuOptions = ContextmenuItem[] | {
 
 const ITEM_CLASS = "rplayer-contextmenu-item"
 
-export default class Contextmenu extends Toggle {
+export default class Contextmenu extends ToggleVisible {
     private _actionsMap = new WeakMap<HTMLElement, Action>()
     private _beforeShow?: BeforeShowCallback
     private _menu: HTMLElement
