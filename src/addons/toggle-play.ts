@@ -1,7 +1,7 @@
 import { Addon } from "../commons/types";
 import Player from "../modules/player";
 
-const toggleBtn: Addon = {
+const togglePlay: Addon = {
     tag: "button",
     classNames: ["rplayer-addon-btn", "rplayer-toggle-btn"],
     install(
@@ -32,4 +32,4 @@ const toggleBtn: Addon = {
     }
 }
 
-export default toggleBtn
+export default togglePlay

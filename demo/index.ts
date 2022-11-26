@@ -3,7 +3,7 @@ import hotkey from "../src/extensions/hotkey"
 import loading from "../src/extensions/loading"
 import volumeState from "../src/extensions/volume-state"
 import toggleState from "../src/extensions/toggle-state"
-import ToggleBtn from "../src/addons/toggle-btn"
+import togglePlay from "../src/addons/toggle-play"
 
 import "./index.scss"
 import "../src/styles/index.scss"
@@ -17,7 +17,7 @@ declare global {
 let rp = new RPlayer({
     container: "#player",
     extensions: [hotkey, loading, volumeState, toggleState],
-    addons: [[ToggleBtn]],
+    addons: [[togglePlay]],
     contextmenu: {
         beforeShow(ev) {
             return ev.pointerType === "mouse"
