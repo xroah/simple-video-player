@@ -22,15 +22,39 @@ export function requestFullscreen(el: any) {
     }
 }
 
-export function toggleFullScreen(el: HTMLElement) {
+export function getFullscreenElement() {
     const doc = document as any
-    const fsEl = doc.fullscreenElement ||
+
+    return doc.fullscreenElement ||
         doc.webkitFullscreenElement ||
         doc.mozFullscreenElement
+}
+
+export function toggleFullScreen(el: HTMLElement) {
+    const fsEl = getFullscreenElement()
 
     if (fsEl) {
         exitFullscreen()
     } else {
         requestFullscreen(el)
+    }
+}
+
+export function getFullscreenChangeEventName() {
+    const { body } = document
+
+    // @ts-ignore
+    if (body.requestFullscreen) {
+        return "fullscreenchange"
+    }
+
+    // @ts-ignore
+    if (body.webkitRequestFullscreen) {
+        return "webkitfullscreenchange"
+    }
+
+    // @ts-ignore
+    if (body.mozRequestFullscreen) {
+        return "mozfullscreenchange"
     }
 }

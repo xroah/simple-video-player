@@ -13,15 +13,25 @@
     cursor: pointer;
     border: none;
     background-color: transparent;
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
+    background-position: center;
 }
 
-// toggle-btn
+// toggle-play
 .rplayer-toggle-btn {
-    background: url(../../icons/pause.svg) center center / 100% 100% no-repeat;
+    background-image: url(../../icons/pause.svg);
 
     &.rplayer-paused {
         background-image: url(../../icons/play.svg);
     }
 }
 
-// fullscreen-btn
+// fullscreen
+.rplayer-fullscreen-btn {
+    background-image: url(../../icons/fullscreen.svg);
+
+    &.rplayer-fullscreen-in {
+        background-image: url(../../icons/fullscreen-exit.svg);
+    }
+}
