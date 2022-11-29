@@ -1,9 +1,10 @@
+import { ADDON_BTN_CLASS } from "../commons/constants";
 import { Addon } from "../commons/types";
 import Player from "../modules/player";
 
 const togglePlay: Addon = {
     tag: "button",
-    classNames: ["rplayer-addon-btn", "rplayer-toggle-btn"],
+    classNames: [ADDON_BTN_CLASS, "rplayer-toggle-btn"],
     install(
         el: HTMLElement,
         player: Player
