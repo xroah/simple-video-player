@@ -34,4 +34,12 @@ export default class ToggleVisible {
 
         this.el.classList.add(HIDDEN_CLASS)
     }
+
+    public toggle() {
+        if (this.visible) {
+            this.show()
+        } else {
+            this.hide()
+        }
+    }
 }
