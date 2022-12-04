@@ -14,8 +14,7 @@ export default class AddonManager {
 
     constructor(
         private _parent: HTMLElement,
-        private _player: Player,
-        addons: AddonArray
+        private _player: Player
     ) {
         this._el = createEl("div", "rplayer-addons-wrapper")
         this._left = createEl("div", "rplayer-left-addons")
@@ -26,11 +25,9 @@ export default class AddonManager {
         this._el.appendChild(this._center)
         this._el.appendChild(this._right)
         _parent.appendChild(this._el)
-
-        this._init(addons)
     }
 
-    private _init(addons: AddonArray) {
+    public installAddons(addons: AddonArray) {
         const containers = [
             this._left,
             this._center,
@@ -43,13 +40,29 @@ export default class AddonManager {
 
             if (c) {
                 addons[i].forEach(
-                    addon => this.install(c, addon)
+                    addon => this._install(c, addon)
                 )
             }
         }
     }
 
-    private install(
+    public installAddon(
+        addon: Addon | AddonFunction,
+        pos: "left" | "center" | "right"
+    ) {
+        const posMap = new Map([
+            ["left", this._left],
+            ["center", this._center],
+            ["right", this._right]
+        ])
+        const c = posMap.get(pos)
+
+        if (c) {
+            this._install(c, addon)
+        } 
+    }
+
+    private _install(
         container: HTMLElement,
         addon: Addon | AddonFunction
     ) {

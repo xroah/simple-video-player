@@ -1,15 +1,13 @@
-import { controlBarHtml } from "../commons/constants"
 import { EventObject } from "../commons/event-emitter"
 import { OptionsWithAddons } from "../commons/types"
 import { createEl, formatTime } from "../utils"
-import AddonManager from "./addon-manager"
 import MiniProgress from "./mini-progress"
 import Slider, { Details } from "./slider"
 import Transition from "./transition"
 import Player from ".."
 import Video from "./video"
 
-interface Options extends OptionsWithAddons {
+interface Options {
     showMiniProgress?: boolean
 }
 
@@ -22,7 +20,6 @@ export default class ControlBar extends Transition {
     private _durationEl: HTMLElement
     private _hidePrevented = false
 
-    private _addons: AddonManager
     private _video: Video
 
     constructor(
@@ -51,26 +48,22 @@ export default class ControlBar extends Transition {
             }
         )
 
-        progressWrapper.appendChild(this._currentTimeEl)
-        progressWrapper.appendChild(sliderWrapper)
-        progressWrapper.appendChild(this._durationEl)
-        this.el.appendChild(progressWrapper)
-
-        if (_options.addons) {
-            this._addons = new AddonManager(
-                el,
-                player,
-                _options.addons
-            )
-        }
-
         if (_options.showMiniProgress !== false) {
             this._miniProgress = new MiniProgress(this._parent)
         }
 
+        progressWrapper.appendChild(this._currentTimeEl)
+        progressWrapper.appendChild(sliderWrapper)
+        progressWrapper.appendChild(this._durationEl)
+        this.el.appendChild(progressWrapper)
         this._parent.appendChild(this.el)
+
         this.show(true)
         this.init()
+    }
+
+    public getAddonContainer() {
+        return this.el
     }
 
     protected init() {

@@ -5,6 +5,7 @@ import DblClickEmulator from "../utils/emulate-dbl-cilck"
 import Contextmenu, { ContextmenuOptions } from "./contextmenu"
 import { OptionsWithAddons } from "../commons/types"
 import { toggleFullScreen } from "../utils/fullscreen"
+import AddonManager from "./addon-manager"
 
 interface ExtensionFn {
     (player: Player, options?: unknown): unknown
@@ -34,6 +35,7 @@ export default class Player {
     public body: HTMLElement
     public video: Video
     public controlBar: ControlBar
+    private addonManager: AddonManager
 
     private _container: HTMLElement
     private _dblClickEmulator?: DblClickEmulator
@@ -62,10 +64,11 @@ export default class Player {
         this.controlBar = new ControlBar(
             el,
             this,
-            {
-                addons: _options.addons,
-                showMiniProgress: _options.showMiniProgress
-            }
+            { showMiniProgress: _options.showMiniProgress }
+        )
+        this.addonManager = new AddonManager(
+            this.controlBar.getAddonContainer(),
+            this
         )
 
         if (_options.contextmenu) {
@@ -87,7 +90,9 @@ export default class Player {
     }
 
     private _init() {
-        this.video.setSrc(this._options.src)
+        const { addons, src } = this._options
+
+        this.video.setSrc(src)
         this.root.appendChild(this.body)
         this._container.appendChild(this.root)
 
@@ -97,6 +102,10 @@ export default class Player {
         )
 
         this._installExtensions()
+
+        if (addons) {
+            this.addonManager.installAddons(addons)
+        }
     }
 
     private _installExtensions() {
