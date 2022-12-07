@@ -1,6 +1,13 @@
 .rplayer-addons-wrapper {
     display: flex;
     flex-grow: 1;
+
+    .rplayer-left-addons,
+    .rplayer-center-addons,
+    .rplayer-right-addons {
+        display: flex;
+        align-items: center;
+    }
 }
 
 .rplayer-addon {
@@ -16,6 +23,11 @@
     background-repeat: no-repeat;
     background-size: 100% 100%;
     background-position: center;
+    color: #fff;
+
+    &+.rplayer-addon-btn {
+        margin-left: 20px;
+    }
 
     &:hover {
         filter: brightness(.85);
