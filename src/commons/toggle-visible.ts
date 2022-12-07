@@ -37,9 +37,9 @@ export default class ToggleVisible {
 
     public toggle() {
         if (this.visible) {
-            this.show()
-        } else {
             this.hide()
+        } else {
+            this.show()
         }
     }
 }
