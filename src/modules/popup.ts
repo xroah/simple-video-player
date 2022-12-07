@@ -33,8 +33,9 @@ export default class Popup extends ToggleVisible {
         const { el } = this
         const relatedRect = this.related.getBoundingClientRect()
         const rect = el.getBoundingClientRect()
-        const OFFSET = 30
-        const left = relatedRect.left - rect.width / 2
+        const OFFSET = 5
+        const leftOffset = (rect.width - relatedRect.width) / 2
+        const left = relatedRect.left - leftOffset
         const top = relatedRect.top - rect.height - OFFSET
 
         el.style.left = `${left}px`
