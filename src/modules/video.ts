@@ -119,6 +119,14 @@ export default class Video extends EventEmitter {
         this.el.muted = muted
     }
 
+    public getPlayRate() {
+        return this.el.playbackRate
+    }
+
+    public setPlayRate(r: number) {
+        this.el.playbackRate = r
+    }
+
     public getBuffered() {
         return this.el.buffered
     }
