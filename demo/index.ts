@@ -5,6 +5,7 @@ import volumeState from "../src/extensions/volume-state"
 import toggleState from "../src/extensions/toggle-state"
 import togglePlay from "../src/addons/toggle-play"
 import fullscreen from "../src/addons/fullscreen"
+import playRate from "../src/addons/playrate"
 
 import "./index.scss"
 import "../src/styles/index.scss"
@@ -18,7 +19,7 @@ declare global {
 let rp = new RPlayer({
     container: "#player",
     extensions: [hotkey, loading, volumeState, toggleState],
-    addons: [[togglePlay], [], [fullscreen]],
+    addons: [[togglePlay], [], [playRate, fullscreen]],
     contextmenu: {
         beforeShow(ev) {
             return ev.pointerType === "mouse"

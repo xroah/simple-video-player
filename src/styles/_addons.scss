@@ -51,3 +51,18 @@
         background-image: url(../../icons/fullscreen-exit.svg);
     }
 }
+
+// playback rate
+.rplayer-rate-popup {
+    width: 80px;
+    color: #fff;
+
+    .rplayer-rate-item {
+        padding: 6px 15px;
+        cursor: pointer;
+
+        &:hover {
+            background-color: rgba(255, 255, 255, .2);
+        }
+    }
+}
