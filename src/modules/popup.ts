@@ -27,6 +27,29 @@ export default class Popup extends ToggleVisible {
         this.player.controlBar.preventHide(false)
     }
 
+    private _handleClickOutSide = (ev: MouseEvent) => {
+        const target = ev.target as HTMLElement
+
+        if (
+            this.visible &&
+            target !== this.related &&
+            !this.related.contains(target) &&
+            target !== this.el &&
+            !this.el.contains(target)
+        ) {
+            this.hide()
+        }
+    }
+
+    public hide() {
+        super.hide()
+
+        document.removeEventListener(
+            "click",
+            this._handleClickOutSide
+        )
+    }
+
     public override show() {
         super.show()
 
@@ -40,5 +63,10 @@ export default class Popup extends ToggleVisible {
 
         el.style.left = `${left}px`
         el.style.top = `${top}px`
+
+        document.addEventListener(
+            "click",
+            this._handleClickOutSide
+        )
     }
 }
