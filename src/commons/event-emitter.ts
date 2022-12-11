@@ -1,4 +1,4 @@
-import { isFunc, isUndef } from "../ts/commons/utils"
+import { isFunc, isUndef } from "../utils"
 
 export interface EventObject {
     type: string
