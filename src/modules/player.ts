@@ -6,6 +6,7 @@ import Contextmenu, { ContextmenuOptions } from "./contextmenu"
 import { OptionsWithAddons } from "../commons/types"
 import { toggleFullScreen } from "../utils/fullscreen"
 import AddonManager from "./addon-manager"
+import { throttle } from "../ts/commons/utils"
 
 interface ExtensionFn {
     (player: Player, options?: unknown): unknown
@@ -144,11 +145,14 @@ export default class Player {
         this.video.toggle()
     }
 
-    private _handlePointerMove = (ev: PointerEvent) => {
-        if (ev.pointerType !== "touch") {
-            this.showControlBar()
-        }
-    }
+    private _handlePointerMove = throttle(
+        (ev: PointerEvent) => {
+            if (ev.pointerType !== "touch") {
+                this.showControlBar()
+            }
+        },
+        { delay: 500 }
+    )
 
     public showControlBar() {
         this.controlBar.show()
