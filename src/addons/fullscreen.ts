@@ -1,6 +1,5 @@
 import { ADDON_BTN_CLASS } from "../commons/constants"
 import { Addon } from "../commons/types"
-import Player from "../modules/player"
 import {
     getFullscreenChangeEventName,
     getFullscreenElement,
@@ -10,7 +9,7 @@ import {
 const fullscreen: Addon = {
     tag: "button",
     classNames: [ADDON_BTN_CLASS, "rplayer-fullscreen-btn"],
-    install(el: HTMLElement, { root }: Player) {
+    install(el, { root }) {
         const fullscreenchangeName = getFullscreenChangeEventName()
         const FULLSCREEN_IN_CLASS = "rplayer-fullscreen-in"
 

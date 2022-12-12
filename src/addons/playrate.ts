@@ -2,7 +2,6 @@ import { ADDON_BTN_CLASS } from "../commons/constants"
 import { Addon } from "../commons/types"
 import Player from "../modules/player"
 import Popup from "../modules/popup"
-import Video from "../modules/video"
 import { createEl } from "../utils"
 
 const ITEM_CLASS = "rplayer-rate-item"
