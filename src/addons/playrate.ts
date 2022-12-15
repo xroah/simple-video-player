@@ -30,13 +30,13 @@ class RatePopup extends Popup {
 
     private _createList() {
         const rates = [
-            .25,
-            .5,
-            1.0,
-            1.25,
-            1.5,
+            2.0,
             1.75,
-            2.0
+            1.5,
+            1.25,
+            1.0,
+            .5,
+            .25
         ]
 
         for (const rate of rates) {
