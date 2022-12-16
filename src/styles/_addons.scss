@@ -10,24 +10,21 @@
     }
 }
 
-.rplayer-addon {
-    $size: 26px;
-    width: $size;
-    height: $size;
+.rplayer-addon + .rplayer-addon{
+    margin-left: 20px;
 }
 
 .rplayer-addon-btn {
-    cursor: pointer;
+    $size: 26px;
+    width: $size;
+    height: $size;
     border: none;
+    cursor: pointer;
     background-color: transparent;
     background-repeat: no-repeat;
     background-size: 100% 100%;
     background-position: center;
     color: #fff;
-
-    &+.rplayer-addon-btn {
-        margin-left: 20px;
-    }
 
     &:hover {
         filter: brightness(.85);
