@@ -12,27 +12,17 @@ export default class Transition extends EventEmitter {
     // for auto hide
     protected hideTimeout = 0
     protected autoHide = false
-
     private _autoHideTimer = -1
+
     private _transitionEndTimer = -1
 
     constructor(cls: string = "", el?: HTMLElement) {
         super()
 
-        this.el = el || createEl("div", HIDDEN_CLASS, cls)
-    }
+        this.el = el = el || createEl("div", HIDDEN_CLASS, cls)
 
-    protected init() {
-        if (this.autoHide) {
-            this.el.addEventListener(
-                "mouseenter",
-                this._handleMouseEnter
-            )
-            this.el.addEventListener(
-                "mouseleave",
-                this._handleMouseLeave
-            )
-        }
+        el.addEventListener("mouseenter", this._handleMouseEnter)
+        el.addEventListener("mouseleave", this._handleMouseLeave)
     }
 
     protected shouldDelay() {
@@ -53,6 +43,7 @@ export default class Transition extends EventEmitter {
         }
 
         this.clearHideTimeout()
+        console.log(Math.random())
 
         this._autoHideTimer = window.setTimeout(
             () => {

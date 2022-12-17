@@ -1,5 +1,4 @@
 import { EventObject } from "../commons/event-emitter"
-import { OptionsWithAddons } from "../commons/types"
 import { createEl, formatTime } from "../utils"
 import MiniProgress from "./mini-progress"
 import Slider, { Details } from "./slider"
@@ -30,7 +29,6 @@ export default class ControlBar extends Transition {
         super("rplayer-control-bar")
 
         const DEFAULT_TIME = "00:00"
-        const { el } = this
         const progressWrapper = createEl("div", "rplayer-progress-wrapper")
         const sliderWrapper = createEl("div", "rplayer-progress")
         this._video = player.video
@@ -67,8 +65,6 @@ export default class ControlBar extends Transition {
     }
 
     protected init() {
-        super.init()
-
         const { _video } = this
 
         _video.addListener("timeupdate", this._handleTimeUpdate)
