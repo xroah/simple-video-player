@@ -149,10 +149,8 @@ export default class Slider extends EventEmitter {
     private _handleStart(pos: Position) {
         const { percent } = this._getMousePosition(pos.clientX)
         this._mouseDown = true
-        this._moving = true
 
         this._updateProgress(percent, pos)
-        this._el.classList.add("rplayer-moving")
         this.emit(
             "slide-start",
             {
@@ -178,6 +176,9 @@ export default class Slider extends EventEmitter {
             return
         }
 
+        this._moving = true
+
+        this._el.classList.add("rplayer-moving")
         this.emit(
             "slide-move",
             {
@@ -242,7 +243,7 @@ export default class Slider extends EventEmitter {
 
     private _handleTouchStart = (e: TouchEvent) => {
         if (e.touches.length === 1) {
-        this._handleStart(e.touches[0])
+            this._handleStart(e.touches[0])
         }
     }
 

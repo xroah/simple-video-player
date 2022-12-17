@@ -72,15 +72,12 @@ export default class ControlBar extends Transition {
         _video.addListener("progress", this._handleVideoProgress)
 
         this._slider.on("value-change", this._handleSliderChange)
-        this._slider.on("value-update", this._handleSliderUpdate)
+        this._slider.on("slide-start", this._handleSlideStart)
+        this._slider.on("slide-move", this._handleSlideMove)
         this._slider.on("slide-end", this._handleSlideEnd)
 
         this.on("show", this._handleShow)
         this.on("hidden", this._handleHidden)
-    }
-
-    protected override shouldDelay() {
-        return this._slider.isMoving()
     }
 
     public override hide() {
@@ -202,11 +199,17 @@ export default class ControlBar extends Transition {
         )
     }
 
-    private _handleSliderUpdate = (eo: EventObject) => {
+    private _handleSlideStart = (eo: EventObject) => {
+        this._emitSeekEvent("seek-start", eo)
+        this.preventHide(true)
+    }
+
+    private _handleSlideMove = (eo: EventObject) => {
         this._emitSeekEvent("seeking", eo)
     }
 
     private _handleSlideEnd = (eo: EventObject) => {
         this._emitSeekEvent("seek-end", eo)
+        this.preventHide(false)
     }
 }
