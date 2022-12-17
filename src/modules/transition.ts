@@ -43,7 +43,6 @@ export default class Transition extends EventEmitter {
         }
 
         this.clearHideTimeout()
-        console.log(Math.random())
 
         this._autoHideTimer = window.setTimeout(
             () => {

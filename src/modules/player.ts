@@ -145,14 +145,9 @@ export default class Player {
         this.video.toggle()
     }
 
-    private _handlePointerMove = throttle(
-        (ev: PointerEvent) => {
-            if (ev.pointerType !== "touch") {
-                this.showControlBar()
-            }
-        },
-        { delay: 500 }
-    )
+    private _handlePointerMove = () => {
+        this.showControlBar()
+    }
 
     public showControlBar() {
         this.controlBar.show()
