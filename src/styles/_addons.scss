@@ -63,3 +63,15 @@
         }
     }
 }
+
+// volume addon
+.rplayer-volume-addon {
+    display: flex;
+    align-items: center;
+    width: auto;
+
+    .rplayer-volume-slider {
+        width: 80px;
+        margin-left: 15px;
+    }
+}
