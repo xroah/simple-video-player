@@ -1,6 +1,7 @@
 import { ADDON_BTN_CLASS } from "../commons/constants";
 import { EventObject } from "../commons/event-emitter";
 import { Addon } from "../commons/types";
+import Player from "../modules/player";
 import Slider, { Details } from "../modules/slider";
 import Video from "../modules/video";
 import { createEl, getVolumeClass } from "../utils";
@@ -8,27 +9,31 @@ import { createEl, getVolumeClass } from "../utils";
 class VolumeAddon {
     private _btn: HTMLElement
     private _slider: Slider
+    private _video: Video
 
     constructor(
         parent: HTMLElement,
-        private _video: Video
+        private _player: Player
     ) {
-        this._btn = createEl("button")
         const sliderWrapper = createEl("div", "rplayer-volume-slider")
-        this._slider = new Slider(
+        const vid = this._video = _player.video
+        this._btn = createEl("button")
+        const slider = this._slider = new Slider(
             sliderWrapper,
             { tooltip: false }
         )
 
-        this._slider.updateProgress(_video.getVolume())
+        this._slider.updateProgress(vid.getVolume())
         this._updateBtnClass()
 
         parent.appendChild(this._btn)
         parent.appendChild(sliderWrapper)
         
         this._btn.addEventListener("click", this._handleClick)
-        _video.addListener("volumechange", this._handleVolumeChange)
-        this._slider.on("value-update", this._handleSliderUpdate)
+        vid.addListener("volumechange", this._handleVolumeChange)
+        slider.on("value-update", this._handleSliderUpdate)
+        slider.on("slide-start", this._handleSlideStart)
+        slider.on("slide-end", this._handleSlideEnd)
     }
 
     private _updateBtnClass() {
@@ -55,13 +60,21 @@ class VolumeAddon {
         
         this._video.setVolume(details.value)
     }
+
+    private _handleSlideStart = () => {
+        this._player.controlBar.preventHide(true)
+    }
+
+    private _handleSlideEnd = () => {
+        this._player.controlBar.preventHide(false)
+    }
 }
 
 const volume: Addon = {
     tag: "div",
     classNames: ["rplayer-volume-addon"],
     install(el, player) {
-        return new VolumeAddon(el, player.video)
+        return new VolumeAddon(el, player)
     }
 }
 

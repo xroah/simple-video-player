@@ -73,5 +73,9 @@
     .rplayer-volume-slider {
         width: 80px;
         margin-left: 15px;
+
+        .rplayer-slider-marker {
+            opacity: 1;
+        }
     }
 }
