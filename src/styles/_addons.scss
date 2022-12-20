@@ -10,7 +10,7 @@
     }
 }
 
-.rplayer-addon + .rplayer-addon{
+.rplayer-addon+.rplayer-addon {
     margin-left: 20px;
 }
 
@@ -71,11 +71,19 @@
     width: auto;
 
     .rplayer-volume-slider {
-        width: 80px;
-        margin-left: 15px;
+        overflow: hidden;
+        width: 0;
+        margin-left: 0;
+        transition: width .15s;
 
         .rplayer-slider-marker {
             opacity: 1;
         }
+    }
+
+    &.rplayer-active .rplayer-volume-slider {
+        width: 80px;
+        margin-left: 15px;
+        overflow: visible;
     }
 }

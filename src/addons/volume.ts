@@ -1,4 +1,4 @@
-import { ADDON_BTN_CLASS } from "../commons/constants";
+import { ACTIVE_CLASS, ADDON_BTN_CLASS } from "../commons/constants";
 import { EventObject } from "../commons/event-emitter";
 import { Addon } from "../commons/types";
 import Player from "../modules/player";
@@ -10,9 +10,10 @@ class VolumeAddon {
     private _btn: HTMLElement
     private _slider: Slider
     private _video: Video
+    private _mouseEntered = false
 
     constructor(
-        parent: HTMLElement,
+        private _parent: HTMLElement,
         private _player: Player
     ) {
         const sliderWrapper = createEl("div", "rplayer-volume-slider")
@@ -26,14 +27,17 @@ class VolumeAddon {
         this._slider.updateProgress(vid.getVolume())
         this._updateBtnClass()
 
-        parent.appendChild(this._btn)
-        parent.appendChild(sliderWrapper)
-        
+        _parent.appendChild(this._btn)
+        _parent.appendChild(sliderWrapper)
+
         this._btn.addEventListener("click", this._handleClick)
         vid.addListener("volumechange", this._handleVolumeChange)
         slider.on("value-update", this._handleSliderUpdate)
         slider.on("slide-start", this._handleSlideStart)
         slider.on("slide-end", this._handleSlideEnd)
+
+        _parent.addEventListener("mouseenter", this._handleMouseEnter)
+        _parent.addEventListener("mouseleave", this._handleMouseLeave)
     }
 
     private _updateBtnClass() {
@@ -57,7 +61,7 @@ class VolumeAddon {
 
     private _handleSliderUpdate = (eo: EventObject) => {
         const details = eo.details as Details
-        
+
         this._video.setVolume(details.value)
     }
 
@@ -67,6 +71,28 @@ class VolumeAddon {
 
     private _handleSlideEnd = () => {
         this._player.controlBar.preventHide(false)
+
+        if (!this._mouseEntered) {
+            this._deactivate()
+        }
+    }
+
+    private _handleMouseEnter = () => {
+        this._mouseEntered = true
+
+        this._parent.classList.add(ACTIVE_CLASS)
+    }
+
+    private _deactivate() {
+        this._parent.classList.remove(ACTIVE_CLASS)
+    }
+
+    private _handleMouseLeave = () => {
+        this._mouseEntered = false
+
+        if (!this._slider.isMoving()) {
+            this._deactivate()
+        }
     }
 }
 

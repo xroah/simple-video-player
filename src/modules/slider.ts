@@ -287,7 +287,7 @@ export default class Slider extends EventEmitter {
     }
 
     public isMoving() {
-        return this._moving
+        return this._mouseDown || this._moving
     }
 
     public updateProgress(val: number) {
