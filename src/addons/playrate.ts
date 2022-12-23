@@ -1,10 +1,8 @@
-import { ADDON_BTN_CLASS } from "../commons/constants"
+import { ADDON_BTN_CLASS, RATE_ITEM_CLASS } from "../commons/constants"
 import { Addon } from "../commons/types"
 import Player from "../modules/player"
 import Popup from "../modules/popup"
 import { createEl } from "../utils"
-
-const ITEM_CLASS = "rplayer-rate-item"
 
 function getPlayRate(rate: number) {
     if (/^\d+$/.test(String(rate))) {
@@ -40,7 +38,7 @@ class RatePopup extends Popup {
         ]
 
         for (const rate of rates) {
-            const li = createEl("li", ITEM_CLASS)
+            const li = createEl("li", RATE_ITEM_CLASS)
             li.innerHTML = getPlayRate(rate)
 
             this._rateMap.set(li, rate)
@@ -51,7 +49,7 @@ class RatePopup extends Popup {
     private _handleClick = (ev: MouseEvent) => {
         const target = ev.target as HTMLElement
 
-        if (target.classList.contains(ITEM_CLASS)) {
+        if (target.classList.contains(RATE_ITEM_CLASS)) {
             const rate = this._rateMap.get(target) || 1
 
             this.player.video.setPlayRate(rate)

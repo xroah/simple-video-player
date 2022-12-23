@@ -6,7 +6,6 @@ import Contextmenu, { ContextmenuOptions } from "./contextmenu"
 import { OptionsWithAddons } from "../commons/types"
 import { toggleFullScreen } from "../utils/fullscreen"
 import AddonManager from "./addon-manager"
-import throttle from "../utils/throttle"
 
 interface ExtensionFn {
     (player: Player, options?: unknown): unknown

@@ -1,5 +1,5 @@
-import ToggleVisible from "../commons/toggle-visible";
-import { createEl } from "../utils";
+import ToggleVisible from "../commons/toggle-visible"
+import { createEl } from "../utils"
 
 export default class MiniProgress extends ToggleVisible {
     private _progress: HTMLElement

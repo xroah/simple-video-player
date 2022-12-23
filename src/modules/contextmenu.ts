@@ -1,4 +1,5 @@
 import Player from ".."
+import { CONTEXTMENU_ITEM_CLASS } from "../commons/constants"
 import ToggleVisible from "../commons/toggle-visible"
 import { createEl } from "../utils"
 
@@ -21,7 +22,6 @@ export type ContextmenuOptions = ContextmenuItem[] | {
     beforeShow?: BeforeShowCallback
 }
 
-const ITEM_CLASS = "rplayer-contextmenu-item"
 
 export default class Contextmenu extends ToggleVisible {
     private _actionsMap = new WeakMap<HTMLElement, Action>()
@@ -61,7 +61,7 @@ export default class Contextmenu extends ToggleVisible {
                 li.classList.add(item.className)
             }
 
-            li.classList.add(ITEM_CLASS)
+            li.classList.add(CONTEXTMENU_ITEM_CLASS)
             this._menu.appendChild(li)
             this._actionsMap.set(li, item.action)
         }
@@ -136,7 +136,7 @@ export default class Contextmenu extends ToggleVisible {
     private _handleClick = (ev: PointerEvent) => {
         const target = ev.target as HTMLElement
 
-        if (target.classList.contains(ITEM_CLASS)) {
+        if (target.classList.contains(CONTEXTMENU_ITEM_CLASS)) {
             const action = this._actionsMap.get(target)
 
             action?.(this._player)

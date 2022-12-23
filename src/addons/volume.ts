@@ -1,10 +1,13 @@
-import { ACTIVE_CLASS, ADDON_BTN_CLASS } from "../commons/constants";
-import { EventObject } from "../commons/event-emitter";
-import { Addon } from "../commons/types";
-import Player from "../modules/player";
-import Slider, { Details } from "../modules/slider";
-import Video from "../modules/video";
-import { createEl, getVolumeClass } from "../utils";
+import {
+    ACTIVE_CLASS,
+    ADDON_BTN_CLASS
+} from "../commons/constants"
+import { EventObject } from "../commons/event-emitter"
+import { Addon } from "../commons/types"
+import Player from "../modules/player"
+import Slider, { Details } from "../modules/slider"
+import Video from "../modules/video"
+import { createEl, getVolumeClass } from "../utils"
 
 class VolumeAddon {
     private _btn: HTMLElement

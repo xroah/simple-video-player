@@ -5,6 +5,7 @@ import Slider, { Details } from "./slider"
 import Transition from "./transition"
 import Player from ".."
 import Video from "./video"
+import { CONTROL_BAR_DELAY } from "../commons/constants"
 
 interface Options {
     showMiniProgress?: boolean
@@ -33,7 +34,7 @@ export default class ControlBar extends Transition {
         const sliderWrapper = createEl("div", "rplayer-progress")
         this._video = player.video
         this.autoHide = true
-        this.hideTimeout = 3000
+        this.hideTimeout = CONTROL_BAR_DELAY
         this._currentTimeEl = createEl("div", "rplayer-current-time")
         this._durationEl = createEl("div", "rplayer-duration")!
         this._currentTimeEl.innerHTML = DEFAULT_TIME

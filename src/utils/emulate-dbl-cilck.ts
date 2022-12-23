@@ -1,3 +1,5 @@
+import { DBLCLICK_THRESHOLD } from "../commons/constants"
+
 interface Handler {
     (e: PointerEvent): void
 }
@@ -7,8 +9,6 @@ interface Options {
     onDblClick?: Handler
     target: HTMLElement
 }
-
-const THRESHOLD = 200
 
 export default class DblClickEmulator {
     private _clickTimes = 0
@@ -71,7 +71,7 @@ export default class DblClickEmulator {
 
         if (
             this._clickTimes === 2 &&
-            this._interval <= THRESHOLD
+            this._interval <= DBLCLICK_THRESHOLD
         ) {
             this._clickTimes = 0
 
@@ -89,7 +89,7 @@ export default class DblClickEmulator {
 
                     this._options.onClick?.(ev)
                 },
-                THRESHOLD
+                DBLCLICK_THRESHOLD
             )
         }
     }
