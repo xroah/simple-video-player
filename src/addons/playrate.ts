@@ -1,4 +1,4 @@
-import { ADDON_BTN_CLASS, RATE_ITEM_CLASS } from "../commons/constants"
+import { ACTIVE_CLASS, ADDON_BTN_CLASS, RATE_ITEM_CLASS } from "../commons/constants"
 import { Addon } from "../commons/types"
 import Player from "../modules/player"
 import Popup from "../modules/popup"
@@ -36,10 +36,15 @@ class RatePopup extends Popup {
             .5,
             .25
         ]
+        const videoRate = this.player.video.getPlayRate()
 
         for (const rate of rates) {
             const li = createEl("li", RATE_ITEM_CLASS)
             li.innerHTML = getPlayRate(rate)
+
+            if (videoRate === rate) {
+                li.classList.add(ACTIVE_CLASS)
+            }
 
             this._rateMap.set(li, rate)
             this._list.appendChild(li)
@@ -51,6 +56,10 @@ class RatePopup extends Popup {
 
         if (target.classList.contains(RATE_ITEM_CLASS)) {
             const rate = this._rateMap.get(target) || 1
+            const prev = this.el.querySelector("." + ACTIVE_CLASS)
+
+            prev?.classList.remove(ACTIVE_CLASS)
+            target.classList.add(ACTIVE_CLASS)
 
             this.player.video.setPlayRate(rate)
         }
