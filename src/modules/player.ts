@@ -3,18 +3,14 @@ import ControlBar from "./control-bar"
 import Video from "./video"
 import DblClickEmulator from "../utils/emulate-dbl-cilck"
 import Contextmenu, { ContextmenuOptions } from "./contextmenu"
-import { OptionsWithAddons } from "../commons/types"
+import {
+    Extension,
+    ExtensionFn,
+    OptionsWithAddons
+} from "../commons/types"
 import { toggleFullScreen } from "../utils/fullscreen"
 import AddonManager from "./addon-manager"
 
-interface ExtensionFn {
-    (player: Player, options?: unknown): unknown
-}
-
-interface Extension {
-    options?: unknown
-    install: ExtensionFn
-}
 
 interface PlayerOptions extends OptionsWithAddons {
     container: string | HTMLElement | Node

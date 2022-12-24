@@ -1,5 +1,14 @@
 import Player from ".."
 
+export interface ExtensionFn {
+    (player: Player, options?: unknown): unknown
+}
+
+export interface Extension {
+    options?: unknown
+    install: ExtensionFn
+}
+
 export type AddonFunction = {
     (
         el: HTMLElement,
