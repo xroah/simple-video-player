@@ -2,29 +2,10 @@ import { createEl, getContainer } from "../utils"
 import ControlBar from "./control-bar"
 import Video from "./video"
 import DblClickEmulator from "../utils/emulate-dbl-cilck"
-import Contextmenu, { ContextmenuOptions } from "./contextmenu"
-import {
-    Extension,
-    ExtensionFn,
-    OptionsWithAddons
-} from "../commons/types"
+import Contextmenu from "./contextmenu"
+import { PlayerOptions } from "../commons/types"
 import { toggleFullScreen } from "../utils/fullscreen"
 import AddonManager from "./addon-manager"
-
-
-interface PlayerOptions extends OptionsWithAddons {
-    container: string | HTMLElement | Node
-    src: string
-    poster?: string
-    controlBarTimeout?: number
-    showMiniProgress?: boolean
-    extensions?: Array<Extension | ExtensionFn>
-    contextmenu?: false | ContextmenuOptions
-    // default pointer action
-    //for touch: click toggle control bar, dblclick toggle play
-    // for mouse or pen: click toggle play, dblclick toggle fullscreen
-    defaultPointerAction?: boolean
-}
 
 export default class Player {
     public root: HTMLElement

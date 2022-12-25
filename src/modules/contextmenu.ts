@@ -1,27 +1,13 @@
 import Player from ".."
 import { CONTEXTMENU_ITEM_CLASS } from "../commons/constants"
 import ToggleVisible from "../commons/toggle-visible"
+import {
+    Action,
+    BeforeShowCallback,
+    ContextmenuItem,
+    ContextmenuOptions
+} from "../commons/types"
 import { createEl } from "../utils"
-
-interface Action {
-    (play: Player): void
-}
-
-interface ContextmenuItem {
-    className?: string
-    text: string
-    action: Action
-}
-
-interface BeforeShowCallback {
-    (ev: PointerEvent, el: HTMLElement): boolean
-}
-
-export type ContextmenuOptions = ContextmenuItem[] | {
-    items: ContextmenuItem[],
-    beforeShow?: BeforeShowCallback
-}
-
 
 export default class Contextmenu extends ToggleVisible {
     private _actionsMap = new WeakMap<HTMLElement, Action>()

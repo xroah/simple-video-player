@@ -6,10 +6,7 @@ import Transition from "./transition"
 import Player from ".."
 import Video from "./video"
 import { CONTROL_BAR_DELAY } from "../commons/constants"
-
-interface Options {
-    showMiniProgress?: boolean
-}
+import { ControlBarOptions } from "../commons/types"
 
 const NO_CURSOR_CLASS = "rplayer-no-cursor"
 
@@ -25,7 +22,7 @@ export default class ControlBar extends Transition {
     constructor(
         private _parent: HTMLElement,
         player: Player,
-        private _options: Options = {}
+        private _options: ControlBarOptions = {}
     ) {
         super("rplayer-control-bar")
 
