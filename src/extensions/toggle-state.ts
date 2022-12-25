@@ -1,4 +1,4 @@
-import Player from "../modules/player"
+import Player from ".."
 import Transition from "../modules/transition"
 import Video from "../modules/video"
 

@@ -1,6 +1,10 @@
-import { ACTIVE_CLASS, ADDON_BTN_CLASS, RATE_ITEM_CLASS } from "../commons/constants"
+import {
+    ACTIVE_CLASS,
+    ADDON_BTN_CLASS,
+    RATE_ITEM_CLASS
+} from "../commons/constants"
 import { Addon } from "../commons/types"
-import Player from "../modules/player"
+import Player from ".."
 import Popup from "../modules/popup"
 import { createEl } from "../utils"
 

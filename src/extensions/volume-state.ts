@@ -1,5 +1,5 @@
 import ToggleVisible from "../commons/toggle-visible"
-import Player from "../modules/player"
+import Player from ".."
 import Video from "../modules/video"
 import { createEl, getVolumeClass } from "../utils"
 
@@ -37,7 +37,7 @@ class VolumeState extends ToggleVisible {
         this.show()
         this._updateState()
 
-        this._timer = window.setTimeout(() => this.hide(),DELAY)
+        this._timer = window.setTimeout(() => this.hide(), DELAY)
     }
 
     private _updateState() {

@@ -1,7 +1,7 @@
 import Video from "../modules/video"
 import throttle from "../utils/throttle"
 import { toggleFullScreen } from "../utils/fullscreen"
-import Player from "../modules/player"
+import Player from ".."
 
 class Hotkey {
     private _seek = throttle(
