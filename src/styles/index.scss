@@ -1,4 +1,5 @@
 @use "./vars";
+@use "./commons";
 @use "./slider";
 @use "./control-bar";
 @use "./tooltip";
@@ -23,10 +24,6 @@
     }
 }
 
-.rplayer-hidden {
-    display: none !important;
-}
-
 .rplayer-root {
     position: relative;
     width: 100%;
@@ -35,6 +32,7 @@
     padding-bottom: 56.25%;
     background-color: #000;
     user-select: none;
+    font-size: 14px;
 
     .rplayer-no-cursor {
         cursor: none;
@@ -58,20 +56,4 @@
         width: 100%;
         align-self: center;
     }
-}
-
-.rplayer-volume-muted {
-    background-image: url(../../icons/volume-muted.svg);
-}
-
-.rplayer-volume-low {
-    background-image: url(../../icons/volume-low.svg);
-}
-
-.rplayer-volume-medium {
-    background-image: url(../../icons/volume-medium.svg);
-}
-
-.rplayer-volume-high {
-    background-image: url(../../icons/volume-high.svg);
 }
