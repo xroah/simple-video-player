@@ -7,6 +7,8 @@ import { createEl } from "../utils"
 class VideoError extends ToggleVisible {
     private _msgEl: HTMLElement
     private _refreshBtn: HTMLElement
+    private _paused = true
+    private _time = 0
 
     constructor(private _player: Player) {
         super(_player.root, "rplayer-error-wrapper")
@@ -45,12 +47,27 @@ class VideoError extends ToggleVisible {
         return msg
     }
 
+    private _handleLoadedMetadata = () => {
+        if (this._time > 0) {
+            this._player.video.setCurrentTime(this._time)
+        }
+
+        this._player.video.play()
+    }
+
     private _handleRefresh = () => {
-        const {video} = this._player
-        const currentTime = video.getCurrentTime()
-        
+        if (!navigator.onLine) {
+            return
+        }
+
+        const { video } = this._player
+
         video.load()
-        video.setCurrentTime(currentTime)
+        video.addListener(
+            "loadeddata",
+            this._handleLoadedMetadata,
+            { once: true }
+        )
         this._hide()
     }
 
@@ -69,7 +86,15 @@ class VideoError extends ToggleVisible {
     }
 
     private _handleError = () => {
+        const { video } = this._player
+        this._paused = video.isPaused()
+        this._time = video.getCurrentTime()
+
         this._show()
+        video.removeListener(
+            "loadedmetadata",
+            this._handleLoadedMetadata
+        )
     }
 }
 
