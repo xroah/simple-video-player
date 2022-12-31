@@ -1,13 +1,11 @@
 import Player from ".."
 import { ERROR_CLASS } from "../commons/constants"
 import ToggleVisible from "../commons/toggle-visible"
-import Video from "../modules/video"
 import { createEl } from "../utils"
 
 class VideoError extends ToggleVisible {
     private _msgEl: HTMLElement
     private _refreshBtn: HTMLElement
-    private _paused = true
     private _time = 0
 
     constructor(private _player: Player) {
@@ -21,6 +19,7 @@ class VideoError extends ToggleVisible {
 
         this._refreshBtn.addEventListener("click", this._handleRefresh)
         _player.video.addListener("error", this._handleError)
+        this.el.addEventListener("contextmenu", this._handleContextmenu)
     }
 
     private getMessage() {
@@ -45,6 +44,10 @@ class VideoError extends ToggleVisible {
         }
 
         return msg
+    }
+
+    private _handleContextmenu(ev: Event) {
+        ev.stopPropagation()
     }
 
     private _handleLoadedMetadata = () => {
@@ -87,7 +90,6 @@ class VideoError extends ToggleVisible {
 
     private _handleError = () => {
         const { video } = this._player
-        this._paused = video.isPaused()
         this._time = video.getCurrentTime()
 
         this._show()
