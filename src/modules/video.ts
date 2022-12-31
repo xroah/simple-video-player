@@ -54,6 +54,10 @@ export default class Video extends EventEmitter {
         this.el.load()
     }
 
+    public load() {
+        this.el.load()
+    }
+
     public play() {
         this.el.play()
     }

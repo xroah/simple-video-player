@@ -1,4 +1,5 @@
 @use "./vars";
+@use "sass:color";
 
 // toggle-state
 .rplayer-toggle-state {
@@ -87,7 +88,34 @@ $translate: translate(-50%, -50%);
     }
 }
 
-// lock
-.rplayer-lock-wrapper {
-    
+// error
+.rplayer-error-wrapper {
+    @include vars.fill-parent();
+    @include vars.flex-center();
+    flex-direction: column;
+    pointer-events: auto;
+    background-color: black;
+    z-index: 999999;
+    color: #fff;
+    font-size: 18px;
+    cursor: default;
+
+    .rplayer-error-refresh {
+        padding: 6px 10px;
+        margin-top: 10px;
+        border-radius: 3px;
+        border: none;
+        background-color: vars.$color;
+        color: #fff;
+        font-size: 14px;
+        cursor: pointer;
+
+        &:hover {
+            background-color: color.scale(vars.$color, $blackness: 10%);
+        }
+
+        &:active {
+            background-color: color.scale(vars.$color, $blackness: 20%);
+        }
+    }
 }

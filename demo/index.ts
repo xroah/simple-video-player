@@ -3,6 +3,7 @@ import hotkey from "../src/extensions/hotkey"
 import loading from "../src/extensions/loading"
 import volumeState from "../src/extensions/volume-state"
 import toggleState from "../src/extensions/toggle-state"
+import videoError from "../src/extensions/error"
 import togglePlay from "../src/addons/toggle-play"
 import fullscreen from "../src/addons/fullscreen"
 import playRate from "../src/addons/playrate"
@@ -19,7 +20,13 @@ declare global {
 
 let rp = new RPlayer({
     container: "#player",
-    extensions: [hotkey, loading, volumeState, toggleState],
+    extensions: [
+        hotkey,
+        loading,
+        volumeState,
+        toggleState,
+        videoError
+    ],
     addons: [
         [togglePlay, volume],
         [],

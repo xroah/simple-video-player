@@ -48,6 +48,10 @@
         outline: none;
     }
 
+    &.rplayer-error {
+        pointer-events: none;
+    }
+
     &.rplayer-no-cursor {
         cursor: none;
     }
