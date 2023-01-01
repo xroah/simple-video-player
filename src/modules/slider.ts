@@ -262,12 +262,17 @@ export default class Slider extends EventEmitter {
 
     private _getMousePosition(clientX: number) {
         const rect = this._el.getBoundingClientRect()
-        const x = clientX - rect.left
-        const percent = x / rect.width * 100
+        let x = clientX - rect.left
+
+        if (x > rect.width) {
+            x = rect.width
+        } else if (x < 0) {
+            x = 0
+        }
 
         return {
             left: x,
-            percent
+            percent: x / rect.width * 100
         }
     }
 
