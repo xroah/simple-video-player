@@ -11,6 +11,8 @@ class VolumeAddon {
     private _slider: Slider
     private _video: Video
     private _mouseEntered = false
+    private _delayTimer = -1
+    private _delayTimeout = 300
 
     constructor(
         private _parent: HTMLElement,
@@ -80,11 +82,29 @@ class VolumeAddon {
     private _handleMouseEnter = () => {
         this._mouseEntered = true
 
+        this._clearTimeout()
         this._parent.classList.add(ACTIVE_CLASS)
     }
 
+    private _clearTimeout() {
+        if (this._delayTimer !== -1) {
+            window.clearTimeout(this._delayTimer)
+
+            this._delayTimer = -1
+        }
+    }
+
     private _deactivate() {
-        this._parent.classList.remove(ACTIVE_CLASS)
+        this._clearTimeout()
+
+        this._delayTimer = window.setTimeout(
+            () => {
+                this._delayTimer = -1
+
+                this._parent.classList.remove(ACTIVE_CLASS)
+            },
+            this._delayTimeout
+        )
     }
 
     private _handleMouseLeave = () => {
