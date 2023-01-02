@@ -22,15 +22,21 @@
         display: flex;
         align-items: center;
         height: 16px;
+    }
 
-        .rplayer-progress {
-            margin: 0 10px;
-            flex-grow: 1;
-            flex-shrink: 0;
+    .rplayer-progress {
+        margin: 0 20px;
+        flex-grow: 1;
+        flex-shrink: 0;
 
-            &:hover .rplayer-slider-wrapper,
-            .rplayer-slider-wrapper.rplayer-moving {
-                height: 10px;
+        &:hover .rplayer-slider-wrapper,
+        .rplayer-slider-wrapper.rplayer-moving {
+            height: 10px;
+
+            .rplayer-slider-marker {
+                $size: 18px;
+                width: $size;
+                height: $size;
             }
         }
     }
