@@ -17,8 +17,6 @@ export function requestFullscreen(el: any) {
         el.webkitRequestFullscreen()
     } else if (el.mozRequestFullScreen) {
         el.mozRequestFullScreen()
-    } else {
-        return false
     }
 }
 

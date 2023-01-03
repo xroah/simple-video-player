@@ -9,7 +9,7 @@ import {
 const fullscreen: Addon = {
     tag: "button",
     classNames: [ADDON_BTN_CLASS, "rplayer-fullscreen-btn"],
-    install(el, { root }) {
+    install(el, { root, video }) {
         const fullscreenchangeName = getFullscreenChangeEventName()
         const FULLSCREEN_IN_CLASS = "rplayer-fullscreen-in"
 
@@ -27,7 +27,19 @@ const fullscreen: Addon = {
             }
         )
 
-        el.addEventListener("click", () => toggleFullScreen(root))
+        el.addEventListener(
+            "click",
+            () => {
+                const videoEl = video.el as any
+
+                // iphone
+                if (videoEl.webkitEnterFullScreen) {
+                    videoEl.webkitEnterFullScreen()
+                } else {
+                    toggleFullScreen(root)
+                }
+            }
+        )
     }
 }
 
