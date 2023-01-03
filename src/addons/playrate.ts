@@ -74,7 +74,7 @@ class RatePopup extends Popup {
 
 const playRate: Addon = {
     tag: "button",
-    classNames: [ADDON_BTN_CLASS],
+    classNames: [ADDON_BTN_CLASS, "rplayer-rate-btn"],
     install(el, player) {
         const ratePopup = new RatePopup(el, player)
         el.innerHTML = getPlayRate(player.video.getPlayRate())
