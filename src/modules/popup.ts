@@ -60,9 +60,10 @@ export default class Popup extends ToggleVisible {
         const leftOffset = (rect.width - relatedRect.width) / 2
         const left = relatedRect.left - leftOffset
         const top = relatedRect.top - rect.height - OFFSET
+        const maxLeft = window.innerWidth - rect.width 
 
-        el.style.left = `${left}px`
-        el.style.top = `${top}px`
+        el.style.left = `${left > maxLeft ? maxLeft : left}px`
+        el.style.top = `${top < 0 ? 0 : top}px`
 
         document.addEventListener(
             "click",
