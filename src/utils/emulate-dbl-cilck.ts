@@ -76,7 +76,10 @@ export default class DblClickEmulator {
             this._clickTimes = 0
 
             this._clearTimeout()
-            this._options.onDblClick?.(ev)
+
+            if(!ev.defaultPrevented) {
+                this._options.onDblClick?.(ev)
+            }
 
             return
         }
@@ -87,7 +90,9 @@ export default class DblClickEmulator {
                     this._clickTimes = 0
                     this._timer = -1
 
-                    this._options.onClick?.(ev)
+                    if(!ev.defaultPrevented) {
+                        this._options.onClick?.(ev)
+                    }
                 },
                 DBLCLICK_THRESHOLD
             )
