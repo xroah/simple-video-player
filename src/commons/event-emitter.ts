@@ -11,16 +11,6 @@ interface Listener {
     once: boolean
 }
 
-function createListener(
-    fn: Function,
-    once: boolean
-): Listener {
-    return {
-        fn,
-        once
-    }
-}
-
 function checkFunction(fn: any) {
     if (!isFunc(fn)) {
         throw new Error(`The "listener" argument must be of type function.`)
@@ -54,7 +44,7 @@ export default class EventEmitter {
         }
 
         if (!exists) {
-            listeners.push(createListener(listener, once))
+            listeners.push({fn: listener, once})
         }
 
         return this
