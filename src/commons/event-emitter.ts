@@ -18,7 +18,7 @@ function checkFunction(fn: any) {
 }
 
 export default class EventEmitter {
-    private _listeners: Map<string, Listener[]> = new Map()
+    private _listeners: Map<string, Set<Listener>> = new Map()
 
     private _addListener(
         eventName: string,
@@ -26,26 +26,17 @@ export default class EventEmitter {
         once = false
     ) {
         let listeners = this._listeners.get(eventName)
-        let exists = false
 
         checkFunction(listener)
 
         if (!listeners) {
-            this._listeners.set(eventName, listeners = [])
+            this._listeners.set(eventName, listeners = new Set())
         }
 
-        for (let l of listeners) {
-            //the listener already exists
-            if (l.fn === listener) {
-                exists = true
-
-                break
-            }
-        }
-
-        if (!exists) {
-            listeners.push({fn: listener, once})
-        }
+        listeners.add({
+            fn: listener,
+            once
+        })
 
         return this
     }
@@ -79,13 +70,11 @@ export default class EventEmitter {
             return this
         }
 
-        for (let i = 0, len = listeners.length; i < len; i++) {
-            const l = listeners[i]
-
+        for (const l of listeners) {
             if (l.fn === fn) {
-                listeners.splice(i, 1)
+                listeners.delete(l)
 
-                if (!listeners.length) {
+                if (!listeners.size) {
                     this._removeAllListeners(eventName)
                 }
 
@@ -100,11 +89,11 @@ export default class EventEmitter {
         if (isUndef(eventName)) {
             this._listeners = new Map()
 
-            return
+            return this
         }
 
         if (!this._listeners.get(eventName!)) {
-            return
+            return this
         }
 
         this._listeners.delete(eventName!)
@@ -118,8 +107,6 @@ export default class EventEmitter {
         if (isUndef(eventName) || !listeners) {
             return false
         }
-
-        listeners = [...listeners]
 
         for (let l of listeners) {
             const evt: EventObject = {
