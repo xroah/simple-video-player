@@ -31,10 +31,14 @@ const fullscreen: Addon = {
             "click",
             () => {
                 const videoEl = video.el as any
+                const el = root as any
+                const method = el.requestFullscreen ||
+                    el.webkitRequestFullscreen ||
+                    el.mozRequestFullScreen
 
                 // iphone
-                if (videoEl.webkitEnterFullScreen) {
-                    videoEl.webkitEnterFullScreen()
+                if (!method) {
+                    videoEl.webkitEnterFullScreen?.()
                 } else {
                     toggleFullScreen(root)
                 }

@@ -54,6 +54,7 @@
 // playback rate
 .rplayer-rate-btn {
     width: auto;
+    font-size: 18px;
 }
 
 .rplayer-rate-popup {
@@ -62,6 +63,7 @@
 
     .rplayer-rate-item {
         padding: 6px 15px;
+        font-size: 16px;
         cursor: pointer;
 
         &.rplayer-active {
