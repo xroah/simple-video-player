@@ -8,6 +8,7 @@ import togglePlay from "../src/addons/toggle-play"
 import fullscreen from "../src/addons/fullscreen"
 import playRate from "../src/addons/playrate"
 import volume from "../src/addons/volume"
+import pageFullscreen from "../src/addons/page-fullscreen"
 
 import "./index.scss"
 import "../src/styles/index.scss"
@@ -30,7 +31,7 @@ let rp = new RPlayer({
     addons: [
         [togglePlay, volume],
         [],
-        [playRate, fullscreen]
+        [playRate, pageFullscreen, fullscreen]
     ],
     contextmenu: {
         beforeShow(ev) {
