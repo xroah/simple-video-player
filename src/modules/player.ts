@@ -77,6 +77,9 @@ export default class Player {
             "pointermove",
             this._handlePointerMove
         )
+        this.root.addEventListener(
+            "touchmove",
+            this._handleTouchMove)
 
         this._installExtensions()
 
@@ -99,6 +102,10 @@ export default class Player {
                 e.install(this, e.options)
             }
         })
+    }
+
+    private _handleTouchMove = (ev: TouchEvent) => {
+        ev.preventDefault()
     }
 
     private _handleClick = (ev: PointerEvent) => {
