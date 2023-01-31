@@ -1,7 +1,7 @@
 import { DBLCLICK_THRESHOLD } from "../commons/constants"
 
 interface Handler {
-    (e: PointerEvent): void
+    (ev: Event, type: string): void
 }
 
 interface Options {
@@ -35,12 +35,13 @@ export default class DblClickEmulator {
         }
     }
 
-    private _handlePointerDown = (ev: PointerEvent) => {
-        // main button click
-        if (ev.button !== undefined && ev.button !== 0) {
-            return
-        }
+    private _shouldOmit(ev: PointerEvent) {
+        return (
+            ev.button !== undefined && ev.button !== 0
+        ) || ev.pointerType === "touch"
+    }
 
+    private _handleStart() {
         const now = Date.now()
         // double click based on mousedown intervals
         this._interval = now - this._prevTimestamp
@@ -52,11 +53,15 @@ export default class DblClickEmulator {
         }
     }
 
-    private _handlePointerUp = (ev: PointerEvent) => {
-        if (ev.button !== undefined && ev.button !== 0) {
+    private _handlePointerDown = (ev: PointerEvent) => {
+        if (this._shouldOmit(ev)) {
             return
         }
 
+        this._handleStart()
+    }
+
+    private _handleEnd(ev: Event, type: string) {
         const target = ev.target as HTMLElement
 
         // release pointer outside of the target
@@ -77,8 +82,8 @@ export default class DblClickEmulator {
 
             this._clearTimeout()
 
-            if(!ev.defaultPrevented) {
-                this._options.onDblClick?.(ev)
+            if (!ev.defaultPrevented) {
+                this._options.onDblClick?.(ev, type)
             }
 
             return
@@ -90,12 +95,20 @@ export default class DblClickEmulator {
                     this._clickTimes = 0
                     this._timer = -1
 
-                    if(!ev.defaultPrevented) {
-                        this._options.onClick?.(ev)
+                    if (!ev.defaultPrevented) {
+                        this._options.onClick?.(ev, type)
                     }
                 },
                 DBLCLICK_THRESHOLD
             )
         }
+    }
+
+    private _handlePointerUp = (ev: PointerEvent) => {
+        if (this._shouldOmit(ev)) {
+            return
+        }
+
+        this._handleEnd(ev, ev.pointerType)
     }
 }

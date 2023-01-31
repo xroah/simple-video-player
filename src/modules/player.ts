@@ -108,16 +108,16 @@ export default class Player {
         ev.preventDefault()
     }
 
-    private _handleClick = (ev: PointerEvent) => {
-        if (ev.pointerType !== "touch") {
+    private _handleClick = (ev: Event, type: string) => {
+        if (type !== "touch") {
             this.togglePlay()
         } else {
             this.controlBar.toggle()
         }
     }
 
-    private _handleDblClick = (ev: PointerEvent) => {
-        if (ev.pointerType !== "touch") {
+    private _handleDblClick = (ev: Event, type: string) => {
+        if (type !== "touch") {
             toggleFullScreen(this.root)
         } else {
             this.togglePlay()
@@ -128,8 +128,10 @@ export default class Player {
         this.video.toggle()
     }
 
-    private _handlePointerMove = () => {
-        this.showControlBar()
+    private _handlePointerMove = (ev: PointerEvent) => {
+        if (ev.pointerType !== "touch") {
+            this.showControlBar()
+        }
     }
 
     public showControlBar() {
