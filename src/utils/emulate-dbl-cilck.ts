@@ -21,9 +21,17 @@ export default class DblClickEmulator {
             "pointerdown",
             this._handlePointerDown
         )
+        _options.target.addEventListener(
+            "touchstart",
+            this._handleTouchStart
+        )
         document.addEventListener(
             "pointerup",
             this._handlePointerUp
+        )
+        document.addEventListener(
+            "touchend",
+            this._handleTouchEnd
         )
     }
 
@@ -54,11 +62,9 @@ export default class DblClickEmulator {
     }
 
     private _handlePointerDown = (ev: PointerEvent) => {
-        if (this._shouldOmit(ev)) {
-            return
+        if (!this._shouldOmit(ev)) {
+            this._handleStart()
         }
-
-        this._handleStart()
     }
 
     private _handleEnd(ev: Event, type: string) {
@@ -105,10 +111,20 @@ export default class DblClickEmulator {
     }
 
     private _handlePointerUp = (ev: PointerEvent) => {
-        if (this._shouldOmit(ev)) {
-            return
+        if (!this._shouldOmit(ev)) {
+            this._handleEnd(ev, ev.pointerType)
         }
+    }
 
-        this._handleEnd(ev, ev.pointerType)
+    private _handleTouchStart = (ev: TouchEvent) => {
+        if (ev.touches.length === 1) {
+            this._handleStart()
+        }
+    }
+
+    private _handleTouchEnd = (ev: TouchEvent) => {
+        if (!ev.touches.length) {
+            this._handleEnd(ev, "touch")
+        }
     }
 }
