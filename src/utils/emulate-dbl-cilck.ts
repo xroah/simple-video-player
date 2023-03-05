@@ -57,6 +57,10 @@ export default class DblClickEmulator {
         this._clickTimes++
 
         if (this._clickTimes > 1) {
+            if (this._clickTimes > 2) {
+                this._clickTimes = 1
+            }
+
             this._clearTimeout()
         }
     }
