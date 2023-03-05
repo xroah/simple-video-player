@@ -64,6 +64,7 @@ class VolumeAddon {
     private _handleSliderUpdate = (eo: EventObject) => {
         const details = eo.details as Details
 
+        this._video.setMuted(false)
         this._video.setVolume(details.value)
     }
 

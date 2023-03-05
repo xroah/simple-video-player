@@ -6,8 +6,9 @@ import Contextmenu from "./contextmenu"
 import { PlayerOptions } from "../commons/types"
 import { toggleFullScreen } from "../utils/fullscreen"
 import AddonManager from "./addon-manager"
+import EventEmitter from "../commons/event-emitter"
 
-export default class Player {
+export default class Player extends EventEmitter {
     public root: HTMLElement
     public body: HTMLElement
     public video: Video
@@ -19,6 +20,8 @@ export default class Player {
     private _contextmenu?: Contextmenu
 
     constructor(private _options: PlayerOptions) {
+        super()
+
         const container = <HTMLElement>getContainer(_options.container)
 
         if (!container) {
