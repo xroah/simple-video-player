@@ -112,20 +112,12 @@ export default class Player extends EventEmitter {
         ev.preventDefault()
     }
 
-    private _handleClick = (ev: Event, type: string) => {
-        if (type !== "touch") {
-            this.togglePlay()
-        } else {
-            this.controlBar.toggle()
-        }
+    private _handleClick = () => {
+        this.togglePlay()
     }
 
     private _handleDblClick = (ev: Event, type: string) => {
-        if (type !== "touch") {
-            toggleFullScreen(this.root)
-        } else {
-            this.togglePlay()
-        }
+        toggleFullScreen(this.root)
     }
 
     public togglePlay = () => {
