@@ -25,7 +25,7 @@ export default class Player extends EventEmitter {
         const container = <HTMLElement>getContainer(_options.container)
 
         if (!container) {
-            throw new Error("Can not find a container")
+            throw new Error("Can not find the container")
         }
 
         if (container.firstElementChild) {
@@ -51,44 +51,47 @@ export default class Player extends EventEmitter {
             this
         )
 
-        if (_options.contextmenu) {
-            this._contextmenu = new Contextmenu(
-                this,
-                _options.contextmenu
-            )
+        this._init()
+    }
+
+    private _init() {
+        const {
+            addons,
+            src,
+            contextmenu,
+            defaultPointerAction
+        } = this._options
+        const {
+            video,
+            body,
+            root,
+            _container
+        } = this
+
+        video.setSrc(src)
+        root.appendChild(body)
+        _container.appendChild(root)
+
+        body.addEventListener("pointermove", this._handlePointerMove)
+        root.addEventListener("touchmove", this._handleTouchMove)
+
+        this._installExtensions()
+
+        if (addons) {
+            this.addonManager.installAddons(addons)
         }
 
-        if (_options.defaultPointerAction !== false) {
+        if (contextmenu) {
+            this._contextmenu = new Contextmenu(this, contextmenu)
+        }
+
+        if (defaultPointerAction !== false) {
             this._dblClickEmulator = new DblClickEmulator({
                 onClick: this._handleClick,
                 onDblClick: this._handleDblClick,
                 target: this.body,
                 type: "mouse"
             })
-        }
-
-        this._init()
-    }
-
-    private _init() {
-        const { addons, src } = this._options
-
-        this.video.setSrc(src)
-        this.root.appendChild(this.body)
-        this._container.appendChild(this.root)
-
-        this.body.addEventListener(
-            "pointermove",
-            this._handlePointerMove
-        )
-        this.root.addEventListener(
-            "touchmove",
-            this._handleTouchMove)
-
-        this._installExtensions()
-
-        if (addons) {
-            this.addonManager.installAddons(addons)
         }
     }
 
@@ -112,15 +115,11 @@ export default class Player extends EventEmitter {
         ev.preventDefault()
     }
 
-    private _handleClick = () => {
-        this.togglePlay()
-    }
+    private _handleClick = () => this.togglePlay()
 
-    private _handleDblClick = (ev: Event, type: string) => {
-        toggleFullScreen(this.root)
-    }
+    private _handleDblClick = () => toggleFullScreen(this.root)
 
-    public togglePlay = () => {
+    public togglePlay() {
         this.video.toggle()
     }
 
