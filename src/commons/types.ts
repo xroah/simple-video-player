@@ -8,8 +8,6 @@ export interface PlayerOptions extends OptionsWithAddons {
     showMiniProgress?: boolean
     extensions?: Array<Extension | ExtensionFn>
     contextmenu?: false | ContextmenuOptions
-    // default pointer action
-    //for touch: click toggle control bar, dblclick toggle play
     // for mouse or pen: click toggle play, dblclick toggle fullscreen
     defaultPointerAction?: boolean
 }

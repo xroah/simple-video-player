@@ -62,7 +62,8 @@ export default class Player extends EventEmitter {
             this._dblClickEmulator = new DblClickEmulator({
                 onClick: this._handleClick,
                 onDblClick: this._handleDblClick,
-                target: this.body
+                target: this.body,
+                type: "mouse"
             })
         }
 

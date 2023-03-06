@@ -8,6 +8,8 @@ interface Options {
     onClick?: Handler
     onDblClick?: Handler
     target: HTMLElement
+    type?: "mouse" | "touch" | "both"
+    stop?: boolean
 }
 
 export default class DblClickEmulator {
@@ -17,22 +19,16 @@ export default class DblClickEmulator {
     private _interval = 0
 
     constructor(private _options: Options) {
-        _options.target.addEventListener(
-            "pointerdown",
-            this._handlePointerDown
-        )
-        _options.target.addEventListener(
-            "touchstart",
-            this._handleTouchStart
-        )
-        document.addEventListener(
-            "pointerup",
-            this._handlePointerUp
-        )
-        document.addEventListener(
-            "touchend",
-            this._handleTouchEnd
-        )
+        const { type = "touch", target } = _options
+        const doc = document
+
+        if (type === "mouse" || type === "both") {
+            target.addEventListener("pointerdown", this._handlePointerDown)
+            doc.addEventListener("pointerup", this._handlePointerUp)
+        } else if (type === "touch" || type === "both") {
+            target.addEventListener("touchstart", this._handleTouchStart)
+            doc.addEventListener("touchend", this._handleTouchEnd)
+        }
     }
 
     private _clearTimeout() {
@@ -43,18 +39,22 @@ export default class DblClickEmulator {
         }
     }
 
-    private _shouldOmit(ev: PointerEvent) {
+    private _shouldIgnore(ev: PointerEvent) {
         return (
             ev.button !== undefined && ev.button !== 0
         ) || ev.pointerType === "touch"
     }
 
-    private _handleStart() {
+    private _handleStart(ev: Event) {
         const now = Date.now()
         // double click based on mousedown intervals
         this._interval = now - this._prevTimestamp
         this._prevTimestamp = Date.now()
         this._clickTimes++
+
+        if (this._options.stop) {
+            ev.stopPropagation()
+        }
 
         if (this._clickTimes > 1) {
             if (this._clickTimes > 2) {
@@ -66,13 +66,17 @@ export default class DblClickEmulator {
     }
 
     private _handlePointerDown = (ev: PointerEvent) => {
-        if (!this._shouldOmit(ev)) {
-            this._handleStart()
+        if (!this._shouldIgnore(ev)) {
+            this._handleStart(ev)
         }
     }
 
     private _handleEnd(ev: Event, type: string) {
         const target = ev.target as HTMLElement
+
+        if (this._options.stop) {
+            ev.stopPropagation()
+        }
 
         // release pointer outside of the target
         if (
@@ -115,14 +119,14 @@ export default class DblClickEmulator {
     }
 
     private _handlePointerUp = (ev: PointerEvent) => {
-        if (!this._shouldOmit(ev)) {
+        if (!this._shouldIgnore(ev)) {
             this._handleEnd(ev, ev.pointerType)
         }
     }
 
     private _handleTouchStart = (ev: TouchEvent) => {
         if (ev.touches.length === 1) {
-            this._handleStart()
+            this._handleStart(ev)
         }
     }
 
