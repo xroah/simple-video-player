@@ -23,7 +23,7 @@ export default class Slider extends EventEmitter {
     private _el: HTMLElement
     private _progress: HTMLElement
     private _marker: HTMLElement
-    private _buffer: HTMLElement
+    private _buffer?: HTMLElement
     private _tooltip?: Tooltip
     private _value = 0
     private _moving = false
@@ -96,7 +96,7 @@ export default class Slider extends EventEmitter {
         }
 
         this._tooltip.updateText(text)
-        this._tooltip.show(e.clientX, e.clientY)
+        this._tooltip.show(e.clientX)
     }
 
     private _hideTooltip() {

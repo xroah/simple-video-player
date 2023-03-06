@@ -1,12 +1,8 @@
-export function isUndef(obj: any) {
+export function isUndef(obj: unknown) {
     return obj === undefined || obj === null
 }
 
-export function isFunc(fn: any) {
-    return typeof fn === "function"
-}
-
-export function isPlainObject(obj: any) {
+export function isPlainObject(obj: unknown) {
     return Object.prototype.toString.call(obj) === "[object Object]"
 }
 

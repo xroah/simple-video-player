@@ -26,7 +26,7 @@ export interface ContextmenuItem {
 }
 
 export interface BeforeShowCallback {
-    (ev: PointerEvent, el: HTMLElement): boolean
+    (ev: MouseEvent, el: HTMLElement): boolean
 }
 
 export type ContextmenuOptions = ContextmenuItem[] | {

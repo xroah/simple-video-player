@@ -16,7 +16,7 @@ export default class Transition extends EventEmitter {
 
     private _transitionEndTimer = -1
 
-    constructor(cls: string = "", el?: HTMLElement) {
+    constructor(cls = "", el?: HTMLElement) {
         super()
 
         this.el = el = el || createEl("div", HIDDEN_CLASS, cls)

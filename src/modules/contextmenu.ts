@@ -33,13 +33,12 @@ export default class Contextmenu extends ToggleVisible {
 
         _player.root.addEventListener(
             "contextmenu",
-            // @ts-ignore
             this._handleContextmenu
         )
     }
 
     private _createItems(items: ContextmenuItem[]) {
-        for (let item of items) {
+        for (const item of items) {
             const li = document.createElement("li")
             li.innerHTML = item.text
 
@@ -55,7 +54,7 @@ export default class Contextmenu extends ToggleVisible {
         this.el.appendChild(this._menu)
     }
 
-    private _show(ev: PointerEvent) {
+    private _show(ev: MouseEvent) {
         this.show()
 
         const rect = this._menu.getBoundingClientRect()
@@ -79,7 +78,6 @@ export default class Contextmenu extends ToggleVisible {
             this._handleClickOutside
         )
         this.el.addEventListener("keydown", this._handleKeydown)
-        // @ts-ignore
         this._menu.addEventListener("click", this._handleClick)
     }
 
@@ -94,9 +92,11 @@ export default class Contextmenu extends ToggleVisible {
             "contextmenu",
             this._handleClickOutside
         )
+        this.el.removeEventListener("keydown", this._handleKeydown)
+        this._menu.removeEventListener("click", this._handleClick)
     }
 
-    private _handleContextmenu = (ev: PointerEvent) => {
+    private _handleContextmenu = (ev: MouseEvent) => {
         const target = ev.target as HTMLElement
 
         ev.preventDefault()
@@ -119,7 +119,7 @@ export default class Contextmenu extends ToggleVisible {
         this._show(ev)
     }
 
-    private _handleClick = (ev: PointerEvent) => {
+    private _handleClick = (ev: MouseEvent) => {
         const target = ev.target as HTMLElement
 
         if (target.classList.contains(CONTEXTMENU_ITEM_CLASS)) {

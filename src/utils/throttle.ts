@@ -3,14 +3,16 @@ interface ThrottleOptions {
     delay?: number
 }
 
+export type ThrottleFunc = (...arg: unknown[]) => unknown
+
 // original: https://github.com/jashkenas/underscore/blob/master/modules/throttle.js
 export default function throttle(
-    fn: Function,
+    fn: ThrottleFunc,
     options?: ThrottleOptions
 ) {
-    let timer: any = null
+    let timer = -1
     let previous = 0
-    const throttled = function throttled(...args: any[]) {
+    const throttled = function throttled(...args: unknown[]) {
         if (!options) {
             options = {}
         }
@@ -26,15 +28,19 @@ export default function throttle(
             if (timer !== null) {
                 clearTimeout(timer)
 
-                timer = null
+                timer = -1
             }
 
             previous = now
 
-            fn.apply(null, args)
+            fn(...args)
         } else if (trailing !== false && !timer) {
-            timer = setTimeout(
-                () => fn.apply(timer = null, args),
+            timer = window.setTimeout(
+                () =>{
+                    timer = -1
+
+                    fn(...args)
+                },
                 delay
             )
         }

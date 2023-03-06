@@ -6,7 +6,9 @@
   "scripts": {
     "test": "ts-node tests/index",
     "build": "ts-node build/index",
-    "demo": "vite serve"
+    "demo": "vite serve",
+    "lint": "eslint src/**/*.ts",
+    "fix": "eslint src/**/*.ts --fix"
   },
   "repository": {
     "type": "git",
@@ -36,8 +38,11 @@
     "@types/jasmine": "^3.9.1",
     "@types/karma": "^6.3.1",
     "@types/sass": "^1.16.1",
+    "@typescript-eslint/eslint-plugin": "^5.54.0",
+    "@typescript-eslint/parser": "^5.54.0",
     "babel-plugin-istanbul": "^6.0.0",
     "chalk": "^4.1.2",
+    "eslint": "^8.35.0",
     "jasmine": "^3.10.0",
     "karma": "^6.3.4",
     "karma-chrome-launcher": "^3.1.0",

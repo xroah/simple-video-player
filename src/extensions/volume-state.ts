@@ -44,7 +44,7 @@ class VolumeState extends ToggleVisible {
         const volume = this._video.getVolume()
         const muted = this._video.isMuted()
         const className = getVolumeClass(volume, muted)
-        let volumeStr = volume.toString()
+        const volumeStr = volume.toString()
         this._iconEl.className = ""
         this._textEl.innerHTML = volume === 0 || muted ? "静音" : volumeStr
 

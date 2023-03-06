@@ -1,19 +1,23 @@
-import { isFunc, isUndef } from "../utils"
+import { isUndef } from "../utils"
 
 export interface EventObject {
     type: string
     timeStamp: number
-    details?: any
+    details?: unknown
 }
 
+type ListenerFn = (arg: EventObject) => unknown
+
 interface Listener {
-    fn: Function
+    fn: ListenerFn
     once: boolean
 }
 
-function checkFunction(fn: any) {
-    if (!isFunc(fn)) {
-        throw new Error(`The "listener" argument must be of type function.`)
+function checkFunction(fn: unknown) {
+    if (typeof fn !== "function") {
+        throw new Error(
+            "The 'listener' argument must be of type function."
+        )
     }
 }
 
@@ -22,7 +26,7 @@ export default class EventEmitter {
 
     private _addListener(
         eventName: string,
-        listener: Function,
+        listener: ListenerFn,
         once = false
     ) {
         let listeners = this._listeners.get(eventName)
@@ -41,15 +45,15 @@ export default class EventEmitter {
         return this
     }
 
-    on(eventName: string, listener: Function) {
+    on(eventName: string, listener: ListenerFn) {
         return this._addListener(eventName, listener)
     }
 
-    once(eventName: string, listener: Function) {
+    once(eventName: string, listener: ListenerFn) {
         return this._addListener(eventName, listener, true)
     }
 
-    off(eventName?: string, fn?: Function) {
+    off(eventName?: string, fn?: ListenerFn) {
         if (isUndef(eventName)) {
             this._removeAllListeners()
         } else if (isUndef(fn)) {
@@ -61,7 +65,7 @@ export default class EventEmitter {
         return this
     }
 
-    private _removeListener(eventName: string, fn: Function) {
+    private _removeListener(eventName: string, fn: ListenerFn) {
         const listeners = this._listeners.get(eventName)
 
         checkFunction(fn)
@@ -101,14 +105,14 @@ export default class EventEmitter {
         return this
     }
 
-    emit(eventName: string, arg?: any) {
-        let listeners = this._listeners.get(eventName)
+    emit(eventName: string, arg?: unknown) {
+        const listeners = this._listeners.get(eventName)
 
         if (isUndef(eventName) || !listeners) {
             return false
         }
 
-        for (let l of listeners) {
+        for (const l of listeners) {
             const evt: EventObject = {
                 type: eventName,
                 details: arg,

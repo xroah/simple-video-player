@@ -22,7 +22,7 @@ export default class ControlBar extends Transition {
     constructor(
         private _parent: HTMLElement,
         player: Player,
-        private _options: ControlBarOptions = {}
+        options: ControlBarOptions = {}
     ) {
         super("rplayer-control-bar")
 
@@ -44,7 +44,7 @@ export default class ControlBar extends Transition {
             }
         )
 
-        if (_options.showMiniProgress !== false) {
+        if (options.showMiniProgress !== false) {
             this._miniProgress = new MiniProgress(this._parent)
         }
 
@@ -192,7 +192,7 @@ export default class ControlBar extends Transition {
             type,
             {
                 time: this._getSeekTime(eo),
-                ...eo.details
+                ...(eo.details as object)
             }
         )
     }

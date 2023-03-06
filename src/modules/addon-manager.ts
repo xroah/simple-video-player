@@ -13,7 +13,7 @@ export default class AddonManager {
     private _el: HTMLElement
 
     constructor(
-        private _parent: HTMLElement,
+        parent: HTMLElement,
         private _player: Player
     ) {
         this._el = createEl("div", "rplayer-addons-wrapper")
@@ -24,7 +24,7 @@ export default class AddonManager {
         this._el.appendChild(this._left)
         this._el.appendChild(this._center)
         this._el.appendChild(this._right)
-        _parent.appendChild(this._el)
+        parent.appendChild(this._el)
     }
 
     public installAddons(addons: AddonArray) {

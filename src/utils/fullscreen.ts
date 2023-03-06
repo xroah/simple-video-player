@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 export function exitFullscreen() {
     const doc = document as any
 
@@ -39,19 +40,16 @@ export function toggleFullScreen(el: HTMLElement) {
 }
 
 export function getFullscreenChangeEventName() {
-    const { body } = document
+    const body = document.body as any
 
-    // @ts-ignore
     if (body.requestFullscreen) {
         return "fullscreenchange"
     }
 
-    // @ts-ignore
     if (body.webkitRequestFullscreen) {
         return "webkitfullscreenchange"
     }
 
-    // @ts-ignore
     if (body.mozRequestFullscreen) {
         return "mozfullscreenchange"
     }

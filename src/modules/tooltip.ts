@@ -14,7 +14,7 @@ export default class Tooltip extends ToggleVisible {
         this.hide()
     }
 
-    public updatePosition(x: number = 0, y: number = 0) {
+    public updatePosition(x  = 0) {
         const rect = this.el.getBoundingClientRect()
         const parentRect = this._parent.getBoundingClientRect()
         const maxLeft = parentRect.width - rect.width
@@ -32,10 +32,10 @@ export default class Tooltip extends ToggleVisible {
         this.el.style.top = `${top}px`
     }
 
-    // x, y relative to page
-    public show(x?: number, y?: number) {
+    // x relative to page
+    public show(x?: number) {
         super.show()
-        this.updatePosition(x, y)
+        this.updatePosition(x)
     }
 
     public updateText(text: string) {

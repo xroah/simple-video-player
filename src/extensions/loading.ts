@@ -7,7 +7,7 @@ class Loading extends ToggleVisible {
         parent: HTMLElement,
         private _video: Video
     ) {
-       super(parent, "rplayer-loading")
+        super(parent, "rplayer-loading")
 
         this._video.addListener("waiting", this._show)
         this._video.addListener("canplay", this._hide)
