@@ -15,3 +15,5 @@ export const CONTEXTMENU_ITEM_CLASS = "rplayer-contextmenu-item"
 export const RATE_ITEM_CLASS = "rplayer-rate-item"
 
 export const ERROR_CLASS = "rplayer-error"
+
+export const NO_CURSOR_CLASS = "rplayer-no-cursor"

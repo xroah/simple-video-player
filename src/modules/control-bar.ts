@@ -1,29 +1,20 @@
 import { EventObject } from "../commons/event-emitter"
 import { createEl, formatTime } from "../utils"
-import MiniProgress from "./mini-progress"
 import Slider, { Details } from "./slider"
 import Transition from "./transition"
 import Player from ".."
 import Video from "./video"
 import { CONTROL_BAR_DELAY } from "../commons/constants"
-import { ControlBarOptions } from "../commons/types"
-
-const NO_CURSOR_CLASS = "rplayer-no-cursor"
 
 export default class ControlBar extends Transition {
     private _slider: Slider
-    private _miniProgress?: MiniProgress
     private _currentTimeEl: HTMLElement
     private _durationEl: HTMLElement
     private _hidePrevented = false
 
     private _video: Video
 
-    constructor(
-        private _parent: HTMLElement,
-        player: Player,
-        options: ControlBarOptions = {}
-    ) {
+    constructor(private _parent: HTMLElement, player: Player) {
         super("rplayer-control-bar")
 
         const DEFAULT_TIME = "00:00"
@@ -43,10 +34,6 @@ export default class ControlBar extends Transition {
                 tooltip: this._formatTooltip
             }
         )
-
-        if (options.showMiniProgress !== false) {
-            this._miniProgress = new MiniProgress(this._parent)
-        }
 
         progressWrapper.appendChild(this._currentTimeEl)
         progressWrapper.appendChild(sliderWrapper)
@@ -73,9 +60,6 @@ export default class ControlBar extends Transition {
         this._slider.on("slide-start", this._handleSlideStart)
         this._slider.on("slide-move", this._handleSlideMove)
         this._slider.on("slide-end", this._handleSlideEnd)
-
-        this.on("show", this._handleShow)
-        this.on("hidden", this._handleHidden)
     }
 
     public override hide() {
@@ -143,16 +127,6 @@ export default class ControlBar extends Transition {
         return formatTime(duration * v / 100)
     }
 
-    private _handleShow = () => {
-        this._miniProgress?.hide()
-        this._parent.classList.remove(NO_CURSOR_CLASS)
-    }
-
-    private _handleHidden = () => {
-        this._miniProgress?.show()
-        this._parent.classList.add(NO_CURSOR_CLASS)
-    }
-
     private _handleDurationChange = () => {
         const duration = this._video.getDuration()
 
@@ -171,7 +145,6 @@ export default class ControlBar extends Transition {
         this._currentTimeEl.innerHTML = formatTime(time)
 
         this._slider.updateProgress(progress)
-        this._miniProgress?.update(progress)
     }
 
     private _getSeekTime(eo: EventObject) {

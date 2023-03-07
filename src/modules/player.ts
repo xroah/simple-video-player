@@ -7,17 +7,20 @@ import { PlayerOptions } from "../commons/types"
 import { toggleFullScreen } from "../utils/fullscreen"
 import AddonManager from "./addon-manager"
 import EventEmitter from "../commons/event-emitter"
+import MiniProgress from "./mini-progress"
+import { NO_CURSOR_CLASS } from "../commons/constants"
 
 export default class Player extends EventEmitter {
     public root: HTMLElement
     public body: HTMLElement
     public video: Video
     public controlBar: ControlBar
-    private addonManager: AddonManager
+    public addonManager: AddonManager
 
     private _container: HTMLElement
     private _dblClickEmulator?: DblClickEmulator
     private _contextmenu?: Contextmenu
+    private _miniProgress!: MiniProgress
 
     constructor(private _options: PlayerOptions) {
         super()
@@ -43,8 +46,7 @@ export default class Player extends EventEmitter {
         this.video = new Video(body)
         this.controlBar = new ControlBar(
             el,
-            this,
-            { showMiniProgress: _options.showMiniProgress }
+            this
         )
         this.addonManager = new AddonManager(
             this.controlBar.getAddonContainer(),
@@ -59,23 +61,16 @@ export default class Player extends EventEmitter {
             addons,
             src,
             contextmenu,
-            defaultPointerAction
+            defaultPointerAction,
+            miniProgress
         } = this._options
         const {
             video,
             body,
             root,
-            _container
+            _container,
+            controlBar
         } = this
-
-        video.setSrc(src)
-        root.appendChild(body)
-        _container.appendChild(root)
-
-        body.addEventListener("pointermove", this._handlePointerMove)
-        root.addEventListener("touchmove", this._handleTouchMove)
-
-        this._installExtensions()
 
         if (addons) {
             this.addonManager.installAddons(addons)
@@ -83,6 +78,12 @@ export default class Player extends EventEmitter {
 
         if (contextmenu) {
             this._contextmenu = new Contextmenu(this, contextmenu)
+        }
+
+        if (miniProgress !== false) {
+            // use body as parent for floating
+            // when page scroll and video is not in view(todo)
+            this._miniProgress = new MiniProgress(body, this.video)
         }
 
         if (defaultPointerAction !== false) {
@@ -93,6 +94,17 @@ export default class Player extends EventEmitter {
                 type: "mouse"
             })
         }
+
+        body.addEventListener("pointermove", this._handlePointerMove)
+        root.addEventListener("touchmove", this._handleTouchMove)
+        controlBar.on("show", this._handleControlBarShow)
+        controlBar.on("hidden", this._handleControlBarHidden)
+
+        this._installExtensions()
+
+        video.setSrc(src)
+        root.appendChild(body)
+        _container.appendChild(root)
     }
 
     private _installExtensions() {
@@ -118,6 +130,16 @@ export default class Player extends EventEmitter {
     private _handleClick = () => this.togglePlay()
 
     private _handleDblClick = () => toggleFullScreen(this.root)
+
+    private _handleControlBarShow = () => {
+        this._miniProgress?.hide()
+        this.root.classList.remove(NO_CURSOR_CLASS)
+    }
+
+    private _handleControlBarHidden = () => {
+        this._miniProgress.show()
+        this.root.classList.add(NO_CURSOR_CLASS)
+    }
 
     public togglePlay() {
         this.video.toggle()

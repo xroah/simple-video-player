@@ -1,17 +1,13 @@
 import Player from ".."
 
-export interface ControlBarOptions {
-    showMiniProgress?: boolean
-}
-
-export interface PlayerOptions extends
-    OptionsWithAddons, ControlBarOptions {
+export interface PlayerOptions extends OptionsWithAddons {
     container: string | HTMLElement | Node
     src: string
     poster?: string
     controlBarTimeout?: number
     extensions?: Array<Extension | ExtensionFn>
     contextmenu?: false | ContextmenuOptions
+    miniProgress?: boolean
     // for mouse or pen: click toggle play, dblclick toggle fullscreen
     defaultPointerAction?: boolean
 }
