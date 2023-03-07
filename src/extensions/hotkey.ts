@@ -40,7 +40,7 @@ class Hotkey {
                 v.setMuted(!v.isMuted())
                 break
             case "enter": // fullscreen
-                toggleFullScreen(this._target)
+                toggleFullScreen(this._target, this._video.el)
         }
     }
 

@@ -11,13 +11,22 @@ export function exitFullscreen() {
     }
 }
 
-export function requestFullscreen(el: any) {
-    if (el.requestFullscreen) {
-        el.requestFullscreen()
-    } else if (el.webkitRequestFullscreen) {
-        el.webkitRequestFullscreen()
-    } else if (el.mozRequestFullScreen) {
-        el.mozRequestFullScreen()
+export function getFullscreenMethod() {
+    const body = document.body as any
+    const methodName = body.requestFullscreen ||
+        body.webkitRequestFullscreen ||
+        body.mozRequestFullScreen
+
+    return methodName?.name || false
+}
+
+export function requestFullscreen(el: any, videoEl?: HTMLVideoElement) {
+    const methodName = getFullscreenMethod()
+    
+    if (methodName) {
+        el[methodName]()
+    } else {
+        (videoEl as any)?.webkitEnterFullScreen?.()
     }
 }
 
@@ -29,13 +38,13 @@ export function getFullscreenElement() {
         doc.mozFullscreenElement
 }
 
-export function toggleFullScreen(el: HTMLElement) {
+export function toggleFullScreen(el: HTMLElement, videoEl?: HTMLVideoElement) {
     const fsEl = getFullscreenElement()
 
     if (fsEl) {
         exitFullscreen()
     } else {
-        requestFullscreen(el)
+        requestFullscreen(el, videoEl)
     }
 }
 

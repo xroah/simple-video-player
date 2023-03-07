@@ -129,7 +129,9 @@ export default class Player extends EventEmitter {
 
     private _handleClick = () => this.togglePlay()
 
-    private _handleDblClick = () => toggleFullScreen(this.root)
+    private _handleDblClick = () => {
+        toggleFullScreen(this.root, this.video.el)
+    }
 
     private _handleControlBarShow = () => {
         this._miniProgress?.hide()

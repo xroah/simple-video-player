@@ -28,22 +28,7 @@ const fullscreen: Addon = {
 
         el.addEventListener(
             "click",
-            () => {
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                const videoEl = video.el as any
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                const el = root as any
-                const method = el.requestFullscreen ||
-                    el.webkitRequestFullscreen ||
-                    el.mozRequestFullScreen
-
-                // iphone
-                if (!method) {
-                    videoEl.webkitEnterFullScreen?.()
-                } else {
-                    toggleFullScreen(root)
-                }
-            }
+            () => toggleFullScreen(root, video.el)
         )
     }
 }
