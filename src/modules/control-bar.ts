@@ -1,10 +1,11 @@
 import { EventObject } from "../commons/event-emitter"
 import { createEl, formatTime } from "../utils"
-import Slider, { Details } from "./slider"
+import Slider from "./slider"
 import Transition from "./transition"
 import Player from ".."
 import Video from "./video"
 import { CONTROL_BAR_DELAY } from "../commons/constants"
+import { Details } from "../commons/types"
 
 export default class ControlBar extends Transition {
     private _slider: Slider

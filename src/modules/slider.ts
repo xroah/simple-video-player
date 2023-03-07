@@ -1,23 +1,7 @@
 import { createEl } from "../utils"
 import EventEmitter from "../commons/event-emitter"
 import Tooltip from "./tooltip"
-
-interface SliderOptions {
-    buffer?: boolean
-    tooltip?: boolean | ((v: number) => string)
-}
-
-interface Position {
-    clientX: number
-    clientY: number
-    pointerType?: string
-    type?: string
-}
-
-export interface Details {
-    value: number,
-    type?: string
-}
+import { Position, SliderOptions } from "../commons/types"
 
 export default class Slider extends EventEmitter {
     private _el: HTMLElement

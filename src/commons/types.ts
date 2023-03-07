@@ -58,3 +58,21 @@ export type AddonArray = Array<Array<Addon | AddonFunction>>
 export interface OptionsWithAddons {
     addons?: AddonArray
 }
+
+// slider
+export interface SliderOptions {
+    buffer?: boolean
+    tooltip?: boolean | ((v: number) => string)
+}
+
+export interface Position {
+    clientX: number
+    clientY: number
+    pointerType?: string
+    type?: string
+}
+
+export interface Details {
+    value: number,
+    type?: string
+}
