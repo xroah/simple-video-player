@@ -14,18 +14,14 @@ const togglePlay: Addon = {
         player.video
             .addListener(
                 "play",
-                () => {
-                    el.classList.remove(PAUSED_CLASS)
-                }
+                () => el.classList.remove(PAUSED_CLASS)
             )
             .addListener(
                 "pause",
-                () => {
-                    el.classList.add(PAUSED_CLASS)
-                }
+                () => el.classList.add(PAUSED_CLASS)
             )
 
-        el.addEventListener("click", player.togglePlay)
+        el.addEventListener("click", player.togglePlay.bind(player))
     }
 }
 
