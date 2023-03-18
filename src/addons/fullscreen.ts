@@ -13,6 +13,7 @@ const fullscreen: Addon = {
         const fullscreenchangeName = getFullscreenChangeEventName()
         const FULLSCREEN_IN_CLASS = "rplayer-fullscreen-in"
 
+        el.title = "全屏"
         document.addEventListener(
             fullscreenchangeName as keyof DocumentEventMap,
             () => {
