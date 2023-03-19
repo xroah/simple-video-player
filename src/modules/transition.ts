@@ -5,36 +5,58 @@ import {
     noop,
     reflow
 } from "../utils"
+import Timer from "../commons/timer"
+
+interface Options {
+    el?: HTMLElement
+    autoHide?: boolean
+    hideTimeout?: number
+}
 
 export default class Transition extends EventEmitter {
     protected visible = false
     protected el: HTMLElement
-    // for auto hide
-    protected hideTimeout = 0
-    protected autoHide = false
-    private _autoHideTimer = -1
+    protected autoHideTimer?: Timer
 
-    private _transitionEndTimer = -1
+    private _transitionEndTimer: Timer
 
-    constructor(cls = "", el?: HTMLElement) {
+    constructor(cls = "", protected options: Options = {}) {
         super()
 
-        this.el = el = el || createEl("div", HIDDEN_CLASS, cls)
+        this.el = options.el || createEl("div", HIDDEN_CLASS, cls)
+        this._transitionEndTimer = new Timer(
+            0,
+            () => {
+                this.handleTransitionEnd()
+                this.removeListener()
+            }
+        )
 
-        el.addEventListener("mouseenter", this._handleMouseEnter)
-        el.addEventListener("mouseleave", this._handleMouseLeave)
+        if (options.autoHide) {
+            this.autoHideTimer = new Timer(
+                options.hideTimeout || 0,
+                () => {
+                    if (this.shouldDelay()) {
+                        this.delayHide()
+                    } else {
+                        this.setVisible(false)
+                    }
+                }
+            )
+        }
+
+        this.el.addEventListener(
+            "mouseenter",
+            this.handleMouseEnter
+        )
+        this.el.addEventListener(
+            "mouseleave",
+            this.handleMouseLeave
+        )
     }
 
     protected shouldDelay() {
         return false
-    }
-
-    protected clearHideTimeout() {
-        if (this._autoHideTimer !== -1) {
-            window.clearTimeout(this._autoHideTimer)
-
-            this._autoHideTimer = -1
-        }
     }
 
     protected delayHide() {
@@ -42,20 +64,7 @@ export default class Transition extends EventEmitter {
             return
         }
 
-        this.clearHideTimeout()
-
-        this._autoHideTimer = window.setTimeout(
-            () => {
-                this._autoHideTimer = -1
-
-                if (this.shouldDelay()) {
-                    this.delayHide()
-                } else {
-                    this.setVisible(false)
-                }
-            },
-            this.hideTimeout
-        )
+        this.autoHideTimer?.delay(true)
     }
 
     protected _handleTransitionEnd(e?: TransitionEvent) {
@@ -70,19 +79,11 @@ export default class Transition extends EventEmitter {
             this.emit("hidden")
         }
 
-        this.clearTransitionTimeout()
+        this._transitionEndTimer.clear()
     }
 
     protected handleTransitionEnd = (e?: TransitionEvent) => {
         this._handleTransitionEnd(e)
-    }
-
-    private clearTransitionTimeout() {
-        if (this._transitionEndTimer !== -1) {
-            window.clearTimeout(this._transitionEndTimer)
-
-            this._transitionEndTimer = -1
-        }
     }
 
     private getTransitionDuration() {
@@ -105,16 +106,10 @@ export default class Transition extends EventEmitter {
         )
 
         const PAD = 10
+        const duration = this.getTransitionDuration()
         // in case transitioned not firing
-        this._transitionEndTimer = window.setTimeout(
-            () => {
-                this._transitionEndTimer = -1
-
-                this.handleTransitionEnd()
-                this.removeListener()
-            },
-            this.getTransitionDuration() + PAD
-        )
+        this._transitionEndTimer.timeout = duration + PAD
+        this._transitionEndTimer.delay(true)
     }
 
     protected removeListener() {
@@ -122,24 +117,25 @@ export default class Transition extends EventEmitter {
             "transitionend",
             this.handleTransitionEnd
         )
-        this.clearTransitionTimeout()
+
+        this._transitionEndTimer.clear()
     }
 
-    private _handleMouseEnter = () => {
-        if (this.autoHide) {
-            this.clearHideTimeout()
+    protected handleMouseEnter = () => {
+        if (this.options.autoHide) {
+            this.autoHideTimer!.clear()
         }
     }
 
-    private _handleMouseLeave = () => {
-        if (this.autoHide) {
+    protected handleMouseLeave = () => {
+        if (this.options.autoHide) {
             this.delayHide()
         }
     }
 
     protected setVisible(visible: boolean, force = false) {
         if (this.visible === visible) {
-            if (visible && this.autoHide) {
+            if (visible && this.options.autoHide) {
                 // clearHideTimeout and reset
                 this.delayHide()
             }
@@ -168,7 +164,7 @@ export default class Transition extends EventEmitter {
                 this.addListener()
             }
 
-            if (this.autoHide) {
+            if (this.options.autoHide) {
                 this.delayHide()
             }
 

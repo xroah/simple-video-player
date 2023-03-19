@@ -16,14 +16,18 @@ export default class ControlBar extends Transition {
     private _video: Video
 
     constructor(private _parent: HTMLElement, player: Player) {
-        super("rplayer-control-bar")
+        super(
+            "rplayer-control-bar",
+            {
+                autoHide: true,
+                hideTimeout: CONTROL_BAR_DELAY
+            }
+        )
 
         const DEFAULT_TIME = "00:00"
         const progressWrapper = createEl("div", "rplayer-progress-wrapper")
         const sliderWrapper = createEl("div", "rplayer-progress")
         this._video = player.video
-        this.autoHide = true
-        this.hideTimeout = CONTROL_BAR_DELAY
         this._currentTimeEl = createEl("div", "rplayer-current-time")
         this._durationEl = createEl("div", "rplayer-duration")!
         this._currentTimeEl.innerHTML = DEFAULT_TIME
@@ -71,12 +75,18 @@ export default class ControlBar extends Transition {
 
     protected override delayHide() {
         if (this._hidePrevented) {
-            this.clearHideTimeout()
+            this.autoHideTimer?.clear()
 
             return
         }
 
         super.delayHide()
+    }
+    
+    protected override handleMouseLeave = () => {
+        if (!this._hidePrevented) {
+            this.delayHide()
+        }
     }
 
     private _handleVideoProgress = () => {
@@ -109,10 +119,9 @@ export default class ControlBar extends Transition {
         }
 
         this._hidePrevented = prevented
-        this.autoHide = !prevented
 
         if (prevented) {
-            this.clearHideTimeout()
+            this.autoHideTimer?.clear()
         } else {
             this.delayHide()
         }
