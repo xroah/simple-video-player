@@ -1,4 +1,5 @@
 import { DBLCLICK_THRESHOLD } from "../commons/constants"
+import Timer from "../commons/timer"
 
 interface Handler {
     (ev: Event, type: string): void
@@ -14,13 +15,14 @@ interface Options {
 
 export default class DblClickEmulator {
     private _clickTimes = 0
-    private _timer = -1
+    private _timer: Timer
     private _prevTimestamp = 0
     private _interval = 0
 
     constructor(private _options: Options) {
         const { type = "touch", target } = _options
         const doc = document
+        this._timer = new Timer(DBLCLICK_THRESHOLD)
 
         if (type === "mouse" || type === "both") {
             target.addEventListener("pointerdown", this._handlePointerDown)
@@ -28,14 +30,6 @@ export default class DblClickEmulator {
         } else if (type === "touch" || type === "both") {
             target.addEventListener("touchstart", this._handleTouchStart)
             doc.addEventListener("touchend", this._handleTouchEnd)
-        }
-    }
-
-    private _clearTimeout() {
-        if (this._timer !== -1) {
-            window.clearTimeout(this._timer)
-
-            this._timer = -1
         }
     }
 
@@ -61,7 +55,7 @@ export default class DblClickEmulator {
                 this._clickTimes = 1
             }
 
-            this._clearTimeout()
+            this._timer.clear()
         }
     }
 
@@ -94,7 +88,7 @@ export default class DblClickEmulator {
         ) {
             this._clickTimes = 0
 
-            this._clearTimeout()
+            this._timer.clear()
 
             if (!ev.defaultPrevented) {
                 this._options.onDblClick?.(ev, type)
@@ -104,17 +98,15 @@ export default class DblClickEmulator {
         }
 
         if (this._clickTimes === 1) {
-            this._timer = window.setTimeout(
-                () => {
-                    this._clickTimes = 0
-                    this._timer = -1
+            this._timer.callback = () => {
+                this._clickTimes = 0
 
-                    if (!ev.defaultPrevented) {
-                        this._options.onClick?.(ev, type)
-                    }
-                },
-                DBLCLICK_THRESHOLD
-            )
+                if (!ev.defaultPrevented) {
+                    this._options.onClick?.(ev, type)
+                }
+            }
+
+            this._timer.delay(true)
         }
     }
 

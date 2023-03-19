@@ -2,19 +2,21 @@ import ToggleVisible from "../commons/toggle-visible"
 import Player from ".."
 import Video from "../modules/video"
 import { createEl, getVolumeClass } from "../utils"
+import Timer from "../commons/timer"
 
 const DELAY = 3000
 
 class VolumeState extends ToggleVisible {
     private _iconEl: HTMLElement
     private _textEl: HTMLElement
-    private _timer = -1
+    private _timer: Timer
 
     constructor(parent: HTMLElement, private _video: Video) {
         super(parent, "rplayer-volume-state")
 
         this._iconEl = createEl("span")
         this._textEl = createEl("span", "rplayer-volume-text")
+        this._timer = new Timer(DELAY, () => this.hide())
 
         this.el.appendChild(this._iconEl)
         this.el.appendChild(this._textEl)
@@ -24,20 +26,10 @@ class VolumeState extends ToggleVisible {
         this._video.on("update-volume", this._handleVolumeChange)
     }
 
-    private _clearHideTimeout() {
-        if (this._timer !== -1) {
-            window.clearTimeout(this._timer)
-
-            this._timer = -1
-        }
-    }
-
     private _handleVolumeChange = () => {
-        this._clearHideTimeout()
         this.show()
         this._updateState()
-
-        this._timer = window.setTimeout(() => this.hide(), DELAY)
+        this._timer.delay()
     }
 
     private _updateState() {
