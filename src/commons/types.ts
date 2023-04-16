@@ -68,7 +68,6 @@ export interface SliderOptions {
 export interface Position {
     clientX: number
     clientY: number
-    pointerType?: string
     type?: string
 }
 
