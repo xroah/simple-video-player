@@ -1,6 +1,6 @@
 import sass, {Options} from "sass"
-import fs from "fs"
-import path from "path"
+import fs from "node:fs"
+import path from "node:path"
 
 //convert css background image to base64
 function imageURL2Base64(css: string) {
