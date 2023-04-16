@@ -90,6 +90,10 @@ export default class Video extends EventEmitter {
         } else if (time > duration) {
             time = duration
         }
+        
+        if (Number.isNaN(time)) {
+            return
+        }
 
         this.el.currentTime = time
     }
