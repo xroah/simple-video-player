@@ -27,16 +27,12 @@ class VolumeAddon {
         )
         this._timer = new Timer(
             300,
-            () => {
-                this._parent.classList.remove(ACTIVE_CLASS)
-            }
+            () => this._parent.classList.remove(ACTIVE_CLASS)
         )
-
-        this._slider.updateProgress(vid.getVolume())
-        this._updateBtnClass()
 
         _parent.appendChild(this._btn)
         _parent.appendChild(sliderWrapper)
+        this._handleVolumeChange()
 
         this._btn.addEventListener("click", this._handleClick)
         vid.addListener("volumechange", this._handleVolumeChange)
@@ -59,6 +55,12 @@ class VolumeAddon {
 
     private _handleVolumeChange = () => {
         this._updateBtnClass()
+
+        if (!this._slider.isMoving()) {
+            const volume = this._player.video.getVolume()
+
+            this._slider.updateProgress(volume)
+        }
     }
 
     private _handleClick = () => {
