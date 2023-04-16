@@ -20,23 +20,33 @@ export default class DblClickEmulator {
     private _interval = 0
 
     constructor(private _options: Options) {
-        const { type = "touch", target } = _options
+        const { type = "touch", target: t } = _options
         const doc = document
+        const addMouseEvent = () => {
+            t.addEventListener("mousedown", this._handleMouseDown)
+            doc.addEventListener("mouseup", this._handleMouseUp)
+        }
+        const addTouchEvent = () => {
+            t.addEventListener("touchstart", this._handleTouchStart)
+            doc.addEventListener("touchend", this._handleTouchEnd)
+        }
         this._timer = new Timer(DBLCLICK_THRESHOLD)
 
-        if (type === "mouse" || type === "both") {
-            target.addEventListener("pointerdown", this._handlePointerDown)
-            doc.addEventListener("pointerup", this._handlePointerUp)
-        } else if (type === "touch" || type === "both") {
-            target.addEventListener("touchstart", this._handleTouchStart)
-            doc.addEventListener("touchend", this._handleTouchEnd)
+        switch (type) {
+            case "mouse":
+                addMouseEvent()
+                break
+            case "touch":
+                addTouchEvent()
+                break
+            default:
+                addMouseEvent()
+                addTouchEvent()
         }
     }
 
-    private _shouldIgnore(ev: PointerEvent) {
-        return (
-            ev.button !== undefined && ev.button !== 0
-        ) || ev.pointerType === "touch"
+    private _shouldIgnore(ev: MouseEvent) {
+        return ev.button !== undefined && ev.button !== 0
     }
 
     private _handleStart(ev: Event) {
@@ -59,7 +69,7 @@ export default class DblClickEmulator {
         }
     }
 
-    private _handlePointerDown = (ev: PointerEvent) => {
+    private _handleMouseDown = (ev: MouseEvent) => {
         if (!this._shouldIgnore(ev)) {
             this._handleStart(ev)
         }
@@ -110,9 +120,9 @@ export default class DblClickEmulator {
         }
     }
 
-    private _handlePointerUp = (ev: PointerEvent) => {
+    private _handleMouseUp = (ev: MouseEvent) => {
         if (!this._shouldIgnore(ev)) {
-            this._handleEnd(ev, ev.pointerType)
+            this._handleEnd(ev, "mouse")
         }
     }
 
