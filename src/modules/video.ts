@@ -91,11 +91,11 @@ export default class Video extends EventEmitter {
             time = duration
         }
         
-        if (Number.isNaN(time)) {
-            return
+        if (!Number.isNaN(time)) {
+            this.el.currentTime = time
         }
 
-        this.el.currentTime = time
+        return time
     }
 
     public getDuration() {
@@ -115,8 +115,7 @@ export default class Video extends EventEmitter {
 
         this.el.volume = v / 100
 
-        // emit for other extensions(like: volume-state)
-        this.emit("update-volume")
+        return v
     }
 
     public isMuted() {

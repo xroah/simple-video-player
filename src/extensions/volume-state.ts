@@ -29,7 +29,7 @@ class VolumeState extends ToggleVisible {
     private _handleVolumeChange = () => {
         this.show()
         this._updateState()
-        this._timer.delay()
+        this._timer.delay(true)
     }
 
     private _updateState() {
