@@ -4,11 +4,12 @@ import loading from "../src/extensions/loading"
 import volumeState from "../src/extensions/volume-state"
 import toggleState from "../src/extensions/toggle-state"
 import videoError from "../src/extensions/error"
-import togglePlay from "../src/addons/toggle-play"
+import toggle from "../src/addons/toggle"
 import fullscreen from "../src/addons/fullscreen"
 import playRate from "../src/addons/playrate"
 import volume from "../src/addons/volume"
 import pageFullscreen from "../src/addons/page-fullscreen"
+import contextmenu from "../src/extensions/contextmenu"
 
 import "./index.scss"
 import "../src/styles/index.scss"
@@ -26,10 +27,47 @@ const rp = new RPlayer({
         loading,
         volumeState,
         toggleState,
-        videoError
+        videoError,
+        {
+            install: contextmenu,
+            options: {
+                items: [
+                    {
+                        text: "菜单1",
+                        action() {
+                            console.log("菜单11111")
+                        }
+                    },
+                    {
+                        text: "菜单2",
+                        action() {
+                            console.log("菜单222222")
+                        }
+                    },
+                    {
+                        text: "菜单3",
+                        action() {
+                            console.log("菜单333333")
+                        }
+                    },
+                    {
+                        text: "菜单4",
+                        action() {
+                            console.log("菜单444444")
+                        }
+                    },
+                    {
+                        text: "菜单5",
+                        action() {
+                            console.log("菜单555555")
+                        }
+                    }
+                ]
+            }
+        }
     ],
     addons: [
-        [togglePlay, volume],
+        [toggle, volume],
         [],
         [playRate, pageFullscreen, fullscreen]
     ],

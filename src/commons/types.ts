@@ -27,7 +27,8 @@ export type ContextmenuOptions = ContextmenuItem[] | {
     beforeShow?: BeforeShowCallback
 }
 export interface ExtensionFn {
-    (player: Player, options?: unknown): unknown
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (player: Player, options?: any): unknown
 }
 
 export interface Extension {

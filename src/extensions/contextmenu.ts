@@ -9,7 +9,7 @@ import {
 } from "../commons/types"
 import { createEl } from "../utils"
 
-export default class Contextmenu extends ToggleVisible {
+class Contextmenu extends ToggleVisible {
     private _actionsMap = new WeakMap<HTMLElement, Action>()
     private _beforeShow?: BeforeShowCallback
     private _menu: HTMLElement
@@ -141,4 +141,11 @@ export default class Contextmenu extends ToggleVisible {
     private _handleClickOutside = () => {
         this._hide()
     }
+}
+
+export default function install(
+    play: Player,
+    options: ContextmenuOptions
+) {
+    return new Contextmenu(play, options)
 }
