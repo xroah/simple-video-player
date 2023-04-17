@@ -1,10 +1,7 @@
 import { createEl, getContainer } from "../utils"
 import ControlBar from "./control-bar"
 import Video from "./video"
-import DblClickEmulator from "../utils/emulate-dbl-cilck"
-import Contextmenu from "./contextmenu"
 import { PlayerOptions } from "../commons/types"
-import { toggleFullScreen } from "../utils/fullscreen"
 import AddonManager from "./addon-manager"
 import EventEmitter from "../commons/event-emitter"
 import MiniProgress from "./mini-progress"
@@ -18,8 +15,6 @@ export default class Player extends EventEmitter {
     public addonManager: AddonManager
 
     private _container: HTMLElement
-    private _dblClickEmulator?: DblClickEmulator
-    private _contextmenu?: Contextmenu
     private _miniProgress!: MiniProgress
 
     constructor(private _options: PlayerOptions) {
@@ -60,8 +55,6 @@ export default class Player extends EventEmitter {
         const {
             addons,
             src,
-            contextmenu,
-            defaultPointerAction,
             miniProgress
         } = this._options
         const {
@@ -76,23 +69,10 @@ export default class Player extends EventEmitter {
             this.addonManager.installAddons(addons)
         }
 
-        if (contextmenu) {
-            this._contextmenu = new Contextmenu(this, contextmenu)
-        }
-
         if (miniProgress !== false) {
             // use body as parent for floating
             // when page scroll and video is not in view(todo)
             this._miniProgress = new MiniProgress(body, this.video)
-        }
-
-        if (defaultPointerAction !== false) {
-            this._dblClickEmulator = new DblClickEmulator({
-                onClick: this._handleClick,
-                onDblClick: this._handleDblClick,
-                target: this.body,
-                type: "mouse"
-            })
         }
 
         body.addEventListener("pointermove", this._handlePointerMove)
@@ -127,12 +107,6 @@ export default class Player extends EventEmitter {
         ev.preventDefault()
     }
 
-    private _handleClick = () => this.togglePlay()
-
-    private _handleDblClick = () => {
-        toggleFullScreen(this.root, this.video.el)
-    }
-
     private _handleControlBarShow = () => {
         this._miniProgress?.hide()
         this.root.classList.remove(NO_CURSOR_CLASS)
@@ -141,10 +115,6 @@ export default class Player extends EventEmitter {
     private _handleControlBarHidden = () => {
         this._miniProgress.show()
         this.root.classList.add(NO_CURSOR_CLASS)
-    }
-
-    public togglePlay() {
-        this.video.toggle()
     }
 
     private _handlePointerMove = (ev: PointerEvent) => {

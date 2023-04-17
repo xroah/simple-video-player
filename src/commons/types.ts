@@ -6,10 +6,7 @@ export interface PlayerOptions extends OptionsWithAddons {
     poster?: string
     controlBarTimeout?: number
     extensions?: Array<Extension | ExtensionFn>
-    contextmenu?: false | ContextmenuOptions
     miniProgress?: boolean
-    // for mouse or pen: click toggle play, dblclick toggle fullscreen
-    defaultPointerAction?: boolean
 }
 
 // contextmenu
