@@ -5,7 +5,7 @@ import Transition from "./transition"
 import Player from ".."
 import Video from "./video"
 import { CONTROL_BAR_DELAY } from "../commons/constants"
-import { Details } from "../commons/types"
+import { Details, TooltipCallback } from "../commons/types"
 
 export default class ControlBar extends Transition {
     private _slider: Slider
@@ -15,7 +15,11 @@ export default class ControlBar extends Transition {
 
     private _video: Video
 
-    constructor(private _parent: HTMLElement, player: Player) {
+    constructor(
+        private _parent: HTMLElement,
+        player: Player,
+        onTooltipUpdate?: TooltipCallback["onTooltipUpdate"]
+    ) {
         super(
             "rplayer-control-bar",
             {
@@ -36,7 +40,8 @@ export default class ControlBar extends Transition {
             sliderWrapper,
             {
                 buffer: true,
-                tooltip: this._formatTooltip
+                tooltip: this._formatTooltip,
+                onTooltipUpdate,
             }
         )
 
@@ -82,7 +87,7 @@ export default class ControlBar extends Transition {
 
         super.delayHide()
     }
-    
+
     protected override handleMouseLeave = () => {
         if (!this._hidePrevented) {
             this.delayHide()

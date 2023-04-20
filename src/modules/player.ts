@@ -41,7 +41,8 @@ export default class Player extends EventEmitter {
         this.video = new Video(body)
         this.controlBar = new ControlBar(
             el,
-            this
+            this,
+            _options.onTooltipUpdate
         )
         this.addonManager = new AddonManager(
             this.controlBar.getAddonContainer(),

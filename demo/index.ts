@@ -22,6 +22,9 @@ declare global {
 
 const rp = new RPlayer({
     container: "#player",
+    onTooltipUpdate(el, v) {
+        console.log(el, v)
+    },
     extensions: [
         hotkey,
         loading,
