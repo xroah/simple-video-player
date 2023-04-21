@@ -2,6 +2,7 @@ import { createEl } from "../utils"
 import EventEmitter from "../commons/event-emitter"
 import Tooltip from "./tooltip"
 import { Position, SliderOptions } from "../commons/types"
+import throttle, { ThrottleFunc } from "../utils/throttle"
 
 export default class Slider extends EventEmitter {
     private _el: HTMLElement
@@ -49,7 +50,11 @@ export default class Slider extends EventEmitter {
         document.addEventListener("mousemove", this._handleMouseMove)
         document.addEventListener("mouseup", this._handleMouseUp)
 
-        el.addEventListener("touchstart", this._handleTouchStart)
+        el.addEventListener(
+            "touchstart",
+            this._handleTouchStart,
+            { passive: false }
+        )
         document.addEventListener(
             "touchmove",
             this._handleTouchMove,
@@ -64,25 +69,34 @@ export default class Slider extends EventEmitter {
         }
     }
 
-    private _showTooltip(e: Position) {
-        if (!this._tooltip) {
-            return
-        }
+    private _showTooltip = throttle(
+        ((e: Position) => {
+            if (!this._tooltip) {
+                return
+            }
 
-        const { tooltip, onTooltipUpdate } = this._options
-        const rect = this._el.getBoundingClientRect()
-        const left = e.clientX - rect.left
-        const value = left / rect.width * 100
-        let text = Math.floor(value).toString()
+            const { tooltip, onTooltipUpdate } = this._options
+            const rect = this._el.getBoundingClientRect()
+            const left = e.clientX - rect.left
+            let value = left / rect.width * 100
+            let text = Math.floor(value).toString()
 
-        if (typeof tooltip === "function") {
-            text = tooltip(value)
-        }
+            if (value < 0) {
+                value = 0
+            } else if (value > 100) {
+                value = 100
+            }
 
-        onTooltipUpdate?.(this._tooltip.el, value)
-        this._tooltip.updateText(text)
-        this._tooltip.show(e.clientX)
-    }
+            if (typeof tooltip === "function") {
+                text = tooltip(value)
+            }
+
+            onTooltipUpdate?.(this._tooltip.el, value)
+            this._tooltip.updateText(text)
+            this._tooltip.show(e.clientX)
+        }) as ThrottleFunc,
+        { delay: 100 }
+    )
 
     private _hideTooltip() {
         this._tooltip?.hide()
@@ -96,6 +110,7 @@ export default class Slider extends EventEmitter {
 
     private _handleElMouseEnter = (e: MouseEvent) => {
         this._entered = true
+
         this._showTooltip(e)
     }
 
@@ -115,7 +130,7 @@ export default class Slider extends EventEmitter {
         } else if (percent > 100) {
             percent = 100
         }
-        
+
         this._updateProgress(percent, pos)
 
         return percent
@@ -147,12 +162,12 @@ export default class Slider extends EventEmitter {
     private _handleMouseMove = (e: MouseEvent) => {
         this._handleMoving(e)
     }
-    
+
     private _handleMoving(pos: Position) {
         if (!this._mouseDown) {
             return
         }
-        
+
         this._moving = true
 
         this._el.classList.add("rplayer-moving")
