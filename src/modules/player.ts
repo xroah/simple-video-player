@@ -76,8 +76,7 @@ export default class Player extends EventEmitter {
             this._miniProgress = new MiniProgress(body, this.video)
         }
 
-        body.addEventListener("pointermove", this._handlePointerMove)
-        root.addEventListener("touchmove", this._handleTouchMove)
+        body.addEventListener("mousemove", this._handleMouseMove)
         controlBar.on("show", this._handleControlBarShow)
         controlBar.on("hidden", this._handleControlBarHidden)
 
@@ -104,10 +103,6 @@ export default class Player extends EventEmitter {
         })
     }
 
-    private _handleTouchMove = (ev: TouchEvent) => {
-        ev.preventDefault()
-    }
-
     private _handleControlBarShow = () => {
         this._miniProgress?.hide()
         this.root.classList.remove(NO_CURSOR_CLASS)
@@ -118,10 +113,8 @@ export default class Player extends EventEmitter {
         this.root.classList.add(NO_CURSOR_CLASS)
     }
 
-    private _handlePointerMove = (ev: PointerEvent) => {
-        if (ev.pointerType !== "touch") {
-            this.showControlBar()
-        }
+    private _handleMouseMove = () => {
+        this.showControlBar()
     }
 
     public showControlBar() {
