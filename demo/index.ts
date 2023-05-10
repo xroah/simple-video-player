@@ -10,6 +10,7 @@ import playRate from "../src/addons/playrate"
 import volume from "../src/addons/volume"
 import pageFullscreen from "../src/addons/page-fullscreen"
 import contextmenu from "../src/extensions/contextmenu"
+import action from "../src/extensions/action"
 
 import "./index.scss"
 import "../src/styles/index.scss"
@@ -31,6 +32,7 @@ const rp = new RPlayer({
         volumeState,
         toggleState,
         videoError,
+        action,
         {
             install: contextmenu,
             options: {

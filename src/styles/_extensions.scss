@@ -120,3 +120,8 @@ $translate: translate(-50%, -50%);
         }
     }
 }
+
+.rplayer-action {
+    @include vars.fill-parent();
+    z-index: 10;
+}
