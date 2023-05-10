@@ -114,14 +114,6 @@ export default class Player extends EventEmitter {
     }
 
     private _handleMouseMove = () => {
-        this.showControlBar()
-    }
-
-    public showControlBar() {
         this.controlBar.show()
-    }
-
-    public hideControlBar() {
-        this.controlBar.hide()
     }
 }
