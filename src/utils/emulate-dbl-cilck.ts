@@ -99,10 +99,7 @@ export default class DblClickEmulator {
             this._clickTimes = 0
 
             this._timer.clear()
-
-            if (!ev.defaultPrevented) {
-                this._options.onDblClick?.(ev, type)
-            }
+            this._options.onDblClick?.(ev, type)
 
             return
         }
@@ -111,9 +108,7 @@ export default class DblClickEmulator {
             this._timer.callback = () => {
                 this._clickTimes = 0
 
-                if (!ev.defaultPrevented) {
-                    this._options.onClick?.(ev, type)
-                }
+                this._options.onClick?.(ev, type)
             }
 
             this._timer.delay(true)
@@ -128,6 +123,8 @@ export default class DblClickEmulator {
 
     private _handleTouchStart = (ev: TouchEvent) => {
         if (ev.touches.length === 1) {
+            // prevent firing mousedown event
+            ev.preventDefault()
             this._handleStart(ev)
         }
     }
