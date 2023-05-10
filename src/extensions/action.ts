@@ -23,7 +23,7 @@ class Action {
                 if (type === "mouse") {
                     this._handleMouseDblClick()
                 } else {
-                    this._handleTouchDblClick()
+                    this._handleTouchDblClick(ev as TouchEvent)
                 }
             }
         })
@@ -43,11 +43,30 @@ class Action {
     }
 
     private _handleTouchClick() {
-        this._player.showControlBar()
+        this._player.controlBar.toggle()
     }
 
-    private _handleTouchDblClick() {
-        this._handleMouseClick()
+    private _handleTouchDblClick(ev: TouchEvent) {
+        const rect = this._el.getBoundingClientRect()
+        const base = rect.width / 3
+        const touch = ev.changedTouches[0]
+        const { video } = this._player
+        const STEP = 5
+
+        if (!touch) {
+            return
+        }
+
+        const x = touch.clientX - rect.left
+        const currentTime = video.getCurrentTime()
+
+        if (x < base) {
+            video.setCurrentTime(currentTime - STEP)
+        } else if (x > base * 2) {
+            video.setCurrentTime(currentTime + STEP)
+        } else {
+            video.toggle()
+        }
     }
 }
 
