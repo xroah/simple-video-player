@@ -124,4 +124,22 @@ $translate: translate(-50%, -50%);
 .rplayer-action {
     @include vars.fill-parent();
     z-index: 10;
+
+    .rplayer-action-lock {
+        position: absolute;
+        right: 10px;
+        top: 50%;
+        width: 32px;
+        height: 32px;
+        transform: translateY(-50%);
+        background: url(../../icons/unlock.svg) no-repeat center center / 100% 100%;
+
+        &:active {
+            filter: brightness(.9);
+        }
+
+        &.rplayer-locked {
+            background-image: url(../../icons/lock.svg);
+        }
+    }
 }
