@@ -11,7 +11,6 @@ export interface PlayerOptions extends
     poster?: string
     controlBarTimeout?: number
     extensions?: Array<Extension | ExtensionFn>
-    miniProgress?: boolean
 }
 
 // contextmenu

@@ -4,8 +4,6 @@ import Video from "./video"
 import { PlayerOptions } from "../commons/types"
 import AddonManager from "./addon-manager"
 import EventEmitter from "../commons/event-emitter"
-import MiniProgress from "./mini-progress"
-import { NO_CURSOR_CLASS } from "../commons/constants"
 
 export default class Player extends EventEmitter {
     public root: HTMLElement
@@ -15,7 +13,6 @@ export default class Player extends EventEmitter {
     public addonManager: AddonManager
 
     private _container: HTMLElement
-    private _miniProgress!: MiniProgress
 
     constructor(private _options: PlayerOptions) {
         super()
@@ -53,31 +50,17 @@ export default class Player extends EventEmitter {
     }
 
     private _init() {
-        const {
-            addons,
-            src,
-            miniProgress
-        } = this._options
+        const { addons, src } = this._options
         const {
             video,
             body,
             root,
-            _container,
-            controlBar
+            _container
         } = this
 
         if (addons) {
             this.addonManager.installAddons(addons)
         }
-
-        if (miniProgress !== false) {
-            // use body as parent for floating
-            // when page scroll and video is not in view(todo)
-            this._miniProgress = new MiniProgress(body, this.video)
-        }
-
-        controlBar.on("show", this._handleControlBarShow)
-        controlBar.on("hidden", this._handleControlBarHidden)
 
         this._installExtensions()
 
@@ -100,15 +83,5 @@ export default class Player extends EventEmitter {
                 e.install(this, e.options)
             }
         })
-    }
-
-    private _handleControlBarShow = () => {
-        this._miniProgress?.hide()
-        this.root.classList.remove(NO_CURSOR_CLASS)
-    }
-
-    private _handleControlBarHidden = () => {
-        this._miniProgress.show()
-        this.root.classList.add(NO_CURSOR_CLASS)
     }
 }

@@ -11,6 +11,7 @@ import volume from "../src/addons/volume"
 import pageFullscreen from "../src/addons/page-fullscreen"
 import contextmenu from "../src/extensions/contextmenu"
 import action from "../src/extensions/action"
+import miniProgress from "../src/extensions/mini-progress"
 
 import "./index.scss"
 import "../src/styles/index.scss"
@@ -33,6 +34,7 @@ const rp = new RPlayer({
         toggleState,
         videoError,
         action,
+        miniProgress,
         {
             install: contextmenu,
             options: {
