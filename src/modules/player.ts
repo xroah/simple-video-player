@@ -76,7 +76,6 @@ export default class Player extends EventEmitter {
             this._miniProgress = new MiniProgress(body, this.video)
         }
 
-        body.addEventListener("mousemove", this._handleMouseMove)
         controlBar.on("show", this._handleControlBarShow)
         controlBar.on("hidden", this._handleControlBarHidden)
 
@@ -111,9 +110,5 @@ export default class Player extends EventEmitter {
     private _handleControlBarHidden = () => {
         this._miniProgress.show()
         this.root.classList.add(NO_CURSOR_CLASS)
-    }
-
-    private _handleMouseMove = () => {
-        this.controlBar.show()
     }
 }

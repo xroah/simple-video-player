@@ -41,6 +41,10 @@ class Action {
         _player.body.appendChild(this._el)
         this._showLock()
 
+        this._el.addEventListener(
+            "pointermove",
+            this._handlePointerMove
+        )
         this._lock.addEventListener(
             "touchstart",
             this._handleLockTouchStart
@@ -57,6 +61,12 @@ class Action {
 
     private _handleLockTouchStart = (ev: Event) => {
         ev.stopPropagation()
+    }
+
+    private _handlePointerMove = (ev: PointerEvent) => {
+        if (ev.type !== "touch") {
+            this._player.controlBar.show()
+        }
     }
 
     private _handleLockClick = () => {
