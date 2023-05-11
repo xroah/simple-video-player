@@ -41,32 +41,32 @@ const rp = new RPlayer({
                 items: [
                     {
                         text: "菜单1",
-                        action() {
-                            console.log("菜单11111")
+                        action(...args: unknown[]) {
+                            console.log("菜单11111", args)
                         }
                     },
                     {
                         text: "菜单2",
-                        action() {
-                            console.log("菜单222222")
+                        action(...args: unknown[]) {
+                            console.log("菜单222222", args)
                         }
                     },
                     {
                         text: "菜单3",
-                        action() {
-                            console.log("菜单333333")
+                        action(...args: unknown[]) {
+                            console.log("菜单333333", args)
                         }
                     },
                     {
                         text: "菜单4",
-                        action() {
-                            console.log("菜单444444")
+                        action(...args: unknown[]) {
+                            console.log("菜单444444", args)
                         }
                     },
                     {
                         text: "菜单5",
-                        action() {
-                            console.log("菜单555555")
+                        action(...args: unknown[]) {
+                            console.log("菜单555555", args)
                         }
                     }
                 ]

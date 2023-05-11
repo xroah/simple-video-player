@@ -125,7 +125,7 @@ class Contextmenu extends ToggleVisible {
         if (target.classList.contains(CONTEXTMENU_ITEM_CLASS)) {
             const action = this._actionsMap.get(target)
 
-            action?.(this._player)
+            action?.(this._player, target)
             this._hide()
         }
 

@@ -14,7 +14,7 @@ export interface PlayerOptions extends
 }
 
 // contextmenu
-export type Action = (play: Player) => void
+export type Action = (play: Player, el: HTMLElement) => void
 
 export interface ContextmenuItem {
     className?: string
