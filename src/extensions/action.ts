@@ -42,8 +42,14 @@ class Action {
         this._hideLock()
 
         this._el.addEventListener(
-            "pointermove",
-            this._handlePointerMove
+            "touchmove",
+            this._handleTouchMove,
+            { passive: false }
+        )
+        this._el.addEventListener(
+            "mousemove",
+            this._handleMouseMove,
+            { passive: false }
         )
         this._lock.addEventListener(
             "touchstart",
@@ -63,10 +69,8 @@ class Action {
         ev.stopPropagation()
     }
 
-    private _handlePointerMove = (ev: PointerEvent) => {
-        if (ev.type !== "touch") {
-            this._player.controlBar.show()
-        }
+    private _handleMouseMove = () => {
+        this._player.controlBar.show()
     }
 
     private _handleLockClick = () => {
@@ -96,6 +100,10 @@ class Action {
 
     private _hideLock = () => {
         this._lock.classList.add(HIDDEN_CLASS)
+    }
+
+    private _handleTouchMove = (ev: TouchEvent) => {
+        ev.preventDefault()
     }
 
     private _handleTouchClick() {
