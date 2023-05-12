@@ -1,5 +1,5 @@
 import Player from ".."
-import { CONTROL_BAR_DELAY, HIDDEN_CLASS } from "../commons/constants"
+import { HIDDEN_CLASS } from "../commons/constants"
 import Timer from "../commons/timer"
 import { createEl } from "../utils"
 import DblClickEmulator from "../utils/emulate-dbl-cilck"
@@ -16,8 +16,8 @@ class Action {
 
     constructor(private _player: Player) {
         this._el = createEl("div", "rplayer-action")
-        this._lock = createEl( "span", "rplayer-action-lock" )
-        this._timer = new Timer(CONTROL_BAR_DELAY, this._hideLock)
+        this._lock = createEl("span", "rplayer-action-lock")
+        this._timer = new Timer(5000, this._hideLock)
         this._emulator = new DblClickEmulator({
             target: this._el,
             type: "both",
@@ -39,7 +39,7 @@ class Action {
 
         this._el.appendChild(this._lock)
         _player.body.appendChild(this._el)
-        this._showLock()
+        this._hideLock()
 
         this._el.addEventListener(
             "pointermove",
@@ -94,11 +94,6 @@ class Action {
         )
     }
 
-    private _showLock() {
-        this._lock.classList.remove(HIDDEN_CLASS)
-        this._timer.delay(true)
-    }
-
     private _hideLock = () => {
         this._lock.classList.add(HIDDEN_CLASS)
     }
@@ -107,7 +102,9 @@ class Action {
         this._lock.classList.toggle(HIDDEN_CLASS)
         this._timer.clear()
 
-        if (!this._lock.classList.contains(HIDDEN_CLASS)) {
+        const lockVisible = !this._lock.classList.contains(HIDDEN_CLASS)
+
+        if (lockVisible) {
             this._timer.delay()
         }
 
@@ -115,7 +112,11 @@ class Action {
             return
         }
 
-        this._player.controlBar.toggle()
+        if (lockVisible) {
+            this._player.controlBar.show()
+        } else {
+            this._player.controlBar.hide()
+        }
     }
 
     private _handleTouchDblClick(ev: TouchEvent) {
