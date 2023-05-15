@@ -7,7 +7,6 @@
     height: vars.$slider_size;
     background-color: rgba(255, 255, 255, .5);
     transition: all .15s;
-    user-select: none;
     cursor: pointer;
 
     &:hover, &.rplayer-moving {
