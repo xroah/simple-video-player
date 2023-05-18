@@ -4,7 +4,7 @@ import Video from "../modules/video"
 import { createEl, getVolumeClass } from "../utils"
 import Timer from "../commons/timer"
 
-const DELAY = 3000
+const DELAY = 1000
 
 class VolumeState extends ToggleVisible {
     private _iconEl: HTMLElement
