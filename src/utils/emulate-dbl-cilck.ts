@@ -84,8 +84,11 @@ export default class DblClickEmulator {
 
         // release pointer outside of the target
         if (
-            target !== this._options.target &&
-            !this._options.target.contains(target)
+            ev.defaultPrevented ||
+            (
+                target !== this._options.target &&
+                !this._options.target.contains(target)
+            )
         ) {
             this._clickTimes = 0
 
