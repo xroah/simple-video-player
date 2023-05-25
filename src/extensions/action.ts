@@ -1,21 +1,33 @@
 import Player from ".."
 import { HIDDEN_CLASS } from "../commons/constants"
 import Timer from "../commons/timer"
-import { createEl } from "../utils"
+import { createEl, formatTime } from "../utils"
 import DblClickEmulator from "../utils/emulate-dbl-cilck"
 import { toggleFullScreen } from "../utils/fullscreen"
 
 const LOCKED_CLASS = "rplayer-locked"
+const RATIO = 10
 
 class Action {
     private _el: HTMLElement
+    private _seekInfoEl: HTMLElement
+    private _timeEl: HTMLElement
+    private _previewEl: HTMLElement
     private _lock: HTMLElement
     private _emulator: DblClickEmulator
     private _locked = false
     private _timer: Timer
+    private _startX = 0
+    private _startTime = 0
+    private _prevX = 0
+    private _disX = 0
+    private _id = -1
 
     constructor(private _player: Player) {
+        this._seekInfoEl = createEl("div", "rplayer-action-seek-info")
         this._el = createEl("div", "rplayer-action")
+        this._timeEl = createEl("span", "rplayer-action-time")
+        this._previewEl = createEl("div", "rplayer-action-preview")
         this._lock = createEl("span", "rplayer-action-lock")
         this._timer = new Timer(5000, this._hideLock)
         this._emulator = new DblClickEmulator({
@@ -38,12 +50,26 @@ class Action {
         })
 
         this._el.appendChild(this._lock)
+        this._seekInfoEl.appendChild(this._previewEl)
+        this._seekInfoEl.appendChild(this._timeEl)
+        this._el.appendChild(this._seekInfoEl)
         _player.body.appendChild(this._el)
         this._hideLock()
+        this._hideSeekInfo()
 
+        this._el.addEventListener(
+            "touchstart",
+            this._handleToucheStart,
+            { passive: true }
+        )
         this._el.addEventListener(
             "touchmove",
             this._handleTouchMove,
+            { passive: false }
+        )
+        this._el.addEventListener(
+            "touchend",
+            this._handleTouchEnd,
             { passive: false }
         )
         this._el.addEventListener(
@@ -51,6 +77,7 @@ class Action {
             this._handleMouseMove,
             { passive: false }
         )
+
         this._lock.addEventListener(
             "touchstart",
             this._handleLockTouchStart
@@ -65,12 +92,20 @@ class Action {
         )
     }
 
-    private _handleLockTouchStart = (ev: Event) => {
-        ev.stopPropagation()
+    private _showSeekInfo() {
+        this._seekInfoEl.classList.remove(HIDDEN_CLASS)
+    }
+
+    private _hideSeekInfo() {
+        this._seekInfoEl.classList.add(HIDDEN_CLASS)
     }
 
     private _handleMouseMove = () => {
         this._player.controlBar.show()
+    }
+
+    private _handleLockTouchStart = (ev: Event) => {
+        ev.stopPropagation()
     }
 
     private _handleLockClick = () => {
@@ -102,8 +137,86 @@ class Action {
         this._lock.classList.add(HIDDEN_CLASS)
     }
 
+    private _handleToucheStart = (ev: TouchEvent) => {
+        if (ev.touches.length > 1) {
+            this._id = -1
+            return
+        }
+
+        const touch = ev.touches[0]
+        this._id = touch.identifier
+        this._startTime = this._player.video.getCurrentTime()
+        this._startX = this._prevX = touch.clientX
+        this._disX = 0
+    }
+
+    private _getTouch(ev: TouchEvent) {
+        return Array.from(ev.changedTouches).find(
+            t => t.identifier === this._id
+        )
+    }
+
+    private _seek(touch: Touch, end = false) {
+        const duration = this._player.video.getDuration()
+        const disX = touch.clientX - this._startX
+
+        if (!duration || Math.abs(disX) < RATIO) {
+            return
+        }
+
+        const changedTime = disX / RATIO
+        let time = this._startTime + changedTime
+
+        if (time > duration) {
+            time = duration
+        } else if (time < 0) {
+            time = 0
+        }
+
+        if (end) {
+            this._player.video.setCurrentTime(time)
+        }
+
+        const timeStr = formatTime(time)
+        const durationStr = formatTime(duration)
+        this._timeEl.innerHTML = `${timeStr} / ${durationStr}`
+
+        this._showSeekInfo()
+    }
+
     private _handleTouchMove = (ev: TouchEvent) => {
         ev.preventDefault()
+
+        if (this._id === -1) {
+            return
+        }
+
+        const touch = this._getTouch(ev)
+
+        if (touch) {
+            this._disX = touch.clientX - this._prevX
+            this._prevX = touch.clientX
+            this._seek(touch)
+        }
+    }
+
+    private _handleTouchEnd = (ev: TouchEvent) => {
+        if (this._id === -1) {
+            return
+        }
+
+        if (this._disX > RATIO) {
+            ev.preventDefault()
+        }
+
+        const touch = this._getTouch(ev)
+
+        if (touch) {
+            this._id = -1
+
+            this._seek(touch, true)
+            this._hideSeekInfo()
+        }
     }
 
     private _handleTouchClick() {
