@@ -6,7 +6,7 @@ import DblClickEmulator from "../utils/emulate-dbl-cilck"
 import { toggleFullScreen } from "../utils/fullscreen"
 
 const LOCKED_CLASS = "rplayer-locked"
-const RATIO = 10
+const MOVE_THRESHOLD = 10
 
 class Action {
     private _el: HTMLElement
@@ -160,11 +160,11 @@ class Action {
         const duration = this._player.video.getDuration()
         const disX = touch.clientX - this._startX
 
-        if (!duration || Math.abs(disX) < RATIO) {
+        if (!duration || Math.abs(disX) < 1) {
             return
         }
 
-        const changedTime = disX / RATIO
+        const changedTime = disX / MOVE_THRESHOLD
         let time = this._startTime + changedTime
 
         if (time > duration) {
@@ -205,7 +205,7 @@ class Action {
             return
         }
 
-        if (this._disX > RATIO) {
+        if (this._disX > MOVE_THRESHOLD) {
             ev.preventDefault()
         }
 
