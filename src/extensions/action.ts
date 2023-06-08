@@ -160,7 +160,7 @@ class Action {
         const duration = this._player.video.getDuration()
         const disX = touch.clientX - this._startX
 
-        if (!duration || Math.abs(disX) < 1) {
+        if (!duration || Math.abs(disX) < MOVE_THRESHOLD) {
             return
         }
 
