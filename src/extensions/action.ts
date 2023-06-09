@@ -22,7 +22,10 @@ class Action {
     private _startTime = 0
     // determine moved or not
     private _prevX = 0
+    private _prevY = 0
     private _disX = 0
+    private _disY = 0
+    // determine the same touch
     private _id = -1
     private _isMoveHorizontal = false
     private _determined = false
@@ -153,8 +156,8 @@ class Action {
         this._id = touch.identifier
         this._startTime = this._player.video.getCurrentTime()
         this._startX = this._prevX = touch.clientX
-        this._startY = touch.clientY
-        this._disX = 0
+        this._startY = this._prevY = touch.clientY
+        this._disX = this._disY = 0
     }
 
     private _getTouch(ev: TouchEvent) {
@@ -166,7 +169,7 @@ class Action {
     private _seek(touch: Touch, end = false) {
         const duration = this._player.video.getDuration()
         const disX = touch.clientX - this._startX
-
+        
         if (!duration || Math.abs(disX) < MOVE_THRESHOLD) {
             return
         }
@@ -207,6 +210,8 @@ class Action {
             } = touch
             this._disX = x - this._prevX
             this._prevX = x
+            this._disY = y - this._prevY
+            this._prevY = y
 
             if (
                 x !== this._startX &&
@@ -231,7 +236,11 @@ class Action {
             return
         }
 
-        if (this._disX > MOVE_THRESHOLD) {
+        // moved, prevent clicking
+        if (
+            Math.abs(this._disX) > 0 ||
+            Math.abs(this._disY) > 0
+        ) {
             ev.preventDefault()
         }
 
