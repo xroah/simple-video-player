@@ -169,7 +169,7 @@ class Action {
     private _seek(touch: Touch, end = false) {
         const duration = this._player.video.getDuration()
         const disX = touch.clientX - this._startX
-        
+
         if (!duration || Math.abs(disX) < MOVE_THRESHOLD) {
             return
         }
@@ -203,31 +203,35 @@ class Action {
 
         const touch = this._getTouch(ev)
 
-        if (touch) {
-            const {
-                clientX: x,
-                clientY: y
-            } = touch
-            this._disX = x - this._prevX
-            this._prevX = x
-            this._disY = y - this._prevY
-            this._prevY = y
+        if (!touch) {
+            return
+        }
+
+        const {
+            clientX: x,
+            clientY: y
+        } = touch
+        this._disX = x - this._prevX
+        this._prevX = x
+        this._disY = y - this._prevY
+        this._prevY = y
+
+        if (!this._determined) {
+            const disX = Math.abs(x - this._startX)
+            const disY = Math.abs(y - this._startY)
 
             if (
-                x !== this._startX &&
-                y !== this._startY &&
-                !this._determined
+                (x !== this._startX || y !== this._startY) &&
+                disX >= MOVE_THRESHOLD
             ) {
-                this._determined = true
-                const disX = Math.abs(x - this._startX)
-                const disY = Math.abs(y - this._startY)
                 const angle = Math.atan(disY / disX) * 180 / Math.PI
-                this._isMoveHorizontal = angle <= 10
+                this._isMoveHorizontal = angle <= 20
+                this._determined = true
             }
+        }
 
-            if (this._isMoveHorizontal) {
-                this._seek(touch)
-            }
+        if (this._isMoveHorizontal) {
+            this._seek(touch)
         }
     }
 
