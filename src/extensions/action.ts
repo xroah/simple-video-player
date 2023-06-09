@@ -18,10 +18,14 @@ class Action {
     private _locked = false
     private _timer: Timer
     private _startX = 0
+    private _startY = 0
     private _startTime = 0
+    // determine moved or not
     private _prevX = 0
     private _disX = 0
     private _id = -1
+    private _isMoveHorizontal = false
+    private _determined = false
 
     constructor(private _player: Player) {
         this._seekInfoEl = createEl("div", "rplayer-action-seek-info")
@@ -144,9 +148,12 @@ class Action {
         }
 
         const touch = ev.touches[0]
+        this._isMoveHorizontal = false
+        this._determined = false
         this._id = touch.identifier
         this._startTime = this._player.video.getCurrentTime()
         this._startX = this._prevX = touch.clientX
+        this._startY = touch.clientY
         this._disX = 0
     }
 
@@ -194,9 +201,28 @@ class Action {
         const touch = this._getTouch(ev)
 
         if (touch) {
-            this._disX = touch.clientX - this._prevX
-            this._prevX = touch.clientX
-            this._seek(touch)
+            const {
+                clientX: x,
+                clientY: y
+            } = touch
+            this._disX = x - this._prevX
+            this._prevX = x
+
+            if (
+                x !== this._startX &&
+                y !== this._startY &&
+                !this._determined
+            ) {
+                this._determined = true
+                const disX = Math.abs(x - this._startX)
+                const disY = Math.abs(y - this._startY)
+                const angle = Math.atan(disY / disX) * 180 / Math.PI
+                this._isMoveHorizontal = angle <= 10
+            }
+
+            if (this._isMoveHorizontal) {
+                this._seek(touch)
+            }
         }
     }
 
@@ -211,7 +237,7 @@ class Action {
 
         const touch = this._getTouch(ev)
 
-        if (touch) {
+        if (touch && this._isMoveHorizontal) {
             this._id = -1
 
             this._seek(touch, true)
