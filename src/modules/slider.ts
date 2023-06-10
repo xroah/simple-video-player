@@ -229,6 +229,9 @@ export default class Slider extends EventEmitter {
             this._handleStart(touches[0])
             this._showTooltip(touches[0])
         }
+
+        // prevent firing mouse event
+        e.preventDefault()
     }
 
     private _handleTouchMove = (e: TouchEvent) => {

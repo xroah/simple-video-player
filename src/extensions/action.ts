@@ -36,7 +36,7 @@ class Action {
         this._timer = new Timer(5000, this._hideLock)
         this._emulator = new DblClickEmulator({
             target: this._el,
-            type: "touch",
+            type: "both",
             onClick: (ev, type) => {
                 if (type === "mouse") {
                     this._handleMouseClick()
