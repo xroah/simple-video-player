@@ -3,7 +3,6 @@ import { HIDDEN_CLASS } from "../commons/constants"
 import Timer from "../commons/timer"
 import { createEl, formatTime } from "../utils"
 import DblClickEmulator from "../utils/emulate-dbl-cilck"
-import { toggleFullScreen } from "../utils/fullscreen"
 
 const LOCKED_CLASS = "rplayer-locked"
 const MOVE_THRESHOLD = 10
@@ -131,10 +130,7 @@ class Action {
     }
 
     private _handleMouseDblClick() {
-        toggleFullScreen(
-            this._player.root,
-            this._player.video.el
-        )
+        this._player.toggleFullscreen()
     }
 
     private _hideLock = () => {

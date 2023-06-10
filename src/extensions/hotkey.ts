@@ -1,6 +1,4 @@
-import Video from "../modules/video"
 import throttle, { ThrottleFunc } from "../utils/throttle"
-import { toggleFullScreen } from "../utils/fullscreen"
 import Player from ".."
 
 class Hotkey {
@@ -9,16 +7,13 @@ class Hotkey {
         { delay: 500 }
     )
 
-    constructor(
-        private _target: HTMLElement,
-        private _video: Video
-    ) {
-        _target.addEventListener("keydown", this._handleKeydown)
+    constructor(private _player: Player) {
+        _player.root.addEventListener("keydown", this._handleKeydown)
     }
 
     private _handleKeydown = (evt: KeyboardEvent) => {
         const key = evt.key.toLowerCase()
-        const v = this._video
+        const v = this._player.video
 
         switch (key) {
             case "arrowdown":
@@ -40,19 +35,19 @@ class Hotkey {
                 v.setMuted(!v.isMuted())
                 break
             case "enter": // fullscreen
-                toggleFullScreen(this._target, this._video.el)
+                this._player.toggleFullscreen()
         }
     }
 
     private _setVolume(add = true) {
         const STEP = 10
-        const v = this._video
+        const v = this._player.video
         const volume = v.getVolume()
         const finalVolume = volume + (add ? STEP : -STEP)
         const realVolume = v.setVolume(finalVolume)
 
         v.setMuted(false)
-        
+
         if (volume === realVolume) {
             // emit for volume-state extension
             // if volume not change, the volume-state would not show
@@ -61,18 +56,18 @@ class Hotkey {
     }
 
     private _fastSeek(forward = true) {
-        const v = this._video
+        const v = this._player.video
         const STEP = 10
         const time = v.getCurrentTime()
 
         v.setCurrentTime(time + (forward ? STEP : -STEP))
         //update the progress, if the keys were press for long time
         //the timeupdate may not fire (waiting)
-        this._video.dispatch("timeupdate")
-        this._video.dispatch("progress")
+        v.dispatch("timeupdate")
+        v.dispatch("progress")
     }
 }
 
 export default function install(player: Player) {
-    return new Hotkey(player.root, player.video)
+    return new Hotkey(player)
 }

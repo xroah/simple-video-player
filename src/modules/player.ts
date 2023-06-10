@@ -4,6 +4,7 @@ import Video from "./video"
 import { PlayerOptions } from "../commons/types"
 import AddonManager from "./addon-manager"
 import EventEmitter from "../commons/event-emitter"
+import { exitFullscreen, requestFullscreen, toggleFullScreen } from "../utils/fullscreen"
 
 export default class Player extends EventEmitter {
     public root: HTMLElement
@@ -47,6 +48,18 @@ export default class Player extends EventEmitter {
         )
 
         this._init()
+    }
+
+    public requestFullscreen() {
+        requestFullscreen(this.root, this.video.el)
+    }
+
+    public exitFullscreen() {
+        exitFullscreen()
+    }
+
+    public toggleFullscreen() {
+        toggleFullScreen(this.root, this.video.el)
     }
 
     private _init() {
