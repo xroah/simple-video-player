@@ -98,9 +98,14 @@ class Contextmenu extends ToggleVisible {
 
     private _handleContextmenu = (ev: MouseEvent) => {
         const target = ev.target as HTMLElement
-
+        
         ev.preventDefault()
         ev.stopPropagation()
+
+        // prevent touch action
+        if (ev.button !== 2) {
+            return
+        }
 
         if (this.el === target || this.el.contains(target)) {
             if (this.el === target) {
