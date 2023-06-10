@@ -21,10 +21,7 @@ class Action {
     private _startY = 0
     private _startTime = 0
     // determine moved or not
-    private _prevX = 0
-    private _prevY = 0
-    private _disX = 0
-    private _disY = 0
+    private _moved = false
     // determine the same touch
     private _id = -1
     private _isMoveHorizontal = false
@@ -39,7 +36,7 @@ class Action {
         this._timer = new Timer(5000, this._hideLock)
         this._emulator = new DblClickEmulator({
             target: this._el,
-            type: "both",
+            type: "touch",
             onClick: (ev, type) => {
                 if (type === "mouse") {
                     this._handleMouseClick()
@@ -153,11 +150,11 @@ class Action {
         const touch = ev.touches[0]
         this._isMoveHorizontal = false
         this._determined = false
+        this._moved = false
         this._id = touch.identifier
         this._startTime = this._player.video.getCurrentTime()
-        this._startX = this._prevX = touch.clientX
-        this._startY = this._prevY = touch.clientY
-        this._disX = this._disY = 0
+        this._startX = touch.clientX
+        this._startY = touch.clientY
     }
 
     private _getTouch(ev: TouchEvent) {
@@ -211,10 +208,15 @@ class Action {
             clientX: x,
             clientY: y
         } = touch
-        this._disX = x - this._prevX
-        this._prevX = x
-        this._disY = y - this._prevY
-        this._prevY = y
+
+        if (
+            !this._moved && (
+                Math.abs(x - this._startX) >= MOVE_THRESHOLD ||
+                Math.abs(y - this._startY) >= MOVE_THRESHOLD
+            )
+        ) {
+            this._moved = true
+        }
 
         if (!this._determined) {
             const disX = Math.abs(x - this._startX)
@@ -241,10 +243,7 @@ class Action {
         }
 
         // moved, prevent clicking
-        if (
-            Math.abs(this._disX) > 0 ||
-            Math.abs(this._disY) > 0
-        ) {
+        if (this._moved) {
             ev.preventDefault()
         }
 
