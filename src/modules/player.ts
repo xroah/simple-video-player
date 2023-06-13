@@ -14,6 +14,7 @@ export default class Player extends EventEmitter {
     public addonManager: AddonManager
 
     private _container: HTMLElement
+    private _bottom: HTMLElement
 
     constructor(private _options: PlayerOptions) {
         super()
@@ -34,11 +35,12 @@ export default class Player extends EventEmitter {
         const body = createEl("div", "rplayer-body")
         el.tabIndex = -1
         this._container = container
+        this._bottom = createEl("div", "rplayer-bottom-wrapper")
         this.root = el
         this.body = body
         this.video = new Video(body)
         this.controlBar = new ControlBar(
-            el,
+            this._bottom,
             this,
             _options.onTooltipUpdate
         )
@@ -68,6 +70,7 @@ export default class Player extends EventEmitter {
             video,
             body,
             root,
+            _bottom,
             _container
         } = this
 
@@ -79,6 +82,7 @@ export default class Player extends EventEmitter {
 
         video.setSrc(src)
         root.appendChild(body)
+        body.appendChild(_bottom)
         _container.appendChild(root)
     }
 
