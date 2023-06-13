@@ -107,7 +107,7 @@ export default class Transition extends EventEmitter {
 
         const PAD = 10
         const duration = this.getTransitionDuration()
-        // in case transitioned not firing
+        // in case transitionend not firing
         this._transitionEndTimer.timeout = duration + PAD
         this._transitionEndTimer.delay(true)
     }
