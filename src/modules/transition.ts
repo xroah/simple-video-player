@@ -11,10 +11,12 @@ interface Options {
     el?: HTMLElement
     autoHide?: boolean
     hideTimeout?: number
+    removeOnHidden?: boolean
 }
 
 export default class Transition extends EventEmitter {
-    protected visible = false
+    public visible = false
+    
     protected el: HTMLElement
     protected autoHideTimer?: Timer
 
@@ -75,7 +77,12 @@ export default class Transition extends EventEmitter {
         if (this.visible) {
             this.emit("shown")
         } else {
-            this.el.classList.add(HIDDEN_CLASS)
+            if (this.options.removeOnHidden) {
+                this.el.remove()
+            } else {
+                this.el.classList.add(HIDDEN_CLASS)
+            }
+
             this.emit("hidden")
         }
 
