@@ -1,0 +1,28 @@
+@use "./vars";
+
+.rplayer-message-wrapper {
+    $margin: 10px;
+    display: flex;
+    flex-direction: column;
+    padding: $margin;
+
+    .rplayer-message-item {
+        align-self: flex-start;
+        width: auto;
+        transition: .15s transform ease-in-out;
+        padding: 5px 8px;
+        border-radius: 5px;
+        background-color: rgba(0, 0, 0, .8);
+        color: #fff;
+        pointer-events: auto;
+
+        &:not(.#{vars.$show_class}) {
+            opacity: 0;
+            transform: translateX(-100%);
+        }
+
+        & + .rplayer-message-item {
+            margin-top: $margin;
+        }
+    }
+}

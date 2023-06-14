@@ -7,6 +7,7 @@
 @use "./addons";
 @use "./contextmenu";
 @use "./popup";
+@use "./message";
 
 .rplayer-root {
     position: relative;
@@ -22,13 +23,6 @@
         z-index: 1;
     }
 
-    .rplayer-bottom-wrapper {
-        position: absolute;
-        width: 100%;
-        bottom: 0;
-        left: 0;
-    }
-
     .rplayer-video-wrapper {
         @include vars.flex-center();
         @include vars.size-100();
@@ -37,6 +31,15 @@
             width: 100%;
             align-self: center;
         }
+    }
+
+    .rplayer-bottom-wrapper {
+        position: absolute;
+        width: 100%;
+        bottom: 0;
+        left: 0;
+        z-index: 999;
+        pointer-events: none;
     }
 
     ul {

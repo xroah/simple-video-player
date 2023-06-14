@@ -4,7 +4,12 @@ import Video from "./video"
 import { PlayerOptions } from "../commons/types"
 import AddonManager from "./addon-manager"
 import EventEmitter from "../commons/event-emitter"
-import { exitFullscreen, requestFullscreen, toggleFullScreen } from "../utils/fullscreen"
+import {
+    exitFullscreen,
+    requestFullscreen,
+    toggleFullScreen
+} from "../utils/fullscreen"
+import MessageManager from "./message-manager"
 
 export default class Player extends EventEmitter {
     public root: HTMLElement
@@ -12,6 +17,7 @@ export default class Player extends EventEmitter {
     public video: Video
     public controlBar: ControlBar
     public addonManager: AddonManager
+    public message: MessageManager
 
     private _container: HTMLElement
     private _bottom: HTMLElement
@@ -36,6 +42,7 @@ export default class Player extends EventEmitter {
         el.tabIndex = -1
         this._container = container
         this._bottom = createEl("div", "rplayer-bottom-wrapper")
+        this.message = new MessageManager(this._bottom)
         this.root = el
         this.body = body
         this.video = new Video(body)
@@ -82,7 +89,7 @@ export default class Player extends EventEmitter {
 
         video.setSrc(src)
         root.appendChild(body)
-        body.appendChild(_bottom)
+        root.appendChild(_bottom)
         _container.appendChild(root)
     }
 

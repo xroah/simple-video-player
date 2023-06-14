@@ -10,6 +10,7 @@
     z-index: 99;
     background-image: linear-gradient(to top, rgba(0, 0, 0, .3), transparent);
     color: #fff;
+    pointer-events: auto;
 
     &:not(.rplayer-show) {
         transform: translateY(100%);
