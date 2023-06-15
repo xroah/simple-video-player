@@ -91,6 +91,12 @@ export default class Player extends EventEmitter {
         root.appendChild(body)
         root.appendChild(_bottom)
         _container.appendChild(root)
+
+        root.addEventListener("mousemove", this._handleMouseMove)
+    }
+
+    private _handleMouseMove = () => {
+        this.controlBar.show()
     }
 
     private _installExtensions() {

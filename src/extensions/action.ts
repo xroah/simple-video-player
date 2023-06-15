@@ -75,11 +75,6 @@ class Action {
             this._handleTouchEnd,
             { passive: false }
         )
-        this._el.addEventListener(
-            "mousemove",
-            this._handleMouseMove,
-            { passive: false }
-        )
 
         this._lock.addEventListener(
             "touchstart",
@@ -101,10 +96,6 @@ class Action {
 
     private _hideSeekInfo() {
         this._seekInfoEl.classList.add(HIDDEN_CLASS)
-    }
-
-    private _handleMouseMove = () => {
-        this._player.controlBar.show()
     }
 
     private _handleLockTouchStart = (ev: Event) => {
