@@ -2,19 +2,17 @@
 
 .rplayer-message-wrapper {
     $margin: 10px;
-    display: flex;
-    flex-direction: column;
+    position: absolute;
+    top: -$margin;
     padding: $margin;
+    transform: translateY(-100%);
 
     .rplayer-message-item {
-        align-self: flex-start;
-        width: auto;
-        transition: .15s transform ease-in-out;
+        transition: .15s transform, opacity .15s;
         padding: 5px 8px;
         border-radius: 5px;
         background-color: rgba(0, 0, 0, .8);
         color: #fff;
-        pointer-events: auto;
 
         &:not(.#{vars.$show_class}) {
             opacity: 0;
