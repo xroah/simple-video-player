@@ -8,6 +8,8 @@
     transform: translateY(-100%);
 
     .rplayer-message-item {
+        display: flex;
+        align-items: center;
         transition: .15s transform, opacity .15s;
         padding: 5px 8px;
         border-radius: 5px;
@@ -21,6 +23,29 @@
 
         & + .rplayer-message-item {
             margin-top: $margin;
+        }
+    }
+
+    .rplayer-message-content {
+        flex: 1;
+    }
+
+    .rplayer-message-close {
+        $size: 24px;
+        width: $size;
+        height: $size;
+        margin-left: 5px;
+        padding: 0;
+        border: none;
+        background: transparent url(../../icons/close.svg) center / 100% 100% no-repeat;
+        cursor: pointer;
+
+        &:hover {
+            filter: brightness(.9);
+        }
+
+        &:active {
+            filter: brightness(.8);
         }
     }
 }

@@ -16,6 +16,7 @@ interface Options {
 
 export default class Transition extends EventEmitter {
     public visible = false
+    public hideTimeout = 0
     
     protected el: HTMLElement
     protected autoHideTimer?: Timer
@@ -26,6 +27,7 @@ export default class Transition extends EventEmitter {
         super()
 
         this.el = options.el || createEl("div", HIDDEN_CLASS, cls)
+        this.hideTimeout = options.hideTimeout ?? 0
         this._transitionEndTimer = new Timer(
             0,
             () => {
@@ -36,7 +38,7 @@ export default class Transition extends EventEmitter {
 
         if (options.autoHide) {
             this.autoHideTimer = new Timer(
-                options.hideTimeout || 0,
+                this.hideTimeout,
                 () => {
                     if (this.shouldDelay()) {
                         this.delayHide()
