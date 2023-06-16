@@ -15,10 +15,11 @@
         border-radius: 5px;
         background-color: rgba(0, 0, 0, .8);
         color: #fff;
+        transform-origin: left bottom;
 
         &:not(.#{vars.$show_class}) {
             opacity: 0;
-            transform: translateX(-100%);
+            transform: scale(0);
         }
 
         & + .rplayer-message-item {
