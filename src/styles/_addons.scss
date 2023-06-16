@@ -12,8 +12,8 @@
     }
 }
 
-.rplayer-addon+.rplayer-addon {
-    margin-left: 20px;
+.rplayer-addon {
+    margin: 0 10px;
 }
 
 .rplayer-addon-btn {
@@ -97,7 +97,7 @@
 
     &.rplayer-active .rplayer-volume-slider {
         width: 80px;
-        margin-left: 15px;
+        margin: 0 12px;
         overflow: visible;
     }
 }
