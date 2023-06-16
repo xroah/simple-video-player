@@ -1,7 +1,11 @@
 import Player from ".."
 
 export interface TooltipCallback {
-    onTooltipUpdate?: (el: HTMLElement, v: number) => void
+    onTooltipUpdate?: (
+        el: HTMLElement,
+        current: number,
+        duration: number
+    ) => void
 }
 
 export interface PlayerOptions extends
@@ -62,9 +66,8 @@ export interface OptionsWithAddons {
 }
 
 // slider
-export interface SliderOptions extends TooltipCallback {
+export interface SliderOptions {
     buffer?: boolean
-    tooltip?: boolean | ((v: number) => string)
 }
 
 export interface Position {
@@ -76,4 +79,10 @@ export interface Position {
 export interface Details {
     value: number,
     type?: string
+}
+
+export interface TooltipOptions {
+    visibleOnHover?: boolean
+    onUpdate?: (el: HTMLElement, v: number) => void
+    formatter?: (v: number) => string
 }

@@ -6,19 +6,21 @@ import Player from ".."
 import Video from "./video"
 import { CONTROL_BAR_DELAY } from "../commons/constants"
 import { Details, TooltipCallback } from "../commons/types"
+import Tooltip from "./tooltip"
 
 export default class ControlBar extends Transition {
     private _slider: Slider
     private _currentTimeEl: HTMLElement
     private _durationEl: HTMLElement
     private _hidePrevented = false
+    private _tooltip: Tooltip
 
     private _video: Video
 
     constructor(
         private _parent: HTMLElement,
         player: Player,
-        onTooltipUpdate?: TooltipCallback["onTooltipUpdate"]
+        private _onTooltipUpdate?: TooltipCallback["onTooltipUpdate"]
     ) {
         super(
             "rplayer-control-bar",
@@ -38,10 +40,14 @@ export default class ControlBar extends Transition {
         this._durationEl.innerHTML = DEFAULT_TIME
         this._slider = new Slider(
             sliderWrapper,
+            { buffer: true }
+        )
+        this._tooltip = new Tooltip(
+            this._slider,
             {
-                buffer: true,
-                tooltip: this._formatTooltip,
-                onTooltipUpdate,
+                visibleOnHover: true,
+                formatter: this._formatTooltip,
+                onUpdate: this._handleTooltipUpdate
             }
         )
 
@@ -140,6 +146,19 @@ export default class ControlBar extends Transition {
         }
 
         return formatTime(duration * v / 100)
+    }
+
+    private _handleTooltipUpdate = (
+        element: HTMLElement,
+        percent: number
+    ) => {
+        const duration = this._video.getDuration()
+
+        this._onTooltipUpdate?.(
+            element,
+            percent * duration / 100,
+            duration
+        )
     }
 
     private _handleDurationChange = () => {

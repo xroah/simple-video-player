@@ -1,20 +1,28 @@
+import { EventObject } from "../commons/event-emitter"
 import ToggleVisible from "../commons/toggle-visible"
+import { TooltipOptions } from "../commons/types"
 import { createEl } from "../utils"
+import throttle from "../utils/throttle"
+import Slider from "./slider"
 
 export default class Tooltip extends ToggleVisible {
     private _textEl: HTMLElement
+    private _parent: HTMLElement
 
-    constructor(private _parent: HTMLElement) {
-        super(_parent, "rplayer-tooltip")
+    constructor(
+        private _slider: Slider,
+        private _options: TooltipOptions = {}
+    ) {
+        super(_slider.el, "rplayer-tooltip")
 
         this._textEl = createEl("span", "rplayer-tooltip-text")
+        this._parent = _slider.el
 
         this.el.appendChild(this._textEl)
-        _parent.appendChild(this.el)
         this.hide()
     }
 
-    public updatePosition(x  = 0) {
+    public updatePosition(x = 0) {
         const rect = this.el.getBoundingClientRect()
         const parentRect = this._parent.getBoundingClientRect()
         const maxLeft = parentRect.width - rect.width

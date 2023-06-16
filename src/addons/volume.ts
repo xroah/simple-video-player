@@ -21,10 +21,7 @@ class VolumeAddon {
         const sliderWrapper = createEl("div", "rplayer-volume-slider")
         const vid = this._video = _player.video
         this._btn = createEl("button")
-        const slider = this._slider = new Slider(
-            sliderWrapper,
-            { tooltip: false }
-        )
+        const slider = this._slider = new Slider(sliderWrapper)
         this._timer = new Timer(
             300,
             () => this._parent.classList.remove(ACTIVE_CLASS)

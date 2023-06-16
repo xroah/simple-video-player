@@ -1,24 +1,20 @@
 import { createEl } from "../utils"
 import EventEmitter from "../commons/event-emitter"
-import Tooltip from "./tooltip"
 import { Position, SliderOptions } from "../commons/types"
-import throttle, { ThrottleFunc } from "../utils/throttle"
 
 export default class Slider extends EventEmitter {
     private _el: HTMLElement
     private _progress: HTMLElement
     private _marker: HTMLElement
     private _buffer?: HTMLElement
-    private _tooltip?: Tooltip
     private _value = 0
     private _moving = false
     private _mouseDown = false
-    private _entered = false
     private _updated = false
 
     constructor(
         parent: HTMLElement,
-        private _options: SliderOptions = {}
+        options: SliderOptions = {}
     ) {
         super()
 
@@ -27,13 +23,9 @@ export default class Slider extends EventEmitter {
         this._progress = createEl("div", `${PREFIX}-progress`)
         this._marker = createEl("div", `${PREFIX}-marker`)
 
-        if (_options.buffer) {
+        if (options.buffer) {
             this._buffer = createEl("div", `${PREFIX}-buffer`)
             this._el.appendChild(this._buffer)
-        }
-
-        if (_options.tooltip !== false) {
-            this._tooltip = new Tooltip(this._el)
         }
 
         this._el.appendChild(this._progress)
@@ -62,92 +54,47 @@ export default class Slider extends EventEmitter {
         )
         document.addEventListener("touchend", this._handleTouchEnd)
 
-        if (this._tooltip) {
-            el.addEventListener("mousemove", this._handleElMouseMove)
-            el.addEventListener("mouseenter", this._handleElMouseEnter)
-            el.addEventListener("mouseleave", this._handleElMouseLeave)
-        }
-    }
-
-    private _showTooltip = throttle(
-        ((e: Position) => {
-            if (!this._tooltip) {
-                return
-            }
-
-            const { tooltip, onTooltipUpdate } = this._options
-            const rect = this._el.getBoundingClientRect()
-            const left = e.clientX - rect.left
-            let value = left / rect.width * 100
-            let text = Math.floor(value).toString()
-
-            if (value < 0) {
-                value = 0
-            } else if (value > 100) {
-                value = 100
-            }
-
-            if (typeof tooltip === "function") {
-                text = tooltip(value)
-            }
-
-            onTooltipUpdate?.(this._tooltip.el, value)
-            this._tooltip.updateText(text)
-            this._tooltip.show(e.clientX)
-        }) as ThrottleFunc,
-        { delay: 100 }
-    )
-
-    private _hideTooltip() {
-        this._tooltip?.hide()
+        el.addEventListener("mousemove", this._handleElMouseMove)
+        el.addEventListener("mouseenter", this._handleElMouseEnter)
+        el.addEventListener("mouseleave", this._handleElMouseLeave)
     }
 
     private _handleElMouseMove = (e: MouseEvent) => {
-        if (!this._moving) {
-            this._showTooltip(e)
-        }
+        this._emit("mousemove", this._getMousePosition(e.clientX))
     }
 
     private _handleElMouseEnter = (e: MouseEvent) => {
-        this._entered = true
-
-        this._showTooltip(e)
+        this._emit("mouseenter", this._getMousePosition(e.clientX))
     }
 
     private _handleElMouseLeave = () => {
-        this._entered = false
-
-        if (!this._moving) {
-            this._hideTooltip()
-        }
+        this._emit("mouseleave")
     }
 
     private _updatePosition(pos: Position) {
-        let { percent } = this._getMousePosition(pos.clientX)
-
-        if (percent < 0) {
-            percent = 0
-        } else if (percent > 100) {
-            percent = 100
-        }
+        const percent = this._getMousePosition(pos.clientX)
 
         this._updateProgress(percent, pos)
 
         return percent
     }
 
+    private _emit(name: string, v?: number, type?: string) {
+        this.emit(
+            name,
+            {
+                value: v,
+                type
+            }
+        )
+    }
+
     private _handleStart(pos: Position) {
-        const { percent } = this._getMousePosition(pos.clientX)
+        const percent = this._getMousePosition(pos.clientX)
         this._mouseDown = true
 
         this._updateProgress(percent, pos)
-        this.emit(
-            "slide-start",
-            {
-                value: percent,
-                type: pos.type
-            }
-        )
+        this._emit("slide-start", percent, pos.type)
     }
 
     private _handleMouseDown = (e: MouseEvent) => {
@@ -172,15 +119,11 @@ export default class Slider extends EventEmitter {
         this._moving = true
 
         this._el.classList.add("rplayer-moving")
-        this.emit(
+        this._emit(
             "slide-move",
-            {
-                value: this._updatePosition(pos),
-                type: pos.type
-            }
+            this._updatePosition(pos),
+            pos.type
         )
-
-        this._showTooltip(pos)
     }
 
     private _handleEnd(pos: Position) {
@@ -188,7 +131,7 @@ export default class Slider extends EventEmitter {
             return
         }
 
-        const { percent } = this._getMousePosition(pos.clientX)
+        const percent = this._getMousePosition(pos.clientX)
         const updated = this._updated
         this._updated = false
         this._mouseDown = false
@@ -196,31 +139,15 @@ export default class Slider extends EventEmitter {
 
         this._updateProgress(percent, pos)
         this._el.classList.remove("rplayer-moving")
-        this.emit(
-            "slide-end",
-            {
-                value: percent,
-                type: pos.type
-            }
-        )
+        this._emit("slide-end", percent, pos.type)
 
         if (updated) {
-            this.emit(
-                "value-change",
-                {
-                    value: this._value,
-                    type: pos.type
-                }
-            )
+            this._emit("value-change", this._value, pos.type)
         }
     }
 
     private _handleMouseUp = (e: MouseEvent) => {
         this._handleEnd(e)
-
-        if (!this._entered) {
-            this._hideTooltip()
-        }
     }
 
     private _handleTouchStart = (e: TouchEvent) => {
@@ -228,7 +155,6 @@ export default class Slider extends EventEmitter {
 
         if (touches.length === 1) {
             this._handleStart(touches[0])
-            this._showTooltip(touches[0])
         }
 
         // prevent firing mouse event
@@ -245,7 +171,6 @@ export default class Slider extends EventEmitter {
     private _handleTouchEnd = (e: TouchEvent) => {
         if (!e.touches.length) {
             this._handleEnd(e.changedTouches[0])
-            this._hideTooltip()
         }
     }
 
@@ -259,10 +184,7 @@ export default class Slider extends EventEmitter {
             x = 0
         }
 
-        return {
-            left: x,
-            percent: x / rect.width * 100
-        }
+        return x / rect.width * 100
     }
 
     private _updateProgress(val: number, pos: Position) {
@@ -270,14 +192,12 @@ export default class Slider extends EventEmitter {
             this._updated = true
             this.value = val
 
-            this.emit(
-                "value-update",
-                {
-                    value: val,
-                    type: pos.type
-                }
-            )
+            this._emit("value-update", val, pos.type)
         }
+    }
+
+    public get el() {
+        return this._el
     }
 
     public get value() {
