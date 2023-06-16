@@ -53,26 +53,10 @@ export default class Slider extends EventEmitter {
             { passive: false }
         )
         document.addEventListener("touchend", this._handleTouchEnd)
-
-        el.addEventListener("mousemove", this._handleElMouseMove)
-        el.addEventListener("mouseenter", this._handleElMouseEnter)
-        el.addEventListener("mouseleave", this._handleElMouseLeave)
-    }
-
-    private _handleElMouseMove = (e: MouseEvent) => {
-        this._emit("mousemove", this._getMousePosition(e.clientX))
-    }
-
-    private _handleElMouseEnter = (e: MouseEvent) => {
-        this._emit("mouseenter", this._getMousePosition(e.clientX))
-    }
-
-    private _handleElMouseLeave = () => {
-        this._emit("mouseleave")
     }
 
     private _updatePosition(pos: Position) {
-        const percent = this._getMousePosition(pos.clientX)
+        const percent = this.getMousePosition(pos.clientX)
 
         this._updateProgress(percent, pos)
 
@@ -90,7 +74,7 @@ export default class Slider extends EventEmitter {
     }
 
     private _handleStart(pos: Position) {
-        const percent = this._getMousePosition(pos.clientX)
+        const percent = this.getMousePosition(pos.clientX)
         this._mouseDown = true
 
         this._updateProgress(percent, pos)
@@ -131,7 +115,7 @@ export default class Slider extends EventEmitter {
             return
         }
 
-        const percent = this._getMousePosition(pos.clientX)
+        const percent = this.getMousePosition(pos.clientX)
         const updated = this._updated
         this._updated = false
         this._mouseDown = false
@@ -174,7 +158,7 @@ export default class Slider extends EventEmitter {
         }
     }
 
-    private _getMousePosition(clientX: number) {
+    public getMousePosition(clientX: number) {
         const rect = this._el.getBoundingClientRect()
         let x = clientX - rect.left
 
