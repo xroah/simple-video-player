@@ -156,6 +156,7 @@ export default class Slider extends EventEmitter {
             return
         }
 
+        e.preventDefault()
         this._handleStart(e)
     }
 
@@ -267,6 +268,7 @@ export default class Slider extends EventEmitter {
     private _updateProgress(val: number, pos: Position) {
         if (this._value !== val) {
             this._updated = true
+            this.value = val
 
             this.emit(
                 "value-update",
@@ -275,19 +277,22 @@ export default class Slider extends EventEmitter {
                     type: pos.type
                 }
             )
-            this.updateProgress(val)
         }
     }
 
-    public isMoving() {
-        return this._mouseDown || this._moving
+    public get value() {
+        return this._value
     }
 
-    public updateProgress(val: number) {
+    public set value(val: number) {
         const percent = `${val}%`
         this._value = val
         this._marker.style.left = percent
         this._progress.style.width = percent
+    }
+
+    public isMoving() {
+        return this._mouseDown || this._moving
     }
 
     public updateBuffer(val: number) {

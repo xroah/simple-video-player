@@ -158,8 +158,7 @@ export default class ControlBar extends Transition {
         const progress = this._video.getProgress()
         const time = this._video.getCurrentTime()
         this._currentTimeEl.innerHTML = formatTime(time)
-
-        this._slider.updateProgress(progress)
+        this._slider.value = progress
     }
 
     private _getSeekTime(eo: EventObject) {

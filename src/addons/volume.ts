@@ -59,7 +59,7 @@ class VolumeAddon {
         if (!this._slider.isMoving()) {
             const volume = this._player.video.getVolume()
 
-            this._slider.updateProgress(volume)
+            this._slider.value = volume
         }
     }
 
