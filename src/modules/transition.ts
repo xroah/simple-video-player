@@ -20,6 +20,7 @@ export default class Transition extends EventEmitter {
     
     protected el: HTMLElement
     protected autoHideTimer?: Timer
+    protected mouseEntered = false
 
     private _transitionEndTimer: Timer
 
@@ -64,7 +65,7 @@ export default class Transition extends EventEmitter {
     }
 
     protected delayHide() {
-        if (!this.visible) {
+        if (!this.visible || this.mouseEntered) {
             return
         }
 
@@ -131,12 +132,16 @@ export default class Transition extends EventEmitter {
     }
 
     protected handleMouseEnter = () => {
+        this.mouseEntered = true
+
         if (this.options.autoHide) {
             this.autoHideTimer!.clear()
         }
     }
 
     protected handleMouseLeave = () => {
+        this.mouseEntered = false
+
         if (this.options.autoHide) {
             this.delayHide()
         }
