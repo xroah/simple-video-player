@@ -79,8 +79,6 @@ export class Message extends Transition {
 
         if (!isUndef(duration) && this.hideTimeout !== duration) {
             this.hideTimeout = duration!
-
-            this.delayHide()
         }
 
         if(closable) {
@@ -92,5 +90,7 @@ export class Message extends Transition {
                 this._removeClose()
             }
         }
+
+        this.delayHide()
     }
 }
