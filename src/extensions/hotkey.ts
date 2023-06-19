@@ -44,15 +44,9 @@ class Hotkey {
         const v = this._player.video
         const volume = v.getVolume()
         const finalVolume = volume + (add ? STEP : -STEP)
-        const realVolume = v.setVolume(finalVolume)
 
+        v.setVolume(finalVolume)
         v.setMuted(false)
-
-        if (volume === realVolume) {
-            // emit for volume-state extension
-            // if volume not change, the volume-state would not show
-            v.emit("update-volume")
-        }
     }
 
     private _fastSeek(forward = true) {

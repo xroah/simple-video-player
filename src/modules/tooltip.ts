@@ -48,6 +48,7 @@ export default class Tooltip extends ToggleVisible {
 
             this.updateText(format(value))
             this._updatePosition(value)
+            this._options.onUpdate?.(this.el, value)
         }) as ThrottleFunc
     )
 
