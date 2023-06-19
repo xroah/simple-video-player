@@ -1,6 +1,7 @@
 import { createEl } from "../utils"
 import EventEmitter from "../commons/event-emitter"
 import { Position, SliderOptions } from "../commons/types"
+import { SliderEvents } from "../commons/enums"
 
 export default class Slider extends EventEmitter {
     private _el: HTMLElement
@@ -58,17 +59,17 @@ export default class Slider extends EventEmitter {
     private _updatePosition(pos: Position) {
         const percent = this.getMousePosition(pos.clientX)
 
-        this._updateProgress(percent, pos)
+        this._updateProgress(percent)
 
         return percent
     }
 
-    private _emit(name: string, v?: number, type?: string) {
+    private _emit(name: string, v?: number) {
         this.emit(
             name,
             {
                 value: v,
-                type
+                type: name
             }
         )
     }
@@ -77,8 +78,8 @@ export default class Slider extends EventEmitter {
         const percent = this.getMousePosition(pos.clientX)
         this._mouseDown = true
 
-        this._updateProgress(percent, pos)
-        this._emit("slide-start", percent, pos.type)
+        this._updateProgress(percent)
+        this._emit(SliderEvents.SLIDE_START, percent)
     }
 
     private _handleMouseDown = (e: MouseEvent) => {
@@ -103,11 +104,7 @@ export default class Slider extends EventEmitter {
         this._moving = true
 
         this._el.classList.add("rplayer-moving")
-        this._emit(
-            "slide-move",
-            this._updatePosition(pos),
-            pos.type
-        )
+        this._emit(SliderEvents.SLIDE_MOVE, this._updatePosition(pos))
     }
 
     private _handleEnd(pos: Position) {
@@ -121,12 +118,12 @@ export default class Slider extends EventEmitter {
         this._mouseDown = false
         this._moving = false
 
-        this._updateProgress(percent, pos)
+        this._updateProgress(percent)
         this._el.classList.remove("rplayer-moving")
-        this._emit("slide-end", percent, pos.type)
+        this._emit(SliderEvents.SLIDE_END, percent)
 
         if (updated) {
-            this._emit("value-change", this._value, pos.type)
+            this._emit(SliderEvents.VALUE_CHANGE, this._value)
         }
     }
 
@@ -171,12 +168,12 @@ export default class Slider extends EventEmitter {
         return x / rect.width * 100
     }
 
-    private _updateProgress(val: number, pos: Position) {
+    private _updateProgress(val: number) {
         if (this._value !== val) {
             this._updated = true
             this.value = val
 
-            this._emit("value-update", val, pos.type)
+            this._emit(SliderEvents.VALUE_UPDATE, val)
         }
     }
 
