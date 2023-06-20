@@ -6,6 +6,7 @@ import Slider from "../modules/slider"
 import Video from "../modules/video"
 import { createEl, getVolumeClass } from "../utils"
 import Timer from "../commons/timer"
+import Tooltip from "../modules/tooltip"
 
 class VolumeAddon {
     private _btn: HTMLElement
@@ -13,6 +14,7 @@ class VolumeAddon {
     private _video: Video
     private _mouseEntered = false
     private _timer: Timer
+    private _volumeTooltip: Tooltip
 
     constructor(
         private _parent: HTMLElement,
@@ -25,6 +27,10 @@ class VolumeAddon {
         this._timer = new Timer(
             300,
             () => this._parent.classList.remove(ACTIVE_CLASS)
+        )
+        this._volumeTooltip = new Tooltip(
+            slider,
+            { boundary: _parent }
         )
 
         _parent.appendChild(this._btn)

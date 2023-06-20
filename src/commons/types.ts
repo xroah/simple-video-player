@@ -83,6 +83,7 @@ export interface Details {
 
 export interface TooltipOptions {
     visibleOnHover?: boolean
+    boundary?: HTMLElement
     onUpdate?: (el: HTMLElement, v: number) => void
     formatter?: (v: number) => string
 }

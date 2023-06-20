@@ -84,14 +84,18 @@ export default class Tooltip extends ToggleVisible {
     // x:  percent of the parent width
     private _updatePosition(x = 0) {
         const rect = this.el.getBoundingClientRect()
+        const boundary = this._options.boundary ?? this._parent
         const parentRect = this._parent.getBoundingClientRect()
-        const maxLeft = parentRect.width - rect.width
+        const boundRect = boundary.getBoundingClientRect()
+        const minLeft = boundRect.left - parentRect.left
+        const rightDis = boundRect.right - parentRect.right
+        const maxLeft = rightDis + parentRect.width - rect.width
         const SPACE = 20
         const top = - SPACE - rect.height
         let left = x * parentRect.width / 100 - rect.width / 2
-
-        if (left <= 0) {
-            left = 0
+        
+        if (left < minLeft) {
+            left = minLeft
         } else if (left > maxLeft) {
             left = maxLeft
         }

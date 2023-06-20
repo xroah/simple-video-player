@@ -46,6 +46,7 @@ export default class ControlBar extends Transition {
             this._slider,
             {
                 visibleOnHover: true,
+                boundary: player.root,
                 formatter: this._formatTooltip,
                 onUpdate: this._handleTooltipUpdate
             }
