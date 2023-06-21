@@ -68,6 +68,7 @@ export interface OptionsWithAddons {
 // slider
 export interface SliderOptions {
     buffer?: boolean
+    wheel?: boolean
 }
 
 export interface Position {
@@ -84,6 +85,7 @@ export interface Details {
 export interface TooltipOptions {
     visibleOnHover?: boolean
     boundary?: HTMLElement
+    wheel?: boolean
     onUpdate?: (el: HTMLElement, v: number) => void
     formatter?: (v: number) => string
 }

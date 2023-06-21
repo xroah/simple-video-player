@@ -15,7 +15,7 @@ export default class Slider extends EventEmitter {
 
     constructor(
         parent: HTMLElement,
-        options: SliderOptions = {}
+        private _options: SliderOptions = {}
     ) {
         super()
 
@@ -24,7 +24,7 @@ export default class Slider extends EventEmitter {
         this._progress = createEl("div", `${PREFIX}-progress`)
         this._marker = createEl("div", `${PREFIX}-marker`)
 
-        if (options.buffer) {
+        if (_options.buffer) {
             this._buffer = createEl("div", `${PREFIX}-buffer`)
             this._el.appendChild(this._buffer)
         }
@@ -54,6 +54,21 @@ export default class Slider extends EventEmitter {
             { passive: false }
         )
         document.addEventListener("touchend", this._handleTouchEnd)
+
+        if (this._options.wheel) {
+            el.addEventListener("wheel", this._handleWheel)
+        }
+    }
+
+    private _updateProgress(val: number) {
+        val = val < 0 ? 0 : val > 100 ? 100 : val
+
+        if (this._value !== val) {
+            this._updated = true
+            this.value = val
+
+            this._emit(SliderEvents.VALUE_UPDATE, val)
+        }
     }
 
     private _updatePosition(pos: Position) {
@@ -62,6 +77,18 @@ export default class Slider extends EventEmitter {
         this._updateProgress(percent)
 
         return percent
+    }
+
+    private _handleWheel = (ev: WheelEvent) => {
+        const DELTA = 2
+
+        ev.preventDefault()
+
+        if (ev.deltaY > 0) {
+            this._updateProgress(this.value + DELTA)
+        } else {
+            this._updateProgress(this.value - DELTA)
+        }
     }
 
     private _emit(name: string, v?: number) {
@@ -166,15 +193,6 @@ export default class Slider extends EventEmitter {
         }
 
         return x / rect.width * 100
-    }
-
-    private _updateProgress(val: number) {
-        if (this._value !== val) {
-            this._updated = true
-            this.value = val
-
-            this._emit(SliderEvents.VALUE_UPDATE, val)
-        }
     }
 
     public get el() {
