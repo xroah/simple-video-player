@@ -71,7 +71,6 @@ export default class DblClickEmulator {
 
     private _handleMouseDown = (ev: MouseEvent) => {
         if (!this._shouldIgnore(ev)) {
-            ev.preventDefault()
             this._handleStart(ev)
         }
     }

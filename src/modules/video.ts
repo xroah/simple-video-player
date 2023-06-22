@@ -114,8 +114,6 @@ export default class Video extends EventEmitter {
         }
 
         this.el.volume = v / 100
-
-        return v
     }
 
     public isMuted() {
