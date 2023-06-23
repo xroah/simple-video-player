@@ -1,7 +1,6 @@
 import RPlayer from "../src"
 import hotkey from "../src/extensions/hotkey"
-import loading from "../src/extensions/loading"
-import toggleState from "../src/extensions/toggle-state"
+import state from "../src/extensions/state"
 import videoError from "../src/extensions/error"
 import toggle from "../src/addons/toggle"
 import fullscreen from "../src/addons/fullscreen"
@@ -28,8 +27,7 @@ const rp = new RPlayer({
     },
     extensions: [
         hotkey,
-        loading,
-        toggleState,
+        state,
         videoError,
         action,
         miniProgress,
