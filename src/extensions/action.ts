@@ -9,6 +9,7 @@ const MOVE_THRESHOLD = 10
 
 class Action {
     private _el: HTMLElement
+    private _rateEl: HTMLElement
     private _seekInfoEl: HTMLElement
     private _timeEl: HTMLElement
     private _previewEl: HTMLElement
@@ -25,14 +26,26 @@ class Action {
     private _id = -1
     private _isMoveHorizontal = false
     private _determined = false
+    private _longPressTimer: Timer
+    private _originalRate = 1
+    private _longPressed = false
 
     constructor(private _player: Player) {
         this._seekInfoEl = createEl("div", "rplayer-action-seek-info")
         this._el = createEl("div", "rplayer-action")
+        this._rateEl = createEl("div", "rplayer-action-rate")
+        this._rateEl.innerHTML = `
+            <p>2倍速播放中</p>
+            <div>
+                <span></span>
+                <span></span>
+            </div>
+        `
         this._timeEl = createEl("span", "rplayer-action-time")
         this._previewEl = createEl("div", "rplayer-action-preview")
         this._lock = createEl("span", "rplayer-action-lock")
         this._timer = new Timer(5000, this._hideLock)
+        this._longPressTimer = new Timer(500, this._handleLongPress)
         this._emulator = new DblClickEmulator({
             target: this._el,
             type: "both",
@@ -56,9 +69,11 @@ class Action {
         this._seekInfoEl.appendChild(this._previewEl)
         this._seekInfoEl.appendChild(this._timeEl)
         this._el.appendChild(this._seekInfoEl)
+        this._el.appendChild(this._rateEl)
         _player.body.appendChild(this._el)
         this._hideLock()
         this._hideSeekInfo()
+        this._hideRateInfo()
 
         this._el.addEventListener(
             "touchstart",
@@ -98,6 +113,14 @@ class Action {
         this._seekInfoEl.classList.add(HIDDEN_CLASS)
     }
 
+    private _showRateInfo() {
+        this._rateEl.classList.remove(HIDDEN_CLASS)
+    }
+
+    private _hideRateInfo() {
+        this._rateEl.classList.add(HIDDEN_CLASS)
+    }
+
     private _handleLockTouchStart = (ev: Event) => {
         ev.stopPropagation()
     }
@@ -128,6 +151,27 @@ class Action {
         this._lock.classList.add(HIDDEN_CLASS)
     }
 
+    private _handleLongPress = () => {
+        const v = this._player.video
+        this._originalRate = v.getPlayRate()
+        this._longPressed = true
+
+        v.setPlayRate(2)
+        v.play()
+        this._showRateInfo()
+    }
+
+    private _resetLongPress() {
+        if (this._longPressed) {
+            this._player.video.setPlayRate(this._originalRate)
+        }
+
+        this._longPressed = false
+
+        this._longPressTimer.clear()
+        this._hideRateInfo()
+    }
+
     private _handleToucheStart = (ev: TouchEvent) => {
         if (ev.touches.length > 1) {
             this._id = -1
@@ -138,10 +182,13 @@ class Action {
         this._isMoveHorizontal = false
         this._determined = false
         this._moved = false
+        this._longPressed = false
         this._id = touch.identifier
         this._startTime = this._player.video.getCurrentTime()
         this._startX = touch.clientX
         this._startY = touch.clientY
+
+        this._longPressTimer.delay(true)
     }
 
     private _getTouch(ev: TouchEvent) {
@@ -181,7 +228,7 @@ class Action {
     private _handleTouchMove = (ev: TouchEvent) => {
         ev.preventDefault()
 
-        if (this._id === -1) {
+        if (this._id === -1 || this._longPressed) {
             return
         }
 
@@ -203,6 +250,10 @@ class Action {
             )
         ) {
             this._moved = true
+        }
+
+        if (this._moved) {
+            this._longPressTimer.clear()
         }
 
         if (!this._determined) {
@@ -229,19 +280,23 @@ class Action {
             return
         }
 
-        // moved, prevent clicking
-        if (this._moved) {
+        // moved or long pressed prevent clicking
+        if (this._moved || this._longPressed) {
             ev.preventDefault()
         }
 
-        const touch = this._getTouch(ev)
+        if (!this._longPressed) {
+            const touch = this._getTouch(ev)
 
-        if (touch && this._isMoveHorizontal) {
-            this._id = -1
+            if (touch && this._isMoveHorizontal) {
+                this._id = -1
 
-            this._seek(touch, true)
-            this._hideSeekInfo()
+                this._seek(touch, true)
+                this._hideSeekInfo()
+            }
         }
+
+        this._resetLongPress()
     }
 
     private _handleTouchClick() {
