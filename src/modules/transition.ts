@@ -17,12 +17,13 @@ interface Options {
 export default class Transition extends EventEmitter {
     public visible = false
     public hideTimeout = 0
-    
+
     protected el: HTMLElement
     protected autoHideTimer?: Timer
     protected mouseEntered = false
 
     private _transitionEndTimer: Timer
+    private _endTimestamp = 0
 
     constructor(cls = "", protected options: Options = {}) {
         super()
@@ -44,20 +45,15 @@ export default class Transition extends EventEmitter {
                     if (this.shouldDelay()) {
                         this.delayHide()
                     } else {
-                        this.setVisible(false)
+                        this.hide()
                     }
                 }
             )
         }
 
-        this.el.addEventListener(
-            "mouseenter",
-            this.handleMouseEnter
-        )
-        this.el.addEventListener(
-            "mouseleave",
-            this.handleMouseLeave
-        )
+        this.el.addEventListener("mouseenter", this.handleMouseEnter)
+        this.el.addEventListener("mouseleave", this.handleMouseLeave)
+        this.el.addEventListener("touchend", this._handleTouchEnd)
     }
 
     protected shouldDelay() {
@@ -96,7 +92,7 @@ export default class Transition extends EventEmitter {
         this._handleTransitionEnd(e)
     }
 
-    private getTransitionDuration() {
+    private _getTransitionDuration() {
         let { transitionDelay, transitionDuration } = getComputedStyle(this.el)
         // If multiple durations only take the first
         transitionDelay = transitionDelay.split(",")[0]
@@ -116,7 +112,7 @@ export default class Transition extends EventEmitter {
         )
 
         const PAD = 10
-        const duration = this.getTransitionDuration()
+        const duration = this._getTransitionDuration()
         // in case transitionend not firing
         this._transitionEndTimer.timeout = duration + PAD
         this._transitionEndTimer.delay(true)
@@ -131,8 +127,18 @@ export default class Transition extends EventEmitter {
         this._transitionEndTimer.clear()
     }
 
-    protected handleMouseEnter = () => {
-        this.mouseEntered = true
+    private _handleTouchEnd = (ev: TouchEvent) => {
+        this._endTimestamp = ev.timeStamp
+    }
+
+    protected handleMouseEnter = (ev: MouseEvent) => {
+        // mouse enter event fired after touch end
+        // and the timestamp may be equal
+        const interval = Math.abs(ev.timeStamp - this._endTimestamp)
+
+        if (interval > 10) {
+            this.mouseEntered = true
+        }
 
         if (this.options.autoHide) {
             this.autoHideTimer!.clear()
