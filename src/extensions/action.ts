@@ -1,6 +1,7 @@
 import Player from ".."
 import { HIDDEN_CLASS } from "../commons/constants"
 import Timer from "../commons/timer"
+import { Message } from "../modules/message"
 import { createEl, formatTime } from "../utils"
 import DblClickEmulator from "../utils/emulate-dbl-cilck"
 
@@ -29,6 +30,7 @@ class Action {
     private _longPressTimer: Timer
     private _originalRate = 1
     private _longPressed = false
+    private _message: Message | null = null
 
     constructor(private _player: Player) {
         this._seekInfoEl = createEl("div", "rplayer-action-seek-info")
@@ -320,6 +322,14 @@ class Action {
         }
     }
 
+    private _showMessage(msg: string) {
+        if (!this._message || !this._message.visible) {
+            this._message = this._player.message.open(msg)
+        } else {
+            this._message.update(msg)
+        }
+    }
+
     private _handleTouchDblClick(ev: TouchEvent) {
         if (this._locked) {
             return
@@ -340,8 +350,10 @@ class Action {
 
         if (x < base) {
             video.setCurrentTime(currentTime - STEP)
+            this._showMessage("后退" + STEP + "s")
         } else if (x > base * 3) {
             video.setCurrentTime(currentTime + STEP)
+            this._showMessage("前进" + STEP + "s")
         } else {
             video.toggle()
         }
