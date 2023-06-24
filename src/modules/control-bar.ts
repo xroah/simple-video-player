@@ -4,7 +4,7 @@ import Slider from "./slider"
 import Transition from "./transition"
 import Player from ".."
 import Video from "./video"
-import { CONTROL_BAR_DELAY } from "../commons/constants"
+import { CONTROL_BAR_DELAY, NO_CURSOR_CLASS } from "../commons/constants"
 import { Details, TooltipCallback } from "../commons/types"
 import Tooltip from "./tooltip"
 
@@ -14,7 +14,7 @@ export default class ControlBar extends Transition {
     private _durationEl: HTMLElement
     private _hidePrevented = false
     private _tooltip: Tooltip
-
+    private _playerRoot: HTMLElement
     private _video: Video
 
     constructor(
@@ -38,6 +38,7 @@ export default class ControlBar extends Transition {
         this._durationEl = createEl("div", "rplayer-duration")!
         this._currentTimeEl.innerHTML = DEFAULT_TIME
         this._durationEl.innerHTML = DEFAULT_TIME
+        this._playerRoot = player.root
         this._slider = new Slider(
             sliderWrapper,
             { buffer: true }
@@ -58,7 +59,7 @@ export default class ControlBar extends Transition {
         this.el.appendChild(progressWrapper)
         this._parent.appendChild(this.el)
 
-        this.show(true)
+        this.show()
         this.init()
     }
 
@@ -77,13 +78,26 @@ export default class ControlBar extends Transition {
         this._slider.on("slide-start", this._handleSlideStart)
         this._slider.on("slide-move", this._handleSlideMove)
         this._slider.on("slide-end", this._handleSlideEnd)
+
+        this._playerRoot.addEventListener("mousemove", this._show)
+        this._playerRoot.addEventListener("mouseleave", this._hide)
     }
 
     public override hide() {
         if (!this._hidePrevented) {
             super.hide()
+            this._playerRoot.classList.add(NO_CURSOR_CLASS)
         }
     }
+
+    public override show() {
+        super.show()
+        this._playerRoot.classList.remove(NO_CURSOR_CLASS)
+    }
+
+    private _hide = () => this.hide()
+    
+    private _show = () => this.show()
 
     protected override delayHide() {
         if (this._hidePrevented) {
