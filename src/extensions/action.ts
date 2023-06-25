@@ -190,6 +190,7 @@ class Action {
         this._startX = touch.clientX
         this._startY = touch.clientY
 
+        this._player.root.focus()
         this._longPressTimer.delay(true)
     }
 
