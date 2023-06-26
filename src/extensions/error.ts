@@ -37,7 +37,7 @@ class VideoError extends ToggleVisible {
                 msg = "视频加载出错，请检查网络"
                 break
             case MediaError.MEDIA_ERR_SRC_NOT_SUPPORTED:
-                msg = "不支持的视频格式"
+                msg = "不支持的视频格式或网络错误"
                 break
             default:
                 msg = "未知错误"
