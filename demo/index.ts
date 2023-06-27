@@ -28,7 +28,13 @@ const rp = new RPlayer({
     extensions: [
         hotkey,
         state,
-        videoError,
+        {
+            install: videoError,
+            options: {
+                refreshText: "Refresh",
+                networkErrText: "Network error"
+            }
+        },
         action,
         miniProgress,
         {

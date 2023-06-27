@@ -3,17 +3,29 @@ import { ERROR_CLASS } from "../commons/constants"
 import ToggleVisible from "../commons/toggle-visible"
 import { createEl } from "../utils"
 
+interface Options {
+    refreshText?: string
+    abortedText?: string
+    decodeErrText?: string
+    networkErrText?: string
+    notSupportedText?: string
+    unknownErrText?: string
+}
+
 class VideoError extends ToggleVisible {
     private _msgEl: HTMLElement
     private _refreshBtn: HTMLElement
     private _time = 0
 
-    constructor(private _player: Player) {
+    constructor(
+        private _player: Player,
+        private _options: Options = {}
+    ) {
         super(_player.root, "rplayer-error-wrapper")
 
         this._msgEl = createEl("div", "rpalyer-error-text")
         this._refreshBtn = createEl("button", "rplayer-error-refresh")
-        this._refreshBtn.innerHTML = "刷新"
+        this._refreshBtn.innerHTML = _options.refreshText ?? "刷新"
         this.el.appendChild(this._msgEl)
         this.el.appendChild(this._refreshBtn)
 
@@ -22,25 +34,25 @@ class VideoError extends ToggleVisible {
         this.el.addEventListener("contextmenu", this._handleContextmenu)
     }
 
-    private getMessage() {
+    private _getMessage() {
         const error = this._player.video.getError()
         let msg = ""
 
         switch (error?.code) {
             case MediaError.MEDIA_ERR_ABORTED:
-                msg = "视频加载中断"
+                msg = this._options.abortedText ?? "视频加载中断"
                 break
             case MediaError.MEDIA_ERR_DECODE:
-                msg = "视频解码失败"
+                msg = this._options.decodeErrText ?? "视频解码失败"
                 break
             case MediaError.MEDIA_ERR_NETWORK:
-                msg = "视频加载出错，请检查网络"
+                msg = this._options.networkErrText ?? "视频加载出错，请检查网络"
                 break
             case MediaError.MEDIA_ERR_SRC_NOT_SUPPORTED:
-                msg = "不支持的视频格式或网络错误"
+                msg = this._options.notSupportedText ?? "不支持的视频格式或网络错误"
                 break
             default:
-                msg = "未知错误"
+                msg = this._options.unknownErrText ?? "未知错误"
         }
 
         return msg
@@ -80,7 +92,7 @@ class VideoError extends ToggleVisible {
     }
 
     private _show() {
-        const errorMsg = this.getMessage()
+        const errorMsg = this._getMessage()
         this._msgEl.innerHTML = errorMsg
 
         this._player.controlBar.hide()
@@ -100,6 +112,9 @@ class VideoError extends ToggleVisible {
     }
 }
 
-export default function installErrorExt(player: Player) {
-    return new VideoError(player)
+export default function installErrorExt(
+    player: Player,
+    options: Options
+) {
+    return new VideoError(player, options)
 }
