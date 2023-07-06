@@ -3,16 +3,18 @@
 .rplayer-control-bar {
     display: flex;
     flex-direction: column;
+    position: absolute;
+    left: 0;
+    bottom: 0;
     padding: 0 15px;
     width: 100%;
-    height: 50px;
-    transition: transform .3s, opacity .3s;
-    z-index: 99;
+    height: vars.$control_bar_height;
+    transition: opacity .3s;
     background-image: linear-gradient(to top, rgba(0, 0, 0, .3), transparent);
     color: #fff;
+    z-index: 10;
 
     &:not(.rplayer-show) {
-        transform: translateY(100%);
         opacity: 0;
     }
 

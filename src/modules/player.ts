@@ -20,7 +20,6 @@ export default class Player extends EventEmitter {
     public message: MessageManager
 
     private _container: HTMLElement
-    private _bottom: HTMLElement
 
     constructor(private _options: PlayerOptions) {
         super()
@@ -41,13 +40,12 @@ export default class Player extends EventEmitter {
         const body = createEl("div", "rplayer-body")
         el.tabIndex = -1
         this._container = container
-        this._bottom = createEl("div", "rplayer-bottom-wrapper")
-        this.message = new MessageManager(this._bottom)
         this.root = el
         this.body = body
         this.video = new Video(body)
+        this.message = new MessageManager(this.root)
         this.controlBar = new ControlBar(
-            this._bottom,
+            this.root,
             this,
             _options.onTooltipUpdate
         )
@@ -77,7 +75,6 @@ export default class Player extends EventEmitter {
             video,
             body,
             root,
-            _bottom,
             _container
         } = this
 
@@ -89,7 +86,6 @@ export default class Player extends EventEmitter {
 
         video.setSrc(src)
         root.appendChild(body)
-        root.appendChild(_bottom)
         _container.appendChild(root)
     }
 

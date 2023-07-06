@@ -3,9 +3,10 @@
 .rplayer-message-wrapper {
     $margin: 10px;
     position: absolute;
-    top: -$margin;
+    left: 0;
+    bottom: vars.$control_bar_height;
     padding: $margin;
-    transform: translateY(-100%);
+    z-index: 1000;
 
     .rplayer-message-item {
         display: flex;
