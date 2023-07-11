@@ -1,0 +1,1 @@
+# Player desktop client based on Tauri
