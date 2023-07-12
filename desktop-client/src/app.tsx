@@ -1,35 +1,21 @@
-import { useState } from "react"
-import { invoke } from "@tauri-apps/api/tauri"
+import { useEffect } from "react"
+import {TauriEvent, listen} from "@tauri-apps/api/event"
 
 function App() {
-    const [greetMsg, setGreetMsg] = useState("")
-    const [name, setName] = useState("")
-
-    async function greet() {
-        setGreetMsg(await invoke("greet", { name }))
-    }
+    useEffect(
+        () => {
+            listen(TauriEvent.WINDOW_CLOSE_REQUESTED, e => {
+                if (e.windowLabel === "main") {
+                    console.log("closing")
+                }
+            })
+        },
+        []
+    )
 
     return (
         <div className="container">
-            <h1>Welcome to Tauri!</h1>
-            <p>Click on the Tauri, Vite, and React logos to learn more.</p>
-
-            <form
-                className="row"
-                onSubmit={(e) => {
-                    e.preventDefault()
-                    greet()
-                }}
-            >
-                <input
-                    id="greet-input"
-                    onChange={(e) => setName(e.currentTarget.value)}
-                    placeholder="Enter a name..."
-                />
-                <button type="submit">Greet</button>
-            </form>
-
-            <p>{greetMsg}</p>
+            
         </div>
     )
 }
