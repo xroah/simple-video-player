@@ -16,8 +16,12 @@ fn main() {
         .on_system_tray_event(tray::handle_system_tray_event)
         .on_window_event(|event| match event.event() {
             WindowEvent::CloseRequested { api, .. } => {
-                let _ = event.window().hide();
-                api.prevent_close();
+                let win = event.window();
+
+                if win.label() == "main" {
+                    let _ = win.hide();
+                    api.prevent_close();
+                }
             }
             _ => (),
         })
