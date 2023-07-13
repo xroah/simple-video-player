@@ -13,7 +13,7 @@ fn main() {
                 let win = event.window();
 
                 if win.label() == "main" {
-                    // let _ = win.hide();
+                    let _ = win.hide();
                     api.prevent_close();
                 }
             },

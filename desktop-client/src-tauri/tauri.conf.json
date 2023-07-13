@@ -1,50 +1,75 @@
 {
-  "build": {
-    "beforeDevCommand": "npm run dev",
-    "beforeBuildCommand": "npm run build",
-    "devPath": "http://localhost:1420",
-    "distDir": "../dist",
-    "withGlobalTauri": false
-  },
-  "package": {
-    "productName": "RPlayer",
-    "version": "0.0.0"
-  },
-  "tauri": {
-    "systemTray": {
-        "iconPath": "icons/tray.png",
-        "iconAsTemplate": true
+    "build": {
+        "beforeDevCommand": "npm run dev",
+        "beforeBuildCommand": "npm run build",
+        "devPath": "http://localhost:1420",
+        "distDir": "../dist",
+        "withGlobalTauri": false
     },
-    "allowlist": {
-      "all": false,
-      "shell": {
-        "all": false,
-        "open": true
-      }
+    "package": {
+        "productName": "RPlayer",
+        "version": "0.0.0"
     },
-    "bundle": {
-      "active": true,
-      "targets": "all",
-      "identifier": "com.tauri.dev",
-      "icon": [
-        "icons/32x32.png",
-        "icons/128x128.png",
-        "icons/128x128@2x.png",
-        "icons/icon.icns",
-        "icons/icon.ico"
-      ]
-    },
-    "security": {
-      "csp": null
-    },
-    "windows": [
-      {
-        "fullscreen": false,
-        "resizable": true,
-        "title": "RPlayer",
-        "width": 800,
-        "height": 600
-      }
-    ]
-  }
+    "tauri": {
+        "systemTray": {
+            "iconPath": "icons/tray.png",
+            "iconAsTemplate": true
+        },
+        "allowlist": {
+            "all": false,
+            "fs": {
+                "all": true,
+                "scope": [
+                    "*"
+                ]
+            },
+            "protocol": {
+                "all": true,
+                "asset": true,
+                "assetScope": [
+                    "**"
+                ]
+            },
+            "path": {
+                "all": true
+            },
+            "dialog": {
+                "all": true
+            },
+            "process": {
+                "all": true
+            },
+            "shell": {
+                "all": false,
+                "open": true
+            },
+            "window": {
+                "all": true
+            }
+        },
+        "bundle": {
+            "active": true,
+            "targets": "all",
+            "identifier": "com.tauri.dev",
+            "icon": [
+                "icons/32x32.png",
+                "icons/128x128.png",
+                "icons/128x128@2x.png",
+                "icons/icon.icns",
+                "icons/icon.ico"
+            ]
+        },
+        "security": {
+            "csp": null
+        },
+        "windows": [
+            {
+                "fullscreen": false,
+                "resizable": true,
+                "title": "RPlayer",
+                "width": 800,
+                "height": 600
+            }
+        ]
+    }
 }
